@@ -189,7 +189,11 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
 
     private final GlobalStatus[] retryRollbackingStatuses = new GlobalStatus[] {
         GlobalStatus.TimeoutRollbacking,
-        GlobalStatus.TimeoutRollbackRetrying, GlobalStatus.RollbackRetrying};
+        GlobalStatus.TimeoutRollbackRetrying,
+        GlobalStatus.RollbackRetrying,
+        GlobalStatus.TimeoutRollbacked,
+        GlobalStatus.Rollbacked
+    };
 
     private final GlobalStatus[] retryCommittingStatuses = new GlobalStatus[] {GlobalStatus.CommitRetrying, GlobalStatus.Committed};
 
@@ -408,6 +412,11 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
                     //The function of this 'return' is 'continue'.
                     return;
                 }
+
+                if (rollbackingSession.getStatus().equals(GlobalStatus.TimeoutRollbacked) || rollbackingSession.getStatus().equals(GlobalStatus.Rollbacked)) {
+                    SessionHelper.endRollbacked(rollbackingSession, true);
+                }
+
                 core.doGlobalRollback(rollbackingSession, true);
             } catch (TransactionException ex) {
                 LOGGER.error("Failed to retry rollbacking [{}] {} {}", rollbackingSession.getXid(), ex.getCode(), ex.getMessage());
