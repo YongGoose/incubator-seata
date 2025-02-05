@@ -400,6 +400,8 @@ public abstract class AbstractUndoLogManager implements UndoLogManager {
                 if (LOGGER.isInfoEnabled()) {
                     LOGGER.info("xid {} branch {}, undo_log inserted, retry rollback", xid, branchId);
                 }
+                throw new BranchTransactionException(BranchRollbackFailed_Unretriable, String.format(
+                    "Branch session rollback failed due to unique constraint violation, xid = %s branchId = %s", xid, branchId), e);
             } catch (Throwable e) {
                 if (conn != null) {
                     try {
