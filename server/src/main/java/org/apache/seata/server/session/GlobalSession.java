@@ -204,9 +204,17 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
 
     /**
      * prevent could not handle committing and rollbacking transaction
+     *
+     * If the global session's status is "Rollbacked" or "TimeoutRollbacked", it returns the negative time since the session began,
+     * indicating that the session is already dead.
+     * For other statuses, it returns the remaining time until the session reaches the retry dead threshold.
+     *
      * @return time to dead session. if not greater than 0, then deadSession
      */
     public long timeToDeadSession() {
+        if (this.status == GlobalStatus.Rollbacked || this.status == GlobalStatus.TimeoutRollbacked) {
+            return beginTime - System.currentTimeMillis();
+        }
         return beginTime + RETRY_DEAD_THRESHOLD - System.currentTimeMillis();
     }
 

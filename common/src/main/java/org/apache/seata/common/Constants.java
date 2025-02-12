@@ -181,6 +181,10 @@ public interface Constants {
     String ROLLBACKING = "Rollbacking";
 
     /**
+     * The constant Rollbacked
+     */
+    String ROLLBACKED = "Rollbacked";
+    /**
      * The constant AUTO_COMMIT
      */
     String AUTO_COMMIT = "autoCommit";

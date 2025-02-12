@@ -83,6 +83,7 @@ import static org.apache.seata.common.Constants.COMMITTING;
 import static org.apache.seata.common.Constants.RETRY_COMMITTING;
 import static org.apache.seata.common.Constants.RETRY_ROLLBACKING;
 import static org.apache.seata.common.Constants.ROLLBACKING;
+import static org.apache.seata.common.Constants.ROLLBACKED;
 import static org.apache.seata.common.Constants.SYNC_PROCESSING;
 import static org.apache.seata.common.Constants.TX_TIMEOUT_CHECK;
 import static org.apache.seata.common.Constants.UNDOLOG_DELETE;
@@ -95,6 +96,7 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_ROLLBACKING_RETRY_PE
 import static org.apache.seata.common.DefaultValues.DEFAULT_ROLLBACK_FAILED_UNLOCK_ENABLE;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TIMEOUT_RETRY_PERIOD;
 import static org.apache.seata.common.DefaultValues.DEFAULT_UNDO_LOG_DELETE_PERIOD;
+import static org.apache.seata.common.DefaultValues.DEFAULT_ROLLBACKED_RETRY_PERIOD;
 
 /**
  * The type Default coordinator.
@@ -124,6 +126,12 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
      */
     protected static final long ROLLBACKING_RETRY_PERIOD = CONFIG.getLong(ConfigurationKeys.ROLLBACKING_RETRY_PERIOD,
             DEFAULT_ROLLBACKING_RETRY_PERIOD);
+
+    /**
+     * The constant ROLLBACKED_RETRY_PERIOD.
+     */
+    protected static final long ROLLBACKED_RETRY_PERIOD = CONFIG.getLong(ConfigurationKeys.ROLLBACKED_RETRY_PERIOD,
+            DEFAULT_ROLLBACKED_RETRY_PERIOD);
 
     /**
      * The constant TIMEOUT_RETRY_PERIOD.
@@ -190,15 +198,14 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     private final GlobalStatus[] retryRollbackingStatuses = new GlobalStatus[] {
         GlobalStatus.TimeoutRollbacking,
         GlobalStatus.TimeoutRollbackRetrying,
-        GlobalStatus.RollbackRetrying,
-        GlobalStatus.TimeoutRollbacked,
-        GlobalStatus.Rollbacked
+        GlobalStatus.RollbackRetrying
     };
 
     private final GlobalStatus[] retryCommittingStatuses = new GlobalStatus[] {GlobalStatus.CommitRetrying, GlobalStatus.Committed};
 
     private final GlobalStatus[] rollbackingStatuses = new GlobalStatus[] {GlobalStatus.Rollbacking};
     private final GlobalStatus[] committingStatuses = new GlobalStatus[] {GlobalStatus.Committing};
+    private final GlobalStatus[] rollbackedStatuses = new GlobalStatus[] {GlobalStatus.Rollbacked, GlobalStatus.TimeoutRollbacked};
 
     private final ThreadPoolExecutor branchRemoveExecutor;
 
@@ -437,10 +444,6 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
                     return;
                 }
 
-                if (rollbackingSession.getStatus().equals(GlobalStatus.TimeoutRollbacked) || rollbackingSession.getStatus().equals(GlobalStatus.Rollbacked)) {
-                    SessionHelper.endRollbacked(rollbackingSession, true);
-                }
-
                 core.doGlobalRollback(rollbackingSession, true);
             } catch (TransactionException ex) {
                 LOGGER.error("Failed to retry rollbacking [{}] {} {}", rollbackingSession.getXid(), ex.getCode(), ex.getMessage());
@@ -641,6 +644,60 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     }
 
     /**
+     * Handle rollbacked by scheduled.
+     */
+    protected void handleRollbackedByScheduled() {
+        SessionCondition sessionCondition = new SessionCondition(rollbackedStatuses);
+        sessionCondition.setLazyLoadBranch(true);
+        List<GlobalSession> rollbackedSessions =
+            SessionHolder.getRootSessionManager().findGlobalSessions(sessionCondition);
+        if (CollectionUtils.isEmpty(rollbackedSessions)) {
+            rollbackedSchedule(RETRY_DEAD_THRESHOLD);
+            return;
+        }
+        long delay = ROLLBACKED_RETRY_PERIOD;
+        rollbackedSessions.sort(Comparator.comparingLong(GlobalSession::getBeginTime));
+        List<GlobalSession> needDoRollbackedSessions = new ArrayList<>();
+        for (GlobalSession rollbackedSession : rollbackedSessions) {
+            long time = rollbackedSession.timeToDeadSession();
+            if (time <= 0) {
+                needDoRollbackedSessions.add(rollbackedSession);
+            } else {
+                delay = Math.max(time, ROLLBACKED_RETRY_PERIOD);
+                break;
+            }
+        }
+        long now = System.currentTimeMillis();
+        SessionHelper.forEach(needDoRollbackedSessions, rollbackedSession -> {
+            try {
+                if (isRetryTimeout(now, MAX_ROLLBACK_RETRY_TIMEOUT, rollbackedSession.getBeginTime())) {
+
+                    // commit retry timeout event
+                    SessionHelper.endRollbackFailed(rollbackedSession, true, true);
+
+                    //The function of this 'return' is 'continue'.
+                    return;
+                }
+                core.doGlobalRollback(rollbackedSession, true);
+            } catch (TransactionException ex) {
+                LOGGER.error("Failed to handle rollbacked [{}] {} {}", rollbackedSession.getXid(), ex.getCode(), ex.getMessage());
+            }
+        });
+        rollbackedSchedule(delay);
+    }
+
+    private void rollbackedSchedule(long delay) {
+        syncProcessing.schedule(
+            () -> {
+                boolean called = SessionHolder.distributedLockAndExecute(ROLLBACKED, this::handleRollbackedByScheduled);
+                if (!called) {
+                    rollbackedSchedule(ROLLBACKED_RETRY_PERIOD);
+                }
+            },
+            delay, TimeUnit.MILLISECONDS);
+    }
+
+    /**
      * Init.
      */
     public void init() {
@@ -667,6 +724,8 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
         rollbackingSchedule(0);
 
         committingSchedule(0);
+
+        rollbackedSchedule(0);
     }
 
     @Override
