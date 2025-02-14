@@ -19,6 +19,7 @@ package org.apache.seata.server.session;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -79,6 +80,13 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
      */
     private static final int RETRY_DEAD_THRESHOLD = ConfigurationFactory.getInstance()
             .getInt(ConfigurationKeys.RETRY_DEAD_THRESHOLD, DefaultValues.DEFAULT_RETRY_DEAD_THRESHOLD);
+
+    /**
+     * If the global session's status is in an end state and currentTime - createTime >= END_STATE_RETRY_DEAD_THRESHOLD
+     * then the tx will be remand as need to retry rollback
+     */
+    private static final int END_STATE_RETRY_DEAD_THRESHOLD = ConfigurationFactory.getInstance()
+        .getInt(ConfigurationKeys.END_STATE_RETRY_DEAD_THRESHOLD, DefaultValues.DEFAULT_END_STATE_RETRY_DEAD_THRESHOLD);
 
     private String xid;
 
@@ -203,19 +211,33 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
     }
 
     /**
-     * prevent could not handle committing and rollbacking transaction
+     * prevent could not handle committing, rollbacking and rollbacked transaction
      *
-     * If the global session's status is "Rollbacked" or "TimeoutRollbacked", it returns the negative time since the session began,
-     * indicating that the session is already dead.
+     * If the global session's status is in end status, it returns the remaining time until the session reaches
+     * the end state retry dead threshold.
      * For other statuses, it returns the remaining time until the session reaches the retry dead threshold.
      *
      * @return time to dead session. if not greater than 0, then deadSession
      */
     public long timeToDeadSession() {
-        if (this.status == GlobalStatus.Rollbacked || this.status == GlobalStatus.TimeoutRollbacked) {
-            return beginTime - System.currentTimeMillis();
+        if (isEndStatus()) {
+            return beginTime + END_STATE_RETRY_DEAD_THRESHOLD - System.currentTimeMillis();
         }
         return beginTime + RETRY_DEAD_THRESHOLD - System.currentTimeMillis();
+    }
+
+    private boolean isEndStatus() {
+        EnumSet<GlobalStatus> deadStatuses = EnumSet.of(
+            GlobalStatus.Rollbacked,
+            GlobalStatus.TimeoutRollbacked,
+            GlobalStatus.CommitFailed,
+            GlobalStatus.RollbackFailed,
+            GlobalStatus.TimeoutRollbackFailed,
+            GlobalStatus.Finished,
+            GlobalStatus.CommitRetryTimeout,
+            GlobalStatus.RollbackRetryTimeout
+        );
+        return deadStatuses.contains(this.status);
     }
 
     @Override

@@ -605,6 +605,11 @@ public interface ConfigurationKeys {
     String RETRY_DEAD_THRESHOLD = SERVER_PREFIX + "retryDeadThreshold";
 
     /**
+     * the constant END_STATE_RETRY_DEAD_THRESHOLD
+     */
+    String END_STATE_RETRY_DEAD_THRESHOLD = SERVER_PREFIX + "endStateRetryDeadThreshold";
+
+    /**
      * the constant DISTRIBUTED_LOCK_EXPIRE_TIME
      */
     String DISTRIBUTED_LOCK_EXPIRE_TIME = SERVER_PREFIX + "distributedLockExpireTime";
