@@ -405,7 +405,7 @@ public interface DefaultValues {
     /**
      * the constant DEFAULT_END_STATUS_RETRY_PERIOD
      */
-    int DEFAULT_END_STATUS_RETRY_PERIOD = 1000;
+    int DEFAULT_END_STATUS_RETRY_PERIOD = 30;
 
     /**
      * the constant DEFAULT_TIMEOUT_RETRY_PERIOD
