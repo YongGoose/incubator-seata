@@ -206,8 +206,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     private final GlobalStatus[] rollbackingStatuses = new GlobalStatus[] {GlobalStatus.Rollbacking};
     private final GlobalStatus[] committingStatuses = new GlobalStatus[] {GlobalStatus.Committing};
     private final GlobalStatus[] endStatuses = new GlobalStatus[] {GlobalStatus.Rollbacked, GlobalStatus.TimeoutRollbacked,
-        GlobalStatus.CommitFailed, GlobalStatus.RollbackFailed, GlobalStatus.TimeoutRollbackFailed, GlobalStatus.Finished,
-        GlobalStatus.CommitRetryTimeout, GlobalStatus.RollbackRetryTimeout};
+        GlobalStatus.CommitFailed, GlobalStatus.RollbackFailed, GlobalStatus.TimeoutRollbackFailed, GlobalStatus.Finished};
 
     private final ThreadPoolExecutor branchRemoveExecutor;
 
@@ -673,19 +672,23 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
         SessionHelper.forEach(needDoRollbackedSessions, rollbackedSession -> {
             try {
                 if (isRetryTimeout(now, MAX_ROLLBACK_RETRY_TIMEOUT, rollbackedSession.getBeginTime())) {
-
-                    // commit retry timeout event
-                    SessionHelper.endRollbackFailed(rollbackedSession, true, true);
-
-                    //The function of this 'return' is 'continue'.
-                    return;
+                    handleEndStateSession(rollbackedSession);
                 }
-                core.doGlobalRollback(rollbackedSession, true);
             } catch (TransactionException ex) {
                 LOGGER.error("Failed to handle rollbacked [{}] {} {}", rollbackedSession.getXid(), ex.getCode(), ex.getMessage());
             }
         });
         rollbackedSchedule(delay);
+    }
+
+    private void handleEndStateSession(GlobalSession globalSession) throws TransactionException {
+        GlobalStatus status = globalSession.getStatus();
+
+        if (status == GlobalStatus.CommitFailed) {
+            SessionHelper.endCommitted(globalSession, true);
+            return;
+        }
+        SessionHelper.endRollbacked(globalSession, true);
     }
 
     private void rollbackedSchedule(long delay) {
