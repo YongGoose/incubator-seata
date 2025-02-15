@@ -648,7 +648,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     /**
      * Handle rollbacked by scheduled.
      */
-    protected void handleRollbackedByScheduled() {
+    protected void handleEndStatesByScheduled() {
         SessionCondition sessionCondition = new SessionCondition(rollbackedStatuses);
         sessionCondition.setLazyLoadBranch(true);
         List<GlobalSession> rollbackedSessions =
