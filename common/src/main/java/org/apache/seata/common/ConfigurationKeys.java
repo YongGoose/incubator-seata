@@ -476,9 +476,9 @@ public interface ConfigurationKeys {
     String ROLLBACKING_RETRY_PERIOD = RECOVERY_PREFIX + "rollbackingRetryPeriod";
 
     /**
-     * The constant ROLLBACKED_RETRY_PERIOD.
+     * The constant END_STATUS_RETRY_PERIOD.
      */
-    String ROLLBACKED_RETRY_PERIOD = RECOVERY_PREFIX + "rollbackedRetryPeriod";
+    String END_STATUS_RETRY_PERIOD = RECOVERY_PREFIX + "endstatusRetryPeriod";
 
     /**
      * The constant TIMEOUT_RETRY_PERIOD.

@@ -96,7 +96,7 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_ROLLBACKING_RETRY_PE
 import static org.apache.seata.common.DefaultValues.DEFAULT_ROLLBACK_FAILED_UNLOCK_ENABLE;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TIMEOUT_RETRY_PERIOD;
 import static org.apache.seata.common.DefaultValues.DEFAULT_UNDO_LOG_DELETE_PERIOD;
-import static org.apache.seata.common.DefaultValues.DEFAULT_ROLLBACKED_RETRY_PERIOD;
+import static org.apache.seata.common.DefaultValues.DEFAULT_END_STATUS_RETRY_PERIOD;
 
 /**
  * The type Default coordinator.
@@ -128,10 +128,10 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
             DEFAULT_ROLLBACKING_RETRY_PERIOD);
 
     /**
-     * The constant ROLLBACKED_RETRY_PERIOD.
+     * The constant END_STATUS_RETRY_PERIOD.
      */
-    protected static final long ROLLBACKED_RETRY_PERIOD = CONFIG.getLong(ConfigurationKeys.ROLLBACKED_RETRY_PERIOD,
-            DEFAULT_ROLLBACKED_RETRY_PERIOD);
+    protected static final long END_STATUS_RETRY_PERIOD = CONFIG.getLong(ConfigurationKeys.END_STATUS_RETRY_PERIOD,
+        DEFAULT_END_STATUS_RETRY_PERIOD);
 
     /**
      * The constant TIMEOUT_RETRY_PERIOD.
@@ -649,7 +649,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
      * Handle rollbacked by scheduled.
      */
     protected void handleEndStatesByScheduled() {
-        SessionCondition sessionCondition = new SessionCondition(rollbackedStatuses);
+        SessionCondition sessionCondition = new SessionCondition(endStatuses);
         sessionCondition.setLazyLoadBranch(true);
         List<GlobalSession> rollbackedSessions =
             SessionHolder.getRootSessionManager().findGlobalSessions(sessionCondition);
@@ -657,7 +657,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
             rollbackedSchedule(RETRY_DEAD_THRESHOLD);
             return;
         }
-        long delay = ROLLBACKED_RETRY_PERIOD;
+        long delay = END_STATUS_RETRY_PERIOD;
         rollbackedSessions.sort(Comparator.comparingLong(GlobalSession::getBeginTime));
         List<GlobalSession> needDoRollbackedSessions = new ArrayList<>();
         for (GlobalSession rollbackedSession : rollbackedSessions) {
@@ -665,7 +665,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
             if (time <= 0) {
                 needDoRollbackedSessions.add(rollbackedSession);
             } else {
-                delay = Math.max(time, ROLLBACKED_RETRY_PERIOD);
+                delay = Math.max(time, END_STATUS_RETRY_PERIOD);
                 break;
             }
         }
@@ -691,9 +691,9 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     private void rollbackedSchedule(long delay) {
         syncProcessing.schedule(
             () -> {
-                boolean called = SessionHolder.distributedLockAndExecute(ROLLBACKED, this::handleRollbackedByScheduled);
+                boolean called = SessionHolder.distributedLockAndExecute(ROLLBACKED, this::handleEndStatesByScheduled);
                 if (!called) {
-                    rollbackedSchedule(ROLLBACKED_RETRY_PERIOD);
+                    rollbackedSchedule(END_STATUS_RETRY_PERIOD);
                 }
             },
             delay, TimeUnit.MILLISECONDS);

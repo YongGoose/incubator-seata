@@ -403,9 +403,9 @@ public interface DefaultValues {
     int DEFAULT_ROLLBACKING_RETRY_PERIOD = 1000;
 
     /**
-     * the constant DEFAULT_ROLLBACKED_RETRY_PERIOD
+     * the constant DEFAULT_END_STATUS_RETRY_PERIOD
      */
-    int DEFAULT_ROLLBACKED_RETRY_PERIOD = 1000;
+    int DEFAULT_END_STATUS_RETRY_PERIOD = 1000;
 
     /**
      * the constant DEFAULT_TIMEOUT_RETRY_PERIOD
