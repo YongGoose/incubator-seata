@@ -233,9 +233,7 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
             GlobalStatus.CommitFailed,
             GlobalStatus.RollbackFailed,
             GlobalStatus.TimeoutRollbackFailed,
-            GlobalStatus.Finished,
-            GlobalStatus.CommitRetryTimeout,
-            GlobalStatus.RollbackRetryTimeout
+            GlobalStatus.Finished
         );
         return deadStatuses.contains(this.status);
     }
