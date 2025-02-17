@@ -678,7 +678,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
                 LOGGER.error("Failed to handle rollbacked [{}] {} {}", rollbackedSession.getXid(), ex.getCode(), ex.getMessage());
             }
         });
-        rollbackedSchedule(delay);
+        endSchedule(delay);
     }
 
     private void handleEndStateSession(GlobalSession globalSession) throws TransactionException {
