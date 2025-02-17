@@ -650,32 +650,32 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     protected void handleEndStatesByScheduled() {
         SessionCondition sessionCondition = new SessionCondition(endStatuses);
         sessionCondition.setLazyLoadBranch(true);
-        List<GlobalSession> rollbackedSessions =
+        List<GlobalSession> endStatusSessions =
             SessionHolder.getRootSessionManager().findGlobalSessions(sessionCondition);
-        if (CollectionUtils.isEmpty(rollbackedSessions)) {
+        if (CollectionUtils.isEmpty(endStatusSessions)) {
             endSchedule(RETRY_DEAD_THRESHOLD);
             return;
         }
         long delay = END_STATUS_RETRY_PERIOD;
-        rollbackedSessions.sort(Comparator.comparingLong(GlobalSession::getBeginTime));
-        List<GlobalSession> needDoRollbackedSessions = new ArrayList<>();
-        for (GlobalSession rollbackedSession : rollbackedSessions) {
-            long time = rollbackedSession.timeToDeadSession();
+        endStatusSessions.sort(Comparator.comparingLong(GlobalSession::getBeginTime));
+        List<GlobalSession> needDoEndStatusSessions = new ArrayList<>();
+        for (GlobalSession endStatusSession : endStatusSessions) {
+            long time = endStatusSession.timeToDeadSession();
             if (time <= 0) {
-                needDoRollbackedSessions.add(rollbackedSession);
+                needDoEndStatusSessions.add(endStatusSession);
             } else {
                 delay = Math.max(time, END_STATUS_RETRY_PERIOD);
                 break;
             }
         }
         long now = System.currentTimeMillis();
-        SessionHelper.forEach(needDoRollbackedSessions, rollbackedSession -> {
+        SessionHelper.forEach(needDoEndStatusSessions, endStatusSession -> {
             try {
-                if (isRetryTimeout(now, MAX_ROLLBACK_RETRY_TIMEOUT, rollbackedSession.getBeginTime())) {
-                    handleEndStateSession(rollbackedSession);
+                if (isRetryTimeout(now, MAX_ROLLBACK_RETRY_TIMEOUT, endStatusSession.getBeginTime())) {
+                    handleEndStateSession(endStatusSession);
                 }
             } catch (TransactionException ex) {
-                LOGGER.error("Failed to handle rollbacked [{}] {} {}", rollbackedSession.getXid(), ex.getCode(), ex.getMessage());
+                LOGGER.error("Failed to handle end status session [{}] {} {}", endStatusSession.getXid(), ex.getCode(), ex.getMessage());
             }
         });
         endSchedule(delay);
