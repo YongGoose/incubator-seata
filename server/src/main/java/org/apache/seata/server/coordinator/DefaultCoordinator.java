@@ -694,7 +694,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     private void rollbackedSchedule(long delay) {
         syncProcessing.schedule(
             () -> {
-                boolean called = SessionHolder.distributedLockAndExecute(ROLLBACKED, this::handleEndStatesByScheduled);
+                boolean called = SessionHolder.distributedLockAndExecute(END, this::handleEndStatesByScheduled);
                 if (!called) {
                     rollbackedSchedule(END_STATUS_RETRY_PERIOD);
                 }
