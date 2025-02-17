@@ -691,7 +691,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
         SessionHelper.endRollbacked(globalSession, true);
     }
 
-    private void rollbackedSchedule(long delay) {
+    private void endSchedule(long delay) {
         syncProcessing.schedule(
             () -> {
                 boolean called = SessionHolder.distributedLockAndExecute(END, this::handleEndStatesByScheduled);
