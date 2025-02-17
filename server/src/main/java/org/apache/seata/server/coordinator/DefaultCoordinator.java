@@ -83,7 +83,7 @@ import static org.apache.seata.common.Constants.COMMITTING;
 import static org.apache.seata.common.Constants.RETRY_COMMITTING;
 import static org.apache.seata.common.Constants.RETRY_ROLLBACKING;
 import static org.apache.seata.common.Constants.ROLLBACKING;
-import static org.apache.seata.common.Constants.ROLLBACKED;
+import static org.apache.seata.common.Constants.END;
 import static org.apache.seata.common.Constants.SYNC_PROCESSING;
 import static org.apache.seata.common.Constants.TX_TIMEOUT_CHECK;
 import static org.apache.seata.common.Constants.UNDOLOG_DELETE;
@@ -645,7 +645,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     }
 
     /**
-     * Handle rollbacked by scheduled.
+     * Handle end status by scheduled.
      */
     protected void handleEndStatesByScheduled() {
         SessionCondition sessionCondition = new SessionCondition(endStatuses);
@@ -653,7 +653,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
         List<GlobalSession> rollbackedSessions =
             SessionHolder.getRootSessionManager().findGlobalSessions(sessionCondition);
         if (CollectionUtils.isEmpty(rollbackedSessions)) {
-            rollbackedSchedule(RETRY_DEAD_THRESHOLD);
+            endSchedule(RETRY_DEAD_THRESHOLD);
             return;
         }
         long delay = END_STATUS_RETRY_PERIOD;
@@ -682,13 +682,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
     }
 
     private void handleEndStateSession(GlobalSession globalSession) throws TransactionException {
-        GlobalStatus status = globalSession.getStatus();
-
-        if (status == GlobalStatus.CommitFailed) {
-            SessionHelper.endCommitted(globalSession, true);
-            return;
-        }
-        SessionHelper.endRollbacked(globalSession, true);
+        SessionHelper.processEndState(globalSession);
     }
 
     private void endSchedule(long delay) {
@@ -696,7 +690,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
             () -> {
                 boolean called = SessionHolder.distributedLockAndExecute(END, this::handleEndStatesByScheduled);
                 if (!called) {
-                    rollbackedSchedule(END_STATUS_RETRY_PERIOD);
+                    endSchedule(END_STATUS_RETRY_PERIOD);
                 }
             },
             delay, TimeUnit.MILLISECONDS);
@@ -730,7 +724,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
 
         committingSchedule(0);
 
-        rollbackedSchedule(0);
+        endSchedule(0);
     }
 
     @Override
