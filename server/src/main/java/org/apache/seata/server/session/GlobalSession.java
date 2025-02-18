@@ -233,7 +233,7 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
             GlobalStatus.Committed,
             GlobalStatus.Finished
         );
-        return deadStatuses.contains(this.status);
+        return endStatuses.contains(this.status);
     }
 
     @Override
