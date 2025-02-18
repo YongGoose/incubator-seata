@@ -227,12 +227,10 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
     }
 
     private boolean isEndStatus() {
-        EnumSet<GlobalStatus> deadStatuses = EnumSet.of(
+        EnumSet<GlobalStatus> endStatuses = EnumSet.of(
             GlobalStatus.Rollbacked,
             GlobalStatus.TimeoutRollbacked,
-            GlobalStatus.CommitFailed,
-            GlobalStatus.RollbackFailed,
-            GlobalStatus.TimeoutRollbackFailed,
+            GlobalStatus.Committed,
             GlobalStatus.Finished
         );
         return deadStatuses.contains(this.status);
