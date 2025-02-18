@@ -458,7 +458,7 @@ public class SessionHelper {
         GlobalStatus globalStatus = globalSession.getStatus();
 
         switch (globalStatus) {
-            case CommitFailed:
+            case Committed:
             case Finished:
                 endCommitted(globalSession, true);
                 return;
