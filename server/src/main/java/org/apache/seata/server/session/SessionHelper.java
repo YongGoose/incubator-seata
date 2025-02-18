@@ -463,9 +463,6 @@ public class SessionHelper {
                 endCommitted(globalSession, true);
                 return;
             case Rollbacked:
-            case TimeoutRollbacked:
-            case RollbackFailed:
-            case TimeoutRollbackFailed:
                 endRollbacked(globalSession, true);
                 return;
             default:
