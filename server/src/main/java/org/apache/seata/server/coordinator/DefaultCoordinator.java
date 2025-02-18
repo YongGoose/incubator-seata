@@ -205,7 +205,7 @@ public class DefaultCoordinator extends AbstractTCInboundHandler implements Tran
 
     private final GlobalStatus[] rollbackingStatuses = new GlobalStatus[] {GlobalStatus.Rollbacking};
     private final GlobalStatus[] committingStatuses = new GlobalStatus[] {GlobalStatus.Committing};
-    private final GlobalStatus[] endStatuses = new GlobalStatus[] {GlobalStatus.Rollbacked, GlobalStatus.Committed, GlobalStatus.Finished};
+    private final GlobalStatus[] endStatuses = new GlobalStatus[] {GlobalStatus.Rollbacked, GlobalStatus.TimeoutRollbacked, GlobalStatus.Committed, GlobalStatus.Finished};
 
     private final ThreadPoolExecutor branchRemoveExecutor;
 
