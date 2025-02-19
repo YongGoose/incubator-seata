@@ -26,7 +26,7 @@ public class ThreadFactoryPropertiesTest {
         ThreadFactoryProperties threadFactoryProperties = new ThreadFactoryProperties();
         threadFactoryProperties.setBossThreadPrefix("boss");
         threadFactoryProperties.setWorkerThreadPrefix("worker");
-        threadFactoryProperties.setWorkerThreadSize("1");
+        threadFactoryProperties.setWorkerThreadSize("-1");
         threadFactoryProperties.setClientSelectorThreadPrefix("prefix");
         threadFactoryProperties.setClientWorkerThreadPrefix("prefix");
         threadFactoryProperties.setServerExecutorThreadPrefix("prefix");
