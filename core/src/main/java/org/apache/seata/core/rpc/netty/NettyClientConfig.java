@@ -345,11 +345,13 @@ public class NettyClientConfig extends NettyBaseConfig {
 
     /**
      * Gets client selector thread size.
+     * If the configured thread size is less than or equal to 0, it returns the default value.
      *
-     * @return the client selector thread size
+     * @return the client selector thread size, or the default value if the configured size is invalid.
      */
     public int getClientSelectorThreadSize() {
-        return CONFIG.getInt(ConfigurationKeys.CLIENT_SELECTOR_THREAD_SIZE, WorkThreadMode.Default.getValue());
+        int threadSize = CONFIG.getInt(ConfigurationKeys.CLIENT_SELECTOR_THREAD_SIZE, WorkThreadMode.Default.getValue());
+        return threadSize > 0 ? threadSize : WorkThreadMode.Default.getValue();
     }
 
     /**
