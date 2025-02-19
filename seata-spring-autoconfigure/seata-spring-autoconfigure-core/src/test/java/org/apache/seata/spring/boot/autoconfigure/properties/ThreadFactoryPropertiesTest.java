@@ -41,7 +41,7 @@ public class ThreadFactoryPropertiesTest {
         Assertions.assertEquals("prefix", threadFactoryProperties.getClientWorkerThreadPrefix());
         Assertions.assertEquals("prefix", threadFactoryProperties.getServerExecutorThreadPrefix());
         Assertions.assertEquals(1, threadFactoryProperties.getBossThreadSize());
-        Assertions.assertEquals(-1, threadFactoryProperties.getClientSelectorThreadSize());
+        Assertions.assertEquals(1, threadFactoryProperties.getClientSelectorThreadSize());
         Assertions.assertEquals(true, threadFactoryProperties.isShareBossWorker());
     }
 }
