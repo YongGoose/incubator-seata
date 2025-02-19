@@ -26,7 +26,7 @@ public class ThreadFactoryPropertiesTest {
         ThreadFactoryProperties threadFactoryProperties = new ThreadFactoryProperties();
         threadFactoryProperties.setBossThreadPrefix("boss");
         threadFactoryProperties.setWorkerThreadPrefix("worker");
-        threadFactoryProperties.setWorkerThreadSize("-1");
+        threadFactoryProperties.setWorkerThreadSize("1");
         threadFactoryProperties.setClientSelectorThreadPrefix("prefix");
         threadFactoryProperties.setClientWorkerThreadPrefix("prefix");
         threadFactoryProperties.setServerExecutorThreadPrefix("prefix");
@@ -41,7 +41,7 @@ public class ThreadFactoryPropertiesTest {
         Assertions.assertEquals("prefix", threadFactoryProperties.getClientWorkerThreadPrefix());
         Assertions.assertEquals("prefix", threadFactoryProperties.getServerExecutorThreadPrefix());
         Assertions.assertEquals(1, threadFactoryProperties.getBossThreadSize());
-        Assertions.assertEquals(1, threadFactoryProperties.getClientSelectorThreadSize());
+        Assertions.assertEquals(-1, threadFactoryProperties.getClientSelectorThreadSize());
         Assertions.assertEquals(true, threadFactoryProperties.isShareBossWorker());
     }
 }
