@@ -56,18 +56,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Rpc client.
- *
  */
 public class NettyClientBootstrap implements RemotingBootstrap {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientBootstrap.class);
+    private static final String THREAD_PREFIX_SPLIT_CHAR = "_";
+
+
     private final NettyClientConfig nettyClientConfig;
     private final Bootstrap bootstrap = new Bootstrap();
-    private final EventLoopGroup eventLoopGroupWorker;
-    private EventExecutorGroup defaultEventExecutorGroup;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
-    private static final String THREAD_PREFIX_SPLIT_CHAR = "_";
     private final NettyPoolKey.TransactionRole transactionRole;
+    private final EventLoopGroup sharedEventLoopGroup;
+
+    private EventExecutorGroup defaultEventExecutorGroup;
     private ChannelHandler[] channelHandlers;
 
     public NettyClientBootstrap(NettyClientConfig nettyClientConfig, final EventExecutorGroup eventExecutorGroup,
@@ -81,14 +83,12 @@ public class NettyClientBootstrap implements RemotingBootstrap {
         this.nettyClientConfig = nettyClientConfig;
         int selectorThreadSizeThreadSize = this.nettyClientConfig.getClientSelectorThreadSize();
         this.transactionRole = transactionRole;
-        if (NettyServerConfig.enableEpoll()) {
-            this.eventLoopGroupWorker = new EpollEventLoopGroup(selectorThreadSizeThreadSize,
-                new NamedThreadFactory(getThreadPrefix(this.nettyClientConfig.getClientSelectorThreadPrefix()),
-                    selectorThreadSizeThreadSize));
+
+        boolean enableClientSharedEventLoop = this.nettyClientConfig.getEnableClientSharedEventLoop();
+        if (enableClientSharedEventLoop) {
+            this.sharedEventLoopGroup = getOrCreateSharedEventLoopGroup(selectorThreadSizeThreadSize);
         } else {
-            this.eventLoopGroupWorker = new NioEventLoopGroup(selectorThreadSizeThreadSize,
-                new NamedThreadFactory(getThreadPrefix(this.nettyClientConfig.getClientSelectorThreadPrefix()),
-                    selectorThreadSizeThreadSize));
+            this.sharedEventLoopGroup = createEventLoopGroup(selectorThreadSizeThreadSize);
         }
         this.defaultEventExecutorGroup = eventExecutorGroup;
     }
@@ -123,7 +123,7 @@ public class NettyClientBootstrap implements RemotingBootstrap {
                 new NamedThreadFactory(getThreadPrefix(nettyClientConfig.getClientWorkerThreadPrefix()),
                     nettyClientConfig.getClientWorkerThreads()));
         }
-        this.bootstrap.group(this.eventLoopGroupWorker).channel(
+        this.bootstrap.group(this.sharedEventLoopGroup).channel(
             nettyClientConfig.getClientChannelClazz()).option(
             ChannelOption.TCP_NODELAY, true).option(ChannelOption.SO_KEEPALIVE, true).option(
             ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyClientConfig.getConnectTimeoutMillis()).option(
@@ -170,7 +170,7 @@ public class NettyClientBootstrap implements RemotingBootstrap {
     @Override
     public void shutdown() {
         try {
-            this.eventLoopGroupWorker.shutdownGracefully();
+            this.sharedEventLoopGroup.shutdownGracefully();
             if (this.defaultEventExecutorGroup != null) {
                 this.defaultEventExecutorGroup.shutdownGracefully();
             }
@@ -232,5 +232,24 @@ public class NettyClientBootstrap implements RemotingBootstrap {
      */
     private String getThreadPrefix(String threadPrefix) {
         return threadPrefix + THREAD_PREFIX_SPLIT_CHAR + transactionRole.name();
+    }
+
+    private EventLoopGroup getOrCreateSharedEventLoopGroup(int selectorThreadSizeThreadSize) {
+        if (this.sharedEventLoopGroup == null) {
+            return createEventLoopGroup(selectorThreadSizeThreadSize);
+        }
+        return this.sharedEventLoopGroup;
+    }
+
+    private EventLoopGroup createEventLoopGroup(int selectorThreadSizeThreadSize) {
+        if (NettyServerConfig.enableEpoll()) {
+            return new EpollEventLoopGroup(selectorThreadSizeThreadSize,
+                new NamedThreadFactory(getThreadPrefix(this.nettyClientConfig.getClientSelectorThreadPrefix()),
+                    selectorThreadSizeThreadSize));
+        }
+
+        return new NioEventLoopGroup(selectorThreadSizeThreadSize,
+            new NamedThreadFactory(getThreadPrefix(this.nettyClientConfig.getClientSelectorThreadPrefix()),
+                selectorThreadSizeThreadSize));
     }
 }
