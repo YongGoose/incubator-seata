@@ -67,7 +67,7 @@ public class NettyClientBootstrap implements RemotingBootstrap {
     private final Bootstrap bootstrap = new Bootstrap();
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final NettyPoolKey.TransactionRole transactionRole;
-    private final EventLoopGroup sharedEventLoopGroup;
+    private final EventLoopGroup eventLoopGroupWorker;
 
     private EventExecutorGroup defaultEventExecutorGroup;
     private ChannelHandler[] channelHandlers;
@@ -86,9 +86,9 @@ public class NettyClientBootstrap implements RemotingBootstrap {
 
         boolean enableClientSharedEventLoop = this.nettyClientConfig.getEnableClientSharedEventLoop();
         if (enableClientSharedEventLoop) {
-            this.sharedEventLoopGroup = getOrCreateSharedEventLoopGroup(selectorThreadSizeThreadSize);
+            this.eventLoopGroupWorker = getOrCreateEventLoopGroupWorker(selectorThreadSizeThreadSize);
         } else {
-            this.sharedEventLoopGroup = createEventLoopGroup(selectorThreadSizeThreadSize);
+            this.eventLoopGroupWorker = createEventLoopGroupWorker(selectorThreadSizeThreadSize);
         }
         this.defaultEventExecutorGroup = eventExecutorGroup;
     }
@@ -123,7 +123,7 @@ public class NettyClientBootstrap implements RemotingBootstrap {
                 new NamedThreadFactory(getThreadPrefix(nettyClientConfig.getClientWorkerThreadPrefix()),
                     nettyClientConfig.getClientWorkerThreads()));
         }
-        this.bootstrap.group(this.sharedEventLoopGroup).channel(
+        this.bootstrap.group(this.eventLoopGroupWorker).channel(
             nettyClientConfig.getClientChannelClazz()).option(
             ChannelOption.TCP_NODELAY, true).option(ChannelOption.SO_KEEPALIVE, true).option(
             ChannelOption.CONNECT_TIMEOUT_MILLIS, nettyClientConfig.getConnectTimeoutMillis()).option(
@@ -170,7 +170,7 @@ public class NettyClientBootstrap implements RemotingBootstrap {
     @Override
     public void shutdown() {
         try {
-            this.sharedEventLoopGroup.shutdownGracefully();
+            this.eventLoopGroupWorker.shutdownGracefully();
             if (this.defaultEventExecutorGroup != null) {
                 this.defaultEventExecutorGroup.shutdownGracefully();
             }
@@ -234,14 +234,14 @@ public class NettyClientBootstrap implements RemotingBootstrap {
         return threadPrefix + THREAD_PREFIX_SPLIT_CHAR + transactionRole.name();
     }
 
-    private EventLoopGroup getOrCreateSharedEventLoopGroup(int selectorThreadSizeThreadSize) {
-        if (this.sharedEventLoopGroup == null) {
-            return createEventLoopGroup(selectorThreadSizeThreadSize);
+    private EventLoopGroup getOrCreateEventLoopGroupWorker(int selectorThreadSizeThreadSize) {
+        if (this.eventLoopGroupWorker == null) {
+            return createEventLoopGroupWorker(selectorThreadSizeThreadSize);
         }
-        return this.sharedEventLoopGroup;
+        return this.eventLoopGroupWorker;
     }
 
-    private EventLoopGroup createEventLoopGroup(int selectorThreadSizeThreadSize) {
+    private EventLoopGroup createEventLoopGroupWorker(int selectorThreadSizeThreadSize) {
         if (NettyServerConfig.enableEpoll()) {
             return new EpollEventLoopGroup(selectorThreadSizeThreadSize,
                 new NamedThreadFactory(getThreadPrefix(this.nettyClientConfig.getClientSelectorThreadPrefix()),
