@@ -98,7 +98,6 @@ public class DbAndReportTcStateLogStore extends AbstractStore implements StateLo
             if (StringUtils.isEmpty(parentId)) {
                 beginTransaction(machineInstance, context);
             }
-            String sql = null;
 
             try {
                 if (StringUtils.isEmpty(machineInstance.getId()) && seqGenerator != null) {
@@ -110,7 +109,6 @@ public class DbAndReportTcStateLogStore extends AbstractStore implements StateLo
 
                 // save to db
                 machineInstance.setSerializedStartParams(paramsSerializer.serialize(machineInstance.getStartParams()));
-                sql = stateLogStoreSqls.getRecordStateMachineStartedSql(dbType);
                 int effect = executeUpdate(stateLogStoreSqls.getRecordStateMachineStartedSql(dbType),
                     STATE_MACHINE_INSTANCE_TO_STATEMENT_FOR_INSERT, machineInstance);
                 if (effect < 1) {
@@ -121,7 +119,7 @@ public class DbAndReportTcStateLogStore extends AbstractStore implements StateLo
                 LOGGER.error("Record statemachine start error: {}, StateMachine: {}, XID: {}, Reason: {}",
                     e.getErrcode(), machineInstance.getStateMachine().getName(), machineInstance.getId(), e.getMessage(), e);
                 this.clearUp(context);
-                throw new NullPointerException(e.getMessage() + "\n sql : " + sql + "default_xid : " + machineInstance.getId());
+                throw e;
             }
         }
     }
