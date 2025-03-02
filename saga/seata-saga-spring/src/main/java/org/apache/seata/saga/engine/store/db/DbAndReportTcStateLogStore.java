@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.UUID;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.exception.StoreException;
@@ -102,7 +101,7 @@ public class DbAndReportTcStateLogStore extends AbstractStore implements StateLo
 
             try {
                 if (StringUtils.isEmpty(machineInstance.getId()) && seqGenerator != null) {
-                    machineInstance.setId(UUID.randomUUID().toString());
+                    machineInstance.setId(seqGenerator.generate(DomainConstants.SEQ_ENTITY_STATE_MACHINE_INST));
                 }
 
                 // bind SAGA branch type
