@@ -42,7 +42,6 @@ public class UUIDSeqGenerator implements SeqGenerator {
 
     @Override
     public String generate(String entity) {
-        return UUID.randomUUID().toString();
-//        return generate(entity, null);
+        return generate(entity, null);
     }
 }
