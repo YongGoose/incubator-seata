@@ -41,17 +41,12 @@ class NettyClientBootstrapTest {
 
     @Test
     void testSharedEventLoopGroupEnabled() {
-        TmNettyRemotingClient tmNettyRemotingClient = TmNettyRemotingClient.getInstance();
-        RmNettyRemotingClient rmNettyRemotingClient = RmNettyRemotingClient.getInstance();
+        when(nettyClientConfig.getEnableClientSharedEventLoop()).thenReturn(true);
+        NettyClientBootstrap tmNettyClientBootstrap = new NettyClientBootstrap(nettyClientConfig, eventExecutorGroup, NettyPoolKey.TransactionRole.TMROLE);
+        EventLoopGroup tmEventLoopGroupWorker = getEventLoopGroupWorker(tmNettyClientBootstrap);
 
-        tmNettyRemotingClient.init();
-        rmNettyRemotingClient.init();
-
-        NettyClientBootstrap tmBootstrap = getNettyClientBootstrap(tmNettyRemotingClient);
-        NettyClientBootstrap rmBootstrap = getNettyClientBootstrap(rmNettyRemotingClient);
-
-        EventLoopGroup tmEventLoopGroupWorker = getEventLoopGroupWorker(tmBootstrap);
-        EventLoopGroup rmEventLoopGroupWorker = getEventLoopGroupWorker(rmBootstrap);
+        NettyClientBootstrap rmNettyClientBootstrap = new NettyClientBootstrap(nettyClientConfig, eventExecutorGroup, NettyPoolKey.TransactionRole.RMROLE);
+        EventLoopGroup rmEventLoopGroupWorker = getEventLoopGroupWorker(rmNettyClientBootstrap);
 
         Assertions.assertEquals(tmEventLoopGroupWorker, rmEventLoopGroupWorker);
     }
@@ -66,16 +61,6 @@ class NettyClientBootstrapTest {
         EventLoopGroup rmEventLoopGroupWorker = getEventLoopGroupWorker(rmNettyClientBootstrap);
 
         Assertions.assertNotEquals(tmEventLoopGroupWorker, rmEventLoopGroupWorker);
-    }
-
-    private NettyClientBootstrap getNettyClientBootstrap(AbstractNettyRemotingClient remotingClient) {
-        try {
-            java.lang.reflect.Field field = AbstractNettyRemotingClient.class.getDeclaredField("clientBootstrap");
-            field.setAccessible(true);
-            return (NettyClientBootstrap) field.get(remotingClient);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private EventLoopGroup getEventLoopGroupWorker(NettyClientBootstrap bootstrap) {

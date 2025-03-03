@@ -62,12 +62,13 @@ public class NettyClientBootstrap implements RemotingBootstrap {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientBootstrap.class);
     private static final String THREAD_PREFIX_SPLIT_CHAR = "_";
 
-    private static EventLoopGroup eventLoopGroupWorker;
+    private static EventLoopGroup sharedEventLoopGroupWorker = null;
 
     private final NettyClientConfig nettyClientConfig;
     private final Bootstrap bootstrap = new Bootstrap();
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final NettyPoolKey.TransactionRole transactionRole;
+    private final EventLoopGroup eventLoopGroupWorker;
 
     private EventExecutorGroup defaultEventExecutorGroup;
     private ChannelHandler[] channelHandlers;
@@ -86,7 +87,10 @@ public class NettyClientBootstrap implements RemotingBootstrap {
 
         boolean enableClientSharedEventLoop = this.nettyClientConfig.getEnableClientSharedEventLoop();
         if (enableClientSharedEventLoop) {
-            eventLoopGroupWorker = getOrCreateEventLoopGroupWorker(selectorThreadSizeThreadSize);
+            if (sharedEventLoopGroupWorker == null) {
+                sharedEventLoopGroupWorker = getOrCreateEventLoopGroupWorker(selectorThreadSizeThreadSize);
+            }
+            eventLoopGroupWorker = sharedEventLoopGroupWorker;
         } else {
             eventLoopGroupWorker = createEventLoopGroupWorker(selectorThreadSizeThreadSize);
         }
