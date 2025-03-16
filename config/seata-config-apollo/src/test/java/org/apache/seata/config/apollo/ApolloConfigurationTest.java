@@ -17,7 +17,6 @@
 package org.apache.seata.config.apollo;
 
 import java.io.IOException;
-
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.config.ConfigurationChangeEvent;
 import org.apache.seata.config.ConfigurationChangeListener;
@@ -86,17 +85,17 @@ public class ApolloConfigurationTest {
     public void testListener() {
         ConfigurationChangeListener listener = new ConfigurationChangeListener() {
             @Override
-            public void onChangeEvent(ConfigurationChangeEvent event) {
-
-            }
+            public void onChangeEvent(ConfigurationChangeEvent event) {}
         };
         apolloConfiguration.addConfigListener("seata.test", listener);
-        Assertions.assertEquals(1, apolloConfiguration.getConfigListeners("seata.test").size());
+        Assertions.assertEquals(
+                1, apolloConfiguration.getConfigListeners("seata.test").size());
         apolloConfiguration.removeConfigListener("seata.test", null);
-        Assertions.assertEquals(1, apolloConfiguration.getConfigListeners("seata.test").size());
+        Assertions.assertEquals(
+                1, apolloConfiguration.getConfigListeners("seata.test").size());
         apolloConfiguration.removeConfigListener("seata.test", listener);
-        Assertions.assertEquals(0, apolloConfiguration.getConfigListeners("seata.test").size());
-
+        Assertions.assertEquals(
+                0, apolloConfiguration.getConfigListeners("seata.test").size());
     }
 
     /**
@@ -109,5 +108,4 @@ public class ApolloConfigurationTest {
         System.clearProperty("seataEnv");
         apolloMockServer.stop();
     }
-
 }

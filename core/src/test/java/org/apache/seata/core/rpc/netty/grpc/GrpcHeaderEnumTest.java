@@ -16,9 +16,9 @@
  */
 package org.apache.seata.core.rpc.netty.grpc;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class GrpcHeaderEnumTest {
 

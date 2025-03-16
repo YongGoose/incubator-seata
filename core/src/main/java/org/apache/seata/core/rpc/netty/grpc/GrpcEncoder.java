@@ -25,6 +25,9 @@ import io.netty.handler.codec.http2.DefaultHttp2DataFrame;
 import io.netty.handler.codec.http2.DefaultHttp2Headers;
 import io.netty.handler.codec.http2.DefaultHttp2HeadersFrame;
 import io.netty.handler.codec.http2.Http2Headers;
+import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.seata.core.compressor.Compressor;
 import org.apache.seata.core.compressor.CompressorFactory;
 import org.apache.seata.core.protocol.ProtocolConstants;
@@ -33,10 +36,6 @@ import org.apache.seata.core.protocol.generated.GrpcMessageProto;
 import org.apache.seata.core.serializer.Serializer;
 import org.apache.seata.core.serializer.SerializerServiceLoader;
 import org.apache.seata.core.serializer.SerializerType;
-
-import java.nio.ByteBuffer;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GrpcEncoder extends ChannelOutboundHandlerAdapter {
     private final AtomicBoolean headerSent = new AtomicBoolean(false);
@@ -64,7 +63,8 @@ public class GrpcEncoder extends ChannelOutboundHandlerAdapter {
         ByteString dataBytes;
         if (messageType != ProtocolConstants.MSGTYPE_HEARTBEAT_REQUEST
                 && messageType != ProtocolConstants.MSGTYPE_HEARTBEAT_RESPONSE) {
-            Serializer serializer = SerializerServiceLoader.load(SerializerType.getByCode(SerializerType.GRPC.getCode()));
+            Serializer serializer =
+                    SerializerServiceLoader.load(SerializerType.getByCode(SerializerType.GRPC.getCode()));
             byte[] serializedBytes = serializer.serialize(body);
             Compressor compressor = CompressorFactory.getCompressor(rpcMessage.getCompressor());
             dataBytes = ByteString.copyFrom(compressor.compress(serializedBytes));
@@ -95,5 +95,4 @@ public class GrpcEncoder extends ChannelOutboundHandlerAdapter {
             ctx.writeAndFlush(new DefaultHttp2DataFrame(Unpooled.wrappedBuffer(messageWithPrefix)));
         }
     }
-
 }

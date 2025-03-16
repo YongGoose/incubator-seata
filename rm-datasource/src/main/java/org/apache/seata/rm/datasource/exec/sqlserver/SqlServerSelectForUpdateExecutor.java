@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.exec.sqlserver;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.rm.datasource.StatementProxy;
 import org.apache.seata.rm.datasource.exec.SelectForUpdateExecutor;
@@ -40,7 +39,8 @@ public class SqlServerSelectForUpdateExecutor<T, S extends Statement> extends Se
      * @param statementCallback the statement callback
      * @param sqlRecognizer     the sql recognizer
      */
-    public SqlServerSelectForUpdateExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback, SQLRecognizer sqlRecognizer) {
+    public SqlServerSelectForUpdateExecutor(
+            StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback, SQLRecognizer sqlRecognizer) {
         super(statementProxy, statementCallback, sqlRecognizer);
     }
 
@@ -49,9 +49,7 @@ public class SqlServerSelectForUpdateExecutor<T, S extends Statement> extends Se
         SQLSelectRecognizer recognizer = (SQLSelectRecognizer) sqlRecognizer;
         StringBuilder selectSQLAppender = new StringBuilder("SELECT ");
         selectSQLAppender.append(getColumnNamesInSQL(getTableMeta().getEscapePkNameList(getDbType())));
-        selectSQLAppender.append(" FROM ")
-                .append(getFromTableInSQL())
-                .append(" WITH(UPDLOCK) ");
+        selectSQLAppender.append(" FROM ").append(getFromTableInSQL()).append(" WITH(UPDLOCK) ");
         String whereCondition = buildWhereCondition(recognizer, paramAppenderList);
         String orderByCondition = buildOrderCondition(recognizer, paramAppenderList);
         String limitCondition = buildLimitCondition(recognizer, paramAppenderList);

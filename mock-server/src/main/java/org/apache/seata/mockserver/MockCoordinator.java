@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.UUIDGenerator;
 import org.apache.seata.core.exception.TransactionException;
@@ -79,8 +78,7 @@ public class MockCoordinator implements TCInboundHandler, TransactionMessageHand
     private Map<String, Integer> expectRetryTimesMap;
     private Map<String, List<MockBranchSession>> branchMap;
 
-    private MockCoordinator() {
-    }
+    private MockCoordinator() {}
 
     public static MockCoordinator getInstance() {
         if (coordinator == null) {
@@ -98,16 +96,14 @@ public class MockCoordinator implements TCInboundHandler, TransactionMessageHand
     }
 
     @Override
-    public void destroy() {
-
-    }
+    public void destroy() {}
 
     @Override
     public AbstractResultMessage onRequest(AbstractMessage request, RpcContext context) {
         if (!(request instanceof AbstractTransactionRequestToTC)) {
             throw new IllegalArgumentException();
         }
-        AbstractTransactionRequestToTC transactionRequest = (AbstractTransactionRequestToTC)request;
+        AbstractTransactionRequestToTC transactionRequest = (AbstractTransactionRequestToTC) request;
         transactionRequest.setTCInboundHandler(this);
 
         return transactionRequest.handle(context);
@@ -136,15 +132,18 @@ public class MockCoordinator implements TCInboundHandler, TransactionMessageHand
         }
     }
 
-    private <T extends AbstractTransactionResponse> T handleException(TransactionException e, T response,
-                                                                      ResultCode resultCode, String messagePrefix,
-                                                                      GlobalStatus... globalStatus) {
+    private <T extends AbstractTransactionResponse> T handleException(
+            TransactionException e,
+            T response,
+            ResultCode resultCode,
+            String messagePrefix,
+            GlobalStatus... globalStatus) {
         response.setTransactionExceptionCode(e.getCode());
         response.setResultCode(resultCode);
         response.setMsg(messagePrefix + "[" + e.getMessage() + "]");
         if (response instanceof AbstractGlobalEndResponse) {
             if (globalStatus != null && globalStatus.length > 0) {
-                ((AbstractGlobalEndResponse)response).setGlobalStatus(globalStatus[0]);
+                ((AbstractGlobalEndResponse) response).setGlobalStatus(globalStatus[0]);
             }
         }
         return response;
@@ -158,8 +157,11 @@ public class MockCoordinator implements TCInboundHandler, TransactionMessageHand
         } catch (TransactionException e) {
             return handleException(e, response, ResultCode.Failed, "MockBeginException");
         }
-        MockGlobalSession session = new MockGlobalSession(rpcContext.getApplicationId(),
-            rpcContext.getTransactionServiceGroup(), request.getTransactionName(), request.getTimeout());
+        MockGlobalSession session = new MockGlobalSession(
+                rpcContext.getApplicationId(),
+                rpcContext.getTransactionServiceGroup(),
+                request.getTransactionName(),
+                request.getTimeout());
         globalStatusMap.putIfAbsent(session.getXid(), GlobalStatus.Begin);
         response.setXid(session.getXid());
         response.setResultCode(ResultCode.Success);
@@ -199,8 +201,8 @@ public class MockCoordinator implements TCInboundHandler, TransactionMessageHand
         try {
             checkMockActionFail(request.getXid());
         } catch (TransactionException e) {
-            return handleException(e, response, ResultCode.Failed, "MockRollbackException",
-                GlobalStatus.RollbackFailed);
+            return handleException(
+                    e, response, ResultCode.Failed, "MockRollbackException", GlobalStatus.RollbackFailed);
         }
         response.setGlobalStatus(GlobalStatus.Rollbacked);
         response.setResultCode(ResultCode.Success);
@@ -263,9 +265,11 @@ public class MockCoordinator implements TCInboundHandler, TransactionMessageHand
         String xid = request.getXid();
         branchMap.compute(xid, (key, val) -> {
             if (val != null) {
-                val.stream().filter(branch -> branch.getBranchId() == request.getBranchId()).forEach(branch -> {
-                    branch.setApplicationData(request.getApplicationData());
-                });
+                val.stream()
+                        .filter(branch -> branch.getBranchId() == request.getBranchId())
+                        .forEach(branch -> {
+                            branch.setApplicationData(request.getApplicationData());
+                        });
             }
             return val;
         });

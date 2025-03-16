@@ -16,11 +16,11 @@
  */
 package org.apache.seata.common.code;
 
-import org.apache.seata.common.result.Code;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.apache.seata.common.result.Code;
+import org.junit.jupiter.api.Test;
 
 public class CodeTest {
 

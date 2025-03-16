@@ -23,7 +23,6 @@ import org.apache.skywalking.apm.agent.core.logging.api.ILog;
 import org.apache.skywalking.apm.agent.core.logging.api.LogManager;
 import org.apache.skywalking.apm.network.trace.component.ComponentsDefine;
 
-
 public class SWSeataUtils {
 
     private static final ILog LOGGER = LogManager.getLogger(SWSeataUtils.class);
@@ -54,8 +53,10 @@ public class SWSeataUtils {
         String xid = null;
         try {
             xid = SWSeataConstants.TRANSACTION_TRANSMISSION_CLASS_NAME_MAPPING.get(requestSimpleName) != null
-                    ? (String) SWSeataConstants.TRANSACTION_TRANSMISSION_CLASS_NAME_MAPPING.get(requestSimpleName)
-                    .getDeclaredMethod("getXid").invoke(subMessage)
+                    ? (String) SWSeataConstants.TRANSACTION_TRANSMISSION_CLASS_NAME_MAPPING
+                            .get(requestSimpleName)
+                            .getDeclaredMethod("getXid")
+                            .invoke(subMessage)
                     : xid;
         } catch (Throwable e) {
             LOGGER.error("convert seata xid failure", e);

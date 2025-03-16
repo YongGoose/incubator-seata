@@ -19,7 +19,6 @@ package org.apache.seata.integration.tx.api.interceptor;
 import java.lang.reflect.Method;
 import org.apache.seata.integration.tx.api.interceptor.handler.ProxyInvocationHandler;
 
-
 public class NestInterceptorHandlerWrapper implements InvocationWrapper {
 
     private ProxyInvocationHandler proxyInvocationHandler;

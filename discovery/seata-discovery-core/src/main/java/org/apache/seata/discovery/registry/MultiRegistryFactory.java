@@ -19,7 +19,6 @@ package org.apache.seata.discovery.registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.NotSupportYetException;
@@ -49,8 +48,9 @@ public class MultiRegistryFactory {
     private static List<RegistryService> buildRegistryServices() {
         List<RegistryService> registryServices = new ArrayList<>();
         String registryTypeNamesStr =
-            ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(ConfigurationKeys.FILE_ROOT_REGISTRY
-                + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(ConfigurationKeys.FILE_ROOT_REGISTRY
+                        + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                        + ConfigurationKeys.FILE_ROOT_TYPE);
         if (StringUtils.isBlank(registryTypeNamesStr)) {
             registryTypeNamesStr = RegistryType.File.name();
         }
@@ -65,8 +65,10 @@ public class MultiRegistryFactory {
             } catch (Exception exx) {
                 throw new NotSupportYetException("not support registry type: " + registryTypeName);
             }
-            RegistryService registryService = EnhancedServiceLoader
-                .load(RegistryProvider.class, Objects.requireNonNull(registryType).name()).provide();
+            RegistryService registryService = EnhancedServiceLoader.load(
+                            RegistryProvider.class,
+                            Objects.requireNonNull(registryType).name())
+                    .provide();
             registryServices.add(registryService);
         }
         return registryServices;

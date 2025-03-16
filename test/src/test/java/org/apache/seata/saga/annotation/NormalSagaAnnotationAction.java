@@ -16,15 +16,13 @@
  */
 package org.apache.seata.saga.annotation;
 
-import org.apache.seata.rm.tcc.api.BusinessActionContext;
-
 import java.util.List;
+import org.apache.seata.rm.tcc.api.BusinessActionContext;
 
 /**
  * The interface saga action.
  */
 public interface NormalSagaAnnotationAction {
-
 
     boolean commit(BusinessActionContext actionContext, int a, List b, SagaParam sagaParam);
 

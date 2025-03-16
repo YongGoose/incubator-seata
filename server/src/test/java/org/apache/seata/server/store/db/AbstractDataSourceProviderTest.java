@@ -17,7 +17,6 @@
 package org.apache.seata.server.store.db;
 
 import javax.sql.DataSource;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.core.store.db.DataSourceProvider;
 import org.junit.jupiter.api.Assertions;
@@ -39,19 +38,22 @@ public class AbstractDataSourceProviderTest {
 
     @Test
     public void testDbcpDataSourceProvider() {
-        DataSource dataSource = EnhancedServiceLoader.load(DataSourceProvider.class, dbcpDatasourceType).provide();
+        DataSource dataSource = EnhancedServiceLoader.load(DataSourceProvider.class, dbcpDatasourceType)
+                .provide();
         Assertions.assertNotNull(dataSource);
     }
 
     @Test
     public void testDruidDataSourceProvider() {
-        DataSource dataSource = EnhancedServiceLoader.load(DataSourceProvider.class, druidDatasourceType).provide();
+        DataSource dataSource = EnhancedServiceLoader.load(DataSourceProvider.class, druidDatasourceType)
+                .provide();
         Assertions.assertNotNull(dataSource);
     }
 
     @Test
     public void testHikariDataSourceProvider() {
-        DataSource dataSource = EnhancedServiceLoader.load(DataSourceProvider.class, hikariDatasourceType).provide();
+        DataSource dataSource = EnhancedServiceLoader.load(DataSourceProvider.class, hikariDatasourceType)
+                .provide();
         Assertions.assertNotNull(dataSource);
     }
 

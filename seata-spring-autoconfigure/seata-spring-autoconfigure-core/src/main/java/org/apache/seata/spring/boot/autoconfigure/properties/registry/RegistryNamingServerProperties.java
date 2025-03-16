@@ -16,10 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.registry;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.REGISTRY_NAMINGSERVER_PREFIX;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.REGISTRY_NAMINGSERVER_PREFIX;
 
 @Component
 @ConfigurationProperties(prefix = REGISTRY_NAMINGSERVER_PREFIX)
@@ -103,5 +103,4 @@ public class RegistryNamingServerProperties {
     public void setTokenValidityInMilliseconds(Long tokenValidityInMilliseconds) {
         this.tokenValidityInMilliseconds = tokenValidityInMilliseconds;
     }
-
 }

@@ -16,14 +16,13 @@
  */
 package org.apache.seata.server.store;
 
+import java.net.InetSocketAddress;
+import java.util.Map;
 import org.apache.seata.common.XID;
 import org.apache.seata.common.metadata.Instance;
 import org.apache.seata.core.store.MappingDO;
 import org.apache.seata.discovery.registry.MultiRegistryFactory;
 import org.apache.seata.discovery.registry.RegistryService;
-
-import java.net.InetSocketAddress;
-import java.util.Map;
 
 public interface VGroupMappingStoreManager {
     /**
@@ -67,5 +66,4 @@ public interface VGroupMappingStoreManager {
             throw new RuntimeException("vGroup mapping relationship notified failed! ", e);
         }
     }
-
 }

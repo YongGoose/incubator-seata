@@ -18,7 +18,6 @@ package org.apache.seata.integration.rpc.core;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.context.RootContext;
 
@@ -39,13 +38,16 @@ public interface ConsumerRpcFilter<T> extends BaseRpcFilter<T> {
                         contextMap.put(RootContext.KEY_XID, RootContext.getXID());
                         break;
                     case RootContext.KEY_BRANCH_TYPE:
-                        contextMap.put(RootContext.KEY_BRANCH_TYPE, RootContext.getBranchType().name());
+                        contextMap.put(
+                                RootContext.KEY_BRANCH_TYPE,
+                                RootContext.getBranchType().name());
                         break;
                     default:
                         throw new IllegalArgumentException("wrong context: " + TRX_CONTEXT_KEYS[i]);
                 }
             }
-        } return contextMap;
+        }
+        return contextMap;
     }
 
     default String getXidFromRootContexts(Map<String, String> rootContextMap) {
@@ -85,5 +87,4 @@ public interface ConsumerRpcFilter<T> extends BaseRpcFilter<T> {
     }
 
     void cleanRequestContext(T rpcRequest, String key);
-
 }

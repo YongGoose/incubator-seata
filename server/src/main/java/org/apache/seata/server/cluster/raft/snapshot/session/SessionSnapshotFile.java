@@ -16,14 +16,14 @@
  */
 package org.apache.seata.server.cluster.raft.snapshot.session;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.error.RaftError;
 import com.alipay.sofa.jraft.storage.snapshot.SnapshotReader;
 import com.alipay.sofa.jraft.storage.snapshot.SnapshotWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 import org.apache.seata.server.cluster.raft.snapshot.RaftSnapshot;
 import org.apache.seata.server.cluster.raft.snapshot.StoreSnapshotFile;
 import org.apache.seata.server.lock.LockerManagerFactory;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  */
-public class SessionSnapshotFile implements Serializable,StoreSnapshotFile {
+public class SessionSnapshotFile implements Serializable, StoreSnapshotFile {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionSnapshotFile.class);
 
@@ -51,15 +51,21 @@ public class SessionSnapshotFile implements Serializable,StoreSnapshotFile {
 
     @Override
     public Status save(SnapshotWriter writer) {
-        RaftSessionManager raftSessionManager = (RaftSessionManager)SessionHolder.getRootSessionManager(group);
+        RaftSessionManager raftSessionManager = (RaftSessionManager) SessionHolder.getRootSessionManager(group);
         Map<String, GlobalSession> sessionMap = raftSessionManager.getSessionMap();
         RaftSessionSnapshot sessionSnapshot = new RaftSessionSnapshot();
         sessionMap.forEach((xid, session) -> sessionSnapshot.convert2GlobalSessionByte(session));
         RaftSnapshot raftSnapshot = new RaftSnapshot();
         raftSnapshot.setBody(sessionSnapshot);
         raftSnapshot.setType(RaftSnapshot.SnapshotType.session);
-        LOGGER.info("groupId: {}, global session size: {}", group, sessionSnapshot.getGlobalsessions().size());
-        String path = new StringBuilder(writer.getPath()).append(File.separator).append(fileName).toString();
+        LOGGER.info(
+                "groupId: {}, global session size: {}",
+                group,
+                sessionSnapshot.getGlobalsessions().size());
+        String path = new StringBuilder(writer.getPath())
+                .append(File.separator)
+                .append(fileName)
+                .toString();
         try {
             if (save(raftSnapshot, path)) {
                 if (writer.addFile(fileName)) {
@@ -80,11 +86,14 @@ public class SessionSnapshotFile implements Serializable,StoreSnapshotFile {
             LOGGER.error("Fail to find data file in {}", reader.getPath());
             return false;
         }
-        String path = new StringBuilder(reader.getPath()).append(File.separator).append(fileName).toString();
+        String path = new StringBuilder(reader.getPath())
+                .append(File.separator)
+                .append(fileName)
+                .toString();
         try {
             LOGGER.info("on snapshot load start index: {}", reader.load().getLastIncludedIndex());
-            RaftSessionSnapshot sessionSnapshot = (RaftSessionSnapshot)load(path);
-            RaftSessionManager raftSessionManager = (RaftSessionManager)SessionHolder.getRootSessionManager(group);
+            RaftSessionSnapshot sessionSnapshot = (RaftSessionSnapshot) load(path);
+            RaftSessionManager raftSessionManager = (RaftSessionManager) SessionHolder.getRootSessionManager(group);
             Map<String, GlobalSession> rootSessionMap = raftSessionManager.getSessionMap();
             // be sure to clear the data before loading it, because this is a full overwrite update
             LockerManagerFactory.getLockManager().cleanAllLocks();
@@ -99,5 +108,4 @@ public class SessionSnapshotFile implements Serializable,StoreSnapshotFile {
             return false;
         }
     }
-
 }

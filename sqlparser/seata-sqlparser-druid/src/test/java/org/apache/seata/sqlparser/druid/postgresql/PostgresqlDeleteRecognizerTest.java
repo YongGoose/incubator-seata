@@ -16,17 +16,15 @@
  */
 package org.apache.seata.sqlparser.druid.postgresql;
 
-import org.apache.seata.sqlparser.ParametersHolder;
-import org.apache.seata.sqlparser.SQLType;
+import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLStatement;
+import org.apache.seata.sqlparser.ParametersHolder;
+import org.apache.seata.sqlparser.SQLType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 
 public class PostgresqlDeleteRecognizerTest {
 
@@ -66,14 +64,16 @@ public class PostgresqlDeleteRecognizerTest {
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
         PostgresqlDeleteRecognizer postgresqlDeleteRecognizer = new PostgresqlDeleteRecognizer(sql, asts.get(0));
-        String whereCondition = postgresqlDeleteRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                return null;
-            }
-        }, new ArrayList<>());
+        String whereCondition = postgresqlDeleteRecognizer.getWhereCondition(
+                new ParametersHolder() {
+                    @Override
+                    public Map<Integer, ArrayList<Object>> getParameters() {
+                        return null;
+                    }
+                },
+                new ArrayList<>());
 
-        //test for no condition
+        // test for no condition
         Assertions.assertEquals("", whereCondition);
     }
 
@@ -85,7 +85,7 @@ public class PostgresqlDeleteRecognizerTest {
         PostgresqlDeleteRecognizer postgresqlDeleteRecognizer = new PostgresqlDeleteRecognizer(sql, asts.get(0));
         String whereCondition = postgresqlDeleteRecognizer.getWhereCondition();
 
-        //test for no condition
+        // test for no condition
         Assertions.assertEquals("", whereCondition);
     }
 }

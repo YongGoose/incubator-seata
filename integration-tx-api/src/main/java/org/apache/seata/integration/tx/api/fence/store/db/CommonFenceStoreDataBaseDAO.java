@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.seata.common.DefaultValues;
 import org.apache.seata.common.exception.DataAccessException;
 import org.apache.seata.common.exception.FrameworkErrorCode;
@@ -130,7 +129,10 @@ public class CommonFenceStoreDataBaseDAO implements CommonFenceStore {
             ps.setTimestamp(6, now);
             return ps.executeUpdate() > 0;
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new CommonFenceException(String.format("Insert tcc fence record duplicate key exception. xid= %s, branchId= %s", commonFenceDO.getXid(), commonFenceDO.getBranchId()),
+            throw new CommonFenceException(
+                    String.format(
+                            "Insert tcc fence record duplicate key exception. xid= %s, branchId= %s",
+                            commonFenceDO.getXid(), commonFenceDO.getBranchId()),
                     FrameworkErrorCode.DuplicateKeyException);
         } catch (SQLException e) {
             throw new StoreException(e);

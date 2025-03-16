@@ -16,12 +16,10 @@
  */
 package org.apache.seata.integration.tx.api.interceptor.handler;
 
-import org.apache.seata.integration.tx.api.interceptor.DefaultInvocationWrapper;
-import org.apache.seata.integration.tx.api.interceptor.InvocationWrapper;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-
+import org.apache.seata.integration.tx.api.interceptor.DefaultInvocationWrapper;
+import org.apache.seata.integration.tx.api.interceptor.InvocationWrapper;
 
 public class DefaultInvocationHandler implements InvocationHandler {
 

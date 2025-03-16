@@ -16,6 +16,9 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.common.Constants.BEAN_NAME_SPRING_FENCE_CONFIG;
+
+import javax.sql.DataSource;
 import org.apache.seata.common.holder.ObjectHolder;
 import org.apache.seata.rm.fence.SpringFenceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +33,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.sql.DataSource;
-
-import static org.apache.seata.common.Constants.BEAN_NAME_SPRING_FENCE_CONFIG;
 
 /**
  * Spring fence auto configuration.
@@ -54,12 +53,14 @@ public class SeataSpringFenceAutoConfiguration {
     public SpringFenceConfig springFenceConfig(
             DataSource dataSource,
             PlatformTransactionManager transactionManager,
-            @Qualifier(SPRING_FENCE_DATA_SOURCE_BEAN_NAME) @Autowired(required = false) DataSource springFenceDataSource,
-            @Qualifier(SPRING_FENCE_TRANSACTION_MANAGER_BEAN_NAME) @Autowired(required = false) PlatformTransactionManager springFenceTransactionManager) {
-        SpringFenceConfig springFenceConfig = new SpringFenceConfig(springFenceDataSource != null ? springFenceDataSource : dataSource,
+            @Qualifier(SPRING_FENCE_DATA_SOURCE_BEAN_NAME) @Autowired(required = false)
+                    DataSource springFenceDataSource,
+            @Qualifier(SPRING_FENCE_TRANSACTION_MANAGER_BEAN_NAME) @Autowired(required = false)
+                    PlatformTransactionManager springFenceTransactionManager) {
+        SpringFenceConfig springFenceConfig = new SpringFenceConfig(
+                springFenceDataSource != null ? springFenceDataSource : dataSource,
                 springFenceTransactionManager != null ? springFenceTransactionManager : transactionManager);
         ObjectHolder.INSTANCE.setObject(BEAN_NAME_SPRING_FENCE_CONFIG, springFenceConfig);
         return springFenceConfig;
     }
-
 }

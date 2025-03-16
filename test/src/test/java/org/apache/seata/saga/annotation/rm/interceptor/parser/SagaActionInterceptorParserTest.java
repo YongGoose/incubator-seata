@@ -16,6 +16,12 @@
  */
 package org.apache.seata.saga.annotation.rm.interceptor.parser;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.core.model.GlobalStatus;
@@ -37,13 +43,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  *
  */
@@ -61,19 +60,23 @@ public class SagaActionInterceptorParserTest {
 
     @AfterEach
     public void clearTccResource() {
-        DefaultResourceManager.get().getResourceManager(BranchType.SAGA_ANNOTATION).getManagedResources().clear();
+        DefaultResourceManager.get()
+                .getResourceManager(BranchType.SAGA_ANNOTATION)
+                .getManagedResources()
+                .clear();
     }
 
     @Test
     void parserInterfaceToProxy() {
         NormalSagaAnnotationActionImpl sagaAction = new NormalSagaAnnotationActionImpl();
 
-        SagaAnnotationActionInterceptorParser sagaAnnotationActionInterceptorParser = new SagaAnnotationActionInterceptorParser();
+        SagaAnnotationActionInterceptorParser sagaAnnotationActionInterceptorParser =
+                new SagaAnnotationActionInterceptorParser();
 
-        ProxyInvocationHandler proxyInvocationHandler = sagaAnnotationActionInterceptorParser.parserInterfaceToProxy(sagaAction, "sagaAction");
+        ProxyInvocationHandler proxyInvocationHandler =
+                sagaAnnotationActionInterceptorParser.parserInterfaceToProxy(sagaAction, "sagaAction");
         Assertions.assertNotNull(proxyInvocationHandler);
     }
-
 
     @Test
     public void testSagaAnnotation_should_commit() throws TransactionException {
@@ -145,10 +148,10 @@ public class SagaActionInterceptorParserTest {
 
     private static Map<String, List<BranchSessionMock>> applicationDataMap = new ConcurrentHashMap<>();
 
-
     private static TransactionManager transactionManager = new TransactionManager() {
         @Override
-        public String begin(String applicationId, String transactionServiceGroup, String name, int timeout) throws TransactionException {
+        public String begin(String applicationId, String transactionServiceGroup, String name, int timeout)
+                throws TransactionException {
             return DEFAULT_XID;
         }
 
@@ -176,11 +179,17 @@ public class SagaActionInterceptorParserTest {
         }
     };
 
-
     private static ResourceManager resourceManager = new SagaAnnotationResourceManager() {
 
         @Override
-        public Long branchRegister(BranchType branchType, String resourceId, String clientId, String xid, String applicationData, String lockKeys) throws TransactionException {
+        public Long branchRegister(
+                BranchType branchType,
+                String resourceId,
+                String clientId,
+                String xid,
+                String applicationData,
+                String lockKeys)
+                throws TransactionException {
 
             long branchId = System.currentTimeMillis();
 
@@ -198,13 +207,16 @@ public class SagaActionInterceptorParserTest {
         }
     };
 
-
     public static void rollbackAll(String xid) throws TransactionException {
 
         List<BranchSessionMock> branches = applicationDataMap.computeIfAbsent(xid, s -> new ArrayList<>());
         for (BranchSessionMock branch : branches) {
-            resourceManager.branchRollback(branch.getBranchType(), branch.getXid(), branch.getBranchId(), branch.getResourceId(), branch.getApplicationData());
+            resourceManager.branchRollback(
+                    branch.getBranchType(),
+                    branch.getXid(),
+                    branch.getBranchId(),
+                    branch.getResourceId(),
+                    branch.getApplicationData());
         }
     }
-
 }

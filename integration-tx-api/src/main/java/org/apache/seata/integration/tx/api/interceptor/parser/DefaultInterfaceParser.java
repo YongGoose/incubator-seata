@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.integration.tx.api.interceptor.handler.ProxyInvocationHandler;
@@ -32,7 +31,6 @@ import org.apache.seata.integration.tx.api.interceptor.handler.ProxyInvocationHa
 public class DefaultInterfaceParser implements InterfaceParser {
 
     protected static final List<InterfaceParser> ALL_INTERFACE_PARSERS = new ArrayList<>();
-
 
     private static class SingletonHolder {
         private static final DefaultInterfaceParser INSTANCE = new DefaultInterfaceParser();
@@ -75,7 +73,8 @@ public class DefaultInterfaceParser implements InterfaceParser {
             ProxyInvocationHandler proxyInvocationHandler = interfaceParser.parserInterfaceToProxy(target, objectName);
             if (proxyInvocationHandler != null) {
                 if (!invocationHandlerRepeatCheck.add(proxyInvocationHandler.type())) {
-                    throw new RuntimeException("there is already an annotation of type " + proxyInvocationHandler.type() + " for class: " + target.getClass().getName());
+                    throw new RuntimeException("there is already an annotation of type " + proxyInvocationHandler.type()
+                            + " for class: " + target.getClass().getName());
                 }
                 invocationHandlerList.add(proxyInvocationHandler);
             }
@@ -108,5 +107,4 @@ public class DefaultInterfaceParser implements InterfaceParser {
         }
         return new IfNeedEnhanceBean();
     }
-
 }

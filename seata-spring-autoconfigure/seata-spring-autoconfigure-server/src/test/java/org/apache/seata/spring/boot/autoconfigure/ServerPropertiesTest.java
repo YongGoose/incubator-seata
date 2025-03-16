@@ -16,6 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.apache.seata.spring.boot.autoconfigure.properties.server.MetricsProperties;
 import org.apache.seata.spring.boot.autoconfigure.properties.server.ServerProperties;
 import org.apache.seata.spring.boot.autoconfigure.properties.server.ServerRecoveryProperties;
@@ -32,14 +36,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 
 public class ServerPropertiesTest {
     private static AnnotationConfigApplicationContext context;

@@ -16,9 +16,8 @@
  */
 package org.apache.seata.mockserver;
 
-import java.util.concurrent.ThreadPoolExecutor;
-
 import io.netty.channel.Channel;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.rpc.TransactionMessageHandler;
 import org.apache.seata.core.rpc.netty.AbstractNettyRemotingServer;

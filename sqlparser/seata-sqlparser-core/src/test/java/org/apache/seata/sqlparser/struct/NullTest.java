@@ -33,5 +33,4 @@ public class NullTest {
         String expected = "NULL";
         assertEquals(expected.trim(), Null.get().toString().trim());
     }
-
 }

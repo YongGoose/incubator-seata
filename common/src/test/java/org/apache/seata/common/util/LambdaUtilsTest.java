@@ -16,12 +16,11 @@
  */
 package org.apache.seata.common.util;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 class LambdaUtilsTest {
 

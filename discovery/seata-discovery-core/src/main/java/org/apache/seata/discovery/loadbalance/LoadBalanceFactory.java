@@ -16,10 +16,10 @@
  */
 package org.apache.seata.discovery.loadbalance;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_LOAD_BALANCE;
+
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.config.ConfigurationFactory;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_LOAD_BALANCE;
 
 /**
  * The type Load balance factory.
@@ -44,7 +44,6 @@ public class LoadBalanceFactory {
     public static final String CONSISTENT_HASH_LOAD_BALANCE = "ConsistentHashLoadBalance";
 
     public static final String LEAST_ACTIVE_LOAD_BALANCE = "LeastActiveLoadBalance";
-
 
     /**
      * Get instance.

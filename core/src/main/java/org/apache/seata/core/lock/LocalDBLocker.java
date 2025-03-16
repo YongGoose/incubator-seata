@@ -46,7 +46,5 @@ public class LocalDBLocker extends AbstractLocker {
     }
 
     @Override
-    public void updateLockStatus(String xid, LockStatus lockStatus) {
-    }
-
+    public void updateLockStatus(String xid, LockStatus lockStatus) {}
 }

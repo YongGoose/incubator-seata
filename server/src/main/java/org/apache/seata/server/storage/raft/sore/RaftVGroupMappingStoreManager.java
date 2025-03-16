@@ -16,12 +16,12 @@
  */
 package org.apache.seata.server.storage.raft.sore;
 
+import com.alipay.sofa.jraft.Closure;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import com.alipay.sofa.jraft.Closure;
 import org.apache.seata.common.XID;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.metadata.ClusterRole;
@@ -38,16 +38,17 @@ import org.apache.seata.server.store.VGroupMappingStoreManager;
 @LoadLevel(name = "raft")
 public class RaftVGroupMappingStoreManager implements VGroupMappingStoreManager {
 
-    private final static Map<String/*unit(raft group)*/, Map<String/*vgroup*/, MappingDO>> VGROUP_MAPPING =
-        new HashMap<>();
-
+    private static final Map<String /*unit(raft group)*/, Map<String /*vgroup*/, MappingDO>> VGROUP_MAPPING =
+            new HashMap<>();
 
     public boolean localAddVGroup(MappingDO mappingDO) {
-        return VGROUP_MAPPING.computeIfAbsent(mappingDO.getUnit(), k -> new HashMap<>()).put(mappingDO.getVGroup(),
-            mappingDO) != null;
+        return VGROUP_MAPPING
+                        .computeIfAbsent(mappingDO.getUnit(), k -> new HashMap<>())
+                        .put(mappingDO.getVGroup(), mappingDO)
+                != null;
     }
 
-    public void localAddVGroups(Map<String/*vgroup*/, MappingDO> vGroups, String unit) {
+    public void localAddVGroups(Map<String /*vgroup*/, MappingDO> vGroups, String unit) {
         VGROUP_MAPPING.computeIfAbsent(unit, k -> new HashMap<>()).putAll(vGroups);
     }
 
@@ -67,7 +68,7 @@ public class RaftVGroupMappingStoreManager implements VGroupMappingStoreManager 
             return completableFuture.get();
         } catch (Exception e) {
             if (e instanceof RuntimeException) {
-                throw (RuntimeException)e;
+                throw (RuntimeException) e;
             }
             throw new RuntimeException(e);
         }
@@ -91,7 +92,7 @@ public class RaftVGroupMappingStoreManager implements VGroupMappingStoreManager 
             return completableFuture.get();
         } catch (Exception e) {
             if (e instanceof RuntimeException) {
-                throw (RuntimeException)e;
+                throw (RuntimeException) e;
             }
             throw new RuntimeException(e);
         }
@@ -113,7 +114,7 @@ public class RaftVGroupMappingStoreManager implements VGroupMappingStoreManager 
         return result;
     }
 
-    public Map<String/*vgroup*/, MappingDO> loadVGroupsByUnit(String unit) {
+    public Map<String /*vgroup*/, MappingDO> loadVGroupsByUnit(String unit) {
         return VGROUP_MAPPING.getOrDefault(unit, Collections.emptyMap());
     }
 
@@ -123,7 +124,7 @@ public class RaftVGroupMappingStoreManager implements VGroupMappingStoreManager 
     }
 
     @Override
-   public void notifyMapping() {
+    public void notifyMapping() {
         Instance instance = Instance.getInstance();
         Map<String, Object> map = this.readVGroups();
         instance.addMetadata("vGroup", map);
@@ -143,5 +144,4 @@ public class RaftVGroupMappingStoreManager implements VGroupMappingStoreManager 
             Instance.getInstances().clear();
         }
     }
-
 }

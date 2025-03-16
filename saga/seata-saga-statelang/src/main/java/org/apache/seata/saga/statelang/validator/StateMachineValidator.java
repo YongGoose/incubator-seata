@@ -16,9 +16,8 @@
  */
 package org.apache.seata.saga.statelang.validator;
 
-import org.apache.seata.saga.statelang.domain.StateMachine;
-
 import java.util.List;
+import org.apache.seata.saga.statelang.domain.StateMachine;
 
 /**
  * State machine validator used to validate rules.
@@ -34,7 +33,7 @@ public class StateMachineValidator {
      */
     public void validate(StateMachine stateMachine) throws ValidationException {
         List<Rule> rules = RuleFactory.getRules();
-        for (Rule rule: rules) {
+        for (Rule rule : rules) {
             boolean pass;
             try {
                 pass = rule.validate(stateMachine);

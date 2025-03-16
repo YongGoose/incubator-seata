@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import java.util.Map;
 import org.apache.seata.core.exception.DecodeException;
 import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.rpc.netty.v0.ProtocolDecoderV0;
@@ -29,8 +30,6 @@ import org.apache.seata.core.rpc.netty.v1.ProtocolDecoderV1;
 import org.apache.seata.core.rpc.netty.v1.ProtocolEncoderV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * <pre>
@@ -61,7 +60,7 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
     private final Map<Byte, ProtocolDecoder> protocolDecoderMap;
 
     private final Map<Byte, ProtocolEncoder> protocolEncoderMap;
-    
+
     private final ChannelHandler[] channelHandlers;
 
     public MultiProtocolDecoder(ChannelHandler... channelHandlers) {
@@ -76,19 +75,21 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
 
     public MultiProtocolDecoder(int maxFrameLength, ChannelHandler[] channelHandlers) {
         /*
-        int maxFrameLength,      
+        int maxFrameLength,
         int lengthFieldOffset,  magic code is 2B, and version is 1B, and then FullLength. so value is 3
         int lengthFieldLength,  FullLength is int(4B). so values is 4
         int lengthAdjustment,   FullLength include all data and read 7 bytes before, so the left length is (FullLength-7). so values is -7
         int initialBytesToStrip we will check magic code and version self, so do not strip any bytes. so values is 0
         */
         super(maxFrameLength, 3, 4, -7, 0);
-        this.protocolDecoderMap =
-            ImmutableMap.<Byte, ProtocolDecoder>builder().put(ProtocolConstants.VERSION_0, new ProtocolDecoderV0())
-                .put(ProtocolConstants.VERSION_1, new ProtocolDecoderV1()).build();
-        this.protocolEncoderMap =
-            ImmutableMap.<Byte, ProtocolEncoder>builder().put(ProtocolConstants.VERSION_0, new ProtocolEncoderV0())
-                .put(ProtocolConstants.VERSION_1, new ProtocolEncoderV1()).build();
+        this.protocolDecoderMap = ImmutableMap.<Byte, ProtocolDecoder>builder()
+                .put(ProtocolConstants.VERSION_0, new ProtocolDecoderV0())
+                .put(ProtocolConstants.VERSION_1, new ProtocolDecoderV1())
+                .build();
+        this.protocolEncoderMap = ImmutableMap.<Byte, ProtocolEncoder>builder()
+                .put(ProtocolConstants.VERSION_0, new ProtocolEncoderV0())
+                .put(ProtocolConstants.VERSION_1, new ProtocolEncoderV1())
+                .build();
         this.channelHandlers = channelHandlers;
     }
 
@@ -119,8 +120,8 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
                     if (version != ProtocolConstants.VERSION_0) {
                         frame.release();
                     }
-                    ctx.pipeline().addLast((ChannelHandler)decoder);
-                    ctx.pipeline().addLast((ChannelHandler)encoder);
+                    ctx.pipeline().addLast((ChannelHandler) decoder);
+                    ctx.pipeline().addLast((ChannelHandler) encoder);
                     if (channelHandlers != null) {
                         ctx.pipeline().addLast(channelHandlers);
                     }
@@ -140,8 +141,7 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
             frame.markReaderIndex();
             byte b0 = frame.readByte();
             byte b1 = frame.readByte();
-            if (ProtocolConstants.MAGIC_CODE_BYTES[0] != b0
-                    || ProtocolConstants.MAGIC_CODE_BYTES[1] != b1) {
+            if (ProtocolConstants.MAGIC_CODE_BYTES[0] != b0 || ProtocolConstants.MAGIC_CODE_BYTES[1] != b1) {
                 throw new IllegalArgumentException("Unknown magic code: " + b0 + ", " + b1);
             }
 
@@ -152,7 +152,6 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
         return -1;
     }
 
-
     protected boolean isV0(ByteBuf in) {
         boolean isV0 = false;
         in.markReaderIndex();
@@ -161,9 +160,7 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
         // v1/v2/v3 : b2 = version
         // v0 : 1st byte in FLAG(2byte:0x10/0x20/0x40/0x80)
         byte b2 = in.readByte();
-        if (ProtocolConstants.MAGIC_CODE_BYTES[0] == b0
-                && ProtocolConstants.MAGIC_CODE_BYTES[1] == b1
-                && 0 == b2) {
+        if (ProtocolConstants.MAGIC_CODE_BYTES[0] == b0 && ProtocolConstants.MAGIC_CODE_BYTES[1] == b1 && 0 == b2) {
             isV0 = true;
         }
 

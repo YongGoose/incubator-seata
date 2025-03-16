@@ -20,10 +20,8 @@ import java.io.Serializable;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.integration.tx.api.interceptor.ActionContextUtil;
-
 
 /**
  * The type Business action context.
@@ -66,8 +64,7 @@ public class BusinessActionContext implements Serializable {
     /**
      * Instantiates a new Business action context.
      */
-    public BusinessActionContext() {
-    }
+    public BusinessActionContext() {}
 
     /**
      * Instantiates a new Business action context.
@@ -238,14 +235,21 @@ public class BusinessActionContext implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[xid:").append(xid)
-                .append(",branch_Id:").append(branchId)
-                .append(",action_name:").append(actionName)
-                .append(",is_delay_report:").append(isDelayReport)
-                .append(",is_updated:").append(isDelayReport)
-                .append(",branch_type:").append(branchType)
+        sb.append("[xid:")
+                .append(xid)
+                .append(",branch_Id:")
+                .append(branchId)
+                .append(",action_name:")
+                .append(actionName)
+                .append(",is_delay_report:")
+                .append(isDelayReport)
+                .append(",is_updated:")
+                .append(isDelayReport)
+                .append(",branch_type:")
+                .append(branchType)
                 .append(",action_context:")
-                .append(actionContext).append("]");
+                .append(actionContext)
+                .append("]");
         return sb.toString();
     }
 }

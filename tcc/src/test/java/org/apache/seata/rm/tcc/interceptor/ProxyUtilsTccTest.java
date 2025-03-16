@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchStatus;
@@ -35,51 +34,57 @@ import org.apache.seata.rm.tcc.TccParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class ProxyUtilsTccTest {
 
     private final String DEFAULT_XID = "default_xid";
 
     AtomicReference<String> branchReference = new AtomicReference<String>();
 
-
     ResourceManager resourceManager = new ResourceManager() {
 
         @Override
-        public Long branchRegister(BranchType branchType, String resourceId, String clientId, String xid, String applicationData, String lockKeys) throws TransactionException {
+        public Long branchRegister(
+                BranchType branchType,
+                String resourceId,
+                String clientId,
+                String xid,
+                String applicationData,
+                String lockKeys)
+                throws TransactionException {
             branchReference.set(resourceId);
             return System.currentTimeMillis();
         }
 
         @Override
-        public void branchReport(BranchType branchType, String xid, long branchId, BranchStatus status, String applicationData) throws TransactionException {
-
-        }
+        public void branchReport(
+                BranchType branchType, String xid, long branchId, BranchStatus status, String applicationData)
+                throws TransactionException {}
 
         @Override
-        public boolean lockQuery(BranchType branchType, String resourceId, String xid, String lockKeys) throws TransactionException {
+        public boolean lockQuery(BranchType branchType, String resourceId, String xid, String lockKeys)
+                throws TransactionException {
             return false;
         }
 
         @Override
-        public BranchStatus branchCommit(BranchType branchType, String xid, long branchId, String resourceId, String applicationData) throws TransactionException {
+        public BranchStatus branchCommit(
+                BranchType branchType, String xid, long branchId, String resourceId, String applicationData)
+                throws TransactionException {
             return null;
         }
 
         @Override
-        public BranchStatus branchRollback(BranchType branchType, String xid, long branchId, String resourceId, String applicationData) throws TransactionException {
+        public BranchStatus branchRollback(
+                BranchType branchType, String xid, long branchId, String resourceId, String applicationData)
+                throws TransactionException {
             return null;
         }
 
         @Override
-        public void registerResource(Resource resource) {
-
-        }
+        public void registerResource(Resource resource) {}
 
         @Override
-        public void unregisterResource(Resource resource) {
-
-        }
+        public void unregisterResource(Resource resource) {}
 
         @Override
         public Map<String, Resource> getManagedResources() {
@@ -95,16 +100,13 @@ public class ProxyUtilsTccTest {
         public GlobalStatus getGlobalStatus(BranchType branchType, String xid) {
             return null;
         }
-
-
     };
 
-    private final NormalTccActionImpl tccActionProxy= ProxyUtil.createProxy(new NormalTccActionImpl());
-
+    private final NormalTccActionImpl tccActionProxy = ProxyUtil.createProxy(new NormalTccActionImpl());
 
     @Test
     public void testTcc() {
-        //given
+        // given
         RootContext.bind(DEFAULT_XID);
 
         TccParam tccParam = new TccParam(1, "abc@163.com");
@@ -112,10 +114,10 @@ public class ProxyUtilsTccTest {
 
         DefaultResourceManager.mockResourceManager(BranchType.TCC, resourceManager);
 
-        //when
+        // when
         String result = tccActionProxy.prepare(null, 0, listB, tccParam);
 
-        //then
+        // then
         Assertions.assertEquals("a", result);
         Assertions.assertNotNull(result);
         Assertions.assertEquals("normalTccActionForTest", branchReference.get());
@@ -123,7 +125,7 @@ public class ProxyUtilsTccTest {
 
     @Test
     public void testTccThrowRawException() {
-        //given
+        // given
         RootContext.bind(DEFAULT_XID);
 
         TccParam tccParam = new TccParam(1, "abc@163.com");
@@ -131,15 +133,14 @@ public class ProxyUtilsTccTest {
 
         DefaultResourceManager.mockResourceManager(BranchType.TCC, resourceManager);
 
-        //when
-        //then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> tccActionProxy.prepareWithException(null, 0, listB, tccParam));
+        // when
+        // then
+        Assertions.assertThrows(
+                IllegalArgumentException.class, () -> tccActionProxy.prepareWithException(null, 0, listB, tccParam));
     }
 
     @Test
-    public void testTccImplementOtherMethod(){
+    public void testTccImplementOtherMethod() {
         Assertions.assertTrue(tccActionProxy.otherMethod());
     }
-
-
 }

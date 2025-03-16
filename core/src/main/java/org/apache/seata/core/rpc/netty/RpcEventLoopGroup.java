@@ -17,7 +17,6 @@
 package org.apache.seata.core.rpc.netty;
 
 import io.netty.channel.EventLoopGroup;
-
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -32,7 +31,7 @@ public interface RpcEventLoopGroup {
     //    public EventLoopGroup createEventLoopGroup(int workThreadSize, ThreadFactory threadFactory) {
     //        return null;
     //    }
-    //};
+    // };
 
     /**
      * Create event loop group event loop group.

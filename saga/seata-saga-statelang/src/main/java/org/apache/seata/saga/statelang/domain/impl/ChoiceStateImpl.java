@@ -18,7 +18,6 @@ package org.apache.seata.saga.statelang.domain.impl;
 
 import java.util.List;
 import java.util.Map;
-
 import org.apache.seata.saga.statelang.domain.ChoiceState;
 import org.apache.seata.saga.statelang.domain.StateType;
 

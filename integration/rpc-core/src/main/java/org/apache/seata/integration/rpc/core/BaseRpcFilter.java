@@ -17,11 +17,9 @@
 package org.apache.seata.integration.rpc.core;
 
 import java.util.Map;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.context.RootContext;
-
 
 public interface BaseRpcFilter<T> {
     String[] TRX_CONTEXT_KEYS = new String[] {RootContext.KEY_XID, RootContext.KEY_BRANCH_TYPE};
@@ -29,6 +27,7 @@ public interface BaseRpcFilter<T> {
     default String getValueFromMap(Map<String, String> rpcContextMap, String key) {
         return rpcContextMap.get(key);
     }
+
     default void assertNotNull(Object obj, String errMsg) {
         if (obj == null) {
             throw new IllegalStateException(errMsg);
@@ -52,7 +51,6 @@ public interface BaseRpcFilter<T> {
             } else {
                 sb.append("\"").append(contextValue).append("\"");
             }
-
         }
         sb.append("}");
         return sb.toString();

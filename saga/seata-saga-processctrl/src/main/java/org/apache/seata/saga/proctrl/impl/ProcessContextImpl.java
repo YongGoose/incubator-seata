@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.seata.saga.proctrl.HierarchicalProcessContext;
 import org.apache.seata.saga.proctrl.Instruction;
 import org.apache.seata.saga.proctrl.ProcessContext;
@@ -122,7 +121,7 @@ public class ProcessContextImpl implements HierarchicalProcessContext, ProcessCo
 
     @Override
     public <T extends Instruction> T getInstruction(Class<T> clazz) {
-        return (T)instruction;
+        return (T) instruction;
     }
 
     @Override

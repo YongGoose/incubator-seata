@@ -16,10 +16,11 @@
  */
 package org.apache.seata.server.session;
 
-import java.util.stream.Stream;
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 
-import org.apache.seata.core.model.BranchType;
+import java.util.stream.Stream;
 import org.apache.seata.common.util.UUIDGenerator;
+import org.apache.seata.core.model.BranchType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,8 +28,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 
 /**
  * The type Branch session test.
@@ -39,9 +38,7 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 public class BranchSessionTest {
 
     @BeforeAll
-    public static void setUp(ApplicationContext context) {
-
-    }
+    public static void setUp(ApplicationContext context) {}
 
     /**
      * Codec test.
@@ -61,7 +58,6 @@ public class BranchSessionTest {
         Assertions.assertEquals(branchSession.getLockKey(), expected.getLockKey());
         Assertions.assertEquals(branchSession.getClientId(), expected.getClientId());
         Assertions.assertEquals(branchSession.getApplicationData(), expected.getApplicationData());
-
     }
 
     /**
@@ -69,7 +65,7 @@ public class BranchSessionTest {
      *
      * @return the object [ ] [ ]
      */
-     static Stream<Arguments> branchSessionProvider() {
+    static Stream<Arguments> branchSessionProvider() {
         BranchSession branchSession = new BranchSession();
         branchSession.setTransactionId(UUIDGenerator.generateUUID());
         branchSession.setBranchId(1L);

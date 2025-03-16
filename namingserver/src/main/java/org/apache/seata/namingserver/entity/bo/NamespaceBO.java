@@ -29,14 +29,13 @@ public class NamespaceBO {
 
     Map<String, ClusterBO> clusterMap = new ConcurrentHashMap<>();
 
-    public NamespaceBO() {
-    }
+    public NamespaceBO() {}
 
     public Map<String, ClusterBO> getClusterMap() {
         return clusterMap;
     }
 
-    public List<Cluster> getCluster(Map<String/* clusterName */, ClusterData> clusterDataMap) {
+    public List<Cluster> getCluster(Map<String /* clusterName */, ClusterData> clusterDataMap) {
         List<Cluster> list = new ArrayList<>();
         clusterMap.forEach((clusterName, unitNameSet) -> {
             ClusterData clusterData = clusterDataMap.get(clusterName);

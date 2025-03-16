@@ -16,12 +16,12 @@
  */
 package org.apache.seata.server.storage.redis.lock;
 
+import static org.apache.seata.common.Constants.STORE_REDIS_TYPE_PIPELINE;
+
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.lock.Locker;
-
-import static org.apache.seata.common.Constants.STORE_REDIS_TYPE_PIPELINE;
 
 /**
  */
@@ -38,8 +38,10 @@ public class RedisLockerFactory {
         if (locker == null) {
             synchronized (RedisLockerFactory.class) {
                 if (locker == null) {
-                    String storeRedisType = CONFIG.getConfig(ConfigurationKeys.STORE_REDIS_TYPE, STORE_REDIS_TYPE_PIPELINE);
-                    locker = STORE_REDIS_TYPE_PIPELINE.equals(storeRedisType) ? new RedisLocker() : new RedisLuaLocker();
+                    String storeRedisType =
+                            CONFIG.getConfig(ConfigurationKeys.STORE_REDIS_TYPE, STORE_REDIS_TYPE_PIPELINE);
+                    locker =
+                            STORE_REDIS_TYPE_PIPELINE.equals(storeRedisType) ? new RedisLocker() : new RedisLuaLocker();
                 }
             }
         }

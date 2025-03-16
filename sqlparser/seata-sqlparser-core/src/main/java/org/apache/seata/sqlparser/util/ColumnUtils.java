@@ -18,7 +18,6 @@ package org.apache.seata.sqlparser.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.sqlparser.EscapeHandler;
@@ -50,7 +49,6 @@ public final class ColumnUtils {
         }
         return newCols;
     }
-
 
     /**
      * del escape by escape
@@ -91,7 +89,6 @@ public final class ColumnUtils {
         }
         return newCols;
     }
-
 
     /**
      * if necessary, add escape

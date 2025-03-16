@@ -16,11 +16,17 @@
  */
 package org.apache.seata.core.rpc.processor.client;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import org.apache.seata.core.protocol.HeartbeatMessage;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.junit.jupiter.api.AfterEach;
@@ -34,13 +40,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * The type Client heartbeat processor test.
@@ -64,7 +63,9 @@ public class ClientHeartbeatProcessorTest {
 
         // Mock static LoggerFactory to control LOGGER behavior
         mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
-        mockedLoggerFactory.when(() -> LoggerFactory.getLogger(ClientHeartbeatProcessor.class)).thenReturn(mockLogger);
+        mockedLoggerFactory
+                .when(() -> LoggerFactory.getLogger(ClientHeartbeatProcessor.class))
+                .thenReturn(mockLogger);
         processor = new ClientHeartbeatProcessor();
     }
 

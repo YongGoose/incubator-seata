@@ -17,7 +17,6 @@
 package org.apache.seata.core.rpc.netty.mockserver;
 
 import java.util.Map;
-
 import org.apache.seata.rm.tcc.api.BusinessActionContext;
 import org.springframework.stereotype.Service;
 import vlsi.utils.CompactHashMap;
@@ -36,7 +35,6 @@ public class Action1Impl implements Action1 {
         System.out.println("prepare");
         return "prepare";
     }
-
 
     @Override
     public boolean commitTcc(BusinessActionContext actionContext) {

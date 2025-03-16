@@ -16,12 +16,11 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_LOG_EXCEPTION_RATE;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.LOG_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = LOG_PREFIX)

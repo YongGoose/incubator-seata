@@ -18,7 +18,6 @@ package org.apache.seata.server;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.annotation.Resource;
 import org.apache.seata.core.rpc.Disposable;
 import org.slf4j.Logger;
@@ -32,12 +31,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
-
 /**
  */
 @Component
-public class ServerRunner implements CommandLineRunner, DisposableBean,
-    ApplicationListener<ApplicationEvent>, Ordered {
+public class ServerRunner implements CommandLineRunner, DisposableBean, ApplicationListener<ApplicationEvent>, Ordered {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerRunner.class);
 
@@ -65,7 +62,10 @@ public class ServerRunner implements CommandLineRunner, DisposableBean,
             started = true;
 
             long cost = System.currentTimeMillis() - start;
-            LOGGER.info("\r\n you can visit seata console UI on http://127.0.0.1:{}. \r\n log path: {}.", this.port, this.logPath);
+            LOGGER.info(
+                    "\r\n you can visit seata console UI on http://127.0.0.1:{}. \r\n log path: {}.",
+                    this.port,
+                    this.logPath);
             LOGGER.info("seata server started in {} millSeconds", cost);
         } catch (Throwable e) {
             started = Boolean.FALSE;
@@ -73,7 +73,6 @@ public class ServerRunner implements CommandLineRunner, DisposableBean,
             System.exit(-1);
         }
     }
-
 
     public boolean started() {
         return started;
@@ -98,7 +97,7 @@ public class ServerRunner implements CommandLineRunner, DisposableBean,
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof WebServerInitializedEvent) {
-            this.port = ((WebServerInitializedEvent)event).getWebServer().getPort();
+            this.port = ((WebServerInitializedEvent) event).getWebServer().getPort();
         }
     }
 

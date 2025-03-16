@@ -40,20 +40,23 @@ class ExceptionUtilTest {
     public void unwrapInvocationTargetException() {
         InvocationTargetException ite = new InvocationTargetException(exception, "test");
         Throwable result = ExceptionUtil.unwrap(ite);
-        Assertions.assertSame(exception, result, "Expected the unwrapped exception to be the cause of InvocationTargetException.");
+        Assertions.assertSame(
+                exception, result, "Expected the unwrapped exception to be the cause of InvocationTargetException.");
     }
 
     @Test
     public void unwrapUndeclaredThrowableException() {
         UndeclaredThrowableException ute = new UndeclaredThrowableException(exception, "test");
         Throwable result = ExceptionUtil.unwrap(ute);
-        Assertions.assertSame(exception, result, "Expected the unwrapped exception to be the cause of UndeclaredThrowableException.");
+        Assertions.assertSame(
+                exception, result, "Expected the unwrapped exception to be the cause of UndeclaredThrowableException.");
     }
 
     @Test
     public void unwrapNestedInvocationTargetException() {
         Exception rootCause = new Exception();
-        InvocationTargetException ite = new InvocationTargetException(new UndeclaredThrowableException(rootCause, "test"), "test");
+        InvocationTargetException ite =
+                new InvocationTargetException(new UndeclaredThrowableException(rootCause, "test"), "test");
         Throwable result = ExceptionUtil.unwrap(ite);
         Assertions.assertSame(rootCause, result, "Expected the unwrapped exception to be the root cause.");
     }
@@ -61,6 +64,9 @@ class ExceptionUtilTest {
     @Test
     public void unwrapNotWrappedException() {
         Throwable result = ExceptionUtil.unwrap(exception);
-        Assertions.assertSame(exception, result, "Expected the unwrapped exception to be the same as the input when no wrapping is present.");
+        Assertions.assertSame(
+                exception,
+                result,
+                "Expected the unwrapped exception to be the same as the input when no wrapping is present.");
     }
 }

@@ -16,9 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
@@ -26,6 +23,8 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLDeleteRecognizer;
@@ -55,8 +54,8 @@ public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implement
 
     @Override
     public String getTableAlias() {
-        //there is different between getFrom() and getTableSource()
-        //when use "delete t1 from t t2", getTableSource().getAlias() will return null
+        // there is different between getFrom() and getTableSource()
+        // when use "delete t1 from t t2", getTableSource().getAlias() will return null
         if (ast.getFrom() == null) {
             return ast.getTableSource().getAlias();
         }
@@ -96,8 +95,8 @@ public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implement
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-                                    final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }

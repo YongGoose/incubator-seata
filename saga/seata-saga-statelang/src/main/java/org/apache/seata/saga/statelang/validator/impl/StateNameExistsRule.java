@@ -16,11 +16,10 @@
  */
 package org.apache.seata.saga.statelang.validator.impl;
 
+import java.util.Set;
 import org.apache.seata.saga.statelang.domain.State;
 import org.apache.seata.saga.statelang.domain.StateMachine;
 import org.apache.seata.saga.statelang.parser.utils.StateMachineUtils;
-
-import java.util.Set;
 
 /**
  * Rule to check if all the state name exists
@@ -30,9 +29,9 @@ public class StateNameExistsRule extends AbstractRule {
 
     @Override
     public boolean validate(StateMachine stateMachine) {
-        for (State state: stateMachine.getStates().values()) {
+        for (State state : stateMachine.getStates().values()) {
             Set<String> subsequentStates = StateMachineUtils.getAllPossibleSubsequentStates(state);
-            for (String subsequentState: subsequentStates) {
+            for (String subsequentState : subsequentStates) {
                 if (stateMachine.getState(subsequentState) == null) {
                     hint = String.format("Subsequent state [%s] of [%s] does not exist", subsequentState, state);
                     return false;

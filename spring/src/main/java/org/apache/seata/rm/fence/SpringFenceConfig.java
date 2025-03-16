@@ -16,15 +16,13 @@
  */
 package org.apache.seata.rm.fence;
 
+import javax.sql.DataSource;
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.integration.tx.api.fence.config.CommonFenceConfig;
 import org.apache.seata.integration.tx.api.fence.exception.CommonFenceException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import javax.sql.DataSource;
-
 
 public class SpringFenceConfig extends CommonFenceConfig implements InitializingBean {
 
@@ -58,6 +56,4 @@ public class SpringFenceConfig extends CommonFenceConfig implements Initializing
             throw new CommonFenceException(FrameworkErrorCode.TransactionManagerNeedInjected);
         }
     }
-
-
 }

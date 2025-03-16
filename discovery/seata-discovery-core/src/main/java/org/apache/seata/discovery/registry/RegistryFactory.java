@@ -17,7 +17,6 @@
 package org.apache.seata.discovery.registry;
 
 import java.util.Objects;
-
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.config.ConfigurationFactory;
@@ -44,17 +43,20 @@ public class RegistryFactory {
 
     private static RegistryService buildRegistryService() {
         RegistryType registryType;
-        String registryTypeName = ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(
-            ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
-                + ConfigurationKeys.FILE_ROOT_TYPE);
+        String registryTypeName =
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(ConfigurationKeys.FILE_ROOT_REGISTRY
+                        + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                        + ConfigurationKeys.FILE_ROOT_TYPE);
         LOGGER.info("use registry center type: {}", registryTypeName);
         try {
             registryType = RegistryType.getType(registryTypeName);
         } catch (Exception exx) {
             throw new NotSupportYetException("not support registry type: " + registryTypeName);
         }
-        return EnhancedServiceLoader.load(RegistryProvider.class, Objects.requireNonNull(registryType).name()).provide();
-
+        return EnhancedServiceLoader.load(
+                        RegistryProvider.class,
+                        Objects.requireNonNull(registryType).name())
+                .provide();
     }
 
     private static class RegistryFactoryHolder {

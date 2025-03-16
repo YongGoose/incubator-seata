@@ -16,24 +16,22 @@
  */
 package org.apache.seata.common.util;
 
-import org.apache.seata.common.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.List;
-import java.util.ArrayList;
-
+import java.util.Set;
+import org.apache.seata.common.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The type Net util.
@@ -42,24 +40,23 @@ import java.util.ArrayList;
 public class NetUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetUtil.class);
 
-    public static final boolean PREFER_IPV6_ADDRESSES = Boolean.parseBoolean(
-            System.getProperty("java.net.preferIPv6Addresses"));
+    public static final boolean PREFER_IPV6_ADDRESSES =
+            Boolean.parseBoolean(System.getProperty("java.net.preferIPv6Addresses"));
 
     private static final String LOCALHOST = "127.0.0.1";
     private static final String ANY_HOST = "0.0.0.0";
 
     public static final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
     public static final String LOCALHOST_SHORT_IPV6 = "::1";
-    public static final String ANY_HOST_IPV6  = "0:0:0:0:0:0:0:0";
-    public static final String ANY_HOST_SHORT_IPV6  = "::";
+    public static final String ANY_HOST_IPV6 = "0:0:0:0:0:0:0:0";
+    public static final String ANY_HOST_SHORT_IPV6 = "::";
 
     private static volatile InetAddress LOCAL_ADDRESS = null;
 
-    private static final Set<String> FORBIDDEN_HOSTS = Collections.unmodifiableSet(
-            new LinkedHashSet<>(Arrays.asList(
-                            LOCALHOST, ANY_HOST,
-                            LOCALHOST_IPV6, LOCALHOST_SHORT_IPV6,
-                            ANY_HOST_IPV6,ANY_HOST_SHORT_IPV6)));
+    private static final Set<String> FORBIDDEN_HOSTS = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(
+            LOCALHOST, ANY_HOST,
+            LOCALHOST_IPV6, LOCALHOST_SHORT_IPV6,
+            ANY_HOST_IPV6, ANY_HOST_SHORT_IPV6)));
 
     /**
      * To string address string.
@@ -142,7 +139,7 @@ public class NetUtil {
         int i = address.lastIndexOf(Constants.IP_PORT_SPLIT_CHAR);
         if (i > -1) {
             serverAddArr = new String[2];
-            String hostAddress = address.substring(0,i);
+            String hostAddress = address.substring(0, i);
             if (hostAddress.contains("%")) {
                 hostAddress = hostAddress.substring(0, hostAddress.indexOf("%"));
             }
@@ -239,7 +236,7 @@ public class NetUtil {
                                         if (null == localAddress) {
                                             localAddress = address;
                                         }
-                                        //check preferredNetworks
+                                        // check preferredNetworks
                                         if (preferredNetworks.length > 0) {
                                             String ip = address.getHostAddress();
                                             for (String regex : preferredNetworks) {
@@ -270,7 +267,10 @@ public class NetUtil {
         if (localAddress == null) {
             LOGGER.error("Could not get local host ip address, will use 127.0.0.1 instead.");
         } else {
-            LOGGER.error("Could not match ip by preferredNetworks:{}, will use default first ip {} instead.", Arrays.toString(preferredNetworks), localAddress.getHostAddress());
+            LOGGER.error(
+                    "Could not match ip by preferredNetworks:{}, will use default first ip {} instead.",
+                    Arrays.toString(preferredNetworks),
+                    localAddress.getHostAddress());
         }
         return localAddress;
     }
@@ -302,9 +302,9 @@ public class NetUtil {
                 return false;
             }
             if (address.isAnyLocalAddress() // filter ::/128
-                    || address.isLinkLocalAddress() //filter fe80::/10
-                    || address.isSiteLocalAddress()// filter fec0::/10
-                    || isUniqueLocalAddress(address)) //filter fd00::/8
+                    || address.isLinkLocalAddress() // filter fe80::/10
+                    || address.isSiteLocalAddress() // filter fec0::/10
+                    || isUniqueLocalAddress(address)) // filter fd00::/8
             {
                 return false;
             }

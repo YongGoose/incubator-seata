@@ -16,15 +16,14 @@
  */
 package org.apache.seata.common.lock;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.common.util.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 public class ResourceLockTest {
@@ -64,7 +63,8 @@ public class ResourceLockTest {
         ConcurrentHashMap<String, ResourceLock> lockMap = new ConcurrentHashMap<>();
         String key = "testKey";
         // Use try-with-resources to obtain and release the lock
-        try (ResourceLock ignored = CollectionUtils.computeIfAbsent(lockMap, key, k -> new ResourceLock()).obtain()) {
+        try (ResourceLock ignored = CollectionUtils.computeIfAbsent(lockMap, key, k -> new ResourceLock())
+                .obtain()) {
             // Do something while holding the lock
             assertTrue(lockMap.containsKey(key));
             assertTrue(lockMap.get(key).isHeldByCurrentThread());
@@ -94,9 +94,13 @@ public class ResourceLockTest {
         });
 
         Thread t2 = new Thread(() -> {
-            assertFalse(resourceLock.isHeldByCurrentThread(), "Lock should not be held by current thread before t1 releases it");
+            assertFalse(
+                    resourceLock.isHeldByCurrentThread(),
+                    "Lock should not be held by current thread before t1 releases it");
             try (ResourceLock lock = resourceLock.obtain()) {
-                assertTrue(resourceLock.isHeldByCurrentThread(), "Lock should be held by current thread after t1 releases it");
+                assertTrue(
+                        resourceLock.isHeldByCurrentThread(),
+                        "Lock should be held by current thread after t1 releases it");
             }
         });
 

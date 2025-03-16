@@ -16,9 +16,6 @@
  */
 package org.apache.seata.sqlparser.struct;
 
-import java.util.Map;
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -28,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Set;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,7 +105,6 @@ public class TableMetaTest {
 
         assertEquals(1, allIndexes.size(), "Should return all indexes added");
         assertTrue(allIndexes.containsKey("primary"), "Should contain index 'primary'");
-
     }
 
     @Test
@@ -123,11 +120,11 @@ public class TableMetaTest {
     public void testGetPrimaryKeyMapNoPrimaryKey() {
         tableMeta.getAllIndexes().clear();
 
-        NotSupportYetException exception = assertThrows(
-                NotSupportYetException.class,
-                () -> tableMeta.getPrimaryKeyMap());
+        NotSupportYetException exception =
+                assertThrows(NotSupportYetException.class, () -> tableMeta.getPrimaryKeyMap());
 
-        assertEquals(String.format("%s needs to contain the primary key.", tableMeta.getTableName()),
+        assertEquals(
+                String.format("%s needs to contain the primary key.", tableMeta.getTableName()),
                 exception.getMessage());
     }
 
@@ -139,18 +136,17 @@ public class TableMetaTest {
         assertEquals(2, pks.size());
         assertTrue(pks.contains("col1"));
         assertTrue(pks.contains("CoL2"));
-
     }
 
     @Test
     public void testGetCaseInsensitivePKsNoPrimaryKey() {
         tableMeta.getAllIndexes().clear(); // Remove primary key
 
-        NotSupportYetException exception = assertThrows(
-                NotSupportYetException.class,
-                () -> tableMeta.getCaseInsensitivePKs());
+        NotSupportYetException exception =
+                assertThrows(NotSupportYetException.class, () -> tableMeta.getCaseInsensitivePKs());
 
-        assertEquals(String.format("%s needs to contain the primary key.", tableMeta.getTableName()),
+        assertEquals(
+                String.format("%s needs to contain the primary key.", tableMeta.getTableName()),
                 exception.getMessage());
     }
 
@@ -161,7 +157,6 @@ public class TableMetaTest {
         assertEquals(2, pksName.size());
         assertTrue(pksName.contains("col1"));
         assertTrue(pksName.contains("col2"));
-
     }
 
     @Test
@@ -225,5 +220,4 @@ public class TableMetaTest {
         tableMeta2.setTableName("different_table");
         assertNotEquals(tableMeta.hashCode(), tableMeta2.hashCode());
     }
-
 }

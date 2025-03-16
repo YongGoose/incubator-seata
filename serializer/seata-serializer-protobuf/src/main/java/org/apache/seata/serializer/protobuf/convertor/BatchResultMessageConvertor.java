@@ -16,12 +16,11 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.core.protocol.AbstractResultMessage;
 import org.apache.seata.core.protocol.BatchResultMessage;
@@ -42,22 +41,22 @@ public class BatchResultMessageConvertor implements PbConvertor<BatchResultMessa
 
         final short typeCode = batchResultMessage.getTypeCode();
 
-        final AbstractMessageProto abstractMessage = AbstractMessageProto.newBuilder().setMessageType(
-            MessageTypeProto.forNumber(typeCode)).build();
+        final AbstractMessageProto abstractMessage = AbstractMessageProto.newBuilder()
+                .setMessageType(MessageTypeProto.forNumber(typeCode))
+                .build();
 
         List<Any> lists = new ArrayList<>();
         batchResultMessage.getResultMessages().forEach(msg -> {
-            final PbConvertor pbConvertor = ProtobufConvertManager.getInstance().
-                fetchConvertor(msg.getClass().getName());
+            final PbConvertor pbConvertor = ProtobufConvertManager.getInstance()
+                    .fetchConvertor(msg.getClass().getName());
             lists.add(Any.pack((Message) pbConvertor.convert2Proto(msg)));
         });
 
         return BatchResultMessageProto.newBuilder()
-            .setAbstractMessage(abstractMessage)
-            .addAllResultMessages(lists)
-            .addAllMsgIds(batchResultMessage.getMsgIds())
-            .build();
-
+                .setAbstractMessage(abstractMessage)
+                .addAllResultMessages(lists)
+                .addAllMsgIds(batchResultMessage.getMsgIds())
+                .build();
     }
 
     @Override
@@ -65,13 +64,13 @@ public class BatchResultMessageConvertor implements PbConvertor<BatchResultMessa
         BatchResultMessage result = new BatchResultMessage();
         List<Any> anys = batchResultMessageProto.getResultMessagesList();
         anys.forEach(any -> {
-            final Class clazz = ProtobufConvertManager.getInstance().fetchProtoClass(
-                getTypeNameFromTypeUrl(any.getTypeUrl()));
+            final Class clazz =
+                    ProtobufConvertManager.getInstance().fetchProtoClass(getTypeNameFromTypeUrl(any.getTypeUrl()));
             if (any.is(clazz)) {
                 try {
                     Object ob = any.unpack(clazz);
-                    final PbConvertor pbConvertor = ProtobufConvertManager.getInstance().fetchReversedConvertor(
-                        clazz.getName());
+                    final PbConvertor pbConvertor =
+                            ProtobufConvertManager.getInstance().fetchReversedConvertor(clazz.getName());
                     Object model = pbConvertor.convert2Model(ob);
                     result.getResultMessages().add((AbstractResultMessage) model);
                 } catch (InvalidProtocolBufferException e) {

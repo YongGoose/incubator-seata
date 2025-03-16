@@ -17,7 +17,6 @@
 package org.apache.seata.saga.proctrl.process.impl;
 
 import java.util.Map;
-
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.saga.proctrl.ProcessContext;
@@ -41,7 +40,7 @@ public class CustomizeBusinessProcessor implements BusinessProcessor {
     private Map<String, RouterHandler> routerHandlers;
 
     public static ProcessType matchProcessType(ProcessContext context) {
-        ProcessType processType = (ProcessType)context.getVariable(ProcessContext.VAR_NAME_PROCESS_TYPE);
+        ProcessType processType = (ProcessType) context.getVariable(ProcessContext.VAR_NAME_PROCESS_TYPE);
         if (processType == null) {
             processType = ProcessType.STATE_LANG;
         }

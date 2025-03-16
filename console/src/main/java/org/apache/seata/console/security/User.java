@@ -30,8 +30,7 @@ public class User {
      */
     String password;
 
-
-    //region Getter && Setter
+    // region Getter && Setter
 
     public String getUsername() {
         return username;
@@ -49,5 +48,5 @@ public class User {
         this.password = password;
     }
 
-    //endregion
+    // endregion
 }

@@ -16,15 +16,15 @@
  */
 package org.apache.seata.core.rpc;
 
+import io.netty.channel.Channel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
-import io.netty.channel.Channel;
 import org.apache.seata.core.protocol.AbstractMessage;
+import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
 import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.seata.core.rpc.processor.RemotingProcessor;
-import org.apache.seata.core.protocol.MessageType;
 
 /**
  * The interface remoting client.

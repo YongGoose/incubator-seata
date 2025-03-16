@@ -16,13 +16,6 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_DISABLE_GLOBAL_TRANSACTION;
 import static org.apache.seata.common.DefaultValues.DEFAULT_GROUPLIST;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TC_CLUSTER;
@@ -30,6 +23,11 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP_OLD;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SERVICE_PREFIX;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = SERVICE_PREFIX)
@@ -77,7 +75,7 @@ public class ServiceProperties implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         if (0 == vgroupMapping.size()) {
             vgroupMapping.put(DEFAULT_TX_GROUP, DEFAULT_TC_CLUSTER);
-            //compatible with old value, will remove next version
+            // compatible with old value, will remove next version
             vgroupMapping.put(DEFAULT_TX_GROUP_OLD, DEFAULT_TC_CLUSTER);
         }
         if (0 == grouplist.size()) {

@@ -123,5 +123,4 @@ public class ZkConfigurationTest {
         }
         Assertions.assertTrue(listened[0]);
     }
-
 }

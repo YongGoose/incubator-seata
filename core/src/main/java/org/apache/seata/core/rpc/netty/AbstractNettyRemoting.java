@@ -16,6 +16,9 @@
  */
 package org.apache.seata.core.rpc.netty;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.SocketAddress;
@@ -30,9 +33,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
@@ -62,8 +62,8 @@ public abstract class AbstractNettyRemoting implements Disposable {
     /**
      * The Timer executor.
      */
-    protected final ScheduledExecutorService timerExecutor = new ScheduledThreadPoolExecutor(1,
-        new NamedThreadFactory("timeoutChecker", 1, true));
+    protected final ScheduledExecutorService timerExecutor =
+            new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("timeoutChecker", 1, true));
     /**
      * The Message executor.
      */
@@ -87,42 +87,54 @@ public abstract class AbstractNettyRemoting implements Disposable {
      * The Now mills.
      */
     protected volatile long nowMills = 0;
+
     private static final int TIMEOUT_CHECK_INTERVAL = 3000;
     protected final Object lock = new Object();
     /**
      * The Is sending.
      */
     protected volatile boolean isSending = false;
+
     private String group = "DEFAULT";
 
     /**
      * This container holds all processors.
      * processor type {@link MessageType}
      */
-    protected final HashMap<Integer/*MessageType*/, Pair<RemotingProcessor, ExecutorService>> processorTable = new HashMap<>(32);
+    protected final HashMap<Integer /*MessageType*/, Pair<RemotingProcessor, ExecutorService>> processorTable =
+            new HashMap<>(32);
 
     protected final List<RpcHook> rpcHooks = EnhancedServiceLoader.loadAll(RpcHook.class);
 
     public void init() {
-        timerExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                for (Map.Entry<Integer, MessageFuture> entry : futures.entrySet()) {
-                    MessageFuture future = entry.getValue();
-                    if (future.isTimeout()) {
-                        futures.remove(entry.getKey());
-                        RpcMessage rpcMessage = future.getRequestMessage();
-                        future.setResultMessage(new TimeoutException(String
-                            .format("msgId: %s ,msgType: %s ,msg: %s ,request timeout", rpcMessage.getId(), String.valueOf(rpcMessage.getMessageType()), rpcMessage.getBody().toString())));
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("timeout clear future: {}", entry.getValue().getRequestMessage().getBody());
+        timerExecutor.scheduleAtFixedRate(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        for (Map.Entry<Integer, MessageFuture> entry : futures.entrySet()) {
+                            MessageFuture future = entry.getValue();
+                            if (future.isTimeout()) {
+                                futures.remove(entry.getKey());
+                                RpcMessage rpcMessage = future.getRequestMessage();
+                                future.setResultMessage(new TimeoutException(String.format(
+                                        "msgId: %s ,msgType: %s ,msg: %s ,request timeout",
+                                        rpcMessage.getId(),
+                                        String.valueOf(rpcMessage.getMessageType()),
+                                        rpcMessage.getBody().toString())));
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.debug(
+                                            "timeout clear future: {}",
+                                            entry.getValue().getRequestMessage().getBody());
+                                }
+                            }
                         }
-                    }
-                }
 
-                nowMills = System.currentTimeMillis();
-            }
-        }, TIMEOUT_CHECK_INTERVAL, TIMEOUT_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
+                        nowMills = System.currentTimeMillis();
+                    }
+                },
+                TIMEOUT_CHECK_INTERVAL,
+                TIMEOUT_CHECK_INTERVAL,
+                TimeUnit.MILLISECONDS);
     }
 
     public AbstractNettyRemoting(ThreadPoolExecutor messageExecutor) {
@@ -199,8 +211,11 @@ public abstract class AbstractNettyRemoting implements Disposable {
             doAfterRpcHooks(remoteAddr, rpcMessage, result);
             return result;
         } catch (Exception exx) {
-            LOGGER.error("wait response error:{},ip:{},request:{}", exx.getMessage(), channel.remoteAddress(),
-                rpcMessage.getBody());
+            LOGGER.error(
+                    "wait response error:{},ip:{},request:{}",
+                    exx.getMessage(),
+                    channel.remoteAddress(),
+                    rpcMessage.getBody());
             if (exx instanceof TimeoutException) {
                 throw (TimeoutException) exx;
             } else {
@@ -219,7 +234,7 @@ public abstract class AbstractNettyRemoting implements Disposable {
         channelWritableCheck(channel, rpcMessage.getBody());
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("write message:" + rpcMessage.getBody() + ", channel:" + channel + ",active?"
-                + channel.isActive() + ",writable?" + channel.isWritable() + ",isopen?" + channel.isOpen());
+                    + channel.isActive() + ",writable?" + channel.isWritable() + ",isopen?" + channel.isOpen());
         }
 
         doBeforeRpcHooks(ChannelUtil.getAddressFromChannel(channel), rpcMessage);
@@ -271,7 +286,8 @@ public abstract class AbstractNettyRemoting implements Disposable {
         Object body = rpcMessage.getBody();
         if (body instanceof MessageTypeAware) {
             MessageTypeAware messageTypeAware = (MessageTypeAware) body;
-            final Pair<RemotingProcessor, ExecutorService> pair = this.processorTable.get((int) messageTypeAware.getTypeCode());
+            final Pair<RemotingProcessor, ExecutorService> pair =
+                    this.processorTable.get((int) messageTypeAware.getTypeCode());
             if (pair != null) {
                 if (pair.getSecond() != null) {
                     try {
@@ -285,8 +301,9 @@ public abstract class AbstractNettyRemoting implements Disposable {
                             }
                         });
                     } catch (RejectedExecutionException e) {
-                        LOGGER.error(FrameworkErrorCode.ThreadPoolFull.getErrCode(),
-                            "thread pool is full, current max pool size is " + messageExecutor.getActiveCount());
+                        LOGGER.error(
+                                FrameworkErrorCode.ThreadPoolFull.getErrCode(),
+                                "thread pool is full, current max pool size is " + messageExecutor.getActiveCount());
                         if (allowDumpStack) {
                             String name = ManagementFactory.getRuntimeMXBean().getName();
                             String pid = name.split("@")[0];
@@ -336,7 +353,9 @@ public abstract class AbstractNettyRemoting implements Disposable {
         SocketAddress socketAddress = channel.remoteAddress();
         String address = socketAddress.toString();
         if (socketAddress.toString().indexOf(NettyClientConfig.getSocketAddressStartChar()) == 0) {
-            address = socketAddress.toString().substring(NettyClientConfig.getSocketAddressStartChar().length());
+            address = socketAddress
+                    .toString()
+                    .substring(NettyClientConfig.getSocketAddressStartChar().length());
         }
         return address;
     }
@@ -349,8 +368,9 @@ public abstract class AbstractNettyRemoting implements Disposable {
                     tryTimes++;
                     if (tryTimes > NettyClientConfig.getMaxNotWriteableRetry()) {
                         destroyChannel(channel);
-                        throw new FrameworkException("msg:" + ((msg == null) ? "null" : msg.toString()),
-                            FrameworkErrorCode.ChannelIsNotWritable);
+                        throw new FrameworkException(
+                                "msg:" + ((msg == null) ? "null" : msg.toString()),
+                                FrameworkErrorCode.ChannelIsNotWritable);
                     }
                     lock.wait(NOT_WRITEABLE_CHECK_MILLS);
                 } catch (InterruptedException exx) {
@@ -369,13 +389,13 @@ public abstract class AbstractNettyRemoting implements Disposable {
     public abstract void destroyChannel(String serverAddress, Channel channel);
 
     protected void doBeforeRpcHooks(String remoteAddr, RpcMessage request) {
-        for (RpcHook rpcHook: rpcHooks) {
+        for (RpcHook rpcHook : rpcHooks) {
             rpcHook.doBeforeRequest(remoteAddr, request);
         }
     }
 
     protected void doAfterRpcHooks(String remoteAddr, RpcMessage request, Object response) {
-        for (RpcHook rpcHook: rpcHooks) {
+        for (RpcHook rpcHook : rpcHooks) {
             rpcHook.doAfterResponse(remoteAddr, request, response);
         }
     }

@@ -16,12 +16,10 @@
  */
 package org.apache.seata.serializer.protobuf;
 
+import com.google.protobuf.GeneratedMessageV3;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import com.google.protobuf.GeneratedMessageV3;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.BufferUtils;
 import org.apache.seata.core.serializer.Serializer;
@@ -43,11 +41,11 @@ public class ProtobufSerializer implements Serializer {
             throw new NullPointerException();
         }
 
-        //translate to pb
-        final PbConvertor pbConvertor = ProtobufConvertManager.getInstance().fetchConvertor(
-            t.getClass().getName());
-        //for cross language,write FullName to data,which defines in proto file
-        GeneratedMessageV3 newBody = (GeneratedMessageV3)pbConvertor.convert2Proto(t);
+        // translate to pb
+        final PbConvertor pbConvertor =
+                ProtobufConvertManager.getInstance().fetchConvertor(t.getClass().getName());
+        // for cross language,write FullName to data,which defines in proto file
+        GeneratedMessageV3 newBody = (GeneratedMessageV3) pbConvertor.convert2Proto(t);
         byte[] body = ProtobufInnerSerializer.serializeContent(newBody);
         final String name = newBody.getDescriptorForType().getFullName();
         final byte[] nameBytes = name.getBytes(UTF8);
@@ -75,10 +73,10 @@ public class ProtobufSerializer implements Serializer {
         final String descriptorName = new String(clazzName, UTF8);
         Class protobufClazz = ProtobufConvertManager.getInstance().fetchProtoClass(descriptorName);
         Object protobufObject = ProtobufInnerSerializer.deserializeContent(protobufClazz.getName(), body);
-        //translate back to core model
-        final PbConvertor pbConvertor = ProtobufConvertManager.getInstance().fetchReversedConvertor(protobufClazz.getName());
+        // translate back to core model
+        final PbConvertor pbConvertor =
+                ProtobufConvertManager.getInstance().fetchReversedConvertor(protobufClazz.getName());
         Object newBody = pbConvertor.convert2Model(protobufObject);
-        return (T)newBody;
+        return (T) newBody;
     }
-
 }

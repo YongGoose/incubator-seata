@@ -16,13 +16,12 @@
  */
 package org.apache.seata.core.lock;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.core.model.LockStatus;
 import org.apache.seata.core.store.LockDO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The AbstractLocker Test
@@ -76,16 +75,13 @@ public class AbstractLockerTest {
             }
 
             @Override
-            public void updateLockStatus(String xid, LockStatus lockStatus) {
-
-            }
+            public void updateLockStatus(String xid, LockStatus lockStatus) {}
         };
         List<RowLock> locks = getRowLocks();
 
         // Call the convertToLockDO method
         return locker.convertToLockDO(locks);
     }
-
 
     @Test
     public void testGetRowKey() {
@@ -111,9 +107,7 @@ public class AbstractLockerTest {
             }
 
             @Override
-            public void updateLockStatus(String xid, LockStatus lockStatus) {
-
-            }
+            public void updateLockStatus(String xid, LockStatus lockStatus) {}
         };
 
         // Call the getRowKey method

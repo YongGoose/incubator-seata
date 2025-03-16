@@ -89,7 +89,6 @@ public class APITest {
         GlobalTransaction tx = GlobalTransactionContext.getCurrentOrCreate();
         Assertions.assertEquals(tx.getXid(), DEFAULT_XID);
         Assertions.assertEquals(tx.getStatus(), GlobalStatus.Begin);
-
     }
 
     /**
@@ -115,7 +114,6 @@ public class APITest {
         tx.begin();
         Assertions.assertEquals(tx.getStatus(), GlobalStatus.Begin);
         Assertions.assertNotNull(tx.getXid());
-
     }
 
     /**
@@ -204,7 +202,7 @@ public class APITest {
         GlobalTransaction tx = GlobalTransactionContext.getCurrentOrCreate();
         tx.globalReport(tx.getStatus());
 
-        Assertions.assertThrows(IllegalStateException.class, () ->  tx.globalReport(null));
+        Assertions.assertThrows(IllegalStateException.class, () -> tx.globalReport(null));
         Assertions.assertThrows(IllegalStateException.class, () -> {
             RootContext.unbind();
             GlobalTransaction tx2 = GlobalTransactionContext.getCurrentOrCreate();
@@ -213,11 +211,9 @@ public class APITest {
 
         Assertions.assertEquals(tx.getStatus(), GlobalStatus.Begin);
         Assertions.assertNotNull(tx.getXid());
-
     }
 
-
-    private static abstract class AbstractTransactionalExecutor implements TransactionalExecutor {
+    private abstract static class AbstractTransactionalExecutor implements TransactionalExecutor {
 
         @Override
         public TransactionInfo getTransactionInfo() {

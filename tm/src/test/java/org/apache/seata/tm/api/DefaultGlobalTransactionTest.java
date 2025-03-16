@@ -16,7 +16,6 @@
  */
 package org.apache.seata.tm.api;
 
-
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalStatus;
@@ -26,7 +25,6 @@ import org.apache.seata.tm.api.transaction.MyRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 
 class DefaultGlobalTransactionTest {
     private static final String DEFAULT_XID = "1234567890";
@@ -53,7 +51,7 @@ class DefaultGlobalTransactionTest {
 
             @Override
             public GlobalStatus getStatus(String xid) throws TransactionException {
-              throw new MyRuntimeException("");
+                throw new MyRuntimeException("");
             }
 
             @Override
@@ -62,7 +60,6 @@ class DefaultGlobalTransactionTest {
             }
         });
     }
-
 
     @Test
     public void commitRetryExceptionTest() throws TransactionException {
@@ -79,7 +76,6 @@ class DefaultGlobalTransactionTest {
         Assertions.assertThrows(IllegalStateException.class, tx::commit);
     }
 
-
     @Test
     public void rollBackRetryExceptionTest() throws TransactionException {
         RootContext.unbind();
@@ -95,5 +91,4 @@ class DefaultGlobalTransactionTest {
         tx.begin();
         Assertions.assertThrows(TransactionException.class, tx::rollback);
     }
-
 }

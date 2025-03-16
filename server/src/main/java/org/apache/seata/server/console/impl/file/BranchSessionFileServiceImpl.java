@@ -16,21 +16,20 @@
  */
 package org.apache.seata.server.console.impl.file;
 
-import org.apache.seata.common.util.StringUtils;
-import org.apache.seata.server.console.impl.AbstractBranchService;
-import org.apache.seata.server.console.entity.vo.BranchSessionVO;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import org.apache.seata.common.result.PageResult;
+import org.apache.seata.common.util.StringUtils;
+import org.apache.seata.server.console.entity.vo.BranchSessionVO;
+import org.apache.seata.server.console.impl.AbstractBranchService;
 import org.apache.seata.server.console.service.BranchSessionService;
 import org.apache.seata.server.session.GlobalSession;
 import org.apache.seata.server.session.SessionHolder;
 import org.apache.seata.server.storage.SessionConverter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Branch Session File ServiceImpl
@@ -47,10 +46,12 @@ public class BranchSessionFileServiceImpl extends AbstractBranchService implemen
             throw new IllegalArgumentException("xid should not be blank");
         }
         List<BranchSessionVO> branchSessionVOList = new ArrayList<>(0);
-        final Collection<GlobalSession> allSessions = SessionHolder.getRootSessionManager().allSessions();
+        final Collection<GlobalSession> allSessions =
+                SessionHolder.getRootSessionManager().allSessions();
         for (GlobalSession globalSession : allSessions) {
             if (globalSession.getXid().equals(xid)) {
-                Set<BranchSessionVO> branchSessionVOS = SessionConverter.convertBranchSession(globalSession.getBranchSessions());
+                Set<BranchSessionVO> branchSessionVOS =
+                        SessionConverter.convertBranchSession(globalSession.getBranchSessions());
                 branchSessionVOList = new ArrayList<>(branchSessionVOS);
                 break;
             }

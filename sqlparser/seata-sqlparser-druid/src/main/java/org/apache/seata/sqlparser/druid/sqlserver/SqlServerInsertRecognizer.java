@@ -16,10 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLDefaultExpr;
@@ -33,6 +29,9 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerOutputVisitor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.sqlparser.SQLInsertRecognizer;
 import org.apache.seata.sqlparser.SQLType;
@@ -86,7 +85,7 @@ public class SqlServerInsertRecognizer extends BaseSqlServerRecognizer implement
     @Override
     public List<List<Object>> getInsertRows(Collection<Integer> primaryKeyIndex) {
         if (ast.getTop() != null) {
-            //deal with top sql
+            // deal with top sql
             dealTop(ast);
         }
         List<SQLInsertStatement.ValuesClause> valuesClauses = ast.getValuesList();
@@ -102,14 +101,14 @@ public class SqlServerInsertRecognizer extends BaseSqlServerRecognizer implement
                 } else if (expr instanceof SQLValuableExpr) {
                     row.add(((SQLValuableExpr) expr).getValue());
                 } else if (expr instanceof SQLVariantRefExpr) {
-                    //add '?'
+                    // add '?'
                     row.add(((SQLVariantRefExpr) expr).getName());
                 } else if (expr instanceof SQLMethodInvokeExpr) {
                     row.add(SqlMethodExpr.get());
                 } else if (expr instanceof SQLDefaultExpr) {
                     row.add(SqlDefaultExpr.get());
                 } else if (expr instanceof SQLSequenceExpr) {
-                    //Supported only since 2012 version of SQL Server,use next value for
+                    // Supported only since 2012 version of SQL Server,use next value for
                     SQLSequenceExpr sequenceExpr = (SQLSequenceExpr) expr;
                     String sequence = sequenceExpr.getSequence().getSimpleName();
                     String function = sequenceExpr.getFunction().name;

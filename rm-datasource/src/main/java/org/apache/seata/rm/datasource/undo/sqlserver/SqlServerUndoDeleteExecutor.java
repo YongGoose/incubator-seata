@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.IOUtil;
@@ -37,7 +36,6 @@ import org.apache.seata.sqlparser.struct.SqlServerTableMeta;
 import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
 
 public class SqlServerUndoDeleteExecutor extends BaseSqlServerUndoExecutor {
 
@@ -68,15 +66,14 @@ public class SqlServerUndoDeleteExecutor extends BaseSqlServerUndoExecutor {
         String insertColumns = fields.stream()
                 .map(field -> ColumnUtils.addEscape(field.getName(), JdbcConstants.SQLSERVER))
                 .collect(Collectors.joining(", "));
-        String insertValues = fields.stream().map(field -> "?")
-                .collect(Collectors.joining(", "));
+        String insertValues = fields.stream().map(field -> "?").collect(Collectors.joining(", "));
 
         if (tableIdentifyExistence) {
-            return "begin " +
-                    "SET IDENTITY_INSERT " + sqlUndoLog.getTableName() + " ON;" +
-                    "INSERT INTO " + sqlUndoLog.getTableName() + "(" + insertColumns + ") VALUES (" + insertValues + ");" +
-                    "SET IDENTITY_INSERT " + sqlUndoLog.getTableName() + " OFF; " +
-                    "end";
+            return "begin " + "SET IDENTITY_INSERT "
+                    + sqlUndoLog.getTableName() + " ON;" + "INSERT INTO "
+                    + sqlUndoLog.getTableName() + "(" + insertColumns + ") VALUES (" + insertValues + ");"
+                    + "SET IDENTITY_INSERT "
+                    + sqlUndoLog.getTableName() + " OFF; " + "end";
         }
         return "INSERT INTO " + sqlUndoLog.getTableName() + "(" + insertColumns + ") VALUES (" + insertValues + ");";
     }
@@ -91,8 +88,7 @@ public class SqlServerUndoDeleteExecutor extends BaseSqlServerUndoExecutor {
                 .getTableMeta(
                         connectionProxy.getTargetConnection(),
                         sqlUndoLog.getTableName(),
-                        connectionProxy.getDataSourceProxy().getResourceId()
-                );
+                        connectionProxy.getDataSourceProxy().getResourceId());
         tableIdentifyExistence = ((SqlServerTableMeta) tableMeta).isTableIdentifyExistence();
     }
 
@@ -139,7 +135,6 @@ public class SqlServerUndoDeleteExecutor extends BaseSqlServerUndoExecutor {
         } finally {
             IOUtil.close(undoPST);
         }
-
     }
 
     @Override

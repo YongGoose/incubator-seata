@@ -17,11 +17,9 @@
 package org.apache.seata.server.session.redis;
 
 import java.io.IOException;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.server.storage.redis.session.RedisSessionManager;
 import org.apache.seata.server.storage.redis.store.RedisLuaTransactionStoreManager;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,5 +49,4 @@ public class RedisLuaTransactionStoreManagerTest extends RedisTransactionStoreMa
         redisSessionManager.setTransactionStoreManager(redisTransactionStoreManager);
         sessionManager = redisSessionManager;
     }
-
 }

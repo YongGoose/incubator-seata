@@ -16,14 +16,12 @@
  */
 package org.apache.seata.rm.datasource;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class ColumnUtilsTest {
 
@@ -78,7 +76,7 @@ public class ColumnUtilsTest {
 
         Assertions.assertNull(ColumnUtils.delEscape((String) null, JdbcConstants.MYSQL));
 
-        //SqlServer test case
+        // SqlServer test case
         List<String> cols10 = new ArrayList<>();
         cols10.add("[id]");
         cols10.add("name");
@@ -164,7 +162,6 @@ public class ColumnUtilsTest {
         cols = ColumnUtils.addEscape(cols, JdbcConstants.MYSQL);
         Assertions.assertEquals("scheme.`id`", cols.get(0));
 
-
         cols = new ArrayList<>();
         cols.add("id");
         cols = ColumnUtils.addEscape(cols, JdbcConstants.ORACLE);
@@ -210,7 +207,6 @@ public class ColumnUtilsTest {
         cols = ColumnUtils.addEscape(cols, JdbcConstants.ORACLE);
         Assertions.assertEquals("\"scheme\".\"id\"", cols.get(0));
 
-
         cols = new ArrayList<>();
         cols.add("id");
         cols = ColumnUtils.addEscape(cols, JdbcConstants.POSTGRESQL);
@@ -255,7 +251,5 @@ public class ColumnUtilsTest {
         cols.add("schEme.id");
         cols = ColumnUtils.addEscape(cols, JdbcConstants.POSTGRESQL);
         Assertions.assertEquals("schEme.id", cols.get(0));
-
     }
-
 }

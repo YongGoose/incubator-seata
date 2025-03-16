@@ -16,8 +16,8 @@
  */
 package org.apache.seata.tm.api;
 
-
 import io.netty.util.HashedWheelTimer;
+import java.lang.reflect.Field;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalStatus;
@@ -29,9 +29,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Field;
-
 
 class DefaultFailureHandlerImplTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultFailureHandlerImplTest.class);
@@ -80,7 +77,7 @@ class DefaultFailureHandlerImplTest {
     }
 
     @Test
-    void onCommitFailure() throws Exception{
+    void onCommitFailure() throws Exception {
 
         RootContext.bind(DEFAULT_XID);
         GlobalTransaction tx = GlobalTransactionContext.getCurrentOrCreate();
@@ -94,19 +91,18 @@ class DefaultFailureHandlerImplTest {
         HashedWheelTimer timer = (HashedWheelTimer) field.get(failureHandler);
         // assert timer pendingCount: first time is 1
         Long pendingTimeout = timer.pendingTimeouts();
-        Assertions.assertEquals(pendingTimeout,1L);
-        //set globalStatus
-        globalStatus= GlobalStatus.Committed;
-        Thread.sleep(25*1000L);
+        Assertions.assertEquals(pendingTimeout, 1L);
+        // set globalStatus
+        globalStatus = GlobalStatus.Committed;
+        Thread.sleep(25 * 1000L);
         pendingTimeout = timer.pendingTimeouts();
-        LOGGER.info("pendingTimeout {}" ,pendingTimeout);
-        //all timer is done
-        Assertions.assertEquals(pendingTimeout,0L);
+        LOGGER.info("pendingTimeout {}", pendingTimeout);
+        // all timer is done
+        Assertions.assertEquals(pendingTimeout, 0L);
     }
 
     @Test
     void onRollbackFailure() throws Exception {
-
 
         RootContext.bind(DEFAULT_XID);
         GlobalTransaction tx = GlobalTransactionContext.getCurrentOrCreate();
@@ -120,17 +116,13 @@ class DefaultFailureHandlerImplTest {
         HashedWheelTimer timer = (HashedWheelTimer) field.get(failureHandler);
         // assert timer pendingCount: first time is 1
         Long pendingTimeout = timer.pendingTimeouts();
-        Assertions.assertEquals(pendingTimeout,1L);
-        //set globalStatus
-        globalStatus= GlobalStatus.Rollbacked;
-        Thread.sleep(25*1000L);
+        Assertions.assertEquals(pendingTimeout, 1L);
+        // set globalStatus
+        globalStatus = GlobalStatus.Rollbacked;
+        Thread.sleep(25 * 1000L);
         pendingTimeout = timer.pendingTimeouts();
-        LOGGER.info("pendingTimeout {}" ,pendingTimeout);
-        //all timer is done
-        Assertions.assertEquals(pendingTimeout,0L);
-
-
+        LOGGER.info("pendingTimeout {}", pendingTimeout);
+        // all timer is done
+        Assertions.assertEquals(pendingTimeout, 0L);
     }
-
-
 }

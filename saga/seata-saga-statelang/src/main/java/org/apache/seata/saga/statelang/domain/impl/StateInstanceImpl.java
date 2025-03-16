@@ -17,7 +17,6 @@
 package org.apache.seata.saga.statelang.domain.impl;
 
 import java.util.Date;
-
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.saga.statelang.domain.ExecutionStatus;
 import org.apache.seata.saga.statelang.domain.StateInstance;

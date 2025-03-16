@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.undo.polardbx;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.rm.datasource.undo.UndoLogParser;
 import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoLogManager;
@@ -37,8 +36,8 @@ public class PolarDBXUndoLogManager extends MySQLUndoLogManager {
     }
 
     @Override
-    protected void insertUndoLogWithNormal(String xid, long branchId, String rollbackCtx, byte[] undoLogContent,
-                                           Connection conn) throws SQLException {
+    protected void insertUndoLogWithNormal(
+            String xid, long branchId, String rollbackCtx, byte[] undoLogContent, Connection conn) throws SQLException {
         super.insertUndoLogWithNormal(xid, branchId, rollbackCtx, undoLogContent, conn);
     }
 

@@ -16,12 +16,12 @@
  */
 package org.apache.seata.rm.tcc.json;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
 import org.apache.seata.integration.tx.api.json.JsonParserFactory;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JsonParserFactoryTest {
 

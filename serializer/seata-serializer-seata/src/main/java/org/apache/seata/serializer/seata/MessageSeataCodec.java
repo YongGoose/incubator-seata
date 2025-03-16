@@ -16,10 +16,8 @@
  */
 package org.apache.seata.serializer.seata;
 
-
-import java.nio.ByteBuffer;
-
 import io.netty.buffer.ByteBuf;
+import java.nio.ByteBuffer;
 
 /**
  * The interface Message seata codec.

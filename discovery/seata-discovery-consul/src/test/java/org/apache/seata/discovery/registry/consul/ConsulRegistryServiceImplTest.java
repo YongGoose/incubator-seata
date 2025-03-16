@@ -16,18 +16,14 @@
  */
 package org.apache.seata.discovery.registry.consul;
 
-import org.apache.seata.discovery.registry.RegistryService;
-import org.junit.jupiter.api.Test;
-
-import java.net.InetSocketAddress;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-
+import java.net.InetSocketAddress;
+import org.apache.seata.discovery.registry.RegistryService;
+import org.junit.jupiter.api.Test;
 
 public class ConsulRegistryServiceImplTest {
-
 
     @Test
     public void testRegister() throws Exception {

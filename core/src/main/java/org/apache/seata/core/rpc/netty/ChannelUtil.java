@@ -17,11 +17,10 @@
 package org.apache.seata.core.rpc.netty;
 
 import io.netty.channel.Channel;
+import java.net.SocketAddress;
 import org.apache.seata.common.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.net.SocketAddress;
-
 
 public class ChannelUtil {
 

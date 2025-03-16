@@ -16,12 +16,12 @@
  */
 package org.apache.seata.server.metrics;
 
+import static org.apache.seata.server.metrics.MeterIdConstants.COUNTER_ACTIVE;
+
 import org.apache.seata.metrics.Id;
 import org.apache.seata.metrics.IdConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.apache.seata.server.metrics.MeterIdConstants.COUNTER_ACTIVE;
 
 public class RegistryMeterKeyTest {
     @Test
@@ -36,5 +36,4 @@ public class RegistryMeterKeyTest {
         Assertions.assertNotEquals(meterKey2, meterKey1);
         Assertions.assertEquals(meterKey3, meterKey1);
     }
-
 }

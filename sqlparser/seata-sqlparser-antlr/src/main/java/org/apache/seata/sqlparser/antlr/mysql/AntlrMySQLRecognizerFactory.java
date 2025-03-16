@@ -16,6 +16,9 @@
  */
 package org.apache.seata.sqlparser.antlr.mysql;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.seata.sqlparser.SQLRecognizer;
 import org.apache.seata.sqlparser.SQLRecognizerFactory;
 import org.apache.seata.sqlparser.antlr.SQLOperateRecognizerHolder;
@@ -24,10 +27,6 @@ import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlLexer;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParser;
 import org.apache.seata.sqlparser.antlr.mysql.stream.ANTLRNoCaseStringStream;
 import org.apache.seata.sqlparser.antlr.mysql.visit.StatementSqlVisitor;
-import org.antlr.v4.runtime.CommonTokenStream;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * AntlrMySQLRecognizerFactory

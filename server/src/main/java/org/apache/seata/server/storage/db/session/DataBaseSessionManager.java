@@ -64,7 +64,6 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
         if (!ret) {
             throw new StoreException("addGlobalSession failed.");
         }
-
     }
 
     @Override
@@ -86,7 +85,7 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     /**
      * remove globalSession 1. rootSessionManager remove normal globalSession 2. retryCommitSessionManager and
      * retryRollbackSessionManager remove retry expired globalSession
-     * 
+     *
      * @param session the session
      * @throws TransactionException the transaction exception
      */
@@ -135,11 +134,19 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     @Override
     public Collection<GlobalSession> allSessions() {
         // all data
-        return findGlobalSessions(
-            new SessionCondition(GlobalStatus.UnKnown, GlobalStatus.Begin, GlobalStatus.Committing,
-                GlobalStatus.CommitRetrying, GlobalStatus.Rollbacking, GlobalStatus.RollbackRetrying,
-                GlobalStatus.TimeoutRollbacking, GlobalStatus.TimeoutRollbackRetrying, GlobalStatus.AsyncCommitting,
-                GlobalStatus.StopRollbackOrRollbackRetry, GlobalStatus.StopCommitOrCommitRetry, GlobalStatus.Deleting));
+        return findGlobalSessions(new SessionCondition(
+                GlobalStatus.UnKnown,
+                GlobalStatus.Begin,
+                GlobalStatus.Committing,
+                GlobalStatus.CommitRetrying,
+                GlobalStatus.Rollbacking,
+                GlobalStatus.RollbackRetrying,
+                GlobalStatus.TimeoutRollbacking,
+                GlobalStatus.TimeoutRollbackRetrying,
+                GlobalStatus.AsyncCommitting,
+                GlobalStatus.StopRollbackOrRollbackRetry,
+                GlobalStatus.StopCommitOrCommitRetry,
+                GlobalStatus.Deleting));
     }
 
     @Override
@@ -150,7 +157,7 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
 
     @Override
     public <T> T lockAndExecute(GlobalSession globalSession, GlobalSession.LockCallable<T> lockCallable)
-        throws TransactionException {
+            throws TransactionException {
         return lockCallable.call();
     }
 }

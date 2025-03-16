@@ -16,7 +16,6 @@
  */
 package org.apache.seata.tm;
 
-
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.core.model.TransactionManager;
 import org.apache.seata.tm.api.transaction.MockTransactionManager;
@@ -25,13 +24,13 @@ import org.junit.jupiter.api.Test;
 
 class TransactionManagerHolderTest {
 
-
     @Test
     void getTest() {
-        Assertions.assertThrows(ShouldNeverHappenException.class, () -> {   TransactionManagerHolder.set(null);
-            TransactionManagerHolder.get();});
+        Assertions.assertThrows(ShouldNeverHappenException.class, () -> {
+            TransactionManagerHolder.set(null);
+            TransactionManagerHolder.get();
+        });
     }
-
 
     @Test
     void getInstanceTest() {
@@ -40,5 +39,4 @@ class TransactionManagerHolderTest {
         TransactionManager transactionManager = TransactionManagerHolder.get();
         Assertions.assertTrue(transactionManager instanceof MockTransactionManager);
     }
-
 }

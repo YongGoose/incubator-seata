@@ -19,7 +19,6 @@ package org.apache.seata.saga.engine.pcext.utils;
 import java.util.Collection;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.seata.saga.proctrl.ProcessContext;
 import org.apache.seata.saga.statelang.domain.DomainConstants;
 
@@ -39,13 +38,13 @@ public class LoopContextHolder {
     private Collection collection;
 
     public static LoopContextHolder getCurrent(ProcessContext context, boolean forceCreate) {
-        LoopContextHolder loopContextHolder = (LoopContextHolder)context.getVariable(
-            DomainConstants.VAR_NAME_CURRENT_LOOP_CONTEXT_HOLDER);
+        LoopContextHolder loopContextHolder =
+                (LoopContextHolder) context.getVariable(DomainConstants.VAR_NAME_CURRENT_LOOP_CONTEXT_HOLDER);
 
         if (null == loopContextHolder && forceCreate) {
             synchronized (context) {
-                loopContextHolder = (LoopContextHolder)context.getVariable(
-                    DomainConstants.VAR_NAME_CURRENT_LOOP_CONTEXT_HOLDER);
+                loopContextHolder =
+                        (LoopContextHolder) context.getVariable(DomainConstants.VAR_NAME_CURRENT_LOOP_CONTEXT_HOLDER);
                 if (null == loopContextHolder) {
                     loopContextHolder = new LoopContextHolder();
                     context.setVariable(DomainConstants.VAR_NAME_CURRENT_LOOP_CONTEXT_HOLDER, loopContextHolder);

@@ -16,11 +16,10 @@
  */
 package org.apache.seata.core.context;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Context core test.
@@ -44,7 +43,7 @@ public class ContextCoreTest {
         assertThat(load.put(SECOND_KEY, SECOND_VALUE)).isNull();
         assertThat(load.put(FIRST_KEY, SECOND_VALUE)).isEqualTo(FIRST_VALUE);
         assertThat(load.put(SECOND_KEY, FIRST_VALUE)).isEqualTo(SECOND_VALUE);
-        //clear keys
+        // clear keys
         load.remove(FIRST_KEY);
         load.remove(SECOND_KEY);
     }
@@ -64,7 +63,7 @@ public class ContextCoreTest {
         assertThat(load.get(FIRST_KEY)).isEqualTo(SECOND_VALUE);
         assertThat(load.get(SECOND_KEY)).isEqualTo(SECOND_VALUE);
         assertThat(load.get(NOT_EXIST_KEY)).isNull();
-        //clear keys
+        // clear keys
         load.remove(FIRST_KEY);
         load.remove(SECOND_KEY);
         load.remove(NOT_EXIST_KEY);
@@ -98,5 +97,4 @@ public class ContextCoreTest {
         assertThat(load.remove(SECOND_KEY)).isEqualTo(SECOND_VALUE);
         assertThat(load.remove(NOT_EXIST_KEY)).isNull();
     }
-
 }

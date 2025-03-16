@@ -16,13 +16,11 @@
  */
 package org.apache.seata.rm.datasource.mock;
 
+import com.alibaba.druid.mock.MockStatementBase;
+import com.alibaba.druid.util.jdbc.PreparedStatementBase;
 import java.sql.ParameterMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import com.alibaba.druid.mock.MockStatementBase;
-import com.alibaba.druid.util.jdbc.PreparedStatementBase;
-
 
 public class MockPreparedStatement extends PreparedStatementBase implements MockStatementBase {
 
@@ -30,7 +28,7 @@ public class MockPreparedStatement extends PreparedStatementBase implements Mock
 
     private ParameterMetaData parameterMetaData;
 
-    public MockPreparedStatement(MockConnection conn, String sql){
+    public MockPreparedStatement(MockConnection conn, String sql) {
         super(conn);
         this.sql = sql;
         parameterMetaData = new MockParameterMetaData(sql);

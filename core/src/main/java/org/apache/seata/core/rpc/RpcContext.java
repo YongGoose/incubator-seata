@@ -17,6 +17,11 @@
 package org.apache.seata.core.rpc;
 
 import io.netty.channel.Channel;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.rpc.netty.ChannelUtil;
@@ -24,12 +29,6 @@ import org.apache.seata.core.rpc.netty.NettyPoolKey;
 import org.apache.seata.core.rpc.netty.NettyPoolKey.TransactionRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * The type rpc context.
@@ -143,8 +142,8 @@ public class RpcContext {
         if (this.clientRMHolderMap == null) {
             this.clientRMHolderMap = new ConcurrentHashMap<>();
         }
-        ConcurrentMap<Integer, RpcContext> portMap = CollectionUtils.computeIfAbsent(clientRMHolderMap, resourceId,
-            key -> new ConcurrentHashMap<>());
+        ConcurrentMap<Integer, RpcContext> portMap =
+                CollectionUtils.computeIfAbsent(clientRMHolderMap, resourceId, key -> new ConcurrentHashMap<>());
         portMap.put(clientPort, this);
     }
 
@@ -305,7 +304,9 @@ public class RpcContext {
      * @param resources the resources
      */
     public void addResources(Set<String> resources) {
-        if (resources == null) { return; }
+        if (resources == null) {
+            return;
+        }
         if (resourceSets == null) {
             this.resourceSets = new HashSet<String>();
         }
@@ -323,12 +324,11 @@ public class RpcContext {
 
     @Override
     public String toString() {
-        return "RpcContext{" +
-            "applicationId='" + applicationId + '\'' +
-            ", transactionServiceGroup='" + transactionServiceGroup + '\'' +
-            ", clientId='" + clientId + '\'' +
-            ", channel=" + channel +
-            ", resourceSets=" + resourceSets +
-            '}';
+        return "RpcContext{" + "applicationId='"
+                + applicationId + '\'' + ", transactionServiceGroup='"
+                + transactionServiceGroup + '\'' + ", clientId='"
+                + clientId + '\'' + ", channel="
+                + channel + ", resourceSets="
+                + resourceSets + '}';
     }
 }

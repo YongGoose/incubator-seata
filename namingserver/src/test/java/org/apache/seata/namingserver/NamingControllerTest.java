@@ -16,6 +16,13 @@
  */
 package org.apache.seata.namingserver;
 
+import static org.apache.seata.common.NamingServerConstants.CONSTANT_GROUP;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.apache.seata.common.metadata.Cluster;
 import org.apache.seata.common.metadata.Node;
 import org.apache.seata.common.metadata.namingserver.MetaResponse;
@@ -29,16 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-
-import static org.apache.seata.common.NamingServerConstants.CONSTANT_GROUP;
-import static org.junit.jupiter.api.Assertions.*;
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class NamingControllerTest {
@@ -48,9 +45,9 @@ class NamingControllerTest {
 
     @Value("${heartbeat.period}")
     private int period;
+
     @Autowired
     NamingController namingController;
-
 
     @Test
     void mockRegister() {
@@ -62,8 +59,8 @@ class NamingControllerTest {
         node.setTransaction(new Node.Endpoint("127.0.0.1", 8091, "netty"));
         node.setControl(new Node.Endpoint("127.0.0.1", 7091, "http"));
         Map<String, Object> meatadata = node.getMetadata();
-        Map<String,Object> vGroups = new HashMap<>();
-        vGroups.put(vGroup,unitName);
+        Map<String, Object> vGroups = new HashMap<>();
+        vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
         namingController.registerInstance(namespace, clusterName, unitName, node);
         namingController.changeGroup(namespace, clusterName, unitName, vGroup);
@@ -93,17 +90,17 @@ class NamingControllerTest {
         node.setTransaction(new Node.Endpoint("127.0.0.1", 8092, "netty"));
         node.setControl(new Node.Endpoint("127.0.0.1", 7092, "http"));
         Map<String, Object> meatadata = node.getMetadata();
-        Map<String,Object> vGroups = new HashMap<>();
-        vGroups.put(vGroup,unitName);
+        Map<String, Object> vGroups = new HashMap<>();
+        vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
         namingController.registerInstance(namespace, clusterName, unitName, node);
         NamingServerNode node2 = new NamingServerNode();
         node2.setTransaction(new Node.Endpoint("127.0.0.1", 8093, "netty"));
         node2.setControl(new Node.Endpoint("127.0.0.1", 7093, "http"));
         Map<String, Object> meatadata2 = node2.getMetadata();
-        Map<String,Object> vGroups2 = new HashMap<>();
+        Map<String, Object> vGroups2 = new HashMap<>();
         String unitName2 = UUID.randomUUID().toString();
-        vGroups2.put(UUID.randomUUID().toString(),unitName2);
+        vGroups2.put(UUID.randomUUID().toString(), unitName2);
         meatadata2.put(CONSTANT_GROUP, vGroups2);
         namingController.registerInstance(namespace, UUID.randomUUID().toString(), unitName2, node2);
         MetaResponse metaResponse = namingController.discovery(vGroup, namespace);
@@ -136,11 +133,11 @@ class NamingControllerTest {
         node.setTransaction(new Node.Endpoint("127.0.0.1", 8094, "netty"));
         node.setControl(new Node.Endpoint("127.0.0.1", 7094, "http"));
         Map<String, Object> meatadata = node.getMetadata();
-        Map<String,Object> vGroups = new HashMap<>();
-        vGroups.put(vGroup,unitName);
+        Map<String, Object> vGroups = new HashMap<>();
+        vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
         namingController.registerInstance(namespace, clusterName, unitName, node);
-        //namingController.changeGroup(namespace, clusterName, vGroup, vGroup);
+        // namingController.changeGroup(namespace, clusterName, vGroup, vGroup);
         MetaResponse metaResponse = namingController.discovery(vGroup, namespace);
         assertNotNull(metaResponse);
         assertNotNull(metaResponse.getClusterList());
@@ -172,15 +169,15 @@ class NamingControllerTest {
         node.setTransaction(new Node.Endpoint("127.0.0.1", 8095, "netty"));
         node.setControl(new Node.Endpoint("127.0.0.1", 7095, "http"));
         Map<String, Object> meatadata = node.getMetadata();
-        Map<String,Object> vGroups = new HashMap<>();
-        vGroups.put(vGroup,unitName);
+        Map<String, Object> vGroups = new HashMap<>();
+        vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
         NamingServerNode node2 = new NamingServerNode();
         String unitName2 = String.valueOf(UUID.randomUUID());
         node2.setTransaction(new Node.Endpoint("127.0.0.1", 8096, "netty"));
         node2.setControl(new Node.Endpoint("127.0.0.1", 7096, "http"));
         vGroups = new HashMap<>();
-        vGroups.put(vGroup,unitName2);
+        vGroups.put(vGroup, unitName2);
         node2.getMetadata().put(CONSTANT_GROUP, vGroups);
         namingController.registerInstance(namespace, clusterName, unitName, node);
         namingController.registerInstance(namespace, clusterName, unitName2, node2);
@@ -216,20 +213,20 @@ class NamingControllerTest {
         node.setTransaction(new Node.Endpoint("127.0.0.1", 8097, "netty"));
         node.setControl(new Node.Endpoint("127.0.0.1", 7097, "http"));
         Map<String, Object> meatadata = node.getMetadata();
-        Map<String,Object> vGroups = new HashMap<>();
-        vGroups.put(vGroup,unitName);
+        Map<String, Object> vGroups = new HashMap<>();
+        vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
         namingController.registerInstance(namespace, clusterName, unitName, node);
         NamingServerNode node2 = new NamingServerNode();
         node2.setTransaction(new Node.Endpoint("127.0.0.1", 8098, "netty"));
         node2.setControl(new Node.Endpoint("127.0.0.1", 7098, "http"));
         Map<String, Object> meatadata2 = node2.getMetadata();
-        Map<String,Object> vGroups2 = new HashMap<>();
+        Map<String, Object> vGroups2 = new HashMap<>();
         String unitName2 = UUID.randomUUID().toString();
-        vGroups2.put(vGroup,unitName2);
+        vGroups2.put(vGroup, unitName2);
         meatadata2.put(CONSTANT_GROUP, vGroups2);
         namingController.registerInstance(namespace, clusterName, unitName2, node2);
-        Thread thread = new Thread(()->{
+        Thread thread = new Thread(() -> {
             for (int i = 0; i < 5; i++) {
                 try {
                     TimeUnit.SECONDS.sleep(5);
@@ -261,5 +258,4 @@ class NamingControllerTest {
         assertEquals("127.0.0.1", node1.getTransaction().getHost());
         assertEquals(8097, node1.getTransaction().getPort());
     }
-
 }

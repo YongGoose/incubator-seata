@@ -16,12 +16,11 @@
  */
 package org.apache.seata.common.thread;
 
+import io.netty.util.concurrent.FastThreadLocalThread;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import io.netty.util.concurrent.FastThreadLocalThread;
 import org.apache.seata.common.util.CollectionUtils;
 
 /**
@@ -29,7 +28,7 @@ import org.apache.seata.common.util.CollectionUtils;
  *
  */
 public class NamedThreadFactory implements ThreadFactory {
-    private final static Map<String, AtomicInteger> PREFIX_COUNTER = new ConcurrentHashMap<>();
+    private static final Map<String, AtomicInteger> PREFIX_COUNTER = new ConcurrentHashMap<>();
     private final ThreadGroup group;
     private final AtomicInteger counter = new AtomicInteger(0);
     private final String prefix;
@@ -47,7 +46,9 @@ public class NamedThreadFactory implements ThreadFactory {
         int prefixCounter = CollectionUtils.computeIfAbsent(PREFIX_COUNTER, prefix, key -> new AtomicInteger(0))
                 .incrementAndGet();
         SecurityManager securityManager = System.getSecurityManager();
-        group = (securityManager != null) ? securityManager.getThreadGroup() : Thread.currentThread().getThreadGroup();
+        group = (securityManager != null)
+                ? securityManager.getThreadGroup()
+                : Thread.currentThread().getThreadGroup();
         this.prefix = prefix + "_" + prefixCounter;
         this.makeDaemons = makeDaemons;
         this.totalSize = totalSize;

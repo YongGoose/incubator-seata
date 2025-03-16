@@ -18,7 +18,6 @@ package org.apache.seata.saga.engine;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.LockAndCallback;
 import org.apache.seata.common.SagaCostPrint;
 import org.apache.seata.saga.engine.mock.DemoService.People;
@@ -41,7 +40,8 @@ public class StateMachineAsyncTests {
 
     @BeforeAll
     public static void initApplicationContext() {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:saga/spring/statemachine_engine_test.xml");
+        ApplicationContext applicationContext =
+                new ClassPathXmlApplicationContext("classpath:saga/spring/statemachine_engine_test.xml");
         stateMachineEngine = applicationContext.getBean("stateMachineEngine", StateMachineEngine.class);
     }
 
@@ -55,7 +55,8 @@ public class StateMachineAsyncTests {
             paramMap.put("barThrowException", "true");
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
             Assertions.assertNotNull(inst.getException());
@@ -106,7 +107,8 @@ public class StateMachineAsyncTests {
             paramMap.put("barThrowException", "true");
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
             Assertions.assertNotNull(inst.getException());
@@ -124,7 +126,8 @@ public class StateMachineAsyncTests {
             paramMap.put("barThrowException", "true");
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
             Assertions.assertNotNull(inst.getException());
@@ -143,7 +146,8 @@ public class StateMachineAsyncTests {
             paramMap.put("barThrowException", "true");
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
             Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
@@ -162,7 +166,8 @@ public class StateMachineAsyncTests {
             paramMap.put("barThrowException", "true");
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
             Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
@@ -179,7 +184,8 @@ public class StateMachineAsyncTests {
             paramMap.put("barThrowException", "true");
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
             Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
@@ -199,10 +205,11 @@ public class StateMachineAsyncTests {
             paramMap.put("people", people);
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
-            People peopleResult = (People)inst.getEndParams().get("complexParameterMethodResult");
+            People peopleResult = (People) inst.getEndParams().get("complexParameterMethodResult");
             Assertions.assertNotNull(peopleResult);
             Assertions.assertEquals(people.getName(), peopleResult.getName());
             Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
@@ -218,7 +225,8 @@ public class StateMachineAsyncTests {
             paramMap.put("a", 1);
 
             LockAndCallback lockAndCallback = new LockAndCallback();
-            StateMachineInstance inst = stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
+            StateMachineInstance inst =
+                    stateMachineEngine.startAsync(stateMachineName, null, paramMap, lockAndCallback.getCallback());
             lockAndCallback.waitingForFinish(inst);
 
             Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());

@@ -16,26 +16,23 @@
  */
 package io.seata.rm.datasource;
 
-import java.sql.Connection;
-
-import javax.sql.DataSource;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import com.alibaba.druid.pool.DruidDataSource;
-
 import io.seata.rm.datasource.mock.MockDataSource;
 import io.seata.rm.datasource.mock.MockDriver;
+import java.sql.Connection;
+import javax.sql.DataSource;
 import org.apache.seata.rm.datasource.undo.UndoLogManagerFactory;
 import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoLogManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 public class DataSourceProxyTest {
 
@@ -62,24 +59,27 @@ public class DataSourceProxyTest {
         dataSource.setUsername(username);
         dataSource.setPassword("password");
 
-        Throwable throwable = Assertions.assertThrows(IllegalStateException.class, () -> new DataSourceProxy(dataSource));
+        Throwable throwable =
+                Assertions.assertThrows(IllegalStateException.class, () -> new DataSourceProxy(dataSource));
         assertThat(throwable).hasMessageContaining("AT mode don't support the dbtype");
     }
-
 
     @Test
     public void testUndologTableNotExist() {
         DataSource dataSource = new MockDataSource();
 
-        MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic = Mockito.mockStatic(UndoLogManagerFactory.class);
+        MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic =
+                Mockito.mockStatic(UndoLogManagerFactory.class);
 
         MySQLUndoLogManager mysqlUndoLogManager = mock(MySQLUndoLogManager.class);
-        undoLogManagerFactoryMockedStatic.when(()->UndoLogManagerFactory.getUndoLogManager(anyString()))
+        undoLogManagerFactoryMockedStatic
+                .when(() -> UndoLogManagerFactory.getUndoLogManager(anyString()))
                 .thenReturn(mysqlUndoLogManager);
 
         doReturn(false).when(mysqlUndoLogManager).hasUndoLogTable(any(Connection.class));
 
-        Throwable throwable = Assertions.assertThrows(IllegalStateException.class, () -> new DataSourceProxy(dataSource));
+        Throwable throwable =
+                Assertions.assertThrows(IllegalStateException.class, () -> new DataSourceProxy(dataSource));
         undoLogManagerFactoryMockedStatic.close();
 
         assertThat(throwable).hasMessageContaining("table not exist");
@@ -87,9 +87,12 @@ public class DataSourceProxyTest {
 
     // to skip the db & undolog table check
     public static DataSourceProxy getDataSourceProxy(DataSource dataSource) {
-        try (MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic = Mockito.mockStatic(UndoLogManagerFactory.class)) {
+        try (MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic =
+                Mockito.mockStatic(UndoLogManagerFactory.class)) {
             MySQLUndoLogManager mysqlUndoLogManager = mock(MySQLUndoLogManager.class);
-            undoLogManagerFactoryMockedStatic.when(() -> UndoLogManagerFactory.getUndoLogManager(anyString())).thenReturn(mysqlUndoLogManager);
+            undoLogManagerFactoryMockedStatic
+                    .when(() -> UndoLogManagerFactory.getUndoLogManager(anyString()))
+                    .thenReturn(mysqlUndoLogManager);
 
             doReturn(true).when(mysqlUndoLogManager).hasUndoLogTable(any(Connection.class));
 
