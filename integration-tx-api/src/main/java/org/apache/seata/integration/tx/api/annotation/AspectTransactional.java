@@ -34,10 +34,10 @@ public class AspectTransactional {
      */
     private String name = "";
 
-    // TODO revert changes after check the message
     /**
      * roll back for the Class
-     */private Class<? extends Throwable>[] rollbackFor = new Class[          ] {};
+     */
+    private Class<? extends Throwable>[] rollbackFor = new Class[] {};
 
     /**
      * roll back for the class name
