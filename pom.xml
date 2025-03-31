@@ -340,7 +340,7 @@
                                     <exclude>**/antlr/mysql/antlr/*.*</exclude>
                                     <exclude>**/antlr/mysql/stream/ANTLRNoCaseStringStream.java</exclude>
                                 </excludes>
-                                <ratchetFrom>2.x</ratchetFrom>
+                                <ratchetFrom>refs/2.x</ratchetFrom>
                                 <palantirJavaFormat>
                                     <version>${palantirJavaFormat.version}</version>
                                 </palantirJavaFormat>
