@@ -69,7 +69,24 @@ jobs:
         run: |
           ./mvnw -T 4C clean test \
                  -Dcheckstyle.skip=false -Dpmd.skip=false -Dlicense.skip=false -DredisCaseEnabled=true \
-                 -e -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn;
+                 -e -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn > mvn.log 2>&1 || {
+            echo "## :negative_squared_cross_mark: Formatting issues found!" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          
+            ERROR_LINES=$(grep "ERROR" mvn.log | wc -l)
+          
+            if [ "$ERROR_LINES" -gt 11 ]; then
+            grep "ERROR" mvn.log | sed 's/Check if code needs formatting    Check if code aligns with code style   [0-9A-Z:.-]\+//' | sed 's/\[ERROR] //' | head -n -11 >> $GITHUB_STEP_SUMMARY
+            else
+            grep "ERROR" mvn.log | sed 's/Check if code needs formatting    Check if code aligns with code style   [0-9A-Z:.-]\+//' | sed 's/\[ERROR] //' >> $GITHUB_STEP_SUMMARY
+            fi
+          
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "Please run \`mvn spotless:apply\` to fix the formatting issues." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
+
+
       # step 5.2
       - name: "Test with Maven and Java${{ matrix.java }}"
         if: matrix.java != '8'
