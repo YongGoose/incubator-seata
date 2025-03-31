@@ -16,6 +16,11 @@
  */
 package org.apache.seata.console.security;
 
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -32,23 +37,40 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
-    @Value("${console.user.username}")
-    private String username;
-
-    @Value("${console.user.password}")
-    private String password;
-
+    private Console console;
     private User user;
 
     /**
      * Init.
      */
     @PostConstruct
-    public void init() {
-        // TODO: get userInfo by db
-        user = new User();
-        user.setUsername(username);
-        user.setPassword(new BCryptPasswordEncoder().encode(password));
+    public void init() throws IOException {
+        console = System.console();
+
+        if (console == null) {
+            // In an IDE, 'System.console()' returns 'null', so 'BufferedReader' is used instead.
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String username = promptInput(reader, "Username: ");
+            String password = promptInput(reader, "Password: ");
+            user = new User(username, password);
+        } else {
+            String username = getUsername();
+            String password = getUserPassword();
+            user = new User(username, password);
+        }
+    }
+
+    private String promptInput(BufferedReader reader, String message) throws IOException {
+        System.out.print(message);
+        return reader.readLine();
+    }
+
+    private String getUserPassword() {
+        return Arrays.toString(console.readPassword("Password: "));
+    }
+
+    private String getUsername() {
+        return console.readLine("Username: ");
     }
 
     @Override
