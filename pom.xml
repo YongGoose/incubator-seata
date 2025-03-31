@@ -323,7 +323,7 @@
         <profile>
             <id>java11+</id>
             <activation>
-                <jdk>[1.8,)</jdk>
+                <jdk>[11,)</jdk>
             </activation>
             <build>
                 <plugins>
@@ -340,7 +340,7 @@
                                     <exclude>**/antlr/mysql/antlr/*.*</exclude>
                                     <exclude>**/antlr/mysql/stream/ANTLRNoCaseStringStream.java</exclude>
                                 </excludes>
-                                <ratchetFrom>2.x</ratchetFrom>
+                                <ratchetFrom>HEAD</ratchetFrom>
                                 <palantirJavaFormat>
                                     <version>${palantirJavaFormat.version}</version>
                                 </palantirJavaFormat>
