@@ -16,11 +16,9 @@
  */
 package org.apache.seata.compressor.gzip;
 
+import java.util.zip.GZIPInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.zip.GZIPInputStream;
-
 
 public class GzipUtilTest {
 
@@ -50,7 +48,6 @@ public class GzipUtilTest {
             byte[] bytes = {0x1, 0x2};
             GzipUtil.decompress(bytes);
         });
-
     }
 
     @Test
@@ -63,4 +60,118 @@ public class GzipUtilTest {
         Assertions.assertEquals("aa", new String(decompress));
     }
 
+    @Test
+    public void test_compressWithFlag_nullInput() {
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            GzipUtil.compressWithFlag(null, 1024);
+        });
+    }
+
+    @Test
+    public void test_compressWithFlag_smallInput() {
+        String smallData = "small";
+        byte[] result = GzipUtil.compressWithFlag(smallData.getBytes(), 100);
+
+        Assertions.assertEquals(0, result[0]); // uncompressed flag
+
+        byte[] originalData = new byte[result.length - 1];
+        System.arraycopy(result, 1, originalData, 0, originalData.length);
+        Assertions.assertEquals(smallData, new String(originalData));
+    }
+
+    @Test
+    public void test_compressWithFlag_largeInput() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 2000; i++) {
+            sb.append("a");
+        }
+        String largeData = sb.toString();
+        byte[] result = GzipUtil.compressWithFlag(largeData.getBytes(), 1000);
+
+        Assertions.assertEquals(1, result[0]); // compressed flag
+        Assertions.assertTrue(result.length < largeData.length() + 1);
+    }
+
+    @Test
+    public void test_decompressWithFlag_nullInput() {
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            GzipUtil.decompressWithFlag(null);
+        });
+    }
+
+    @Test
+    public void test_decompressWithFlag_emptyInput() {
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            GzipUtil.decompressWithFlag(new byte[0]);
+        });
+    }
+
+    @Test
+    public void test_decompressWithFlag_uncompressedData() {
+        String original = "uncompressed data";
+        byte[] data = original.getBytes();
+
+        byte[] flaggedData = new byte[data.length + 1];
+        flaggedData[0] = 0; // uncompressed flag
+
+        System.arraycopy(data, 0, flaggedData, 1, data.length);
+        byte[] result = GzipUtil.decompressWithFlag(flaggedData);
+        Assertions.assertEquals(original, new String(result));
+    }
+
+    @Test
+    public void test_decompressWithFlag_compressedData() {
+        String original = "This is data that will be compressed with a flag byte added";
+        byte[] compressed = GzipUtil.compress(original.getBytes());
+
+        byte[] flaggedData = new byte[compressed.length + 1];
+        flaggedData[0] = 1; // compressed flag
+        System.arraycopy(compressed, 0, flaggedData, 1, compressed.length);
+
+        byte[] result = GzipUtil.decompressWithFlag(flaggedData);
+
+        Assertions.assertEquals(original, new String(result));
+    }
+
+    @Test
+    public void test_roundTrip_compressWithFlag() {
+        String[] testData = {
+            "small data",
+            "medium sized data that might be close to the threshold",
+            String.join("", java.util.Collections.nCopies(1000, "large data "))
+        };
+
+        for (String data : testData) {
+            byte[] original = data.getBytes();
+            byte[] withFlag = GzipUtil.compressWithFlag(original, 100);
+            byte[] restored = GzipUtil.decompressWithFlag(withFlag);
+
+            Assertions.assertEquals(data, new String(restored));
+        }
+    }
+
+    @Test
+    public void test_hasCompressionFlag() {
+        Assertions.assertFalse(GzipUtil.hasCompressionFlag(null));
+        Assertions.assertFalse(GzipUtil.hasCompressionFlag(new byte[0]));
+
+        byte[] withCompressedFlag = new byte[] {1, 0, 0, 0};
+        Assertions.assertTrue(GzipUtil.hasCompressionFlag(withCompressedFlag));
+
+        byte[] withUncompressedFlag = new byte[] {0, 0, 0, 0};
+        Assertions.assertFalse(GzipUtil.hasCompressionFlag(withUncompressedFlag));
+    }
+
+    @Test
+    public void test_thresholdBehavior() {
+        byte[] lessThreshold = new byte[99];
+        byte[] result = GzipUtil.compressWithFlag(lessThreshold, 100);
+
+        Assertions.assertEquals(0, result[0]);
+
+        byte[] overThreshold = new byte[101];
+        result = GzipUtil.compressWithFlag(overThreshold, 100);
+
+        Assertions.assertEquals(1, result[0]);
+    }
 }
