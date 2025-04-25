@@ -18,7 +18,8 @@ name: "test-ubuntu"
 
 on:
   push:
-    branches: [ test*, "*.*.*" ]
+    #TODO Make sure to remove this when pr is ready to merge
+    branches: [ test*, "*.*.*", 2.x ]
 jobs:
   # job 1
   test:
