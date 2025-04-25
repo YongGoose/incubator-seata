@@ -27,8 +27,8 @@ import org.apache.seata.core.protocol.transaction.BranchRollbackRequest;
 import org.apache.seata.core.protocol.transaction.BranchRollbackResponse;
 import org.apache.seata.core.rpc.RemotingClient;
 import org.apache.seata.core.rpc.TransactionMessageHandler;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -48,20 +48,20 @@ import static org.mockito.Mockito.when;
  * The type Rm branch rollback processor test.
  */
 public class RmBranchRollbackProcessorTest {
-    private static ChannelHandlerContext mockCtx;
-    private static RpcMessage mockRpcMessage;
-    private static TransactionMessageHandler mockHandler;
-    private static RemotingClient mockRemotingClient;
-    private static Logger mockLogger;
-    private static MockedStatic<LoggerFactory> mockedLoggerFactory;
-    private static MockedStatic<NetUtil> mockedNetUtil;
-    private static RmBranchRollbackProcessor processor;
+    private ChannelHandlerContext mockCtx;
+    private RpcMessage mockRpcMessage;
+    private TransactionMessageHandler mockHandler;
+    private RemotingClient mockRemotingClient;
+    private Logger mockLogger;
+    private MockedStatic<LoggerFactory> mockedLoggerFactory;
+    private MockedStatic<NetUtil> mockedNetUtil;
+    private RmBranchRollbackProcessor processor;
 
     /**
      * Sets up.
      */
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         mockCtx = mock(ChannelHandlerContext.class);
         mockRpcMessage = mock(RpcMessage.class);
         mockHandler = mock(TransactionMessageHandler.class);
@@ -71,6 +71,7 @@ public class RmBranchRollbackProcessorTest {
         mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
         mockedLoggerFactory.when(() -> LoggerFactory.getLogger(RmBranchRollbackProcessor.class)).thenReturn(mockLogger);
         mockedNetUtil = Mockito.mockStatic(NetUtil.class);
+        processor = new RmBranchRollbackProcessor(mockHandler, mockRemotingClient);
     }
 
     /**
@@ -160,9 +161,10 @@ public class RmBranchRollbackProcessorTest {
     /**
      * Tear down.
      */
-    @AfterAll
-    static void tearDown() {
+    @AfterEach
+    void tearDown() {
         mockedLoggerFactory.close();
         mockedNetUtil.close();
     }
+
 }
