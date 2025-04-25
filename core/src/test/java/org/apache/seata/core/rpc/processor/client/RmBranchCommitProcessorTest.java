@@ -27,8 +27,8 @@ import org.apache.seata.core.protocol.transaction.BranchCommitRequest;
 import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
 import org.apache.seata.core.rpc.RemotingClient;
 import org.apache.seata.core.rpc.TransactionMessageHandler;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -48,20 +48,20 @@ import static org.mockito.Mockito.when;
  * The type Rm branch commit processor test.
  */
 public class RmBranchCommitProcessorTest {
-    private ChannelHandlerContext mockCtx;
-    private RpcMessage mockRpcMessage;
-    private TransactionMessageHandler mockHandler;
-    private RemotingClient mockRemotingClient;
-    private Logger mockLogger;
-    private MockedStatic<LoggerFactory> mockedLoggerFactory;
-    private MockedStatic<NetUtil> mockedNetUtil;
-    private RmBranchCommitProcessor processor;
+    private static ChannelHandlerContext mockCtx;
+    private static RpcMessage mockRpcMessage;
+    private static TransactionMessageHandler mockHandler;
+    private static RemotingClient mockRemotingClient;
+    private static Logger mockLogger;
+    private static MockedStatic<LoggerFactory> mockedLoggerFactory;
+    private static MockedStatic<NetUtil> mockedNetUtil;
+    private static RmBranchCommitProcessor processor;
 
     /**
      * Sets up.
      */
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         mockCtx = mock(ChannelHandlerContext.class);
         mockRpcMessage = mock(RpcMessage.class);
         mockHandler = mock(TransactionMessageHandler.class);
@@ -74,14 +74,13 @@ public class RmBranchCommitProcessorTest {
         mockedNetUtil = Mockito.mockStatic(NetUtil.class);
 
         processor = new RmBranchCommitProcessor(mockHandler, mockRemotingClient);
-        //setField(null, "LOGGER", mockLogger);
     }
 
     /**
      * Tear down.
      */
-    @AfterEach
-    void tearDown() {
+    @AfterAll
+    static void tearDown() {
         mockedLoggerFactory.close();
         mockedNetUtil.close();
     }

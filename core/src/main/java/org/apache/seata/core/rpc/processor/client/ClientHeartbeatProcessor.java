@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ClientHeartbeatProcessor implements RemotingProcessor {
 
-    private Logger LOGGER = LoggerFactory.getLogger(ClientHeartbeatProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientHeartbeatProcessor.class);
 
     @Override
     public void process(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {

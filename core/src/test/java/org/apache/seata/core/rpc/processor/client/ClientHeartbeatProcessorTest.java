@@ -23,8 +23,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.seata.core.protocol.HeartbeatMessage;
 import org.apache.seata.core.protocol.RpcMessage;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -47,17 +47,17 @@ import static org.mockito.Mockito.when;
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClientHeartbeatProcessorTest {
-    private ClientHeartbeatProcessor processor;
-    private ChannelHandlerContext mockCtx;
-    private RpcMessage mockRpcMessage;
-    private Logger mockLogger;
-    private MockedStatic<LoggerFactory> mockedLoggerFactory;
+    private static ClientHeartbeatProcessor processor;
+    private static ChannelHandlerContext mockCtx;
+    private static RpcMessage mockRpcMessage;
+    private static Logger mockLogger;
+    private static MockedStatic<LoggerFactory> mockedLoggerFactory;
 
     /**
      * Sets up.
      */
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         mockCtx = mock(ChannelHandlerContext.class);
         mockRpcMessage = mock(RpcMessage.class);
         mockLogger = mock(Logger.class);
@@ -116,8 +116,8 @@ public class ClientHeartbeatProcessorTest {
     /**
      * Tear down.
      */
-    @AfterEach
-    void tearDown() {
+    @AfterAll
+    static void tearDown() {
         if (mockedLoggerFactory != null) {
             mockedLoggerFactory.close();
         }
