@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RmBranchCommitProcessor implements RemotingProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RmBranchCommitProcessor.class);
+    private Logger LOGGER = LoggerFactory.getLogger(RmBranchCommitProcessor.class);
 
     private TransactionMessageHandler handler;
 
