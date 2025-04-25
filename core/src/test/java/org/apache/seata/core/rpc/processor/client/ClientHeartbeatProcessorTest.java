@@ -16,14 +16,21 @@
  */
 package org.apache.seata.core.rpc.processor.client;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import org.apache.seata.core.protocol.HeartbeatMessage;
 import org.apache.seata.core.protocol.RpcMessage;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -35,36 +42,50 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 /**
  * The type Client heartbeat processor test.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClientHeartbeatProcessorTest {
+    private static Logger mockLogger;
+    private static MockedStatic<LoggerFactory> mockedLoggerFactory;
+
     private ClientHeartbeatProcessor processor;
     private ChannelHandlerContext mockCtx;
     private RpcMessage mockRpcMessage;
-    private Logger mockLogger;
-    private MockedStatic<LoggerFactory> mockedLoggerFactory;
 
     /**
-     * Sets up.
+     * Sets up static mocks before all tests.
+     */
+    @BeforeAll
+    static void beforeAll() {
+        mockLogger = mock(Logger.class);
+        mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
+        mockedLoggerFactory
+                .when(() -> LoggerFactory.getLogger(ClientHeartbeatProcessor.class))
+                .thenReturn(mockLogger);
+    }
+
+    /**
+     * Clean up static mocks after all tests.
+     */
+    @AfterAll
+    static void afterAll() {
+        if (mockedLoggerFactory != null) {
+            mockedLoggerFactory.close();
+        }
+    }
+
+    /**
+     * Sets up before each test.
      */
     @BeforeEach
     void setUp() {
+        // Reset the mockLogger before each test to clear previous interactions
+        Mockito.reset(mockLogger);
+
         mockCtx = mock(ChannelHandlerContext.class);
         mockRpcMessage = mock(RpcMessage.class);
-        mockLogger = mock(Logger.class);
-
-        // Mock static LoggerFactory to control LOGGER behavior
-        mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
-        mockedLoggerFactory.when(() -> LoggerFactory.getLogger(ClientHeartbeatProcessor.class)).thenReturn(mockLogger);
         processor = new ClientHeartbeatProcessor();
     }
 
@@ -111,15 +132,5 @@ public class ClientHeartbeatProcessorTest {
 
         // Assert
         verify(mockLogger, never()).debug(anyString(), ArgumentMatchers.<Object[]>any());
-    }
-
-    /**
-     * Tear down.
-     */
-    @AfterEach
-    void tearDown() {
-        if (mockedLoggerFactory != null) {
-            mockedLoggerFactory.close();
-        }
     }
 }
