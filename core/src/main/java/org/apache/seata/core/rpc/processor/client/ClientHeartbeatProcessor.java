@@ -37,7 +37,7 @@ public class ClientHeartbeatProcessor implements RemotingProcessor {
 
     @Override
     public void process(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {
-        if (rpcMessage.getBody() == HeartbeatMessage.PONG) {
+        if (rpcMessage.getBody().equals(HeartbeatMessage.PONG)) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("received PONG from {}", ctx.channel().remoteAddress());
             }
