@@ -22,12 +22,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,8 +42,15 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
      */
     @PostConstruct
     public void init() throws IOException {
-        console = System.console();
+        String envUsername = System.getenv("SEATA_CONSOLE_USERNAME");
+        String envPassword = System.getenv("SEATA_CONSOLE_PASSWORD");
 
+        if (envUsername != null && envPassword != null) {
+            user = new User(envUsername, envPassword);
+            return;
+        }
+
+        console = System.console();
         if (console == null) {
             // In an IDE, 'System.console()' returns 'null', so 'BufferedReader' is used instead.
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
