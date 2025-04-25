@@ -490,6 +490,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
+                    <useFile>false</useFile>
                     <argLine>${maven.surefire.argLine}</argLine>
                     <excludes>${maven.surefire.excludes}</excludes>
                 </configuration>
