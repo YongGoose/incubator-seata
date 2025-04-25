@@ -27,9 +27,7 @@ import org.apache.seata.core.protocol.transaction.BranchCommitRequest;
 import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
 import org.apache.seata.core.rpc.RemotingClient;
 import org.apache.seata.core.rpc.TransactionMessageHandler;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -46,51 +44,53 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * The type Rm branch commit processor test.
+ */
 public class RmBranchCommitProcessorTest {
-    private static Logger mockLogger;
-    private static MockedStatic<LoggerFactory> mockedLoggerFactory;
-
     private ChannelHandlerContext mockCtx;
     private RpcMessage mockRpcMessage;
     private TransactionMessageHandler mockHandler;
     private RemotingClient mockRemotingClient;
+    private Logger mockLogger;
+    private MockedStatic<LoggerFactory> mockedLoggerFactory;
     private MockedStatic<NetUtil> mockedNetUtil;
     private RmBranchCommitProcessor processor;
 
-    @BeforeAll
-    static void beforeAll() {
-        mockLogger = mock(Logger.class);
-        mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
-        mockedLoggerFactory.when(() -> LoggerFactory.getLogger(RmBranchCommitProcessor.class)).thenReturn(mockLogger);
-    }
-
-    @AfterAll
-    static void afterAll() {
-        if (mockedLoggerFactory != null) {
-            mockedLoggerFactory.close();
-        }
-    }
-
+    /**
+     * Sets up.
+     */
     @BeforeEach
     void setUp() {
-        Mockito.reset(mockLogger);
         mockCtx = mock(ChannelHandlerContext.class);
         mockRpcMessage = mock(RpcMessage.class);
         mockHandler = mock(TransactionMessageHandler.class);
         mockRemotingClient = mock(RemotingClient.class);
+        mockLogger = mock(Logger.class);
+        when(mockLogger.isInfoEnabled()).thenReturn(true);
+        mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
+        mockedLoggerFactory.when(() -> LoggerFactory.getLogger(RmBranchCommitProcessor.class)).thenReturn(mockLogger);
 
         mockedNetUtil = Mockito.mockStatic(NetUtil.class);
 
         processor = new RmBranchCommitProcessor(mockHandler, mockRemotingClient);
+        //setField(null, "LOGGER", mockLogger);
     }
 
+    /**
+     * Tear down.
+     */
     @AfterEach
     void tearDown() {
-        if (mockedNetUtil != null) {
-            mockedNetUtil.close();
-        }
+        mockedLoggerFactory.close();
+        mockedNetUtil.close();
     }
 
+    /**
+     * Process should handle branch commit and send response.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void processShouldHandleBranchCommitAndSendResponse() throws Exception {
         InetSocketAddress mockAddress = new InetSocketAddress("127.0.0.1", 8091);
@@ -111,6 +111,11 @@ public class RmBranchCommitProcessorTest {
         verify(mockRemotingClient).sendAsyncResponse("127.0.0.1:8091", mockRpcMessage, mockResponse);
     }
 
+    /**
+     * Process should log error when send fails.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void processShouldLogErrorWhenSendFails() throws Exception {
         InetSocketAddress mockAddress = new InetSocketAddress("127.0.0.1", 8091);
@@ -132,6 +137,11 @@ public class RmBranchCommitProcessorTest {
         verify(mockLogger).error(eq("branch commit error: {}"), eq("Network failure"), eq(simulatedError));
     }
 
+    /**
+     * Process should not log debug when disabled.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void processShouldNotLogDebugWhenDisabled() throws Exception {
         InetSocketAddress mockAddress = new InetSocketAddress("127.0.0.1", 8091);
