@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RmBranchRollbackProcessorTest {
     private static final String CLASS_NAME = "org.apache.seata.core.rpc.processor.client.RmBranchRollbackProcessor";
+
     private final List<Logger> watchedLoggers = new ArrayList<>();
     private final ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
 
