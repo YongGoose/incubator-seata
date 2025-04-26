@@ -142,7 +142,7 @@ public class RmBranchRollbackProcessorTest {
         processor.process(mockCtx, mockRpcMessage);
 
         // Assert
-        assertTrue(getLogs(Level.INFO).stream().anyMatch(log -> log.contains("rm handle branch rollback process:")));
+        assertTrue(getLogs(Level.INFO).stream().anyMatch(log -> log.startsWith("rm handle branch rollback process:")));
     }
 
     /**
@@ -173,7 +173,7 @@ public class RmBranchRollbackProcessorTest {
         processor.process(mockCtx, mockRpcMessage);
 
         // Assert
-        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.contains("send response error: Network error")));
+        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.startsWith("send response error:")));
     }
 
     private List<String> getLogs(Level level) {

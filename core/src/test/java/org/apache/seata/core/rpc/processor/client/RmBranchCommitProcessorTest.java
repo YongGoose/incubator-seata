@@ -139,7 +139,7 @@ public class RmBranchCommitProcessorTest {
 
         processor.process(mockCtx, mockRpcMessage);
 
-        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.contains("branch commit error:")));
+        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.startsWith("branch commit error:")));
     }
 
     /**
@@ -164,7 +164,7 @@ public class RmBranchCommitProcessorTest {
         processor.process(mockCtx, mockRpcMessage);
 
         assertTrue(
-                getLogs(Level.INFO).stream().anyMatch(log -> log.contains("rm client handle branch commit process:"))
+                getLogs(Level.INFO).stream().anyMatch(log -> log.startsWith("rm client handle branch commit process:"))
         );
     }
 
