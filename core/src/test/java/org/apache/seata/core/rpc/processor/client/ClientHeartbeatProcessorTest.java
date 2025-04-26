@@ -98,7 +98,7 @@ public class ClientHeartbeatProcessorTest {
 
         // Assert
         assertTrue(
-                getLogs(Level.DEBUG).stream().anyMatch(log -> log.contains("received PONG from " + mockRemoteAddress)));
+                getLogs(Level.DEBUG).stream().anyMatch(log -> log.equals("received PONG from " + mockRemoteAddress)));
     }
 
     /**

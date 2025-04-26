@@ -173,7 +173,7 @@ public class RmBranchRollbackProcessorTest {
         processor.process(mockCtx, mockRpcMessage);
 
         // Assert
-        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.startsWith("send response error:")));
+        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.equals("send response error: Network error")));
     }
 
     private List<String> getLogs(Level level) {

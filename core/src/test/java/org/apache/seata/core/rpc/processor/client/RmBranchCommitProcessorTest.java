@@ -139,7 +139,7 @@ public class RmBranchCommitProcessorTest {
 
         processor.process(mockCtx, mockRpcMessage);
 
-        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.startsWith("branch commit error:")));
+        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.equals("branch commit error: Network failure")));
     }
 
     /**
