@@ -76,6 +76,7 @@ public class GzipUtilTest {
 
         byte[] originalData = new byte[result.length - 1];
         System.arraycopy(result, 1, originalData, 0, originalData.length);
+
         Assertions.assertEquals(smallData, new String(originalData));
     }
 
@@ -88,8 +89,8 @@ public class GzipUtilTest {
         String largeData = sb.toString();
         byte[] result = GzipUtil.compressWithFlag(largeData.getBytes(), 1000);
 
-        Assertions.assertEquals(1, result[0]); // compressed flag
-        Assertions.assertTrue(result.length < largeData.length() + 1);
+        Assertions.assertEquals((byte) 0x02, result[0]);
+        Assertions.assertEquals((byte) 0x9D, result[1]);
     }
 
     @Test
@@ -124,9 +125,10 @@ public class GzipUtilTest {
         String original = "This is data that will be compressed with a flag byte added";
         byte[] compressed = GzipUtil.compress(original.getBytes());
 
-        byte[] flaggedData = new byte[compressed.length + 1];
-        flaggedData[0] = 1; // compressed flag
-        System.arraycopy(compressed, 0, flaggedData, 1, compressed.length);
+        byte[] flaggedData = new byte[compressed.length + 2];
+        flaggedData[0] = (byte) 0x02;
+        flaggedData[1] = (byte) 0x9D;
+        System.arraycopy(compressed, 0, flaggedData, 2, compressed.length);
 
         byte[] result = GzipUtil.decompressWithFlag(flaggedData);
 
@@ -155,7 +157,7 @@ public class GzipUtilTest {
         Assertions.assertFalse(GzipUtil.hasCompressionFlag(null));
         Assertions.assertFalse(GzipUtil.hasCompressionFlag(new byte[0]));
 
-        byte[] withCompressedFlag = new byte[] {1, 0, 0, 0};
+        byte[] withCompressedFlag = new byte[] {(byte) 0x02, (byte) 0x9D, 0, 0};
         Assertions.assertTrue(GzipUtil.hasCompressionFlag(withCompressedFlag));
 
         byte[] withUncompressedFlag = new byte[] {0, 0, 0, 0};
@@ -172,6 +174,7 @@ public class GzipUtilTest {
         byte[] overThreshold = new byte[101];
         result = GzipUtil.compressWithFlag(overThreshold, 100);
 
-        Assertions.assertEquals(1, result[0]);
+        Assertions.assertEquals((byte) 0x02, result[0]);
+        Assertions.assertEquals((byte) 0x9D, result[1]);
     }
 }

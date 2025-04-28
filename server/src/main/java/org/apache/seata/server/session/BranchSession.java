@@ -18,6 +18,7 @@ package org.apache.seata.server.session;
 
 import static org.apache.seata.core.model.LockStatus.Locked;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Map;
@@ -442,11 +443,7 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
         if (lockKeyLen > 0) {
             byte[] byLockKey = new byte[lockKeyLen];
             byteBuffer.get(byLockKey);
-            if (GzipUtil.hasCompressionFlag(byLockKey)) {
-                this.lockKey = new String(GzipUtil.decompressWithFlag(byLockKey));
-            } else {
-                this.lockKey = new String(byLockKey);
-            }
+            lockKey = decodeLockKey(byLockKey);
         }
         short clientIdLen = byteBuffer.getShort();
         if (clientIdLen > 0) {
@@ -471,5 +468,20 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
             this.branchType = BranchType.values()[branchTypeId];
         }
         this.status = BranchStatus.get(byteBuffer.get());
+    }
+
+    private String decodeLockKey(byte[] lockKeyBytes) {
+        if (GzipUtil.isCompressData(lockKeyBytes)) {
+            try {
+                return new String(GzipUtil.uncompress(lockKeyBytes));
+            } catch (IOException e) {
+                throw new RuntimeException("decompress lockKey error", e);
+            }
+        }
+
+        if (GzipUtil.hasCompressionFlag(lockKeyBytes)) {
+            return new String(GzipUtil.decompressWithFlag(lockKeyBytes));
+        }
+        return new String(lockKeyBytes);
     }
 }

@@ -21,15 +21,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import org.apache.seata.common.util.IOUtil;
 
-public class GzipUtil {
+public final class GzipUtil {
 
     private GzipUtil() {}
 
     private static final int BUFFER_SIZE = 8192;
 
-    private static final byte COMPRESSED_FLAG = 1;
-    private static final byte UNCOMPRESSED_FLAG = 0;
+    private static final byte[] COMPRESSED_FLAG = {(byte) 0x02, (byte) 0x9D};
+    private static final byte UNCOMPRESSED_FLAG = 0x00;
 
     public static byte[] compress(byte[] bytes) {
         if (bytes == null) {
@@ -93,7 +94,7 @@ public class GzipUtil {
 
     /**
      * Decompress the data if the flag indicates it is compressed.
-     * This method expects the first byte to be a compression flag.
+     * This method expects the first and second byte to be a compression flag.
      *
      * @param bytes the bytes with compression flag
      * @return the decompressed data
@@ -103,11 +104,23 @@ public class GzipUtil {
             throw new NullPointerException("bytes is null or empty");
         }
 
-        boolean isCompressed = bytes[0] == COMPRESSED_FLAG;
-        byte[] data = new byte[bytes.length - 1];
-        System.arraycopy(bytes, 1, data, 0, data.length);
+        if (bytes[0] == UNCOMPRESSED_FLAG) {
+            byte[] data = new byte[bytes.length - 1];
+            System.arraycopy(bytes, 1, data, 0, data.length);
+            return data;
+        }
 
-        return isCompressed ? decompress(data) : data;
+        if (bytes.length < 2) {
+            return bytes;
+        }
+
+        if (bytes[0] == COMPRESSED_FLAG[0] && bytes[1] == COMPRESSED_FLAG[1]) {
+            byte[] data = new byte[bytes.length - 2];
+            System.arraycopy(bytes, 2, data, 0, data.length);
+            return decompress(data);
+        }
+
+        return bytes;
     }
 
     /**
@@ -118,9 +131,21 @@ public class GzipUtil {
      * @return byte array with flag + data
      */
     private static byte[] addCompressionFlag(byte[] bytes, boolean isCompressed) {
-        byte[] result = new byte[bytes.length + 1];
-        result[0] = isCompressed ? COMPRESSED_FLAG : UNCOMPRESSED_FLAG;
-        System.arraycopy(bytes, 0, result, 1, bytes.length);
+        if (bytes == null) {
+            throw new NullPointerException("bytes is null");
+        }
+
+        byte[] result;
+        if (isCompressed) {
+            result = new byte[bytes.length + COMPRESSED_FLAG.length];
+            result[0] = COMPRESSED_FLAG[0];
+            result[1] = COMPRESSED_FLAG[1];
+            System.arraycopy(bytes, 0, result, COMPRESSED_FLAG.length, bytes.length);
+        } else {
+            result = new byte[bytes.length + 1];
+            result[0] = UNCOMPRESSED_FLAG;
+            System.arraycopy(bytes, 0, result, 1, bytes.length);
+        }
         return result;
     }
 
@@ -129,9 +154,56 @@ public class GzipUtil {
      * This is the preferred method to check compression status when using the new format.
      *
      * @param bytes the bytes to check
-     * @return true if the first byte indicates the data is compressed
+     * @return true if the first byte and second byte indicates the data is compressed
      */
     public static boolean hasCompressionFlag(byte[] bytes) {
-        return bytes != null && bytes.length > 0 && bytes[0] == COMPRESSED_FLAG;
+        if (bytes == null || bytes.length < 2) {
+            return false;
+        }
+        return bytes[0] == COMPRESSED_FLAG[0] && bytes[1] == COMPRESSED_FLAG[1];
+    }
+
+    /**
+     * Is compress data boolean.
+     *
+     * @param bytes the bytes
+     * @return the boolean
+     */
+    public static boolean isCompressData(byte[] bytes) {
+        if (bytes != null && bytes.length > 2) {
+            int header = ((bytes[0] & 0xff)) | (bytes[1] & 0xff) << 8;
+            return GZIPInputStream.GZIP_MAGIC == header;
+        }
+        return false;
+    }
+
+    /**
+     * Uncompress byte [ ].
+     *
+     * @param src the src
+     * @return the byte [ ]
+     * @throws IOException the io exception
+     */
+    public static byte[] uncompress(final byte[] src) throws IOException {
+        byte[] result;
+        byte[] uncompressData = new byte[src.length];
+        ByteArrayInputStream bis = new ByteArrayInputStream(src);
+        GZIPInputStream iis = new GZIPInputStream(bis);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(src.length);
+
+        try {
+            while (true) {
+                int len = iis.read(uncompressData, 0, uncompressData.length);
+                if (len <= 0) {
+                    break;
+                }
+                bos.write(uncompressData, 0, len);
+            }
+            bos.flush();
+            result = bos.toByteArray();
+        } finally {
+            IOUtil.close(bis, iis, bos);
+        }
+        return result;
     }
 }
