@@ -16,6 +16,8 @@
  */
 package org.apache.seata.server.cluster.manager;
 
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
@@ -24,8 +26,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
-import javax.servlet.AsyncContext;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.seata.common.thread.NamedThreadFactory;
 import org.apache.seata.server.cluster.listener.ClusterChangeEvent;
 import org.apache.seata.server.cluster.listener.ClusterChangeListener;
