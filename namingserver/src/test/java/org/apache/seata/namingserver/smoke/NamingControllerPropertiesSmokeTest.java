@@ -17,25 +17,37 @@
 
 package org.apache.seata.namingserver.smoke;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.seata.console.security.CustomUserDetailsServiceImpl;
 import org.apache.seata.namingserver.NamingserverApplication;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @SpringBootTest(
         classes = NamingserverApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "console.user.password=foo")
+        properties = {"console.user.username=seata", "console.user.password=foo"})
 @ExtendWith(OutputCaptureExtension.class)
 class NamingControllerPropertiesSmokeTest {
+
+    @Autowired
+    private CustomUserDetailsServiceImpl customUserDetailsService;
 
     @Test
     void processShouldNotPrintLogsAndGeneratePasswordWhenPasswordIsDefined(CapturedOutput output) {
         String logs = output.getOut();
         assertFalse(logs.contains("No password was configured."));
+
+        // TODO: When apply PasswordEncoder modify this test
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername("seata");
+        assertEquals("foo", userDetails.getPassword());
     }
 }
