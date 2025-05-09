@@ -17,14 +17,11 @@
 
 package org.apache.seata.namingserver.smoke;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.seata.console.security.CustomUserDetailsServiceImpl;
 import org.apache.seata.namingserver.NamingserverApplication;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -36,17 +33,9 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 @ExtendWith(OutputCaptureExtension.class)
 class NamingControllerLoggerPrintSmokeTest {
 
-    @Autowired
-    private CustomUserDetailsServiceImpl customUserDetailsService;
-
     @Test
     void processShouldPrintLogAndGeneratePasswordWhenDefaultPasswordIsNotDefined(CapturedOutput output) {
         String logs = output.getOut();
         assertTrue(logs.contains("No password was configured."));
-
-        // TODO : When apply PasswordEncoder modify this test
-        String password = customUserDetailsService.loadUserByUsername("seata").getPassword();
-        assertEquals(8, password.length());
-        assertTrue(password.matches("[0-9a-f]{8}"), "Password should only contain hexadecimal characters (0-9, a-f).");
     }
 }
