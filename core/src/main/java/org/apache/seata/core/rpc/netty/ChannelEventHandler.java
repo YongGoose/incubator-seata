@@ -18,6 +18,7 @@ package org.apache.seata.core.rpc.netty;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * Detects channel activation, deactivation, exceptions, and idle state events
  * and forwards these events to the AbstractNettyRemotingClient.
  */
+@Sharable
 public class ChannelEventHandler extends ChannelDuplexHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelEventHandler.class);
