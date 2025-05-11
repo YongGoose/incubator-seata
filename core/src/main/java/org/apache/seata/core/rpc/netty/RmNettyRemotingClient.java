@@ -86,6 +86,13 @@ public final class RmNettyRemotingClient extends AbstractNettyRemotingClient {
                 getClientChannelManager().initReconnect(transactionServiceGroup, failFast);
             }
         }
+
+        registerChannelEventListener(new ChannelEventListener() {
+            @Override public void onChannelDisconnected(Channel channel) {
+                // TODO[#7058] : Implement a action when channel is disconnected
+                LOGGER.warn("Channel inactive: {}", channel.remoteAddress());
+            }
+        });
     }
 
     private RmNettyRemotingClient(NettyClientConfig nettyClientConfig, EventExecutorGroup eventExecutorGroup,
