@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.seata.core.rpc.netty;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,10 +44,10 @@ class ResourceCleanupTest {
     private AbstractNettyRemotingClient client;
 
     @Mock
-    private Channel mockChannel;
+    private Channel channel;
 
     @Mock
-    private ChannelId mockChannelId;
+    private ChannelId channelId;
 
     private Map<Integer, MessageFuture> futures;
     private Map<Integer, MergeMessage> mergeMsgMap;
@@ -65,8 +81,8 @@ class ResourceCleanupTest {
 
     @Test
     void testCleanupMessageFuturesOnChannelDisconnection() {
-        when(mockChannel.id()).thenReturn(mockChannelId);
-        when(mockChannel.remoteAddress()).thenReturn(new InetSocketAddress("127.0.0.1", 8091));
+        when(channel.id()).thenReturn(channelId);
+        when(channel.remoteAddress()).thenReturn(new InetSocketAddress("127.0.0.1", 8091));
 
         MessageFuture messageFuture1 = new MessageFuture();
         RpcMessage rpcMessage1 = createRpcMessage(1);
@@ -87,14 +103,14 @@ class ResourceCleanupTest {
         mergeMsgMap.put(parentId, mergeMessage);
 
         String serverAddress = "127.0.0.1:8091";
-        channels.put(serverAddress, mockChannel);
+        channels.put(serverAddress, channel);
 
         BlockingQueue<RpcMessage> basket = new LinkedBlockingQueue<>();
         basket.add(rpcMessage1);
         basket.add(rpcMessage2);
         basketMap.put(serverAddress, basket);
 
-        client.cleanupResourcesForChannel(mockChannel);
+        client.cleanupResourcesForChannel(channel);
 
         assertFalse(futures.containsKey(1), "Future ID 1 has not been removed");
         assertFalse(futures.containsKey(2), "Future ID 2 has not been removed");
