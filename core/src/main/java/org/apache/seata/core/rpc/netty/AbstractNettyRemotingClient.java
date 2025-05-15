@@ -407,6 +407,16 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
     }
 
     /**
+     * Handles channel idle events from Netty.
+     * Fires an IDLE event to all registered listeners.
+     *
+     * @param channel the channel that became idle
+     */
+    public void onChannelIdle(Channel channel) {
+        fireChannelEvent(channel, ChannelEventType.IDLE);
+    }
+
+    /**
      * Cleans up resources associated with a channel that has been disconnected.
      * This includes collecting message IDs for the channel and cleaning up their futures.
      *
@@ -482,16 +492,6 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
                 future.setResultMessage(cause);
             }
         }
-    }
-
-    /**
-     * Handles channel idle events from Netty.
-     * Fires an IDLE event to all registered listeners.
-     *
-     * @param channel the channel that became idle
-     */
-    public void onChannelIdle(Channel channel) {
-        fireChannelEvent(channel, ChannelEventType.IDLE);
     }
 
     /**
