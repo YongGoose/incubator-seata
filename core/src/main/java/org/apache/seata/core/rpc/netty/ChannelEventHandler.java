@@ -48,7 +48,9 @@ public class ChannelEventHandler extends ChannelDuplexHandler {
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.debug("Channel active: {}", ctx.channel().remoteAddress());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Channel active: {}", ctx.channel().remoteAddress());
+        }
         remotingClient.onChannelActive(ctx.channel());
         super.channelActive(ctx);
     }
@@ -95,7 +97,9 @@ public class ChannelEventHandler extends ChannelDuplexHandler {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            LOGGER.debug("Channel idle: {}", ctx.channel().remoteAddress());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Channel idle: {}", ctx.channel().remoteAddress());
+            }
             remotingClient.onChannelIdle(ctx.channel());
         }
         super.userEventTriggered(ctx, evt);

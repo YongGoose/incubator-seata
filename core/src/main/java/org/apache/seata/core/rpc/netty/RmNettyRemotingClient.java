@@ -89,7 +89,9 @@ public final class RmNettyRemotingClient extends AbstractNettyRemotingClient {
 
         registerChannelEventListener(new ChannelEventListener() {
             @Override public void onChannelConnected(Channel channel) {
-                LOGGER.debug("Channel active: {}", channel.remoteAddress());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Channel active: {}", channel.remoteAddress());
+                }
             }
 
             @Override public void onChannelDisconnected(Channel channel) {
