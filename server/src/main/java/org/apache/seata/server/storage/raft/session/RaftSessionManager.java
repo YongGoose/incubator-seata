@@ -101,9 +101,7 @@ public class RaftSessionManager extends FileSessionManager {
         GlobalSession globalSession = sessionMap.remove(session.getXid());
         if (globalSession != null) {
             List<BranchSession> branchSessionList = globalSession.getBranchSessions();
-            // For the follower, the following code will not be executed because when the follower receives the remove
-            // global session
-            // the branch session on the leader side has already been completely cleared.
+            // For the follower, this code will not execute because, by the time the follower receives the remove global session request, the branch sessions on the leader side have already been completely cleared.
             if (CollectionUtils.isNotEmpty(branchSessionList)) {
                 for (BranchSession branchSession : branchSessionList) {
                     branchSession.unlock();
