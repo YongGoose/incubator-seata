@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.apache.seata.common.store.SessionMode;
+import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.core.model.GlobalStatus;
@@ -73,8 +74,26 @@ public class GlobalSessionTest {
     @ParameterizedTest
     @MethodSource("globalSessionProvider")
     public void beginTest(GlobalSession globalSession) throws Exception {
-        globalSession.checkSize();
         globalSession.begin();
+    }
+
+    /**
+     * Begin test.
+     *
+     * @param globalSession the global session
+     * @throws Exception the exception
+     */
+    @ParameterizedTest
+    @MethodSource("globalSessionProvider")
+    public void checkSizeTest(GlobalSession globalSession) throws Exception {
+        int size = 520;
+        StringBuilder sb = new StringBuilder(size);
+        for (int i = 0; i < size; i++) {
+            sb.append('a');
+        }
+        String str = sb.toString();
+        globalSession.setApplicationData(str);
+        Assertions.assertThrows(TransactionException.class, globalSession::checkSize);
     }
 
     /**
