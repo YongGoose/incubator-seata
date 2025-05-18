@@ -18,6 +18,7 @@ package org.apache.seata.server.session;
 
 import java.util.stream.Stream;
 
+import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.common.util.UUIDGenerator;
 import org.junit.jupiter.api.Assertions;
@@ -50,7 +51,8 @@ public class BranchSessionTest {
      */
     @ParameterizedTest
     @MethodSource("branchSessionProvider")
-    public void codecTest(BranchSession branchSession) {
+    public void codecTest(BranchSession branchSession) throws TransactionException {
+        branchSession.checkSize();
         byte[] result = branchSession.encode();
         Assertions.assertNotNull(result);
         BranchSession expected = new BranchSession();

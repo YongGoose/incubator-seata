@@ -73,6 +73,7 @@ public class GlobalSessionTest {
     @ParameterizedTest
     @MethodSource("globalSessionProvider")
     public void beginTest(GlobalSession globalSession) throws Exception {
+        globalSession.checkSize();
         globalSession.begin();
     }
 
