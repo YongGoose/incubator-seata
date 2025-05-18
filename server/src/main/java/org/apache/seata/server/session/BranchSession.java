@@ -446,7 +446,7 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
             byte[] clientIdBytes,
             byte[] applicationDataBytes,
             byte[] xidBytes) {
-        // trascationId
+        // transactionId
         // branchId
         // resourceIdBytes.length
         // lockKeyBytes.length
