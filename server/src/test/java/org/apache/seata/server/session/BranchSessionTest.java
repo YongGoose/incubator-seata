@@ -68,6 +68,7 @@ public class BranchSessionTest {
     @ParameterizedTest
     @MethodSource("branchSessionProvider")
     public void checkSizeTest(BranchSession branchSession) throws TransactionException {
+        Assertions.assertDoesNotThrow(branchSession::checkSize);
         int size = 28 * 1024;
         String alphanumeric = "!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder(size);

@@ -86,6 +86,7 @@ public class GlobalSessionTest {
     @ParameterizedTest
     @MethodSource("globalSessionProvider")
     public void checkSizeTest(GlobalSession globalSession) throws Exception {
+        Assertions.assertDoesNotThrow(globalSession::checkSize);
         int size = 520;
         StringBuilder sb = new StringBuilder(size);
         for (int i = 0; i < size; i++) {
