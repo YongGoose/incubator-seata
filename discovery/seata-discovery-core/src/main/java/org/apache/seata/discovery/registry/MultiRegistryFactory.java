@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The type multiple Registry factory.
- *
  */
 public class MultiRegistryFactory {
 
@@ -51,16 +50,18 @@ public class MultiRegistryFactory {
     private static List<RegistryService> buildRegistryServices() {
         List<RegistryService> registryServices = new ArrayList<>();
         Set<String> processedRegistryTypes = new HashSet<>();
-        String registryTypeNamesStr =
-            ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(ConfigurationKeys.FILE_ROOT_REGISTRY
-                + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
+        String registryTypeNamesStr = ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(
+                ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
+
         if (StringUtils.isBlank(registryTypeNamesStr)) {
             registryTypeNamesStr = RegistryType.File.name();
         }
         String[] registryTypeNames = registryTypeNamesStr.split(Constants.REGISTRY_TYPE_SPLIT_CHAR);
+
         if (registryTypeNames.length > 1) {
             LOGGER.info("use multi registry center type: {}", registryTypeNamesStr);
         }
+
         for (String registryTypeName : registryTypeNames) {
             RegistryType registryType;
             try {
@@ -69,13 +70,13 @@ public class MultiRegistryFactory {
                 throw new NotSupportYetException("not support registry type: " + registryTypeName);
             }
 
-            if(processedRegistryTypes.contains(registryType.name())) {
+            if (processedRegistryTypes.contains(registryType.name())) {
                 LOGGER.warn("The duplicate registration center type '{}' was found in the configuration and has been skipped.", registryType.name());
                 continue;
             }
 
             RegistryService registryService = EnhancedServiceLoader
-                .load(RegistryProvider.class, Objects.requireNonNull(registryType).name()).provide();
+                    .load(RegistryProvider.class, Objects.requireNonNull(registryType).name()).provide();
             registryServices.add(registryService);
             processedRegistryTypes.add(registryType.name());
         }

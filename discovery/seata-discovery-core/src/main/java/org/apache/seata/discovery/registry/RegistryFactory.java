@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The type Registry factory.
- *
  */
 public class RegistryFactory {
 
@@ -46,12 +45,12 @@ public class RegistryFactory {
     private static RegistryService buildRegistryService() {
         RegistryType registryType;
         String registryTypeName = ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(
-            ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
-                + ConfigurationKeys.FILE_ROOT_TYPE);
+                ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
 
         if (StringUtils.isBlank(registryTypeName)) {
             registryTypeName = RegistryType.File.name();
         }
+
         LOGGER.info("use registry center type: {}", registryTypeName);
         try {
             registryType = RegistryType.getType(registryTypeName);
