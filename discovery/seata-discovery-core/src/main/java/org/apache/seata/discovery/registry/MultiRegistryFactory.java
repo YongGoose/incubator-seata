@@ -17,8 +17,10 @@
 package org.apache.seata.discovery.registry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
@@ -48,6 +50,7 @@ public class MultiRegistryFactory {
 
     private static List<RegistryService> buildRegistryServices() {
         List<RegistryService> registryServices = new ArrayList<>();
+        Set<String> processedRegistryTypes = new HashSet<>();
         String registryTypeNamesStr =
             ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(ConfigurationKeys.FILE_ROOT_REGISTRY
                 + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
@@ -65,9 +68,16 @@ public class MultiRegistryFactory {
             } catch (Exception exx) {
                 throw new NotSupportYetException("not support registry type: " + registryTypeName);
             }
+
+            if(processedRegistryTypes.contains(registryType.name())) {
+                LOGGER.warn("The duplicate registration center type '{}' was found in the configuration and has been skipped.", registryType.name());
+                continue;
+            }
+
             RegistryService registryService = EnhancedServiceLoader
                 .load(RegistryProvider.class, Objects.requireNonNull(registryType).name()).provide();
             registryServices.add(registryService);
+            processedRegistryTypes.add(registryType.name());
         }
         return registryServices;
     }
