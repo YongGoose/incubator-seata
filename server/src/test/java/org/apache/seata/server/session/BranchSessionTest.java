@@ -78,6 +78,9 @@ public class BranchSessionTest {
         String str = sb.toString();
         branchSession.setLockKey(str);
         Assertions.assertThrows(TransactionException.class, branchSession::checkSize);
+        branchSession.setLockKey(null);
+        branchSession.setApplicationData(str);
+        Assertions.assertThrows(TransactionException.class, branchSession::checkSize);
     }
 
     /**

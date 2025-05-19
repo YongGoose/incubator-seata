@@ -95,6 +95,11 @@ public class GlobalSessionTest {
         String str = sb.toString();
         globalSession.setApplicationData(str);
         Assertions.assertThrows(TransactionException.class, globalSession::checkSize);
+        globalSession.setApplicationData(null);
+        globalSession.setXid(str);
+        Assertions.assertThrows(TransactionException.class, globalSession::checkSize);
+        GlobalSession globalSession1 = new GlobalSession(null,str,null,60000,true);
+        Assertions.assertThrows(TransactionException.class, globalSession1::checkSize);
     }
 
     /**
