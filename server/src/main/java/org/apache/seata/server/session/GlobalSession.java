@@ -684,6 +684,14 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
         return result;
     }
 
+    /**
+     * Checks if the serialized size of the global session exceeds the configured maximum limit.
+     * This method calculates the size based on the current state of the global session's fields
+     * (applicationId, transactionServiceGroup, transactionName, xid, applicationData).
+     *
+     * @throws TransactionException if the calculated size of the global session exceeds
+     *                              the {@link StoreConfig#getMaxGlobalSessionSize()}.
+     */
     public void checkSize() throws TransactionException {
 
         byte[] byApplicationIdBytes = applicationId != null ? applicationId.getBytes() : null;
@@ -702,6 +710,18 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
         }
     }
 
+    /**
+     * Checks if the serialized size of the global session exceeds the configured maximum limit.
+     * This method calculates the size based on the current state of the global session's fields
+     * (applicationId, transactionServiceGroup, transactionName, xid, applicationData).
+     * @param byApplicationIdBytes Byte array representation of the application ID.
+     * @param byServiceGroupBytes  Byte array representation of the transaction service group.
+     * @param byTxNameBytes        Byte array representation of the transaction name.
+     * @param xidBytes             Byte array representation of the XID.
+     * @param applicationDataBytes Byte array representation of the application data.
+     * @throws TransactionException if the calculated size of the global session exceeds
+     *                              the {@link StoreConfig#getMaxGlobalSessionSize()}.
+     */
     private void checkSize(
             byte[] byApplicationIdBytes,
             byte[] byServiceGroupBytes,
@@ -716,6 +736,17 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
         }
     }
 
+    /**
+     * Calculates the total size of the global session in bytes based on its constituent parts.
+     * This includes fixed-size fields and the variable lengths of string fields represented as byte arrays.
+     *
+     * @param byApplicationIdBytes Byte array representation of the application ID.
+     * @param byServiceGroupBytes  Byte array representation of the transaction service group.
+     * @param byTxNameBytes        Byte array representation of the transaction name.
+     * @param xidBytes             Byte array representation of the XID.
+     * @param applicationDataBytes Byte array representation of the application data.
+     * @return The calculated total size of the global session in bytes.
+     */
     private int calGlobalSessionSize(
             byte[] byApplicationIdBytes,
             byte[] byServiceGroupBytes,

@@ -391,6 +391,15 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
         return result;
     }
 
+    /**
+     * Checks if the serialized size of the branch session exceeds the configured maximum limit.
+     * This method calculates the size based on the current state of the branch session's fields
+     * (resourceId, lockKey, clientId, applicationData, xid). If the size exceeds the limit,
+     * it attempts to compress the lockKey and re-checks the size.
+     *
+     * @throws TransactionException if the calculated size of the branch session (after potential lockKey compression)
+     *                              exceeds the {@link StoreConfig#getMaxBranchSessionSize()}.
+     */
     public void checkSize() throws TransactionException {
         byte[] resourceIdBytes = resourceId != null ? resourceId.getBytes() : null;
 
@@ -409,6 +418,19 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
         }
     }
 
+    /**
+     * Checks if the serialized size of the branch session exceeds the configured maximum limit.
+     * This method calculates the size based on the current state of the branch session's fields
+     * (resourceId, lockKey, clientId, applicationData, xid). If the size exceeds the limit,
+     * it attempts to compress the lockKey and re-checks the size.
+     * @param resourceIdBytes      Byte array representation of the resource ID.
+     * @param lockKeyBytes         Byte array representation of the lock key.
+     * @param clientIdBytes        Byte array representation of the client ID.
+     * @param applicationDataBytes Byte array representation of the application data.
+     * @param xidBytes             Byte array representation of the XID.
+     * @throws TransactionException if the calculated size of the branch session (after potential lockKey compression)
+     *                              exceeds the {@link StoreConfig#getMaxBranchSessionSize()}.
+     */
     private void checkSize(
             byte[] resourceIdBytes,
             byte[] lockKeyBytes,
@@ -440,6 +462,17 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
         }
     }
 
+    /**
+     * Calculates the total size of the branch session in bytes based on its constituent parts.
+     * This includes fixed-size fields and the variable lengths of string fields represented as byte arrays.
+     *
+     * @param resourceIdBytes      Byte array representation of the resource ID.
+     * @param lockKeyBytes         Byte array representation of the lock key.
+     * @param clientIdBytes        Byte array representation of the client ID.
+     * @param applicationDataBytes Byte array representation of the application data.
+     * @param xidBytes             Byte array representation of the XID.
+     * @return The calculated total size of the branch session in bytes.
+     */
     private int calBranchSessionSize(
             byte[] resourceIdBytes,
             byte[] lockKeyBytes,
