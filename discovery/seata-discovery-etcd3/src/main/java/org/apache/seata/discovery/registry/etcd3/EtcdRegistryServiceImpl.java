@@ -182,10 +182,7 @@ public class EtcdRegistryServiceImpl implements RegistryService<Watch.Listener> 
             listenerMap.put(cluster, newSubscribeSet);
         }
 
-        EtcdWatcher watcher = watcherMap.remove(cluster);
-        if (watcher != null) {
-            watcher.stop();
-        }
+        watcherMap.remove(cluster).stop();
     }
 
     @Override
@@ -429,7 +426,9 @@ public class EtcdRegistryServiceImpl implements RegistryService<Watch.Listener> 
          * stop this task
          */
         public void stop() {
-            this.watcher.close();
+            if (this.watcher != null) {
+                this.watcher.close();
+            }
         }
     }
 
