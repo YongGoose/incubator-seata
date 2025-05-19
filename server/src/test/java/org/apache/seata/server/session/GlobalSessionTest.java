@@ -98,7 +98,7 @@ public class GlobalSessionTest {
         globalSession.setApplicationData(null);
         globalSession.setXid(str);
         Assertions.assertThrows(TransactionException.class, globalSession::checkSize);
-        GlobalSession globalSession1 = new GlobalSession(null,str,null,60000,true);
+        GlobalSession globalSession1 = new GlobalSession(null, str, null, 60000, true);
         Assertions.assertThrows(TransactionException.class, globalSession1::checkSize);
     }
 
