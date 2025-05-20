@@ -46,7 +46,7 @@ public class RegistryFactoryTest {
         System.setProperty(REGISTRY_TYPE_KEY, RegistryType.File.name());
 
         RegistryService instance = RegistryFactory.getInstance();
-        Assertions.assertNotNull(instance);
+        Assertions.assertEquals(FileRegistryServiceImpl.class, instance.getClass());
     }
 
     /**
@@ -67,11 +67,11 @@ public class RegistryFactoryTest {
         System.setProperty(REGISTRY_TYPE_KEY, "");
 
         RegistryService instance = invokeBuildRegistryService();
-        Assertions.assertEquals(instance.getClass(), FileRegistryServiceImpl.class);
+        Assertions.assertEquals(FileRegistryServiceImpl.class, instance.getClass());
     }
 
     /**
-     * Use reflection to call the buildRegistryServices method
+     * Use reflection to call the buildRegistryService method
      */
     private static RegistryService invokeBuildRegistryService() throws Throwable {
         Method buildMethod = RegistryFactory.class.getDeclaredMethod("buildRegistryService");

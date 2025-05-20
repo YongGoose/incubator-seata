@@ -18,14 +18,23 @@ package org.apache.seata.discovery.registry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * The type Multi registry factory test.
@@ -35,9 +44,23 @@ public class MultiRegistryFactoryTest {
     private static final String REGISTRY_TYPE_KEY =
             ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE;
 
+    private final List<Logger> watchedLoggers = new ArrayList<>();
+    private final ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
+
+    @BeforeEach
+    void setUp() {
+        logWatcher.start();
+
+        Logger logger = ((Logger) LoggerFactory.getLogger(MultiRegistryFactory.class.getName()));
+        logger.addAppender(logWatcher);
+
+        watchedLoggers.add(logger);
+    }
+
     @AfterEach
     public void tearDown() {
         System.clearProperty(REGISTRY_TYPE_KEY);
+        watchedLoggers.forEach(Logger::detachAndStopAllAppenders);
     }
 
     /**
@@ -52,7 +75,7 @@ public class MultiRegistryFactoryTest {
         Assertions.assertNotNull(instances);
 
         for (RegistryService service : instances) {
-            Assertions.assertNotNull(service);
+            Assertions.assertEquals(FileRegistryServiceImpl.class, service.getClass());
         }
     }
 
@@ -62,11 +85,16 @@ public class MultiRegistryFactoryTest {
     @Test
     public void testGetInstancesWithMultiRegistryTypes() throws Throwable {
         // Set up multiple registration center configurations
-        System.setProperty(REGISTRY_TYPE_KEY, RegistryType.File.name() + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.File.name());
+        String registryTypes = RegistryType.File.name() + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.File.name();
+        System.setProperty(REGISTRY_TYPE_KEY, registryTypes);
 
         List<RegistryService> instances = invokeBuildRegistryServices();
-        Assertions.assertNotNull(instances);
         Assertions.assertEquals(1, instances.size());
+        Assertions.assertEquals(FileRegistryServiceImpl.class, instances.get(0).getClass());
+
+        Assertions.assertEquals("use multi registry center type: " + registryTypes, getLogs(Level.INFO).get(0));
+        Assertions.assertEquals("The duplicate registration center type '" + RegistryType.File.name() +
+                "' was found in the configuration and has been skipped.", getLogs(Level.WARN).get(0));
     }
 
     /**
@@ -77,7 +105,7 @@ public class MultiRegistryFactoryTest {
         System.setProperty(REGISTRY_TYPE_KEY, "");
 
         List<RegistryService> instances = invokeBuildRegistryServices();
-        Assertions.assertNotNull(instances);
+        Assertions.assertEquals(FileRegistryServiceImpl.class, instances.get(0).getClass());
     }
 
     /**
@@ -102,5 +130,13 @@ public class MultiRegistryFactoryTest {
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         }
+    }
+
+    private List<String> getLogs(Level level) {
+        return logWatcher.list.stream()
+                .filter(event -> event.getLoggerName().endsWith(MultiRegistryFactory.class.getName())
+                        && event.getLevel().equals(level))
+                .map(ILoggingEvent::getFormattedMessage)
+                .collect(Collectors.toList());
     }
 }
