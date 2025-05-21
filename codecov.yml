@@ -17,6 +17,7 @@
 
 codecov:
   require_ci_to_pass: true
+  branch: 2.x
 coverage:
   status:
     patch: true
@@ -24,7 +25,6 @@ coverage:
       default:
         threshold: 1%
         if_not_found: success
-        base: 2.x
     changes: true
   precision: 2
   range: "50...100"
