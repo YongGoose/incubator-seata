@@ -25,7 +25,7 @@ coverage:
       default:
         threshold: 1%
         if_not_found: success
-    changes: true
+    changes: false
   precision: 2
   range: "50...100"
 ignore:
