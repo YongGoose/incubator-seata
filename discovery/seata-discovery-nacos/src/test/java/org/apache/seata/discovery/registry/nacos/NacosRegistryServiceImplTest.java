@@ -16,29 +16,42 @@
  */
 package org.apache.seata.discovery.registry.nacos;
 
-import java.lang.reflect.Method;
-import java.util.Properties;
-
-import org.apache.seata.common.util.ReflectionUtil;
-import org.assertj.core.api.Assertions;
+import org.apache.seata.discovery.registry.RegistryService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.net.InetSocketAddress;
+import java.util.List;
 
 
 /**
  * The type Nacos registry serivce impl test
- *
  */
 public class NacosRegistryServiceImplTest {
 
-    @Test
-    public void testGetConfigProperties() throws Exception {
-        Method method = ReflectionUtil.getMethod(NacosRegistryServiceImpl.class, "getNamingProperties");
-        Properties properties = (Properties) ReflectionUtil.invokeMethod(null, method);
-        Assertions.assertThat(properties.getProperty("contextPath")).isEqualTo("/foo");
-        System.setProperty("contextPath", "/bar");
-        properties = (Properties) ReflectionUtil.invokeMethod(null, method);
-        Assertions.assertThat(properties.getProperty("contextPath")).isEqualTo("/bar");
+    @BeforeAll
+    public static void init() {
+        System.setProperty("seata.registry.type", "nacos");
+        System.setProperty("seata.registry.nacos.server-addr", "10.21.32.10:8848");
+        System.setProperty("seata.registry.nacos.username", "nacos");
+        System.setProperty("seata.registry.nacos.password", "nacos");
+        System.setProperty("seata.registry.nacos.cluster", "testCluster");
     }
 
+    @Test
+    public void testGetInstance() {
+        RegistryService instance = NacosRegistryServiceImpl.getInstance();
+        Assertions.assertInstanceOf(NacosRegistryServiceImpl.class, instance);
+        Assertions.assertEquals(instance, NacosRegistryServiceImpl.getInstance());
+    }
+
+    @Test
+    public void testRegister() throws Exception {
+        RegistryService instance = NacosRegistryServiceImpl.getInstance();
+        instance.register(new InetSocketAddress("127.0.0.1", 8080));
+        List<InetSocketAddress> testCluster = instance.lookup("testCluster");
+        Assertions.assertEquals(testCluster.get(0), new InetSocketAddress("127.0.0.1", 8080));
+    }
 
 }

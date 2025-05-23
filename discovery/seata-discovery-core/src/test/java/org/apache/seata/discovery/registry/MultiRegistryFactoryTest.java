@@ -92,9 +92,7 @@ public class MultiRegistryFactoryTest {
         List<RegistryService> instances = invokeBuildRegistryServices();
         Assertions.assertEquals(1, instances.size());
         Assertions.assertEquals(FileRegistryServiceImpl.class, instances.get(0).getClass());
-        Assertions.assertEquals("use multi registry center type: " + twoRegistryTypes, getLogs(Level.INFO).get(0));
-        Assertions.assertEquals("The duplicate registration center type '" + RegistryType.File.name() +
-                "' was found in the configuration and has been skipped.", getLogs(Level.WARN).get(0));
+        Assertions.assertTrue(getLogs(Level.INFO).isEmpty());
 
         // Set up three identical registration center configurations
         String threeRegistryTypes = twoRegistryTypes + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.File.name();
