@@ -16,16 +16,17 @@
  */
 package org.apache.seata.discovery.registry;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.NotSupportYetException;
@@ -34,7 +35,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * The type Multi registry factory test.
@@ -68,7 +68,6 @@ public class MultiRegistryFactoryTest {
      */
     @Test
     public void testGetInstancesWithDefaultConfig() {
-        // Set "registry.type = file" as default config
         System.setProperty(REGISTRY_TYPE_KEY, RegistryType.File.name());
 
         List<RegistryService> instances = MultiRegistryFactory.getInstances();
@@ -84,21 +83,23 @@ public class MultiRegistryFactoryTest {
      */
     @Test
     public void testGetInstancesWithMultiRegistryTypes() throws Throwable {
-        // Set up two identical registration center configurations
-        String twoRegistryTypes = RegistryType.File.name() + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.File.name()
-                + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.File.name();
+        // Set up two registry centers with capital and small letter
+        String twoRegistryTypes = "File,file";
         System.setProperty(REGISTRY_TYPE_KEY, twoRegistryTypes);
-
         List<RegistryService> instances = invokeBuildRegistryServices();
+
         Assertions.assertEquals(1, instances.size());
         Assertions.assertEquals(FileRegistryServiceImpl.class, instances.get(0).getClass());
         Assertions.assertTrue(getLogs(Level.INFO).isEmpty());
 
-        // Set up three identical registration center configurations
-        String threeRegistryTypes = twoRegistryTypes + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.File.name();
+        // Set up three registry centers with multiple types
+        String threeRegistryTypes = twoRegistryTypes + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.Nacos.name();
         System.setProperty(REGISTRY_TYPE_KEY, threeRegistryTypes);
         List<RegistryService> instances1 = invokeBuildRegistryServices();
-        Assertions.assertEquals(1, instances1.size());
+
+        Assertions.assertEquals(2, instances1.size());
+        Assertions.assertEquals(MockNacosRegistryService.class, instances1.get(1).getClass());
+        Assertions.assertEquals("use multi registry center type: [File, Nacos]", getLogs(Level.INFO).get(0));
     }
 
     /**
