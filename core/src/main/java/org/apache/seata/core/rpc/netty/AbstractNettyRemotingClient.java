@@ -73,7 +73,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The netty remoting client.
- *
  */
 public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting implements RemotingClient {
 
@@ -106,7 +105,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
      * {@link AbstractNettyRemotingClient#isEnableClientBatchSendRequest()}
      */
     protected final ConcurrentHashMap<String /*serverAddress*/, BlockingQueue<RpcMessage>> basketMap =
-            new ConcurrentHashMap<>();
+        new ConcurrentHashMap<>();
 
     private final NettyClientBootstrap clientBootstrap;
     private final NettyClientChannelManager clientChannelManager;
@@ -118,24 +117,24 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
     @Override
     public void init() {
         timerExecutor.scheduleAtFixedRate(
-                () -> {
-                    try {
-                        clientChannelManager.reconnect(getTransactionServiceGroup());
-                    } catch (Exception ex) {
-                        LOGGER.warn("reconnect server failed. {}", ex.getMessage());
-                    }
-                },
-                SCHEDULE_DELAY_MILLS,
-                SCHEDULE_INTERVAL_MILLS,
-                TimeUnit.MILLISECONDS);
+            () -> {
+                try {
+                    clientChannelManager.reconnect(getTransactionServiceGroup());
+                } catch (Exception ex) {
+                    LOGGER.warn("reconnect server failed. {}", ex.getMessage());
+                }
+            },
+            SCHEDULE_DELAY_MILLS,
+            SCHEDULE_INTERVAL_MILLS,
+            TimeUnit.MILLISECONDS);
         if (this.isEnableClientBatchSendRequest()) {
             mergeSendExecutorService = new ThreadPoolExecutor(
-                    MAX_MERGE_SEND_THREAD,
-                    MAX_MERGE_SEND_THREAD,
-                    KEEP_ALIVE_TIME,
-                    TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(),
-                    new NamedThreadFactory(getThreadPrefix(), MAX_MERGE_SEND_THREAD));
+                MAX_MERGE_SEND_THREAD,
+                MAX_MERGE_SEND_THREAD,
+                KEEP_ALIVE_TIME,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(),
+                new NamedThreadFactory(getThreadPrefix(), MAX_MERGE_SEND_THREAD));
             mergeSendExecutorService.submit(new MergedSendRunnable());
         }
         super.init();
@@ -143,16 +142,16 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
     }
 
     public AbstractNettyRemotingClient(
-            NettyClientConfig nettyClientConfig,
-            EventExecutorGroup eventExecutorGroup,
-            ThreadPoolExecutor messageExecutor,
-            NettyPoolKey.TransactionRole transactionRole) {
+        NettyClientConfig nettyClientConfig,
+        EventExecutorGroup eventExecutorGroup,
+        ThreadPoolExecutor messageExecutor,
+        NettyPoolKey.TransactionRole transactionRole) {
         super(messageExecutor);
         this.transactionRole = transactionRole;
         clientBootstrap = new NettyClientBootstrap(nettyClientConfig, eventExecutorGroup, transactionRole);
         clientBootstrap.setChannelHandlers(new ClientHandler(), new ChannelEventHandler(this));
         clientChannelManager = new NettyClientChannelManager(
-                new NettyPoolableFactory(this, clientBootstrap), getPoolKeyFunction(), nettyClientConfig);
+            new NettyPoolableFactory(this, clientBootstrap), getPoolKeyFunction(), nettyClientConfig);
     }
 
     @Override
@@ -173,12 +172,12 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
 
             // put message into basketMap
             BlockingQueue<RpcMessage> basket =
-                    CollectionUtils.computeIfAbsent(basketMap, serverAddress, key -> new LinkedBlockingQueue<>());
+                CollectionUtils.computeIfAbsent(basketMap, serverAddress, key -> new LinkedBlockingQueue<>());
             if (!basket.offer(rpcMessage)) {
                 LOGGER.error(
-                        "put message into basketMap offer failed, serverAddress:{},rpcMessage:{}",
-                        serverAddress,
-                        rpcMessage);
+                    "put message into basketMap offer failed, serverAddress:{},rpcMessage:{}",
+                    serverAddress,
+                    rpcMessage);
                 return null;
             }
             if (LOGGER.isDebugEnabled()) {
@@ -195,10 +194,10 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
                 return response;
             } catch (Exception exx) {
                 LOGGER.error(
-                        "wait response error:{},ip:{},request:{}",
-                        exx.getMessage(),
-                        serverAddress,
-                        rpcMessage.getBody());
+                    "wait response error:{},ip:{},request:{}",
+                    exx.getMessage(),
+                    serverAddress,
+                    rpcMessage.getBody());
                 if (exx instanceof TimeoutException) {
                     throw (TimeoutException) exx;
                 } else {
@@ -226,13 +225,13 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
         if (channel == null) {
             LOGGER.warn("sendAsyncRequest nothing, caused by null channel.");
             throw new FrameworkException(
-                    new Throwable("throw"), "frameworkException", FrameworkErrorCode.ChannelIsNotWritable);
+                new Throwable("throw"), "frameworkException", FrameworkErrorCode.ChannelIsNotWritable);
         }
         RpcMessage rpcMessage = buildRequestMessage(
-                msg,
-                msg instanceof HeartbeatMessage
-                        ? ProtocolConstants.MSGTYPE_HEARTBEAT_REQUEST
-                        : ProtocolConstants.MSGTYPE_RESQUEST_ONEWAY);
+            msg,
+            msg instanceof HeartbeatMessage
+                ? ProtocolConstants.MSGTYPE_HEARTBEAT_REQUEST
+                : ProtocolConstants.MSGTYPE_RESQUEST_ONEWAY);
         Object body = rpcMessage.getBody();
         if (body instanceof MergeMessage) {
             Integer parentId = rpcMessage.getId();
@@ -290,7 +289,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
         try {
             @SuppressWarnings("unchecked")
             List<InetSocketAddress> inetSocketAddressList =
-                    RegistryFactory.getInstance().aliveLookup(transactionServiceGroup);
+                RegistryFactory.getInstance().aliveLookup(transactionServiceGroup);
             address = this.doSelect(inetSocketAddressList, msg);
         } catch (Exception ex) {
             LOGGER.error("Select the address failed: {}", ex.getMessage());
@@ -330,8 +329,8 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
             }
         }
         return StringUtils.isBlank(xid)
-                ? String.valueOf(ThreadLocalRandom.current().nextLong(Long.MAX_VALUE))
-                : xid;
+            ? String.valueOf(ThreadLocalRandom.current().nextLong(Long.MAX_VALUE))
+            : xid;
     }
 
     private String getThreadPrefix() {
@@ -377,8 +376,8 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
         if (channelEventListener != null) {
             channelEventListeners.addIfAbsent(channelEventListener);
             LOGGER.info(
-                    "register channel event listener: {}",
-                    channelEventListener.getClass().getName());
+                "register channel event listener: {}",
+                channelEventListener.getClass().getName());
         }
     }
 
@@ -392,8 +391,8 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
         if (channelEventListener != null) {
             channelEventListeners.remove(channelEventListener);
             LOGGER.info(
-                    "unregister channel event listener: {}",
-                    channelEventListener.getClass().getName());
+                "unregister channel event listener: {}",
+                channelEventListener.getClass().getName());
         }
     }
 
@@ -423,7 +422,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
      * Fires an EXCEPTION event to all registered listeners and cleans up resources.
      *
      * @param channel the channel where the exception occurred
-     * @param cause the throwable that represents the exception
+     * @param cause   the throwable that represents the exception
      */
     public void onChannelException(Channel channel, Throwable cause) {
         fireChannelEvent(channel, ChannelEventType.EXCEPTION, cause);
@@ -451,15 +450,15 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
             return;
         }
         ChannelException cause =
-                new ChannelException(String.format("Channel disconnected: %s", channel.remoteAddress()));
+            new ChannelException(String.format("Channel disconnected: %s", channel.remoteAddress()));
 
         Set<Integer> messageIds = collectMessageIdsForChannel(channel.id());
         cleanupFuturesForMessageIds(messageIds, cause);
 
         LOGGER.info(
-                "Cleaned up {} pending requests for disconnected channel: {}",
-                messageIds.size(),
-                channel.remoteAddress());
+            "Cleaned up {} pending requests for disconnected channel: {}",
+            messageIds.size(),
+            channel.remoteAddress());
     }
 
     /**
@@ -474,7 +473,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
 
         String serverAddress = null;
         for (Map.Entry<String, Channel> entry :
-                clientChannelManager.getChannels().entrySet()) {
+            clientChannelManager.getChannels().entrySet()) {
             Channel channel = entry.getValue();
             if (channelId.equals(channel.id())) {
                 serverAddress = entry.getKey();
@@ -510,7 +509,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
      * This completes futures with an exception to notify waiting threads.
      *
      * @param messageIds the set of message IDs whose futures should be cleaned up
-     * @param cause the exception to set as the result for each future
+     * @param cause      the exception to set as the result for each future
      */
     private void cleanupFuturesForMessageIds(Set<Integer> messageIds, Exception cause) {
         for (Integer messageId : messageIds) {
@@ -531,7 +530,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
      * This is an overloaded version that calls {@link #fireChannelEvent(Channel, ChannelEventType, Throwable)}
      * with a null cause.
      *
-     * @param channel the channel associated with the event
+     * @param channel   the channel associated with the event
      * @param eventType the type of event that occurred
      */
     protected void fireChannelEvent(Channel channel, ChannelEventType eventType) {
@@ -543,9 +542,9 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
      * This method dispatches the event to the appropriate method on each listener
      * based on the event type.
      *
-     * @param channel the channel associated with the event
+     * @param channel   the channel associated with the event
      * @param eventType the type of event that occurred
-     * @param cause the cause of the event (maybe null for certain event types)
+     * @param cause     the cause of the event (maybe null for certain event types)
      */
     protected void fireChannelEvent(Channel channel, ChannelEventType eventType, Throwable cause) {
         for (ChannelEventListener listener : channelEventListeners) {
@@ -621,7 +620,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
                             }
                             if (messageFuture != null) {
                                 messageFuture.setResultMessage(
-                                        new RuntimeException(String.format("%s is unreachable", address), e));
+                                    new RuntimeException(String.format("%s is unreachable", address), e));
                             }
                         }
                         LOGGER.error("client merge call failed: {}", e.getMessage(), e);
@@ -684,7 +683,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
                 LOGGER.info("channel inactive: {}", ctx.channel());
             }
             clientChannelManager.releaseChannel(
-                    ctx.channel(), NetUtil.toStringAddress(ctx.channel().remoteAddress()));
+                ctx.channel(), NetUtil.toStringAddress(ctx.channel().remoteAddress()));
             super.channelInactive(ctx);
         }
 
@@ -698,7 +697,7 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
                     }
                     try {
                         String serverAddress =
-                                NetUtil.toStringAddress(ctx.channel().remoteAddress());
+                            NetUtil.toStringAddress(ctx.channel().remoteAddress());
                         clientChannelManager.invalidateObject(serverAddress, ctx.channel());
                     } catch (Exception exx) {
                         LOGGER.error(exx.getMessage());
@@ -722,9 +721,9 @@ public abstract class AbstractNettyRemotingClient extends AbstractNettyRemoting 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
             LOGGER.error(
-                    FrameworkErrorCode.ExceptionCaught.getErrCode(),
-                    NetUtil.toStringAddress(ctx.channel().remoteAddress()) + "connect exception. " + cause.getMessage(),
-                    cause);
+                FrameworkErrorCode.ExceptionCaught.getErrCode(),
+                NetUtil.toStringAddress(ctx.channel().remoteAddress()) + "connect exception. " + cause.getMessage(),
+                cause);
             clientChannelManager.releaseChannel(ctx.channel(), getAddressFromChannel(ctx.channel()));
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info("remove exception rm channel:{}", ctx.channel());
