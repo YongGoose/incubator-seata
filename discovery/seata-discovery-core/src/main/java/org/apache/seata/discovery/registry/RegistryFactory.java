@@ -18,7 +18,6 @@ package org.apache.seata.discovery.registry;
 
 import java.util.Objects;
 
-import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.ConfigurationFactory;
