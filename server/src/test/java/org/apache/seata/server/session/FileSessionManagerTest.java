@@ -31,6 +31,7 @@ import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.XID;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.result.PageResult;
+import org.apache.seata.common.result.SingleResult;
 import org.apache.seata.common.store.SessionMode;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.UUIDGenerator;
@@ -38,7 +39,6 @@ import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.core.model.LockStatus;
-import org.apache.seata.server.console.exception.ConsoleException;
 import org.apache.seata.server.console.entity.param.GlobalSessionParam;
 import org.apache.seata.server.console.service.BranchSessionService;
 import org.apache.seata.server.console.service.GlobalSessionService;
@@ -470,12 +470,16 @@ public class FileSessionManagerTest {
             Assertions.assertThrows(IllegalArgumentException.class, () ->
                     globalSessionService.changeGlobalStatus(globalSessions.get(0).getXid()));
 
+            Assertions.assertEquals(GlobalStatus.Begin, globalSessions.get(0).getStatus());
+
             GlobalSession globalSession = globalSessions.get(1);
-            globalSession.changeGlobalStatus(GlobalStatus.CommitFailed);
             String xid = globalSession.getXid();
-//            Assertions.assertThrows(ConsoleException.class, () -> globalSessionService.changeGlobalStatus(xid));
-            globalSession.changeGlobalStatus(GlobalStatus.RollbackFailed);
-            Assertions.assertThrows(ConsoleException.class, () -> globalSessionService.changeGlobalStatus(xid));
+
+            globalSession.changeGlobalStatus(GlobalStatus.CommitFailed);
+            SingleResult<Void> singleResult = globalSessionService.changeGlobalStatus(xid);
+
+            Assertions.assertTrue(singleResult.isSuccess());
+            Assertions.assertEquals(GlobalStatus.Committed, globalSession.getStatus());
         } finally {
             for (GlobalSession globalSession : globalSessions) {
                 globalSession.setStatus(GlobalStatus.Committed);
