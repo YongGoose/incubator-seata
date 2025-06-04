@@ -16,17 +16,20 @@
  */
 package org.apache.seata.discovery.registry;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.NotSupportYetException;
@@ -35,18 +38,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * The type Multi registry factory test.
  */
 public class MultiRegistryFactoryTest {
 
-    private static final String REGISTRY_TYPE_KEY =
-            ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE;
+    private static final String REGISTRY_TYPE_KEY = ConfigurationKeys.FILE_ROOT_REGISTRY
+            + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+            + ConfigurationKeys.FILE_ROOT_TYPE;
 
     private final List<Logger> watchedLoggers = new ArrayList<>();
     private final ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
@@ -101,7 +100,9 @@ public class MultiRegistryFactoryTest {
 
         assertEquals(2, instances.size());
         assertEquals(MockNacosRegistryService.class, instances.get(1).getClass());
-        assertEquals("use multi registry center type: [File, Nacos]", getLogs(Level.INFO).get(0));
+        assertEquals(
+                "use multi registry center type: [File, Nacos]",
+                getLogs(Level.INFO).get(0));
     }
 
     /**

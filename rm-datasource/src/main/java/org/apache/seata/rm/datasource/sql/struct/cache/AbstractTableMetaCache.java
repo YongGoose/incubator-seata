@@ -16,14 +16,13 @@
  */
 package org.apache.seata.rm.datasource.sql.struct.cache;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.context.RootContext;
@@ -48,14 +47,16 @@ public abstract class AbstractTableMetaCache implements TableMetaCache {
 
     static {
         try {
-            TABLE_META_CACHE = Caffeine.newBuilder().maximumSize(CACHE_SIZE)
-                    .expireAfterWrite(EXPIRE_TIME, TimeUnit.MILLISECONDS).softValues().build();
+            TABLE_META_CACHE = Caffeine.newBuilder()
+                    .maximumSize(CACHE_SIZE)
+                    .expireAfterWrite(EXPIRE_TIME, TimeUnit.MILLISECONDS)
+                    .softValues()
+                    .build();
         } catch (Throwable t) {
             LOGGER.error("Build the `TABLE_META_CACHE` failed:", t);
             throw t;
         }
     }
-
 
     @Override
     public TableMeta getTableMeta(final Connection connection, final String tableName, String resourceId) {
@@ -74,8 +75,9 @@ public abstract class AbstractTableMetaCache implements TableMetaCache {
         });
 
         if (tmeta == null) {
-            throw new ShouldNeverHappenException(String.format("[xid:%s] Get table meta failed," +
-                " please check whether the table `%s` exists.", RootContext.getXID(), tableName));
+            throw new ShouldNeverHappenException(String.format(
+                    "[xid:%s] Get table meta failed," + " please check whether the table `%s` exists.",
+                    RootContext.getXID(), tableName));
         }
         return tmeta;
     }
@@ -87,8 +89,9 @@ public abstract class AbstractTableMetaCache implements TableMetaCache {
             String key = getCacheKey(connection, entry.getValue().getOriginalTableName(), resourceId);
             if (entry.getKey().equals(key)) {
                 try {
-                    String freshTableName = StringUtils.isBlank(entry.getValue().getOriginalTableName()) ?
-                            entry.getValue().getTableName() : entry.getValue().getOriginalTableName();
+                    String freshTableName = StringUtils.isBlank(entry.getValue().getOriginalTableName())
+                            ? entry.getValue().getTableName()
+                            : entry.getValue().getOriginalTableName();
                     TableMeta tableMeta = fetchSchema(connection, freshTableName);
                     if (!tableMeta.equals(entry.getValue())) {
                         TABLE_META_CACHE.put(entry.getKey(), tableMeta);
@@ -100,7 +103,6 @@ public abstract class AbstractTableMetaCache implements TableMetaCache {
             }
         }
     }
-
 
     /**
      * generate cache key
@@ -121,5 +123,4 @@ public abstract class AbstractTableMetaCache implements TableMetaCache {
      * @throws SQLException the sql exception
      */
     protected abstract TableMeta fetchSchema(Connection connection, String tableName) throws SQLException;
-
 }

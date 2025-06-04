@@ -17,7 +17,6 @@
 package org.apache.seata.saga.rm;
 
 import java.lang.reflect.Method;
-
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.core.model.Resource;
 
@@ -204,5 +203,4 @@ public class SagaAnnotationResource implements Resource {
         }
         return this.actionName.equals(((SagaAnnotationResource) obj).actionName);
     }
-
 }

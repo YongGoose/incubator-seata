@@ -19,11 +19,9 @@ package org.apache.seata.rm.datasource.undo.parser;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Objects;
-
 
 public class KryoSerializer {
 
@@ -51,5 +49,4 @@ public class KryoSerializer {
         input.close();
         return (T) kryo.readClassAndObject(input);
     }
-
 }

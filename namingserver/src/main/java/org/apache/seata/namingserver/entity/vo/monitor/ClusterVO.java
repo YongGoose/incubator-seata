@@ -16,11 +16,10 @@
  */
 package org.apache.seata.namingserver.entity.vo.monitor;
 
-import org.apache.seata.common.metadata.namingserver.Unit;
-import org.apache.seata.namingserver.entity.pojo.ClusterData;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.seata.common.metadata.namingserver.Unit;
+import org.apache.seata.namingserver.entity.pojo.ClusterData;
 
 public class ClusterVO {
     private String clusterName;
@@ -28,7 +27,6 @@ public class ClusterVO {
 
     private List<String /*vgroup*/> vGroupMapping;
     private final List<Unit> unitData;
-
 
     public ClusterVO() {
         this.vGroupMapping = new ArrayList<>();

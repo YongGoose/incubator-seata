@@ -16,10 +16,9 @@
  */
 package org.apache.seata.saga.engine.repo;
 
-import org.apache.seata.saga.statelang.domain.StateMachine;
-
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.seata.saga.statelang.domain.StateMachine;
 
 /**
  * StateMachineRepository

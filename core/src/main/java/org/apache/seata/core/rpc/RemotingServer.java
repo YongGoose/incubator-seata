@@ -17,13 +17,12 @@
 package org.apache.seata.core.rpc;
 
 import io.netty.channel.Channel;
-import org.apache.seata.core.protocol.RpcMessage;
-import org.apache.seata.core.rpc.processor.RemotingProcessor;
-import org.apache.seata.core.protocol.MessageType;
-
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
+import org.apache.seata.core.protocol.MessageType;
+import org.apache.seata.core.protocol.RpcMessage;
+import org.apache.seata.core.rpc.processor.RemotingProcessor;
 
 /**
  * The interface Remoting server.
@@ -42,7 +41,8 @@ public interface RemotingServer {
      * @return client result message
      * @throws TimeoutException TimeoutException
      */
-    Object sendSyncRequest(String resourceId, String clientId, Object msg, boolean tryOtherApp) throws TimeoutException, IOException;
+    Object sendSyncRequest(String resourceId, String clientId, Object msg, boolean tryOtherApp)
+            throws TimeoutException, IOException;
 
     /**
      * server send sync request.
@@ -79,5 +79,4 @@ public interface RemotingServer {
      * @param executor    thread pool
      */
     void registerProcessor(final int messageType, final RemotingProcessor processor, final ExecutorService executor);
-
 }

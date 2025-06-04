@@ -16,6 +16,10 @@
  */
 package org.apache.seata.sqlparser.antlr.mysql;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLDeleteRecognizer;
 import org.apache.seata.sqlparser.SQLType;
@@ -23,11 +27,6 @@ import org.apache.seata.sqlparser.antlr.mysql.listener.DeleteSpecificationSqlLis
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlLexer;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParser;
 import org.apache.seata.sqlparser.antlr.mysql.stream.ANTLRNoCaseStringStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * AntlrMySQLDeleteRecognizer
@@ -47,7 +46,6 @@ public class AntlrMySQLDeleteRecognizer implements SQLDeleteRecognizer {
         sqlContext.setOriginalSQL(sql);
         walker2.walk(new DeleteSpecificationSqlListener(sqlContext), root);
     }
-
 
     @Override
     public String getWhereCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {

@@ -81,7 +81,6 @@ public abstract class AbstractExceptionHandler {
          * @param exception the exception
          */
         void onException(T request, S response, Exception exception);
-
     }
 
     /**
@@ -90,8 +89,9 @@ public abstract class AbstractExceptionHandler {
      * @param <T> the type parameter
      * @param <S> the type parameter
      */
-    public abstract static class AbstractCallback<T extends AbstractTransactionRequest, S extends AbstractTransactionResponse>
-        implements Callback<T, S> {
+    public abstract static class AbstractCallback<
+                    T extends AbstractTransactionRequest, S extends AbstractTransactionResponse>
+            implements Callback<T, S> {
 
         @Override
         public void onSuccess(T request, S response) {
@@ -99,8 +99,7 @@ public abstract class AbstractExceptionHandler {
         }
 
         @Override
-        public void onTransactionException(T request, S response,
-            TransactionException tex) {
+        public void onTransactionException(T request, S response, TransactionException tex) {
             response.setTransactionExceptionCode(tex.getCode());
             response.setResultCode(ResultCode.Failed);
             response.setMsg("TransactionException[" + tex.getMessage() + "]");
@@ -122,17 +121,22 @@ public abstract class AbstractExceptionHandler {
      * @param request  the request
      * @param response the response
      */
-    public <T extends AbstractTransactionRequest, S extends AbstractTransactionResponse> void exceptionHandleTemplate(Callback<T, S> callback, T request, S response) {
+    public <T extends AbstractTransactionRequest, S extends AbstractTransactionResponse> void exceptionHandleTemplate(
+            Callback<T, S> callback, T request, S response) {
         try {
             callback.execute(request, response);
             callback.onSuccess(request, response);
         } catch (TransactionException tex) {
             if (Objects.equals(TransactionExceptionCode.LockKeyConflict, tex.getCode())) {
-                LOGGER.error("this request cannot acquire global lock, you can let Seata retry by setting config [{}] = false or manually retry by yourself. request: {}",
-                        ConfigurationKeys.CLIENT_LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT, request);
+                LOGGER.error(
+                        "this request cannot acquire global lock, you can let Seata retry by setting config [{}] = false or manually retry by yourself. request: {}",
+                        ConfigurationKeys.CLIENT_LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT,
+                        request);
             } else if (Objects.equals(TransactionExceptionCode.LockKeyConflictFailFast, tex.getCode())) {
-                LOGGER.error("this request cannot acquire global lock, decide fail-fast because LockStatus is {}. request: {}",
-                        LockStatus.Rollbacking, request);
+                LOGGER.error(
+                        "this request cannot acquire global lock, decide fail-fast because LockStatus is {}. request: {}",
+                        LockStatus.Rollbacking,
+                        request);
             } else {
                 LOGGER.error("Catch TransactionException while do RPC, request: {}", request, tex);
             }
@@ -142,5 +146,4 @@ public abstract class AbstractExceptionHandler {
             callback.onException(request, response, rex);
         }
     }
-
 }

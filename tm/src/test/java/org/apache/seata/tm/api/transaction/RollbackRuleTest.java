@@ -16,14 +16,12 @@
  */
 package org.apache.seata.tm.api.transaction;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class RollbackRuleTest {
 
@@ -75,20 +73,22 @@ public class RollbackRuleTest {
     public void ctorArgExceptionStringNameVersionWithNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new RollbackRule((String) null));
     }
+
     @Test
-    public void toStringTest(){
+    public void toStringTest() {
         RollbackRule otherRollbackRuleByName = new RollbackRule(Exception.class.getName());
-        Assertions.assertEquals(otherRollbackRuleByName.toString(), String.format("RollbackRule with pattern [%s]", Exception.class.getName()));
+        Assertions.assertEquals(
+                otherRollbackRuleByName.toString(),
+                String.format("RollbackRule with pattern [%s]", Exception.class.getName()));
     }
 
     @Test
-    public void equalsTest(){
+    public void equalsTest() {
         RollbackRule otherRollbackRuleByName = new RollbackRule(Exception.class.getName());
         RollbackRule otherRollbackRuleByName2 = new NoRollbackRule(Exception.class.getName());
 
         Assertions.assertNotEquals("", otherRollbackRuleByName.getExceptionName());
         Assertions.assertEquals(otherRollbackRuleByName, otherRollbackRuleByName);
         Assertions.assertEquals(otherRollbackRuleByName, otherRollbackRuleByName2);
-
     }
 }

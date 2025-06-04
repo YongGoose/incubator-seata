@@ -16,12 +16,10 @@
  */
 package org.apache.seata.serializer.protobuf;
 
-import org.apache.seata.common.exception.ShouldNeverHappenException;
-import org.apache.seata.common.util.CollectionUtils;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-
+import org.apache.seata.common.exception.ShouldNeverHappenException;
+import org.apache.seata.common.util.CollectionUtils;
 
 public class ProtobufInnerSerializer {
 
@@ -44,13 +42,14 @@ public class ProtobufInnerSerializer {
                 m.setAccessible(true);
                 return m;
             } catch (Exception e) {
-                throw new ShouldNeverHappenException("Cannot found method " + clazz.getName()
-                    + ".toByteArray(), please check the generated code.", e);
+                throw new ShouldNeverHappenException(
+                        "Cannot found method " + clazz.getName() + ".toByteArray(), please check the generated code.",
+                        e);
             }
         });
 
         try {
-            return (byte[])method.invoke(request);
+            return (byte[]) method.invoke(request);
         } catch (Exception e) {
             throw new ShouldNeverHappenException("serialize occurs exception", e);
         }
@@ -67,18 +66,20 @@ public class ProtobufInnerSerializer {
                 Method m = clazz.getMethod(METHOD_PARSEFROM, byte[].class);
                 if (!Modifier.isStatic(m.getModifiers())) {
                     throw new ShouldNeverHappenException("Cannot found static method " + clazz.getName()
-                        + ".parseFrom(byte[]), please check the generated code");
+                            + ".parseFrom(byte[]), please check the generated code");
                 }
                 m.setAccessible(true);
                 return m;
             } catch (NoSuchMethodException e) {
-                throw new ShouldNeverHappenException("Cannot found method " + clazz.getName()
-                    + ".parseFrom(byte[]), please check the generated code", e);
+                throw new ShouldNeverHappenException(
+                        "Cannot found method " + clazz.getName()
+                                + ".parseFrom(byte[]), please check the generated code",
+                        e);
             }
         });
 
         try {
-            return (T)method.invoke(null, content);
+            return (T) method.invoke(null, content);
         } catch (Exception e) {
             throw new ShouldNeverHappenException("Error when invoke " + clazz.getName() + ".parseFrom(byte[]).", e);
         }

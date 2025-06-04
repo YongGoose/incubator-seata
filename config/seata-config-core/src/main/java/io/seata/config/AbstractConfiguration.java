@@ -17,7 +17,6 @@
 package io.seata.config;
 
 import java.time.Duration;
-
 import org.apache.seata.common.util.DurationUtil;
 import org.apache.seata.common.util.StringUtils;
 
@@ -34,7 +33,7 @@ public abstract class AbstractConfiguration implements Configuration {
     /**
      * The constant DEFAULT_XXX.
      */
-    public static final short DEFAULT_SHORT = (short)0;
+    public static final short DEFAULT_SHORT = (short) 0;
     /**
      * The constant DEFAULT_INT.
      */

@@ -17,16 +17,15 @@
 package org.apache.seata.sqlparser.struct;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Collections;
-import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.LowerCaseLinkHashMap;
@@ -213,7 +212,10 @@ public class TableMeta {
      * @return all the on update columns only name
      */
     public List<String> getOnUpdateColumnsOnlyName() {
-        return allColumns.values().stream().filter(ColumnMeta::isOnUpdate).map(ColumnMeta::getColumnName).collect(Collectors.toList());
+        return allColumns.values().stream()
+                .filter(ColumnMeta::isOnUpdate)
+                .map(ColumnMeta::getColumnName)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -242,8 +244,7 @@ public class TableMeta {
             return false;
         }
 
-
-        //at least contain one pk
+        // at least contain one pk
         if (cols.containsAll(pk)) {
             return true;
         } else {

@@ -16,12 +16,11 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server.store;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_SERVICE_SESSION_RELOAD_READ_SIZE;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_FILE_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = STORE_FILE_PREFIX)

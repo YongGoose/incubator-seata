@@ -16,8 +16,10 @@
  */
 package org.apache.seata.server.instance;
 
-import java.util.UUID;
+import static org.apache.seata.common.ConfigurationKeys.META_PREFIX;
+import static org.apache.seata.common.Constants.OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT;
 
+import java.util.UUID;
 import org.apache.seata.common.XID;
 import org.apache.seata.common.holder.ObjectHolder;
 import org.apache.seata.common.metadata.Instance;
@@ -27,16 +29,13 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 
-import static org.apache.seata.common.ConfigurationKeys.META_PREFIX;
-import static org.apache.seata.common.Constants.OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT;
-
 public class GeneralInstanceStrategy extends AbstractSeataInstanceStrategy {
 
     @Override
     public Instance serverInstanceInit() {
 
         ConfigurableEnvironment environment =
-            (ConfigurableEnvironment)ObjectHolder.INSTANCE.getObject(OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT);
+                (ConfigurableEnvironment) ObjectHolder.INSTANCE.getObject(OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT);
 
         // load node properties
         Instance instance = Instance.getInstance();
@@ -62,11 +61,12 @@ public class GeneralInstanceStrategy extends AbstractSeataInstanceStrategy {
         // load metadata
         for (PropertySource<?> propertySource : environment.getPropertySources()) {
             if (propertySource instanceof EnumerablePropertySource) {
-                EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>)propertySource;
+                EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>) propertySource;
                 for (String propertyName : enumerablePropertySource.getPropertyNames()) {
                     if (propertyName.startsWith(META_PREFIX)) {
-                        instance.addMetadata(propertyName.substring(META_PREFIX.length()),
-                            enumerablePropertySource.getProperty(propertyName));
+                        instance.addMetadata(
+                                propertyName.substring(META_PREFIX.length()),
+                                enumerablePropertySource.getProperty(propertyName));
                     }
                 }
             }
@@ -78,5 +78,4 @@ public class GeneralInstanceStrategy extends AbstractSeataInstanceStrategy {
     public Type type() {
         return Type.GENERAL;
     }
-
 }

@@ -16,6 +16,13 @@
  */
 package org.apache.seata.common.util;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,13 +35,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
-
 /**
  * The page util test.
  */
@@ -43,6 +43,7 @@ public class PageUtilTest {
     private int validPageNum;
     private int validPageSize;
     private String validTimeColumnName;
+
     @InjectMocks
     private PageUtil pageUtil;
 
@@ -52,7 +53,6 @@ public class PageUtilTest {
         validPageSize = 10;
         validTimeColumnName = "gmt_create";
         MockitoAnnotations.initMocks(this);
-
     }
 
     @Test
@@ -61,10 +61,11 @@ public class PageUtilTest {
 
         String mysqlTargetSql = "select * from test where a = 1 limit 5 offset 0";
 
-        String oracleTargetSql = "select * from " +
-            "( select ROWNUM rn, temp.* from (select * from test where a = 1) temp )" +
-            " where rn between 1 and 5";
-        String sqlserverTargetSql = "select * from (select temp.*, ROW_NUMBER() OVER(ORDER BY gmt_create desc) AS rowId from (select * from test where a = 1) temp ) t where t.rowId between 1 and 5";
+        String oracleTargetSql =
+                "select * from " + "( select ROWNUM rn, temp.* from (select * from test where a = 1) temp )"
+                        + " where rn between 1 and 5";
+        String sqlserverTargetSql =
+                "select * from (select temp.*, ROW_NUMBER() OVER(ORDER BY gmt_create desc) AS rowId from (select * from test where a = 1) temp ) t where t.rowId between 1 and 5";
 
         assertEquals(PageUtil.pageSql(sourceSql, "mysql", 1, 5), mysqlTargetSql);
         assertEquals(PageUtil.pageSql(sourceSql, "h2", 1, 5), mysqlTargetSql);
@@ -183,7 +184,8 @@ public class PageUtilTest {
     @Test
     public void getTimeStartSqlNotSupportedDBType() {
         String notSupportedDBType = "xxx";
-        assertThrows(IllegalArgumentException.class, () -> PageUtil.getTimeStartSql(notSupportedDBType, validTimeColumnName));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> PageUtil.getTimeStartSql(notSupportedDBType, validTimeColumnName));
     }
-
 }

@@ -39,8 +39,9 @@ public class SQLTypeTest {
 
     @Test
     public void testValueOfInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> SQLType.valueOf(100),
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> SQLType.valueOf(100),
                 "Should throw IllegalArgumentException for invalid value");
     }
-
 }

@@ -16,15 +16,14 @@
  */
 package org.apache.seata.integration.tx.api.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import org.junit.jupiter.api.Test;
 
 public class DubboUtilTest {
 
@@ -39,12 +38,14 @@ public class DubboUtilTest {
     }
 
     @Test
-    public void testGetAssistInterfaceForNull() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void testGetAssistInterfaceForNull()
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         assertNull(DubboUtil.getAssistInterface(null));
     }
 
     @Test
-    public void testGetAssistInterfaceForNotDubboProxy() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void testGetAssistInterfaceForNotDubboProxy()
+            throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         assertNull(DubboUtil.getAssistInterface(new ArrayList<>()));
     }
 

@@ -16,24 +16,21 @@
  */
 package org.apache.seata.xa;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.xa.DruidXADataSource;
+import com.alibaba.druid.util.JdbcUtils;
+import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
-
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.pool.xa.DruidXADataSource;
-import com.alibaba.druid.util.JdbcUtils;
-
-import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchStatus;
@@ -73,7 +70,8 @@ public class XAModeTest2 {
     private static final String mysql_password = "demo";
     private static final String mysql_driverClassName = JdbcUtils.MYSQL_DRIVER;
 
-    private static final String mysql8_jdbcUrl = "jdbc:mysql://0.0.0.0:3306/demo?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+    private static final String mysql8_jdbcUrl =
+            "jdbc:mysql://0.0.0.0:3306/demo?useUnicode=true&characterEncoding=utf-8&useSSL=false";
     private static final String mysql8_username = "demo";
     private static final String mysql8_password = "demo";
     private static final String mysql8_driverClassName = JdbcUtils.MYSQL_DRIVER_6;
@@ -94,14 +92,12 @@ public class XAModeTest2 {
         DruidDataSource druidDataSource = new DruidDataSource();
         initDruidDataSource(druidDataSource);
         return druidDataSource;
-
     }
 
     private DruidXADataSource createNewDruidXADataSource() throws Throwable {
         DruidXADataSource druidDataSource = new DruidXADataSource();
         initDruidDataSource(druidDataSource);
         return druidDataSource;
-
     }
 
     private XADataSource createNewNativeXADataSource() throws Throwable {
@@ -137,7 +133,7 @@ public class XAModeTest2 {
     private XADataSource createOracleXADataSource() {
         try {
             Class oracleXADataSourceClass = Class.forName("oracle.jdbc.xa.client.OracleXADataSource");
-            XADataSource xaDataSource = (XADataSource)oracleXADataSourceClass.newInstance();
+            XADataSource xaDataSource = (XADataSource) oracleXADataSourceClass.newInstance();
 
             Method setURLMethod = oracleXADataSourceClass.getMethod("setURL", String.class);
             setURLMethod.invoke(xaDataSource, oracle_jdbcUrl);
@@ -157,7 +153,6 @@ public class XAModeTest2 {
             ex.printStackTrace();
             return null;
         }
-
     }
 
     private void initDruidDataSource(DruidDataSource druidDataSource) throws Throwable {
@@ -205,18 +200,22 @@ public class XAModeTest2 {
             }
 
             @Override
-            public Long branchRegister(BranchType branchType, String resourceId, String clientId, String xid,
-                                       String applicationData, String lockKeys) throws TransactionException {
+            public Long branchRegister(
+                    BranchType branchType,
+                    String resourceId,
+                    String clientId,
+                    String xid,
+                    String applicationData,
+                    String lockKeys)
+                    throws TransactionException {
                 return mockBranchId;
             }
 
             @Override
-            public void branchReport(BranchType branchType, String xid, long branchId, BranchStatus status,
-                                     String applicationData) throws TransactionException {
-
-            }
+            public void branchReport(
+                    BranchType branchType, String xid, long branchId, BranchStatus status, String applicationData)
+                    throws TransactionException {}
         });
-
     }
 
     @Test
@@ -278,10 +277,10 @@ public class XAModeTest2 {
         helperStat.execute("delete from test where id = " + testRecordId);
         helperStat.close();
         helperConn.close();
-
     }
 
-    private void doTestXAModeNormalCasePhase2(boolean globalCommit, String mockXid, Long mockBranchId) throws Throwable {
+    private void doTestXAModeNormalCasePhase2(boolean globalCommit, String mockXid, Long mockBranchId)
+            throws Throwable {
         // init DataSource: helper
         DruidDataSource helperDS = createNewDruidDataSource();
 
@@ -305,8 +304,13 @@ public class XAModeTest2 {
 
         // Global Tx Phase 2:
         if (globalCommit) {
-            DefaultResourceManager.get().branchCommit(dataSourceProxyXA.getBranchType(), mockXid, mockBranchId,
-                dataSourceProxyXA.getResourceId(), null);
+            DefaultResourceManager.get()
+                    .branchCommit(
+                            dataSourceProxyXA.getBranchType(),
+                            mockXid,
+                            mockBranchId,
+                            dataSourceProxyXA.getResourceId(),
+                            null);
 
             // have a check
             helperConn = helperDS.getConnection();
@@ -321,8 +325,13 @@ public class XAModeTest2 {
             helperConn.close();
 
         } else {
-            DefaultResourceManager.get().branchRollback(dataSourceProxyXA.getBranchType(), mockXid, mockBranchId,
-                dataSourceProxyXA.getResourceId(), null);
+            DefaultResourceManager.get()
+                    .branchRollback(
+                            dataSourceProxyXA.getBranchType(),
+                            mockXid,
+                            mockBranchId,
+                            dataSourceProxyXA.getResourceId(),
+                            null);
 
             // have a check
             helperConn = helperDS.getConnection();
@@ -333,7 +342,6 @@ public class XAModeTest2 {
             helperRes.close();
             helperStat.close();
             helperConn.close();
-
         }
         System.out.println("Phase2 looks good!");
     }
@@ -433,8 +441,13 @@ public class XAModeTest2 {
         helperConn.close();
 
         // Global Tx Phase 2: run phase 2 with the same runner DS
-        DefaultResourceManager.get().branchCommit(dataSourceProxyXA.getBranchType(), mockXid, mockBranchId,
-            dataSourceProxyXA.getResourceId(), null);
+        DefaultResourceManager.get()
+                .branchCommit(
+                        dataSourceProxyXA.getBranchType(),
+                        mockXid,
+                        mockBranchId,
+                        dataSourceProxyXA.getResourceId(),
+                        null);
 
         // have a check
         helperConn = helperDS.getConnection();
@@ -462,7 +475,6 @@ public class XAModeTest2 {
 
         Assertions.assertEquals(mockXid, retrievedXid);
         Assertions.assertEquals(mockBranchId, retrievedBranchId);
-
     }
 
     @Test
@@ -473,7 +485,7 @@ public class XAModeTest2 {
         XAConnection xaConnection = xaDataSource.getXAConnection();
         XAResource xaResource = xaConnection.getXAResource();
 
-        Xid[] xids = xaResource.recover(XAResource.TMSTARTRSCAN|XAResource.TMENDRSCAN);
+        Xid[] xids = xaResource.recover(XAResource.TMSTARTRSCAN | XAResource.TMENDRSCAN);
         for (Xid xid : xids) {
             try {
                 xaResource.rollback(xid);
@@ -482,7 +494,6 @@ public class XAModeTest2 {
             }
         }
         System.out.println("Unfinished XA branches are ALL cleaned!");
-
     }
 
     @Test
@@ -598,7 +609,6 @@ public class XAModeTest2 {
         // >>> close the statement and connection
         testStat.close();
         testConn.close();
-
     }
 
     private DataSourceProxyXANative createDataSourceProxyXANative() throws Throwable {
@@ -621,5 +631,4 @@ public class XAModeTest2 {
         GlobalTransaction gtx = GlobalTransactionContext.getCurrentOrCreate();
         return gtx;
     }
-
 }

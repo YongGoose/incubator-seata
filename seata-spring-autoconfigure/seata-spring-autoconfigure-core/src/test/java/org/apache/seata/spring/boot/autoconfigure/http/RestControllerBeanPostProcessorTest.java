@@ -16,6 +16,8 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.http;
 
+import static org.mockito.Mockito.verify;
+
 import org.apache.seata.core.rpc.netty.http.ControllerManager;
 import org.apache.seata.core.rpc.netty.http.HttpInvocation;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.bind.annotation.*;
-
-import static org.mockito.Mockito.verify;
 
 public class RestControllerBeanPostProcessorTest {
 
@@ -68,6 +68,3 @@ public class RestControllerBeanPostProcessorTest {
         }
     }
 }
-
-
-

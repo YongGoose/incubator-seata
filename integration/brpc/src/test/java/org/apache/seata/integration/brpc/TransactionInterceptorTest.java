@@ -16,6 +16,8 @@
  */
 package org.apache.seata.integration.brpc;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.baidu.brpc.client.BrpcProxy;
 import com.baidu.brpc.client.RpcClient;
 import com.baidu.brpc.client.RpcClientOptions;
@@ -28,9 +30,6 @@ import org.apache.seata.integration.brpc.server.EchoService;
 import org.apache.seata.integration.brpc.server.impl.EchoServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class TransactionInterceptorTest {
 
@@ -71,7 +70,6 @@ public class TransactionInterceptorTest {
         return rpcClient;
     }
 
-
     @BeforeAll
     public static void rpcInit() {
 
@@ -84,6 +82,4 @@ public class TransactionInterceptorTest {
         rpcServerB.getInterceptors().add(new TransactionPropagationServerInterceptor());
         rpcServerB.start();
     }
-
-
 }

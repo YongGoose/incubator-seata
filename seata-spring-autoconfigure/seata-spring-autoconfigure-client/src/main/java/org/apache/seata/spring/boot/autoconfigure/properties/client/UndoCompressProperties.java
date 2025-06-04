@@ -16,12 +16,11 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.client;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.COMPRESS_PREFIX;
+
 import org.apache.seata.common.DefaultValues;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.COMPRESS_PREFIX;
-
 
 @Component
 @ConfigurationProperties(prefix = COMPRESS_PREFIX)

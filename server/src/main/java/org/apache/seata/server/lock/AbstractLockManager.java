@@ -47,7 +47,8 @@ public abstract class AbstractLockManager implements LockManager {
     }
 
     @Override
-    public boolean acquireLock(BranchSession branchSession, boolean autoCommit, boolean skipCheckLock) throws TransactionException {
+    public boolean acquireLock(BranchSession branchSession, boolean autoCommit, boolean skipCheckLock)
+            throws TransactionException {
         if (branchSession == null) {
             throw new IllegalArgumentException("branchSession can't be null for memory/file locker.");
         }
@@ -93,7 +94,6 @@ public abstract class AbstractLockManager implements LockManager {
             return false;
         }
     }
-
 
     @Override
     public void cleanAllLocks() throws TransactionException {
@@ -154,8 +154,8 @@ public abstract class AbstractLockManager implements LockManager {
      * @param branchID      the branch id
      * @return the list
      */
-    protected List<RowLock> collectRowLocks(String lockKey, String resourceId, String xid, Long transactionId,
-        Long branchID) {
+    protected List<RowLock> collectRowLocks(
+            String lockKey, String resourceId, String xid, Long transactionId, Long branchID) {
         List<RowLock> locks = new ArrayList<>();
 
         String[] tableGroupedLockKeys = lockKey.split(";");
@@ -188,10 +188,9 @@ public abstract class AbstractLockManager implements LockManager {
         }
         return locks;
     }
-    
+
     @Override
     public void updateLockStatus(String xid, LockStatus lockStatus) {
         this.getLocker().updateLockStatus(xid, lockStatus);
     }
-
 }

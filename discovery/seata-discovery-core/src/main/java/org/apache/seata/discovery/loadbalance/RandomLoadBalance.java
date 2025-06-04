@@ -18,7 +18,6 @@ package org.apache.seata.discovery.loadbalance;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
 import org.apache.seata.common.loader.LoadLevel;
 
 /**

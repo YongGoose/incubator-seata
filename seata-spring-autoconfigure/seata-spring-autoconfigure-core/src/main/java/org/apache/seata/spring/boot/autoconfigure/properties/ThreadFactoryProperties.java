@@ -16,10 +16,6 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties;
 
-import org.apache.seata.core.rpc.netty.NettyBaseConfig.WorkThreadMode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_BOSS_THREAD_PREFIX;
 import static org.apache.seata.common.DefaultValues.DEFAULT_BOSS_THREAD_SIZE;
 import static org.apache.seata.common.DefaultValues.DEFAULT_EXECUTOR_THREAD_PREFIX;
@@ -29,6 +25,9 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_SELECTOR_THREAD_SIZE
 import static org.apache.seata.common.DefaultValues.DEFAULT_WORKER_THREAD_PREFIX;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.THREAD_FACTORY_PREFIX_KEBAB_STYLE;
 
+import org.apache.seata.core.rpc.netty.NettyBaseConfig.WorkThreadMode;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = THREAD_FACTORY_PREFIX_KEBAB_STYLE)

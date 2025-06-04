@@ -18,7 +18,6 @@ package org.apache.seata.saga.engine.pcext.routers;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.saga.engine.exception.EngineExecutionException;
 import org.apache.seata.saga.engine.pcext.InterceptableStateRouter;
 import org.apache.seata.saga.engine.pcext.StateRouter;
@@ -37,7 +36,7 @@ public class EndStateRouter implements StateRouter, InterceptableStateRouter {
 
     @Override
     public Instruction route(ProcessContext context, State state) throws EngineExecutionException {
-        return null;//Return null to stop execution
+        return null; // Return null to stop execution
     }
 
     @Override

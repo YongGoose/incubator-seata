@@ -16,11 +16,10 @@
  */
 package org.apache.seata.common.util;
 
-import org.apache.seata.common.BranchDO;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.seata.common.BranchDO;
 import org.apache.seata.common.DefaultValues;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.rpc.RpcStatus;
@@ -54,8 +53,7 @@ public class BeanUtilsTest {
     @Test
     public void testMapToObject() {
         // null map
-        BranchDO branchDO =
-                (BranchDO) BeanUtils.mapToObject(null, BranchDO.class);
+        BranchDO branchDO = (BranchDO) BeanUtils.mapToObject(null, BranchDO.class);
         Assertions.assertNull(branchDO);
 
         Map<String, String> map = new HashMap<>();
@@ -108,7 +106,7 @@ public class BeanUtilsTest {
         Assertions.assertEquals(branchDO.getTransactionId(), Long.valueOf(map.get("transactionId")));
         Assertions.assertEquals(branchDO.getStatus(), Integer.valueOf(map.get("status")));
         Assertions.assertEquals(branchDO.getTest(), Double.valueOf(map.get("test")));
-        Assertions.assertEquals(branchDO.getGmtCreate().getTime(),Long.valueOf(map.get("gmtCreate")));
+        Assertions.assertEquals(branchDO.getGmtCreate().getTime(), Long.valueOf(map.get("gmtCreate")));
 
         Assertions.assertNull(BeanUtils.objectToMap(null));
 

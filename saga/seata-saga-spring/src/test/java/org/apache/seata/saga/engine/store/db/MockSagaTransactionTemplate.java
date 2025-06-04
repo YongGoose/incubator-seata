@@ -17,7 +17,6 @@
 package org.apache.seata.saga.engine.store.db;
 
 import java.util.Random;
-
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.model.GlobalStatus;
@@ -33,14 +32,11 @@ import org.apache.seata.tm.api.transaction.TransactionInfo;
 public class MockSagaTransactionTemplate implements SagaTransactionalTemplate {
 
     @Override
-    public void commitTransaction(GlobalTransaction tx) throws ExecutionException {
-
-    }
+    public void commitTransaction(GlobalTransaction tx) throws ExecutionException {}
 
     @Override
-    public void rollbackTransaction(GlobalTransaction tx, Throwable ex) throws TransactionException, ExecutionException {
-
-    }
+    public void rollbackTransaction(GlobalTransaction tx, Throwable ex)
+            throws TransactionException, ExecutionException {}
 
     @Override
     public GlobalTransaction beginTransaction(TransactionInfo txInfo) throws ExecutionException {
@@ -59,9 +55,7 @@ public class MockSagaTransactionTemplate implements SagaTransactionalTemplate {
     }
 
     @Override
-    public void reportTransaction(GlobalTransaction tx, GlobalStatus globalStatus) throws ExecutionException {
-
-    }
+    public void reportTransaction(GlobalTransaction tx, GlobalStatus globalStatus) throws ExecutionException {}
 
     @Override
     public long branchRegister(String resourceId, String clientId, String xid, String applicationData, String lockKeys)
@@ -70,17 +64,12 @@ public class MockSagaTransactionTemplate implements SagaTransactionalTemplate {
     }
 
     @Override
-    public void branchReport(String xid, long branchId, BranchStatus status, String applicationData) throws TransactionException {
-        
-    }
+    public void branchReport(String xid, long branchId, BranchStatus status, String applicationData)
+            throws TransactionException {}
 
     @Override
-    public void triggerAfterCompletion(GlobalTransaction tx) {
-
-    }
+    public void triggerAfterCompletion(GlobalTransaction tx) {}
 
     @Override
-    public void cleanUp(GlobalTransaction tx) {
-
-    }
+    public void cleanUp(GlobalTransaction tx) {}
 }

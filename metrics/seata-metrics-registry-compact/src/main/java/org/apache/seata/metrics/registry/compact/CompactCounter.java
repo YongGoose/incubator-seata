@@ -18,7 +18,6 @@ package org.apache.seata.metrics.registry.compact;
 
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.seata.metrics.Clock;
 import org.apache.seata.metrics.Counter;
 import org.apache.seata.metrics.Id;

@@ -16,10 +16,12 @@
  */
 package org.apache.seata.server.raft.execute;
 
-import org.apache.seata.common.store.LockMode;
-import org.apache.seata.common.store.SessionMode;
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
+
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.seata.common.store.LockMode;
+import org.apache.seata.common.store.SessionMode;
 import org.apache.seata.common.util.NetUtil;
 import org.apache.seata.common.util.UUIDGenerator;
 import org.apache.seata.config.ConfigurationCache;
@@ -46,9 +48,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
-
 
 /**
  */
@@ -109,8 +108,10 @@ class LockExecuteTest {
 
     @Test
     public void testGlobalRelease() throws Throwable {
-        BranchSession branchSession1 = mockBranchSession(GLOBAL_SESSION.getXid(),GLOBAL_SESSION.getTransactionId(),"t1:53");
-        BranchSession branchSession2 =  mockBranchSession(GLOBAL_SESSION.getXid(),GLOBAL_SESSION.getTransactionId(),"t1:54");
+        BranchSession branchSession1 =
+                mockBranchSession(GLOBAL_SESSION.getXid(), GLOBAL_SESSION.getTransactionId(), "t1:53");
+        BranchSession branchSession2 =
+                mockBranchSession(GLOBAL_SESSION.getXid(), GLOBAL_SESSION.getTransactionId(), "t1:54");
         GLOBAL_SESSION.add(branchSession1);
         GLOBAL_SESSION.add(branchSession2);
 
@@ -129,7 +130,8 @@ class LockExecuteTest {
 
     @Test
     public void testBranchRelease() throws Throwable {
-        BranchSession branchSession =  mockBranchSession(GLOBAL_SESSION.getXid(),GLOBAL_SESSION.getTransactionId(),"t1:55");
+        BranchSession branchSession =
+                mockBranchSession(GLOBAL_SESSION.getXid(), GLOBAL_SESSION.getTransactionId(), "t1:55");
         GLOBAL_SESSION.add(branchSession);
 
         LockManager lockerManager = LockerManagerFactory.getLockManager();
@@ -151,7 +153,7 @@ class LockExecuteTest {
         return session;
     }
 
-    private static BranchSession mockBranchSession(String xid,long transactionId,String lockKey) {
+    private static BranchSession mockBranchSession(String xid, long transactionId, String lockKey) {
         BranchSession session = new BranchSession();
         session.setXid(xid);
         session.setTransactionId(transactionId);

@@ -159,8 +159,7 @@ public abstract class AbstractDataSourceProvider implements DataSourceProvider, 
     }
 
     protected ClassLoader getDriverClassLoader() {
-        return DRIVER_LOADERS.getOrDefault(
-                getDriverClassName(), this.getClass().getClassLoader());
+        return DRIVER_LOADERS.getOrDefault(getDriverClassName(), this.getClass().getClassLoader());
     }
 
     private static Map<String, ClassLoader> createMysqlDriverClassLoaders() {

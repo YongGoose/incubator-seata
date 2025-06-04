@@ -16,11 +16,9 @@
  */
 package org.apache.seata.common.util;
 
+import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.nio.ByteBuffer;
-
 
 public class BufferUtilsTest {
 

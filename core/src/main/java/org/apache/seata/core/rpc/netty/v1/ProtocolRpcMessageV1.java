@@ -16,12 +16,11 @@
  */
 package org.apache.seata.core.rpc.netty.v1;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.rpc.netty.ProtocolRpcMessage;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * protocol v1 rpc message
@@ -181,7 +180,6 @@ public class ProtocolRpcMessageV1 implements ProtocolRpcMessage {
         rpcMessage.setBody(this.body);
         return rpcMessage;
     }
-
 
     @Override
     public void rpcMsg2ProtocolMsg(RpcMessage rpcMessage) {

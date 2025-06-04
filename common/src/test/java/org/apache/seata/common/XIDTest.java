@@ -16,12 +16,11 @@
  */
 package org.apache.seata.common;
 
-import java.util.Random;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Random;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Xid test.
@@ -74,6 +73,6 @@ public class XIDTest {
     public void testGetIpAddressAndPort() {
         XID.setPort(8080);
         XID.setIpAddress("127.0.0.1");
-        Assertions.assertEquals("127.0.0.1:8080",XID.getIpAddressAndPort());
+        Assertions.assertEquals("127.0.0.1:8080", XID.getIpAddressAndPort());
     }
 }

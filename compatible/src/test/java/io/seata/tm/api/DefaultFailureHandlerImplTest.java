@@ -19,6 +19,7 @@ package io.seata.tm.api;
 import io.netty.util.HashedWheelTimer;
 import io.seata.core.context.RootContext;
 import io.seata.tm.api.transaction.MyRuntimeException;
+import java.lang.reflect.Field;
 import org.apache.seata.common.util.ReflectionUtil;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalStatus;
@@ -27,8 +28,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Field;
 
 class DefaultFailureHandlerImplTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultFailureHandlerImplTest.class);
@@ -99,12 +98,12 @@ class DefaultFailureHandlerImplTest {
             // assert timer pendingCount: first time is 1
             Long pendingTimeout = timer.pendingTimeouts();
             Assertions.assertEquals(pendingTimeout, 1L);
-            //set globalStatus
+            // set globalStatus
             globalStatus = GlobalStatus.Committed;
             Thread.sleep(25 * 1000L);
             pendingTimeout = timer.pendingTimeouts();
             LOGGER.info("pendingTimeout {}", pendingTimeout);
-            //all timer is done
+            // all timer is done
             Assertions.assertEquals(pendingTimeout, 0L);
         } finally {
             RootContext.unbind();
@@ -130,18 +129,15 @@ class DefaultFailureHandlerImplTest {
             // assert timer pendingCount: first time is 1
             Long pendingTimeout = timer.pendingTimeouts();
             Assertions.assertEquals(pendingTimeout, 1L);
-            //set globalStatus
+            // set globalStatus
             globalStatus = GlobalStatus.Rollbacked;
             Thread.sleep(25 * 1000L);
             pendingTimeout = timer.pendingTimeouts();
             LOGGER.info("pendingTimeout {}", pendingTimeout);
-            //all timer is done
+            // all timer is done
             Assertions.assertEquals(pendingTimeout, 0L);
         } finally {
             RootContext.unbind();
         }
-
     }
-
-
 }

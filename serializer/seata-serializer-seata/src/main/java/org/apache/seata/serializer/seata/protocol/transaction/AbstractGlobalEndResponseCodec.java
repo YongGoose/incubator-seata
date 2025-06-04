@@ -16,9 +16,8 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import java.nio.ByteBuffer;
-
 import io.netty.buffer.ByteBuf;
+import java.nio.ByteBuffer;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.core.protocol.transaction.AbstractGlobalEndResponse;
 
@@ -37,7 +36,7 @@ public abstract class AbstractGlobalEndResponseCodec extends AbstractTransaction
     public <T> void encode(T t, ByteBuf in) {
         super.encode(t, in);
 
-        AbstractGlobalEndResponse abstractGlobalEndResponse = (AbstractGlobalEndResponse)t;
+        AbstractGlobalEndResponse abstractGlobalEndResponse = (AbstractGlobalEndResponse) t;
         GlobalStatus globalStatus = abstractGlobalEndResponse.getGlobalStatus();
         in.writeByte(globalStatus.getCode());
     }
@@ -46,9 +45,8 @@ public abstract class AbstractGlobalEndResponseCodec extends AbstractTransaction
     public <T> void decode(T t, ByteBuffer in) {
         super.decode(t, in);
 
-        AbstractGlobalEndResponse abstractGlobalEndResponse = (AbstractGlobalEndResponse)t;
+        AbstractGlobalEndResponse abstractGlobalEndResponse = (AbstractGlobalEndResponse) t;
 
         abstractGlobalEndResponse.setGlobalStatus(GlobalStatus.get(in.get()));
     }
-
 }

@@ -17,13 +17,11 @@
 package org.apache.seata.server.lock.redis;
 
 import java.io.IOException;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.core.lock.Locker;
 import org.apache.seata.server.session.BranchSession;
 import org.apache.seata.server.storage.redis.lock.RedisLockManager;
 import org.apache.seata.server.storage.redis.lock.RedisLuaLocker;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,11 +49,9 @@ public class RedisLuaLockManagerTest extends RedisLockManagerTest {
         lockManager = new RedisLuaLockManagerTest.RedisLockManagerForTest();
     }
 
-
     public static class RedisLockManagerForTest extends RedisLockManager {
 
-        public RedisLockManagerForTest() {
-        }
+        public RedisLockManagerForTest() {}
 
         @Override
         public Locker getLocker(BranchSession branchSession) {

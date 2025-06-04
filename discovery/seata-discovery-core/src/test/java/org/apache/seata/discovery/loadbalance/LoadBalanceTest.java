@@ -16,11 +16,6 @@
  */
 package org.apache.seata.discovery.loadbalance;
 
-import org.apache.seata.common.rpc.RpcStatus;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -31,6 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
+import org.apache.seata.common.rpc.RpcStatus;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Created by guoyao on 2019/2/14.
@@ -176,8 +175,8 @@ public class LoadBalanceTest {
      * @param loadBalance the load balance
      * @return the selected counter
      */
-    public Map<InetSocketAddress, AtomicLong> getSelectedCounter(int runs, List<InetSocketAddress> addresses,
-                                                                 LoadBalance loadBalance) {
+    public Map<InetSocketAddress, AtomicLong> getSelectedCounter(
+            int runs, List<InetSocketAddress> addresses, LoadBalance loadBalance) {
         Assertions.assertNotNull(loadBalance);
         Map<InetSocketAddress, AtomicLong> counter = new ConcurrentHashMap<>();
         for (InetSocketAddress address : addresses) {
@@ -189,7 +188,7 @@ public class LoadBalanceTest {
                 counter.get(selectAddress).incrementAndGet();
             }
         } catch (Exception e) {
-            //do nothing
+            // do nothing
         }
         return counter;
     }
@@ -216,13 +215,12 @@ public class LoadBalanceTest {
      * @return Stream<List < InetSocketAddress>>
      */
     static Stream<List<InetSocketAddress>> addressProvider() {
-        return Stream.of(
-                Arrays.asList(new InetSocketAddress("127.0.0.1", 8091),
-                        new InetSocketAddress("127.0.0.1", 8092),
-                        new InetSocketAddress("127.0.0.1", 8093),
-                        new InetSocketAddress("127.0.0.1", 8094),
-                        new InetSocketAddress("127.0.0.1", 8095),
-                        new InetSocketAddress("2000:0000:0000:0000:0001:2345:6789:abcd", 8092))
-        );
+        return Stream.of(Arrays.asList(
+                new InetSocketAddress("127.0.0.1", 8091),
+                new InetSocketAddress("127.0.0.1", 8092),
+                new InetSocketAddress("127.0.0.1", 8093),
+                new InetSocketAddress("127.0.0.1", 8094),
+                new InetSocketAddress("127.0.0.1", 8095),
+                new InetSocketAddress("2000:0000:0000:0000:0001:2345:6789:abcd", 8092)));
     }
 }

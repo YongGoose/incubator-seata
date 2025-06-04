@@ -37,8 +37,7 @@ public class DataBaseLocker extends AbstractLocker {
     /**
      * Instantiates a new Data base locker.
      */
-    public DataBaseLocker() {
-    }
+    public DataBaseLocker() {}
 
     /**
      * Instantiates a new Data base locker.
@@ -139,5 +138,4 @@ public class DataBaseLocker extends AbstractLocker {
     public void setLockStore(LockStore lockStore) {
         this.lockStore = lockStore;
     }
-
 }

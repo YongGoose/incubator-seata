@@ -16,9 +16,8 @@
  */
 package org.apache.seata.integration.tx.api.interceptor;
 
-import org.apache.seata.core.model.BranchType;
-
 import java.util.Map;
+import org.apache.seata.core.model.BranchType;
 
 /**
  * The two phase business action parameters.

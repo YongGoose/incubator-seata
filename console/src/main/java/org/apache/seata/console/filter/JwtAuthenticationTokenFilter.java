@@ -17,12 +17,10 @@
 package org.apache.seata.console.filter;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.seata.console.config.WebSecurityConfig;
 import org.apache.seata.console.utils.JwtTokenUtils;
 import org.springframework.security.core.Authentication;
@@ -49,10 +47,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
         String jwt = resolveToken(request);
 
-        if (jwt != null && !"".equals(jwt.trim()) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (jwt != null
+                && !"".equals(jwt.trim())
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (this.tokenProvider.validateToken(jwt)) {
                 /**
                  * get auth info
@@ -83,4 +83,3 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         return null;
     }
 }
-

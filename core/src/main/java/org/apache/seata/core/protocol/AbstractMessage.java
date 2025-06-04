@@ -17,13 +17,12 @@
 package org.apache.seata.core.protocol;
 
 import io.netty.channel.ChannelHandlerContext;
+import java.io.Serializable;
+import java.nio.charset.Charset;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.nio.charset.Charset;
 
 /**
  * The type Abstract message.
@@ -55,7 +54,7 @@ public abstract class AbstractMessage implements MessageTypeAware, Serializable 
         int ret = 0;
         for (int i = 0; i < 4 && i + offset < bytes.length; i++) {
             ret <<= 8;
-            ret |= (int)bytes[i + offset] & 0xFF;
+            ret |= (int) bytes[i + offset] & 0xFF;
         }
         return ret;
     }
@@ -68,10 +67,10 @@ public abstract class AbstractMessage implements MessageTypeAware, Serializable 
      * @param offset the offset
      */
     public static void intToBytes(int i, byte[] bytes, int offset) {
-        bytes[offset] = (byte)((i >> 24) & 0xFF);
-        bytes[offset + 1] = (byte)((i >> 16) & 0xFF);
-        bytes[offset + 2] = (byte)((i >> 8) & 0xFF);
-        bytes[offset + 3] = (byte)(i & 0xFF);
+        bytes[offset] = (byte) ((i >> 24) & 0xFF);
+        bytes[offset + 1] = (byte) ((i >> 16) & 0xFF);
+        bytes[offset + 2] = (byte) ((i >> 8) & 0xFF);
+        bytes[offset + 3] = (byte) (i & 0xFF);
     }
 
     @Override

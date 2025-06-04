@@ -110,11 +110,11 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setAfterImage(afterImage);
 
         MariadbEscapeHandlerTest.MariadbUndoUpdateExecutorExtension mariadbUndoUpdateExecutorExtension =
-            new MariadbEscapeHandlerTest.MariadbUndoUpdateExecutorExtension(sqlUndoLog);
+                new MariadbEscapeHandlerTest.MariadbUndoUpdateExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("UPDATE `lock` SET `desc` = ?, since = ? WHERE `key` = ?",
-            mariadbUndoUpdateExecutorExtension.getSql().trim());
-
+        Assertions.assertEquals(
+                "UPDATE `lock` SET `desc` = ?, since = ? WHERE `key` = ?",
+                mariadbUndoUpdateExecutorExtension.getSql().trim());
     }
 
     /**
@@ -179,11 +179,11 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setAfterImage(afterImage);
 
         MariadbEscapeHandlerTest.MariadbUndoInsertExecutorExtension mariadbUndoInsertExecutorExtension =
-            new MariadbEscapeHandlerTest.MariadbUndoInsertExecutorExtension(sqlUndoLog);
+                new MariadbEscapeHandlerTest.MariadbUndoInsertExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("DELETE FROM `lock` WHERE `key` = ?",
-            mariadbUndoInsertExecutorExtension.getSql().trim());
-
+        Assertions.assertEquals(
+                "DELETE FROM `lock` WHERE `key` = ?",
+                mariadbUndoInsertExecutorExtension.getSql().trim());
     }
 
     /**
@@ -248,11 +248,11 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setBeforeImage(beforeImage);
 
         MariadbEscapeHandlerTest.MariadbUndoDeleteExecutorExtension mariadbUndoDeleteExecutorExtension =
-            new MariadbEscapeHandlerTest.MariadbUndoDeleteExecutorExtension(sqlUndoLog);
+                new MariadbEscapeHandlerTest.MariadbUndoDeleteExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("INSERT INTO `lock` (`desc`, since, `key`) VALUES (?, ?, ?)",
-            mariadbUndoDeleteExecutorExtension.getSql());
-
+        Assertions.assertEquals(
+                "INSERT INTO `lock` (`desc`, since, `key`) VALUES (?, ?, ?)",
+                mariadbUndoDeleteExecutorExtension.getSql());
     }
 
     private static class MariadbUndoUpdateExecutorExtension extends MariadbUndoUpdateExecutor {

@@ -16,10 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server.session;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SESSION_PREFIX;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SESSION_PREFIX;
 
 /**
  * session properties

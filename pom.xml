@@ -320,7 +320,7 @@
                 <jdk>[1.8, 11)</jdk>
             </activation>
             <properties>
-                <googleJavaFormat.version>1.27.0</googleJavaFormat.version>
+                <palantirJavaFormat.version>1.1.0</palantirJavaFormat.version>
             </properties>
         </profile>
 
@@ -330,7 +330,7 @@
                 <jdk>[11, 21)</jdk>
             </activation>
             <properties>
-                <googleJavaFormat.version>1.27.0</googleJavaFormat.version>
+                <palantirJavaFormat.version>2.28.0</palantirJavaFormat.version>
             </properties>
         </profile>
 
@@ -340,7 +340,7 @@
                 <jdk>[21,)</jdk>
             </activation>
             <properties>
-                <googleJavaFormat.version>1.27.0</googleJavaFormat.version>
+                <palantirJavaFormat.version>2.39.0</palantirJavaFormat.version>
             </properties>
         </profile>
         <profile>
@@ -363,12 +363,12 @@
                                     <exclude>**/antlr/mysql/antlr/*.*</exclude>
                                     <exclude>**/antlr/mysql/stream/ANTLRNoCaseStringStream.java</exclude>
                                 </excludes>
-                                <googleJavaFormat>
-                                    <version>${googleJavaFormat.version}</version>
-                                    <style>AOSP</style>
-                                    <reflowLongStrings>true</reflowLongStrings>
-                                    <formatJavadoc>false</formatJavadoc>
-                                </googleJavaFormat>
+                                <palantirJavaFormat>
+                                    <version>${palantirJavaFormat.version}</version>
+                                </palantirJavaFormat>
+                                <removeUnusedImports/>
+                                <trimTrailingWhitespace/>
+                                <endWithNewline/>
                             </java>
                         </configuration>
                         <executions>

@@ -16,6 +16,8 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.HTTP_PREFIX;
+
 import org.apache.seata.integration.http.JakartaSeataWebMvcConfigurer;
 import org.apache.seata.integration.http.SeataWebMvcConfigurer;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -26,8 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.HTTP_PREFIX;
 
 /**
  * Auto bean add for spring webmvc if in springboot env.

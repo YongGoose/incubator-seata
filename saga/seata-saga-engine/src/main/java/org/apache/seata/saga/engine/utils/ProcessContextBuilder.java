@@ -17,7 +17,6 @@
 package org.apache.seata.saga.engine.utils;
 
 import java.util.Map;
-
 import org.apache.seata.saga.engine.AsyncCallback;
 import org.apache.seata.saga.engine.StateMachineConfig;
 import org.apache.seata.saga.engine.StateMachineEngine;
@@ -73,8 +72,8 @@ public class ProcessContextBuilder {
     public ProcessContextBuilder withStateMachineInstance(StateMachineInstance stateMachineInstance) {
         if (stateMachineInstance != null) {
             this.processContext.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_INST, stateMachineInstance);
-            this.processContext.setVariable(DomainConstants.VAR_NAME_STATEMACHINE,
-                stateMachineInstance.getStateMachine());
+            this.processContext.setVariable(
+                    DomainConstants.VAR_NAME_STATEMACHINE, stateMachineInstance.getStateMachine());
         }
         return this;
     }

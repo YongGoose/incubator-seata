@@ -16,10 +16,9 @@
  */
 package org.apache.seata.compressor.zstd;
 
-import org.junit.jupiter.api.Test;
-
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import org.junit.jupiter.api.Test;
 
 /**
  * the Zstd Compressor test
@@ -38,7 +37,7 @@ public class ZstdCompressorTest {
 
         ZstdCompressor compressor = new ZstdCompressor();
         long start = 0;
-        for (int i = 0; i < 1010; i ++) {
+        for (int i = 0; i < 1010; i++) {
             if (i == 10) {
                 start = System.currentTimeMillis();
             }

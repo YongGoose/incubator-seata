@@ -43,7 +43,7 @@ public interface SessionManager extends Disposable {
      * @param xid the xid
      * @return the global session
      */
-    GlobalSession findGlobalSession(String xid) ;
+    GlobalSession findGlobalSession(String xid);
 
     /**
      * Find global session global session.

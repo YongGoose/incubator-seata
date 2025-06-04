@@ -16,6 +16,13 @@
  */
 package org.apache.seata.common.metadata.namingserver;
 
+import static org.apache.seata.common.util.CollectionUtils.mapToJsonString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -24,13 +31,6 @@ import org.apache.seata.common.metadata.ClusterRole;
 import org.apache.seata.common.metadata.Instance;
 import org.apache.seata.common.metadata.Node;
 import org.junit.jupiter.api.Test;
-
-import static org.apache.seata.common.util.CollectionUtils.mapToJsonString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class InstanceTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -95,8 +95,12 @@ class InstanceTest {
         assertEquals(instance.getNamespace(), deserializedInstance.getNamespace());
         assertEquals(instance.getClusterName(), deserializedInstance.getClusterName());
         assertEquals(instance.getUnit(), deserializedInstance.getUnit());
-        assertEquals(instance.getControl().getPort(), deserializedInstance.getControl().getPort());
-        assertEquals(instance.getTransaction().getPort(), deserializedInstance.getTransaction().getPort());
+        assertEquals(
+                instance.getControl().getPort(),
+                deserializedInstance.getControl().getPort());
+        assertEquals(
+                instance.getTransaction().getPort(),
+                deserializedInstance.getTransaction().getPort());
         assertEquals(instance.getWeight(), deserializedInstance.getWeight(), 0.0);
         assertEquals(instance.isHealthy(), deserializedInstance.isHealthy());
         assertEquals(instance.getTerm(), deserializedInstance.getTerm());

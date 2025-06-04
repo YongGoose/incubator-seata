@@ -17,14 +17,13 @@
 package org.apache.seata.core.rpc;
 
 import io.netty.channel.Channel;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.protocol.MessageTypeAware;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.protocol.Version;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * the type ServerSkipMsgHelper

@@ -16,6 +16,7 @@
  */
 package org.apache.seata.sqlparser.druid.polardbx;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.junit.jupiter.api.Assertions;
@@ -84,8 +83,8 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         Assertions.assertEquals("t", recognizer.getTableName());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))))
+        ParametersHolder parametersHolder = () -> Stream.of(new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                        1, new ArrayList<>(Collections.singletonList(1))))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Collections.singletonList(1)), paramAppenderList);
@@ -104,8 +103,10 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
         ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))))
+                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                1, new ArrayList<>(Collections.singletonList(1))),
+                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                2, new ArrayList<>(Collections.singletonList(2))))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2)), paramAppenderList);
@@ -124,8 +125,10 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
         ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))))
+                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                1, new ArrayList<>(Collections.singletonList(1))),
+                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                2, new ArrayList<>(Collections.singletonList(2))))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2)), paramAppenderList);
@@ -144,13 +147,15 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
         ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(3, new ArrayList<>(Collections.singletonList("%test%"))))
+                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                1, new ArrayList<>(Collections.singletonList(1))),
+                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                2, new ArrayList<>(Collections.singletonList(2))),
+                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                3, new ArrayList<>(Collections.singletonList("%test%"))))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2, "%test%")), paramAppenderList);
-        Assertions.assertEquals("id IN (?, ?)\n" +
-                "\tAND name LIKE ?", whereCondition);
+        Assertions.assertEquals("id IN (?, ?)\n" + "\tAND name LIKE ?", whereCondition);
     }
 }

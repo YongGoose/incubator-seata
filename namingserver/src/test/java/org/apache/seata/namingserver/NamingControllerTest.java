@@ -16,6 +16,15 @@
  */
 package org.apache.seata.namingserver;
 
+import static org.apache.seata.common.NamingServerConstants.CONSTANT_GROUP;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.apache.seata.common.metadata.Cluster;
 import org.apache.seata.common.metadata.Node;
 import org.apache.seata.common.metadata.namingserver.MetaResponse;
@@ -32,18 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-
-import static org.apache.seata.common.NamingServerConstants.CONSTANT_GROUP;
-import static org.junit.jupiter.api.Assertions.*;
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class NamingControllerTest {
@@ -53,9 +50,9 @@ class NamingControllerTest {
 
     @Value("${heartbeat.period}")
     private int period;
+
     @Autowired
     NamingController namingController;
-
 
     @Test
     void mockRegister() {
@@ -145,7 +142,7 @@ class NamingControllerTest {
         vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
         namingController.registerInstance(namespace, clusterName, unitName, node);
-        //namingController.changeGroup(namespace, clusterName, vGroup, vGroup);
+        // namingController.changeGroup(namespace, clusterName, vGroup, vGroup);
         MetaResponse metaResponse = namingController.discovery(vGroup, namespace);
         assertNotNull(metaResponse);
         assertNotNull(metaResponse.getClusterList());
@@ -348,7 +345,8 @@ class NamingControllerTest {
         String vGroup = "testAddGroupMessageSuccess";
         NamingManager mockNamingManager = Mockito.mock(NamingManager.class);
         Result<String> expectedResult = new Result<>("200", "add vGroup successfully!");
-        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName)).thenReturn(expectedResult);
+        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName))
+                .thenReturn(expectedResult);
         try {
             Field field = NamingController.class.getDeclaredField("namingManager");
             field.setAccessible(true);
@@ -358,7 +356,9 @@ class NamingControllerTest {
                 Result<String> result = namingController.addGroup(namespace, clusterName, unitName, vGroup);
                 assertNotNull(result);
                 assertEquals("200", result.getCode());
-                assertEquals("change vGroup " + vGroup + "to cluster " + clusterName + " successfully!", result.getMessage());
+                assertEquals(
+                        "change vGroup " + vGroup + "to cluster " + clusterName + " successfully!",
+                        result.getMessage());
                 Mockito.verify(mockNamingManager).createGroup(namespace, vGroup, clusterName, unitName);
             } finally {
                 field.set(namingController, originalNamingManager);
@@ -376,7 +376,8 @@ class NamingControllerTest {
         String vGroup = "testAddGroupMessageFailure";
         NamingManager mockNamingManager = Mockito.mock(NamingManager.class);
         Result<String> expectedResult = new Result<>("500", "add vGroup in new cluster failed");
-        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName)).thenReturn(expectedResult);
+        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName))
+                .thenReturn(expectedResult);
         try {
             Field field = NamingController.class.getDeclaredField("namingManager");
             field.setAccessible(true);
@@ -395,5 +396,4 @@ class NamingControllerTest {
             fail("Test failed due to exception: " + e.getMessage());
         }
     }
-
 }

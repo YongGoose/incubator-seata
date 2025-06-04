@@ -17,9 +17,7 @@
 package org.apache.seata.discovery.registry.consul;
 
 import com.ecwid.consul.v1.health.model.HealthService;
-
 import java.util.List;
-
 
 public interface ConsulListener {
     /**

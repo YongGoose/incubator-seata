@@ -16,6 +16,10 @@
  */
 package org.apache.seata.server.storage.db.store;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.LoadLevel;
@@ -26,11 +30,6 @@ import org.apache.seata.core.store.MappingDO;
 import org.apache.seata.core.store.db.DataSourceProvider;
 import org.apache.seata.server.store.VGroupMappingStoreManager;
 
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @LoadLevel(name = "db")
 public class DataBaseVGroupMappingStoreManager implements VGroupMappingStoreManager {
     protected VGroupMappingDataBaseDAO vGroupMappingDataBaseDAO;
@@ -39,8 +38,9 @@ public class DataBaseVGroupMappingStoreManager implements VGroupMappingStoreMana
 
     public DataBaseVGroupMappingStoreManager() {
         String datasourceType = CONFIG.getConfig(ConfigurationKeys.STORE_DB_DATASOURCE_TYPE);
-        //init dataSource
-        DataSource vGroupMappingDataSource = EnhancedServiceLoader.load(DataSourceProvider.class, datasourceType).provide();
+        // init dataSource
+        DataSource vGroupMappingDataSource = EnhancedServiceLoader.load(DataSourceProvider.class, datasourceType)
+                .provide();
         vGroupMappingDataBaseDAO = new VGroupMappingDataBaseDAO(vGroupMappingDataSource);
     }
 
@@ -66,6 +66,4 @@ public class DataBaseVGroupMappingStoreManager implements VGroupMappingStoreMana
         }
         return mappings;
     }
-
-
 }

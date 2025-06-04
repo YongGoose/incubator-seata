@@ -16,17 +16,15 @@
  */
 package org.apache.seata.serializer.hessian;
 
+import com.caucho.hessian.io.Hessian2Input;
+import com.caucho.hessian.io.Hessian2Output;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import com.caucho.hessian.io.Hessian2Input;
-import com.caucho.hessian.io.Hessian2Output;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.core.serializer.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 @LoadLevel(name = "HESSIAN")
 @Deprecated
@@ -55,7 +53,7 @@ public class HessianSerializer implements Serializer {
         try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
             Hessian2Input input = new Hessian2Input(is);
             input.setSerializerFactory(HessianSerializerFactory.getInstance());
-            obj = (T)input.readObject();
+            obj = (T) input.readObject();
             input.close();
         } catch (IOException e) {
             LOGGER.error("Hessian decode error:{}", e.getMessage(), e);
