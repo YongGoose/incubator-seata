@@ -16,9 +16,9 @@
  */
 package org.apache.seata.integration.tx.api.util;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import javax.annotation.Nullable;
 
 /**
  * from spring utils

@@ -16,11 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.CONFIG_CONSUL_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = CONFIG_CONSUL_PREFIX)
@@ -46,6 +45,7 @@ public class ConfigConsulProperties {
         this.key = key;
         return this;
     }
+
     public String getAclToken() {
         return aclToken;
     }

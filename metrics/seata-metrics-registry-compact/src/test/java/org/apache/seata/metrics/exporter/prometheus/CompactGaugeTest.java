@@ -16,6 +16,10 @@
  */
 package org.apache.seata.metrics.exporter.prometheus;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+import java.util.function.Supplier;
 import org.apache.seata.metrics.Clock;
 import org.apache.seata.metrics.Id;
 import org.apache.seata.metrics.Measurement;
@@ -25,16 +29,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
 public class CompactGaugeTest {
     @Mock
     private Id id;
+
     @Mock
     private Supplier<Number> supplier;
+
     @Mock
     private Clock clock;
 

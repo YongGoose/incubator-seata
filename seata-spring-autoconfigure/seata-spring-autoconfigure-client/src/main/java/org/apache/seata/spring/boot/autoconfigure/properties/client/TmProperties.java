@@ -16,9 +16,6 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.client;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_GLOBAL_TRANSACTION_TIMEOUT;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TM_COMMIT_RETRY_COUNT;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TM_DEGRADE_CHECK;
@@ -28,6 +25,8 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_TM_ROLLBACK_RETRY_CO
 import static org.apache.seata.common.DefaultValues.TM_INTERCEPTOR_ORDER;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_TM_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = CLIENT_TM_PREFIX)

@@ -18,7 +18,6 @@ package org.apache.seata.common.holder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 
 /**
@@ -37,7 +36,11 @@ public enum ObjectHolder {
     }
 
     public <T> T getObject(Class<T> clasz) {
-        return clasz.cast(OBJECT_MAP.values().stream().filter(clasz::isInstance).findAny().orElseThrow(() -> new ShouldNeverHappenException("Can't find any object of class " + clasz.getName())));
+        return clasz.cast(OBJECT_MAP.values().stream()
+                .filter(clasz::isInstance)
+                .findAny()
+                .orElseThrow(
+                        () -> new ShouldNeverHappenException("Can't find any object of class " + clasz.getName())));
     }
 
     /**

@@ -18,7 +18,6 @@ package org.apache.seata.rm.datasource.undo;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.CollectionUtils;
 
@@ -37,7 +36,7 @@ public class UndoExecutorHolderFactory {
      * @return the UndoExecutorGroup
      */
     public static UndoExecutorHolder getUndoExecutorHolder(String dbType) {
-        return CollectionUtils.computeIfAbsent(UNDO_EXECUTOR_HOLDER_MAP, dbType,
-            key -> EnhancedServiceLoader.load(UndoExecutorHolder.class, dbType));
+        return CollectionUtils.computeIfAbsent(
+                UNDO_EXECUTOR_HOLDER_MAP, dbType, key -> EnhancedServiceLoader.load(UndoExecutorHolder.class, dbType));
     }
 }

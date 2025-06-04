@@ -16,18 +16,17 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
+import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOrderingExpr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
-import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOrderingExpr;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLType;
@@ -62,8 +61,10 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         Assertions.assertEquals(SQLType.UPDATE, sqlServerUpdateRecognizer.getSQLType());
         Assertions.assertEquals("t1", sqlServerUpdateRecognizer.getTableName());
         Assertions.assertEquals(1, sqlServerUpdateRecognizer.getUpdateColumns().size());
-        Assertions.assertEquals("name", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
+        Assertions.assertEquals(
+                "name", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
         Assertions.assertEquals("id = 'id1'", sqlServerUpdateRecognizer.getWhereCondition());
     }
 
@@ -83,10 +84,14 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         Assertions.assertEquals(SQLType.UPDATE, sqlServerUpdateRecognizer.getSQLType());
         Assertions.assertEquals("t1", sqlServerUpdateRecognizer.getTableName());
         Assertions.assertEquals(2, sqlServerUpdateRecognizer.getUpdateColumns().size());
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
-        Assertions.assertEquals("name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
-        Assertions.assertEquals("name2", sqlServerUpdateRecognizer.getUpdateValues().get(1));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
+        Assertions.assertEquals(
+                "name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
+        Assertions.assertEquals(
+                "name2", sqlServerUpdateRecognizer.getUpdateValues().get(1));
         Assertions.assertEquals("id = 'id1'", sqlServerUpdateRecognizer.getWhereCondition());
     }
 
@@ -105,19 +110,23 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         Assertions.assertEquals(sql, sqlServerUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerUpdateRecognizer.getTableName());
         Assertions.assertEquals(2, sqlServerUpdateRecognizer.getUpdateColumns().size());
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
         Assertions.assertEquals("?", sqlServerUpdateRecognizer.getUpdateValues().get(0));
-        Assertions.assertEquals("name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
+        Assertions.assertEquals(
+                "name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
         Assertions.assertEquals("?", sqlServerUpdateRecognizer.getUpdateValues().get(1));
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = sqlServerUpdateRecognizer.getWhereCondition(() -> {
-            ArrayList<Object> idParam = new ArrayList<>();
-            idParam.add("id1");
-            Map<Integer, ArrayList<Object>> result = new HashMap<>();
-            result.put(3, idParam);
-            return result;
-        }, paramAppenderList);
+        String whereCondition = sqlServerUpdateRecognizer.getWhereCondition(
+                () -> {
+                    ArrayList<Object> idParam = new ArrayList<>();
+                    idParam.add("id1");
+                    Map<Integer, ArrayList<Object>> result = new HashMap<>();
+                    result.put(3, idParam);
+                    return result;
+                },
+                paramAppenderList);
 
         Assertions.assertEquals(Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
 
@@ -139,22 +148,28 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         Assertions.assertEquals(sql, sqlServerUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerUpdateRecognizer.getTableName());
         Assertions.assertEquals(2, sqlServerUpdateRecognizer.getUpdateColumns().size());
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
-        Assertions.assertEquals("name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
-        Assertions.assertEquals("name2", sqlServerUpdateRecognizer.getUpdateValues().get(1));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
+        Assertions.assertEquals(
+                "name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
+        Assertions.assertEquals(
+                "name2", sqlServerUpdateRecognizer.getUpdateValues().get(1));
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = sqlServerUpdateRecognizer.getWhereCondition(() -> {
-            ArrayList<Object> id1Param = new ArrayList<>();
-            id1Param.add("id1");
-            ArrayList<Object> id2Param = new ArrayList<>();
-            id2Param.add("id2");
-            Map<Integer, ArrayList<Object>> result = new HashMap<>();
-            result.put(1, id1Param);
-            result.put(2, id2Param);
-            return result;
-        }, paramAppenderList);
+        String whereCondition = sqlServerUpdateRecognizer.getWhereCondition(
+                () -> {
+                    ArrayList<Object> id1Param = new ArrayList<>();
+                    id1Param.add("id1");
+                    ArrayList<Object> id2Param = new ArrayList<>();
+                    id2Param.add("id2");
+                    Map<Integer, ArrayList<Object>> result = new HashMap<>();
+                    result.put(1, id1Param);
+                    result.put(2, id2Param);
+                    return result;
+                },
+                paramAppenderList);
 
         Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
 
@@ -176,22 +191,28 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         Assertions.assertEquals(sql, sqlServerUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerUpdateRecognizer.getTableName());
         Assertions.assertEquals(2, sqlServerUpdateRecognizer.getUpdateColumns().size());
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
-        Assertions.assertEquals("name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
-        Assertions.assertEquals("name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
-        Assertions.assertEquals("name2", sqlServerUpdateRecognizer.getUpdateValues().get(1));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateColumns().get(0));
+        Assertions.assertEquals(
+                "name1", sqlServerUpdateRecognizer.getUpdateValues().get(0));
+        Assertions.assertEquals(
+                "name2", sqlServerUpdateRecognizer.getUpdateColumns().get(1));
+        Assertions.assertEquals(
+                "name2", sqlServerUpdateRecognizer.getUpdateValues().get(1));
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = sqlServerUpdateRecognizer.getWhereCondition(() -> {
-            ArrayList<Object> id1Param = new ArrayList<>();
-            id1Param.add("id1");
-            ArrayList<Object> id2Param = new ArrayList<>();
-            id2Param.add("id2");
-            Map<Integer, ArrayList<Object>> result = new HashMap<>();
-            result.put(1, id1Param);
-            result.put(2, id2Param);
-            return result;
-        }, paramAppenderList);
+        String whereCondition = sqlServerUpdateRecognizer.getWhereCondition(
+                () -> {
+                    ArrayList<Object> id1Param = new ArrayList<>();
+                    id1Param.add("id1");
+                    ArrayList<Object> id2Param = new ArrayList<>();
+                    id2Param.add("id2");
+                    Map<Integer, ArrayList<Object>> result = new HashMap<>();
+                    result.put(1, id1Param);
+                    result.put(2, id2Param);
+                    return result;
+                },
+                paramAppenderList);
 
         Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
         Assertions.assertEquals("id BETWEEN ? AND ?", whereCondition);
@@ -229,7 +250,7 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         updateColumns = recognizer.getUpdateColumns();
         Assertions.assertEquals(updateColumns.size(), 3);
 
-        //test with error
+        // test with error
         Assertions.assertThrows(SQLParsingException.class, () -> {
             String s = "update t set a = a";
             SQLStatement sqlStatement1 = getSQLStatement(s);
@@ -277,7 +298,7 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         updateValues = recognizer.getUpdateValues();
         Assertions.assertEquals(updateValues.size(), 1);
 
-        //test with top
+        // test with top
         Assertions.assertThrows(NotSupportYetException.class, () -> {
             String s = "update top(1) t set a = ?";
             SQLStatement sqlStatement1 = getSQLStatement(s);
@@ -322,7 +343,7 @@ public class SqlServerUpdateRecognizerTest extends AbstractRecognizerTest {
         SqlServerUpdateRecognizer recognizer = new SqlServerUpdateRecognizer(sql, sqlStatement);
         Assertions.assertEquals("t", recognizer.getTableName());
 
-        //test for alias
+        // test for alias
         sql = "update t t1 set a = ?";
         sqlStatement = getSQLStatement(sql);
         recognizer = new SqlServerUpdateRecognizer(sql, sqlStatement);

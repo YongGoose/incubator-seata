@@ -16,14 +16,13 @@
  */
 package org.apache.seata.common.io;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * file loader
@@ -55,16 +54,14 @@ public class FileLoader {
         URL resourceUrl = FileLoader.class.getClassLoader().getResource("");
         String[] tryPaths;
         if (resourceUrl != null) {
-            tryPaths = new String[]{
+            tryPaths = new String[] {
                 // first: project dir
                 resourceUrl.getPath() + decodedPath,
                 // second: system path
                 decodedPath
             };
         } else {
-            tryPaths = new String[]{
-                decodedPath
-            };
+            tryPaths = new String[] {decodedPath};
         }
 
         for (String tryPath : tryPaths) {
@@ -76,5 +73,4 @@ public class FileLoader {
 
         return null;
     }
-
 }

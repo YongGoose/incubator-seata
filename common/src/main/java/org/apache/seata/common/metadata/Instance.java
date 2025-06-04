@@ -16,10 +16,8 @@
  */
 package org.apache.seata.common.metadata;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +37,7 @@ public class Instance {
     private ClusterRole role = ClusterRole.MEMBER;
     private Map<String, Object> metadata = new HashMap<>();
 
-    private Instance() {
-    }
+    private Instance() {}
 
     public static Instance getInstance() {
         return SingletonHolder.SERVER_INSTANCE;
@@ -49,7 +46,6 @@ public class Instance {
     public static List<Instance> getInstances() {
         return SingletonHolder.SERVER_INSTANCES;
     }
-
 
     public String getNamespace() {
         return namespace;
@@ -119,7 +115,6 @@ public class Instance {
         return term;
     }
 
-
     public void setTerm(long term) {
         this.term = term;
     }
@@ -161,7 +156,6 @@ public class Instance {
         return Objects.equals(control, instance.control) && Objects.equals(transaction, instance.transaction);
     }
 
-
     public String toJsonString(ObjectMapper objectMapper) {
         try {
             return objectMapper.writeValueAsString(this);
@@ -189,7 +183,4 @@ public class Instance {
         private static final Instance SERVER_INSTANCE = new Instance();
         private static final List<Instance> SERVER_INSTANCES = new ArrayList<>();
     }
-
-
 }
-

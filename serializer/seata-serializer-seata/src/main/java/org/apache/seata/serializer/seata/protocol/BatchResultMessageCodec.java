@@ -16,12 +16,11 @@
  */
 package org.apache.seata.serializer.seata.protocol;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.seata.core.protocol.AbstractMessage;
 import org.apache.seata.core.protocol.AbstractResultMessage;
 import org.apache.seata.core.protocol.BatchResultMessage;
@@ -40,6 +39,7 @@ public class BatchResultMessageCodec extends AbstractMessageCodec {
     public BatchResultMessageCodec(byte version) {
         this.version = version;
     }
+
     @Override
     public Class<?> getMessageClassType() {
         return BatchResultMessage.class;
@@ -70,7 +70,7 @@ public class BatchResultMessageCodec extends AbstractMessageCodec {
 
         final int length = buffer.readableBytes();
         final byte[] content = new byte[length];
-        buffer.setInt(0, length - 4);  // minus the placeholder length itself
+        buffer.setInt(0, length - 4); // minus the placeholder length itself
         buffer.readBytes(content);
 
         if (msgs.size() > 20) {
@@ -79,7 +79,6 @@ public class BatchResultMessageCodec extends AbstractMessageCodec {
             }
         }
         out.writeBytes(content);
-
     }
 
     @Override
@@ -123,6 +122,5 @@ public class BatchResultMessageCodec extends AbstractMessageCodec {
 
         batchResultMessage.setResultMessages(msgs);
         batchResultMessage.setMsgIds(msgIds);
-
     }
 }

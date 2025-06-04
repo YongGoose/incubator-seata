@@ -18,7 +18,6 @@ package org.apache.seata.saga.proctrl.process.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.saga.proctrl.ProcessContext;
 import org.apache.seata.saga.proctrl.ProcessType;

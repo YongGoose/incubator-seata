@@ -16,12 +16,12 @@
  */
 package org.apache.seata.spring.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.Advisor;
 import org.springframework.core.Ordered;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type OrderUtil test
@@ -44,12 +44,14 @@ public class OrderUtilTest {
 
     @Test
     public void test_lowerThan() {
-        assertThat(OrderUtil.lowerThan(Ordered.LOWEST_PRECEDENCE, Ordered.HIGHEST_PRECEDENCE)).isTrue();
+        assertThat(OrderUtil.lowerThan(Ordered.LOWEST_PRECEDENCE, Ordered.HIGHEST_PRECEDENCE))
+                .isTrue();
         assertThat(OrderUtil.lowerThan(1, 0)).isTrue();
         assertThat(OrderUtil.lowerThan(1, 1)).isFalse();
         assertThat(OrderUtil.lowerOrEquals(1, 1)).isTrue();
 
-        assertThat(OrderUtil.lowerThan(String.class, Integer.class)).isTrue(); // S is bigger than I, so String is lower than Integer.
+        assertThat(OrderUtil.lowerThan(String.class, Integer.class))
+                .isTrue(); // S is bigger than I, so String is lower than Integer.
         assertThat(OrderUtil.lowerThan(String.class, String.class)).isFalse();
         assertThat(OrderUtil.lowerOrEquals(String.class, String.class)).isTrue();
 
@@ -69,12 +71,14 @@ public class OrderUtilTest {
 
     @Test
     public void test_higherThan() {
-        assertThat(OrderUtil.higherThan(Ordered.HIGHEST_PRECEDENCE, Ordered.LOWEST_PRECEDENCE)).isTrue();
+        assertThat(OrderUtil.higherThan(Ordered.HIGHEST_PRECEDENCE, Ordered.LOWEST_PRECEDENCE))
+                .isTrue();
         assertThat(OrderUtil.higherThan(0, 1)).isTrue();
         assertThat(OrderUtil.higherThan(1, 1)).isFalse();
         assertThat(OrderUtil.higherOrEquals(1, 1)).isTrue();
 
-        assertThat(OrderUtil.higherThan(Integer.class, String.class)).isTrue(); // I is smaller than S, so String is higher than Integer.
+        assertThat(OrderUtil.higherThan(Integer.class, String.class))
+                .isTrue(); // I is smaller than S, so String is higher than Integer.
         assertThat(OrderUtil.higherThan(String.class, String.class)).isFalse();
         assertThat(OrderUtil.higherOrEquals(String.class, String.class)).isTrue();
 

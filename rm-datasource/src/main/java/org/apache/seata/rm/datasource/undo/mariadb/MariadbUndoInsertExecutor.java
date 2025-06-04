@@ -47,7 +47,7 @@ public class MariadbUndoInsertExecutor extends MySQLUndoInsertExecutor {
 
     @Override
     protected void undoPrepare(PreparedStatement undoPST, ArrayList<Field> undoValues, List<Field> pkValueList)
-        throws SQLException {
+            throws SQLException {
         super.undoPrepare(undoPST, undoValues, pkValueList);
     }
 
@@ -55,5 +55,4 @@ public class MariadbUndoInsertExecutor extends MySQLUndoInsertExecutor {
     protected TableRecords getUndoRows() {
         return super.getUndoRows();
     }
-
 }

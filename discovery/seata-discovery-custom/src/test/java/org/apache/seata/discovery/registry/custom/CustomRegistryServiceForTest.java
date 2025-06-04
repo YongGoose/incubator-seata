@@ -16,11 +16,10 @@
  */
 package org.apache.seata.discovery.registry.custom;
 
-import org.apache.seata.config.ConfigChangeListener;
-import org.apache.seata.discovery.registry.RegistryService;
-
 import java.net.InetSocketAddress;
 import java.util.List;
+import org.apache.seata.config.ConfigChangeListener;
+import org.apache.seata.discovery.registry.RegistryService;
 
 public class CustomRegistryServiceForTest implements RegistryService<ConfigChangeListener> {
     @Override
@@ -52,5 +51,4 @@ public class CustomRegistryServiceForTest implements RegistryService<ConfigChang
     public void close() throws Exception {
         throw new UnsupportedOperationException();
     }
-
 }

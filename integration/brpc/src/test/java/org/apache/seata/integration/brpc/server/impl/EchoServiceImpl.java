@@ -16,13 +16,11 @@
  */
 package org.apache.seata.integration.brpc.server.impl;
 
+import java.util.Objects;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.integration.brpc.dto.Echo;
 import org.apache.seata.integration.brpc.server.EchoService;
-
-import java.util.Objects;
-
 
 public class EchoServiceImpl implements EchoService {
     @Override
@@ -36,5 +34,4 @@ public class EchoServiceImpl implements EchoService {
         }
         return responseBuilder.build();
     }
-
 }

@@ -41,8 +41,9 @@ public class IndexTypeTest {
 
     @Test
     public void testInvalidValueOf() {
-        assertThrows(IllegalArgumentException.class, () -> IndexType.valueOf(4),
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> IndexType.valueOf(4),
                 "Should throw IllegalArgumentException for invalid value 4");
     }
-
 }

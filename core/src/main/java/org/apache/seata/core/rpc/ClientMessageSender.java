@@ -16,9 +16,8 @@
  */
 package org.apache.seata.core.rpc;
 
-import org.apache.seata.core.protocol.RpcMessage;
-
 import java.util.concurrent.TimeoutException;
+import org.apache.seata.core.protocol.RpcMessage;
 
 /**
  * The interface Client message sender.

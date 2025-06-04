@@ -23,13 +23,12 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLDeleteRecognizer;
 import org.apache.seata.sqlparser.SQLType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The type oscar delete recognizer.
@@ -47,7 +46,7 @@ public class OscarDeleteRecognizer extends BaseOscarRecognizer implements SQLDel
      */
     public OscarDeleteRecognizer(String originalSQL, SQLStatement ast) {
         super(originalSQL);
-        this.ast = (SQLDeleteStatement)ast;
+        this.ast = (SQLDeleteStatement) ast;
     }
 
     @Override
@@ -94,8 +93,8 @@ public class OscarDeleteRecognizer extends BaseOscarRecognizer implements SQLDel
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-        final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }
@@ -108,25 +107,25 @@ public class OscarDeleteRecognizer extends BaseOscarRecognizer implements SQLDel
 
     @Override
     public String getLimitCondition() {
-        //oscar does not support limit or rownum yet
+        // oscar does not support limit or rownum yet
         return null;
     }
 
     @Override
     public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
-        //oscar does not support limit or rownum yet
+        // oscar does not support limit or rownum yet
         return null;
     }
 
     @Override
     public String getOrderByCondition() {
-        //oscar does not support order by yet
+        // oscar does not support order by yet
         return null;
     }
 
     @Override
     public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
-        //oscar does not support order by yet
+        // oscar does not support order by yet
         return null;
     }
 

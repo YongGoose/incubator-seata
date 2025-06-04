@@ -28,14 +28,13 @@ import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.SQLUpdateRecognizer;
 import org.apache.seata.sqlparser.util.ColumnUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The type oscar update recognizer.
@@ -68,15 +67,16 @@ public class OscarUpdateRecognizer extends BaseOscarRecognizer implements SQLUpd
         for (SQLUpdateSetItem updateSetItem : updateSetItems) {
             SQLExpr expr = updateSetItem.getColumn();
             if (expr instanceof SQLIdentifierExpr) {
-                list.add(((SQLIdentifierExpr)expr).getName());
+                list.add(((SQLIdentifierExpr) expr).getName());
             } else if (expr instanceof SQLPropertyExpr) {
                 // This is alias case, like UPDATE xxx_tbl a SET a.name = ? WHERE a.id = ?
-                SQLExpr owner = ((SQLPropertyExpr)expr).getOwner();
+                SQLExpr owner = ((SQLPropertyExpr) expr).getOwner();
                 if (owner instanceof SQLIdentifierExpr) {
-                    list.add(((SQLIdentifierExpr)owner).getName() + "." + ((SQLPropertyExpr)expr).getName());
-                    //This is table Field Full path, like update xxx_database.xxx_tbl set xxx_database.xxx_tbl.xxx_field...
+                    list.add(((SQLIdentifierExpr) owner).getName() + "." + ((SQLPropertyExpr) expr).getName());
+                    // This is table Field Full path, like update xxx_database.xxx_tbl set
+                    // xxx_database.xxx_tbl.xxx_field...
                 } else if (((SQLPropertyExpr) expr).getOwnerName().split("\\.").length > 1) {
-                    list.add(((SQLPropertyExpr)expr).getOwnerName()  + "." + ((SQLPropertyExpr)expr).getName());
+                    list.add(((SQLPropertyExpr) expr).getOwnerName() + "." + ((SQLPropertyExpr) expr).getName());
                 }
             } else {
                 wrapSQLParsingException(expr);
@@ -92,7 +92,7 @@ public class OscarUpdateRecognizer extends BaseOscarRecognizer implements SQLUpd
         for (SQLUpdateSetItem updateSetItem : updateSetItems) {
             SQLExpr expr = updateSetItem.getValue();
             if (expr instanceof SQLValuableExpr) {
-                list.add(((SQLValuableExpr)expr).getValue());
+                list.add(((SQLValuableExpr) expr).getValue());
             } else if (expr instanceof SQLVariantRefExpr) {
                 list.add(new VMarker());
             } else {
@@ -109,8 +109,8 @@ public class OscarUpdateRecognizer extends BaseOscarRecognizer implements SQLUpd
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-        final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }
@@ -123,25 +123,25 @@ public class OscarUpdateRecognizer extends BaseOscarRecognizer implements SQLUpd
 
     @Override
     public String getLimitCondition() {
-        //oscar does not support limit or rownum yet
+        // oscar does not support limit or rownum yet
         return null;
     }
 
     @Override
     public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
-        //oscar does not support limit or rownum yet
+        // oscar does not support limit or rownum yet
         return null;
     }
 
     @Override
     public String getOrderByCondition() {
-        //oscar does not support order by yet
+        // oscar does not support order by yet
         return null;
     }
 
     @Override
     public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
-        //oscar does not support order by yet
+        // oscar does not support order by yet
         return null;
     }
 

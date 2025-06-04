@@ -16,6 +16,11 @@
  */
 package org.apache.seata.rm.datasource.exec.kingbase;
 
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.loader.Scope;
 import org.apache.seata.common.util.CollectionUtils;
@@ -33,15 +38,9 @@ import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * The type Kingbase insert executor.
- * 
+ *
  */
 @LoadLevel(name = JdbcConstants.KINGBASE, scope = Scope.PROTOTYPE)
 public class KingbaseInsertExecutor extends BaseInsertExecutor implements Sequenceable {
@@ -55,8 +54,8 @@ public class KingbaseInsertExecutor extends BaseInsertExecutor implements Sequen
      * @param statementCallback the statement callback
      * @param sqlRecognizer     the sql recognizer
      */
-    public KingbaseInsertExecutor(StatementProxy statementProxy, StatementCallback statementCallback,
-                                SQLRecognizer sqlRecognizer) {
+    public KingbaseInsertExecutor(
+            StatementProxy statementProxy, StatementCallback statementCallback, SQLRecognizer sqlRecognizer) {
         super(statementProxy, statementCallback, sqlRecognizer);
     }
 
@@ -97,7 +96,7 @@ public class KingbaseInsertExecutor extends BaseInsertExecutor implements Sequen
      * @return true: contain at least one pk column. false: do not contain any pk columns
      */
     public boolean containsAnyPk() {
-        SQLInsertRecognizer recognizer = (SQLInsertRecognizer)sqlRecognizer;
+        SQLInsertRecognizer recognizer = (SQLInsertRecognizer) sqlRecognizer;
         List<String> insertColumns = recognizer.getInsertColumns();
         if (CollectionUtils.isEmpty(insertColumns)) {
             return false;
@@ -107,8 +106,9 @@ public class KingbaseInsertExecutor extends BaseInsertExecutor implements Sequen
             return false;
         }
         List<String> newColumns = ColumnUtils.delEscape(insertColumns, getDbType());
-        return pkColumnNameList.stream().anyMatch(pkColumn -> newColumns.contains(pkColumn)
-                || CollectionUtils.toUpperList(newColumns).contains(pkColumn.toUpperCase()));
+        return pkColumnNameList.stream()
+                .anyMatch(pkColumn -> newColumns.contains(pkColumn)
+                        || CollectionUtils.toUpperList(newColumns).contains(pkColumn.toUpperCase()));
     }
 
     @Override
@@ -119,7 +119,10 @@ public class KingbaseInsertExecutor extends BaseInsertExecutor implements Sequen
             List<Object> pkValues = pkValuesMap.get(pkKey);
             for (int i = 0; i < pkValues.size(); i++) {
                 if (!pkKey.isEmpty() && pkValues.get(i) instanceof SqlSequenceExpr) {
-                    pkValues.set(i, getPkValuesBySequence((SqlSequenceExpr) pkValues.get(i), pkKey).get(0));
+                    pkValues.set(
+                            i,
+                            getPkValuesBySequence((SqlSequenceExpr) pkValues.get(i), pkKey)
+                                    .get(0));
                 } else if (!pkKey.isEmpty() && pkValues.get(i) instanceof SqlMethodExpr) {
                     pkValues.set(i, getGeneratedKeys(pkKey).get(0));
                 } else if (!pkKey.isEmpty() && pkValues.get(i) instanceof Null) {
@@ -135,5 +138,4 @@ public class KingbaseInsertExecutor extends BaseInsertExecutor implements Sequen
     public String getSequenceSql(SqlSequenceExpr expr) {
         return "SELECT " + expr.getSequence() + ".currval FROM DUAL";
     }
-
 }

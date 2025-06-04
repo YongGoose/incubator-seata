@@ -17,9 +17,7 @@
 package org.apache.seata.common.util;
 
 import java.sql.Blob;
-
 import javax.sql.rowset.serial.SerialBlob;
-
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 
@@ -29,9 +27,7 @@ import org.apache.seata.common.exception.ShouldNeverHappenException;
  */
 public class BlobUtils {
 
-    private BlobUtils() {
-
-    }
+    private BlobUtils() {}
 
     /**
      * String 2 blob blob.

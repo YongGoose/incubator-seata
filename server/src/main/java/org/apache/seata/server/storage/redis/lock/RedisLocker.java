@@ -16,6 +16,12 @@
  */
 package org.apache.seata.server.storage.redis.lock;
 
+import static org.apache.seata.common.Constants.ROW_LOCK_KEY_SPLIT_CHAR;
+import static org.apache.seata.core.constants.RedisKeyConstants.DEFAULT_REDIS_SEATA_GLOBAL_LOCK_PREFIX;
+import static org.apache.seata.core.constants.RedisKeyConstants.DEFAULT_REDIS_SEATA_ROW_LOCK_PREFIX;
+import static org.apache.seata.core.exception.TransactionExceptionCode.LockKeyConflictFailFast;
+
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +31,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.exception.StoreException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.LambdaUtils;
@@ -36,17 +41,10 @@ import org.apache.seata.core.lock.RowLock;
 import org.apache.seata.core.model.LockStatus;
 import org.apache.seata.core.store.LockDO;
 import org.apache.seata.server.storage.redis.JedisPooledFactory;
-
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
-
-import static org.apache.seata.common.Constants.ROW_LOCK_KEY_SPLIT_CHAR;
-import static org.apache.seata.core.constants.RedisKeyConstants.DEFAULT_REDIS_SEATA_GLOBAL_LOCK_PREFIX;
-import static org.apache.seata.core.constants.RedisKeyConstants.DEFAULT_REDIS_SEATA_ROW_LOCK_PREFIX;
-import static org.apache.seata.core.exception.TransactionExceptionCode.LockKeyConflictFailFast;
 
 /**
  * The redis lock store operation
@@ -79,8 +77,7 @@ public class RedisLocker extends AbstractLocker {
     /**
      * Instantiates a new Redis locker.
      */
-    public RedisLocker() {
-    }
+    public RedisLocker() {}
 
     @Override
     public boolean acquireLock(List<RowLock> rowLocks) {
@@ -98,8 +95,9 @@ public class RedisLocker extends AbstractLocker {
             Long branchId = rowLocks.get(0).getBranchId();
             List<LockDO> needLockDOS = convertToLockDO(rowLocks);
             if (needLockDOS.size() > 1) {
-                needLockDOS =
-                    needLockDOS.stream().filter(LambdaUtils.distinctByKey(LockDO::getRowKey)).collect(Collectors.toList());
+                needLockDOS = needLockDOS.stream()
+                        .filter(LambdaUtils.distinctByKey(LockDO::getRowKey))
+                        .collect(Collectors.toList());
             }
             List<String> needLockKeys = new ArrayList<>();
             needLockDOS.forEach(lockDO -> needLockKeys.add(buildLockKey(lockDO.getRowKey())));
@@ -114,7 +112,7 @@ public class RedisLocker extends AbstractLocker {
                     }
                 });
                 List<List<String>> existedLockInfos =
-                    Lists.partition((List<String>) (List) pipeline1.syncAndReturnAll(), autoCommit ? 1 : 2);
+                        Lists.partition((List<String>) (List) pipeline1.syncAndReturnAll(), autoCommit ? 1 : 2);
 
                 // When the local transaction and the global transaction are enabled,
                 // the branch registration fails to acquire the global lock,
@@ -125,17 +123,21 @@ public class RedisLocker extends AbstractLocker {
                 // Therefore, if a global lock is found in the Rollbacking state,
                 // the fail-fast code is returned directly.
                 if (!autoCommit) {
-                    boolean hasRollBackingLock = existedLockInfos.parallelStream().anyMatch(
-                        result -> StringUtils.equals(result.get(1), String.valueOf(LockStatus.Rollbacking.getCode())));
+                    boolean hasRollBackingLock = existedLockInfos.parallelStream()
+                            .anyMatch(result -> StringUtils.equals(
+                                    result.get(1), String.valueOf(LockStatus.Rollbacking.getCode())));
                     if (hasRollBackingLock) {
                         throw new StoreException(new BranchTransactionException(LockKeyConflictFailFast));
                     }
                 }
 
-                // The logic is executed here, there must be a lock without Rollbacking status when autoCommit equals false
+                // The logic is executed here, there must be a lock without Rollbacking status when autoCommit equals
+                // false
                 for (int i = 0; i < needLockKeys.size(); i++) {
                     List<String> results = existedLockInfos.get(i);
-                    String existedLockXid = CollectionUtils.isEmpty(results) ? null : existedLockInfos.get(i).get(0);
+                    String existedLockXid = CollectionUtils.isEmpty(results)
+                            ? null
+                            : existedLockInfos.get(i).get(0);
                     if (StringUtils.isEmpty(existedLockXid)) {
                         // If empty,we need to lock this row
                         needAddLock.put(needLockKeys.get(i), needLockDOS.get(i));
@@ -192,7 +194,11 @@ public class RedisLocker extends AbstractLocker {
     }
 
     protected void logGlobalLockConflictInfo(String needLockXid, String lockKey, String xIdOwnLock) {
-        LOGGER.info("tx:[{}] acquire Global lock failed. Global lock on [{}] is holding by xid {}", needLockXid, lockKey, xIdOwnLock);
+        LOGGER.info(
+                "tx:[{}] acquire Global lock failed. Global lock on [{}] is holding by xid {}",
+                needLockXid,
+                lockKey,
+                xIdOwnLock);
     }
 
     @Override
@@ -238,19 +244,18 @@ public class RedisLocker extends AbstractLocker {
                 return;
             }
             try (Pipeline pipeline = jedis.pipelined()) {
-                branchAndLockKeys.values()
-                    .forEach(k -> {
-                        if (StringUtils.isNotEmpty(k)) {
-                            if (k.contains(ROW_LOCK_KEY_SPLIT_CHAR)) {
-                                String[] keys = k.split(ROW_LOCK_KEY_SPLIT_CHAR);
-                                for (String key : keys) {
-                                    pipeline.hset(key, STATUS, String.valueOf(lockStatus.getCode()));
-                                }
-                            } else {
-                                pipeline.hset(k, STATUS, String.valueOf(lockStatus.getCode()));
+                branchAndLockKeys.values().forEach(k -> {
+                    if (StringUtils.isNotEmpty(k)) {
+                        if (k.contains(ROW_LOCK_KEY_SPLIT_CHAR)) {
+                            String[] keys = k.split(ROW_LOCK_KEY_SPLIT_CHAR);
+                            for (String key : keys) {
+                                pipeline.hset(key, STATUS, String.valueOf(lockStatus.getCode()));
                             }
+                        } else {
+                            pipeline.hset(k, STATUS, String.valueOf(lockStatus.getCode()));
                         }
-                    });
+                    }
+                });
                 pipeline.sync();
             }
         }
@@ -296,5 +301,4 @@ public class RedisLocker extends AbstractLocker {
     protected String buildLockKey(String rowKey) {
         return DEFAULT_REDIS_SEATA_ROW_LOCK_PREFIX + rowKey;
     }
-
 }

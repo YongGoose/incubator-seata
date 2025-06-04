@@ -16,9 +16,9 @@
  */
 package org.apache.seata.common.exception;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * The shouldNeverHappen exception.
@@ -38,15 +38,20 @@ public class ShouldNeverHappenExceptionTest {
 
     @Test
     public void testConstructorWithMessageAndThrowable() {
-        exceptionAsserts(new ShouldNeverHappenException(FrameworkErrorCode.UnknownAppError.getErrMessage(), new Throwable()));
+        exceptionAsserts(
+                new ShouldNeverHappenException(FrameworkErrorCode.UnknownAppError.getErrMessage(), new Throwable()));
     }
 
     @Test
     public void testConstructorWithThrowable() {
-        assertThat(new ShouldNeverHappenException(new Throwable(FrameworkErrorCode.UnknownAppError.getErrMessage()))).isInstanceOf(ShouldNeverHappenException.class).hasMessage("java.lang.Throwable: " + FrameworkErrorCode.UnknownAppError.getErrMessage());
+        assertThat(new ShouldNeverHappenException(new Throwable(FrameworkErrorCode.UnknownAppError.getErrMessage())))
+                .isInstanceOf(ShouldNeverHappenException.class)
+                .hasMessage("java.lang.Throwable: " + FrameworkErrorCode.UnknownAppError.getErrMessage());
     }
 
     private static void exceptionAsserts(ShouldNeverHappenException exception) {
-        assertThat(exception).isInstanceOf(ShouldNeverHappenException.class).hasMessage(FrameworkErrorCode.UnknownAppError.getErrMessage());
+        assertThat(exception)
+                .isInstanceOf(ShouldNeverHappenException.class)
+                .hasMessage(FrameworkErrorCode.UnknownAppError.getErrMessage());
     }
 }

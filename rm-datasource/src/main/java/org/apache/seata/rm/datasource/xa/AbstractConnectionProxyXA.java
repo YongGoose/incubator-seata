@@ -16,11 +16,6 @@
  */
 package org.apache.seata.rm.datasource.xa;
 
-import org.apache.seata.core.context.RootContext;
-import org.apache.seata.rm.BaseDataSourceResource;
-
-import javax.sql.XAConnection;
-import javax.transaction.xa.XAResource;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -39,6 +34,10 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
+import javax.sql.XAConnection;
+import javax.transaction.xa.XAResource;
+import org.apache.seata.core.context.RootContext;
+import org.apache.seata.rm.BaseDataSourceResource;
 
 /**
  * The type Abstract connection proxy on XA mode.
@@ -58,7 +57,8 @@ public abstract class AbstractConnectionProxyXA implements Connection {
 
     protected String xid;
 
-    public AbstractConnectionProxyXA(Connection originalConnection, XAConnection xaConnection, BaseDataSourceResource resource, String xid) {
+    public AbstractConnectionProxyXA(
+            Connection originalConnection, XAConnection xaConnection, BaseDataSourceResource resource, String xid) {
         this.originalConnection = originalConnection;
         this.xaConnection = xaConnection;
         this.resource = resource;
@@ -109,7 +109,6 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void setReadOnly(boolean readOnly) throws SQLException {
         originalConnection.setReadOnly(readOnly);
-
     }
 
     @Override
@@ -120,7 +119,6 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void setCatalog(String catalog) throws SQLException {
         originalConnection.setCatalog(catalog);
-
     }
 
     @Override
@@ -131,7 +129,6 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void setTransactionIsolation(int level) throws SQLException {
         originalConnection.setTransactionIsolation(level);
-
     }
 
     @Override
@@ -147,7 +144,6 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void clearWarnings() throws SQLException {
         originalConnection.clearWarnings();
-
     }
 
     @Override
@@ -158,13 +154,11 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
         originalConnection.setTypeMap(map);
-
     }
 
     @Override
     public void setHoldability(int holdability) throws SQLException {
         originalConnection.setHoldability(holdability);
-
     }
 
     @Override
@@ -185,13 +179,11 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         originalConnection.rollback(savepoint);
-
     }
 
     @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         originalConnection.releaseSavepoint(savepoint);
-
     }
 
     @Override
@@ -202,9 +194,9 @@ public abstract class AbstractConnectionProxyXA implements Connection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
-        throws SQLException {
-        PreparedStatement preparedStatement = originalConnection.prepareStatement(sql, resultSetType,
-            resultSetConcurrency);
+            throws SQLException {
+        PreparedStatement preparedStatement =
+                originalConnection.prepareStatement(sql, resultSetType, resultSetConcurrency);
         return new PreparedStatementProxyXA(this, preparedStatement);
     }
 
@@ -217,22 +209,22 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
             throws SQLException {
-        Statement statement = originalConnection.createStatement(resultSetType, resultSetConcurrency,
-                resultSetHoldability);
+        Statement statement =
+                originalConnection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         return new StatementProxyXA(this, statement);
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
-                                              int resultSetHoldability) throws SQLException {
-        PreparedStatement preparedStatement = originalConnection.prepareStatement(sql, resultSetType,
-                resultSetConcurrency, resultSetHoldability);
+    public PreparedStatement prepareStatement(
+            String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+        PreparedStatement preparedStatement =
+                originalConnection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
         return new PreparedStatementProxyXA(this, preparedStatement);
     }
 
     @Override
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
-                                         int resultSetHoldability) throws SQLException {
+    public CallableStatement prepareCall(
+            String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         RootContext.assertNotInGlobalTransaction();
         return originalConnection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
@@ -283,13 +275,11 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void setClientInfo(String name, String value) throws SQLClientInfoException {
         originalConnection.setClientInfo(name, value);
-
     }
 
     @Override
     public void setClientInfo(Properties properties) throws SQLClientInfoException {
         originalConnection.setClientInfo(properties);
-
     }
 
     @Override
@@ -315,7 +305,6 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void setSchema(String schema) throws SQLException {
         originalConnection.setSchema(schema);
-
     }
 
     @Override
@@ -326,7 +315,6 @@ public abstract class AbstractConnectionProxyXA implements Connection {
     @Override
     public void abort(Executor executor) throws SQLException {
         originalConnection.abort(executor);
-
     }
 
     @Override

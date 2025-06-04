@@ -16,11 +16,10 @@
  */
 package org.apache.seata.saga.annotation;
 
+import java.util.List;
 import org.apache.seata.rm.tcc.api.BusinessActionContext;
 import org.apache.seata.rm.tcc.api.BusinessActionContextParameter;
 import org.apache.seata.saga.rm.api.CompensationBusinessAction;
-
-import java.util.List;
 
 /**
  *
@@ -29,16 +28,23 @@ public class NormalSagaAnnotationActionImpl implements NormalSagaAnnotationActio
 
     private boolean isCommit;
 
-
     @Override
-    @CompensationBusinessAction(name = "sagaActionForTest", compensationMethod = "compensation", compensationArgsClasses = {BusinessActionContext.class, SagaParam.class})
-    public boolean commit(BusinessActionContext actionContext, @BusinessActionContextParameter("a") int a, @BusinessActionContextParameter(paramName = "b", index = 0) List b, @BusinessActionContextParameter(isParamInProperty = true) SagaParam sagaParam) {
+    @CompensationBusinessAction(
+            name = "sagaActionForTest",
+            compensationMethod = "compensation",
+            compensationArgsClasses = {BusinessActionContext.class, SagaParam.class})
+    public boolean commit(
+            BusinessActionContext actionContext,
+            @BusinessActionContextParameter("a") int a,
+            @BusinessActionContextParameter(paramName = "b", index = 0) List b,
+            @BusinessActionContextParameter(isParamInProperty = true) SagaParam sagaParam) {
         isCommit = true;
         return a > 1;
     }
 
     @Override
-    public boolean compensation(BusinessActionContext actionContext, @BusinessActionContextParameter("sagaParam") SagaParam param) {
+    public boolean compensation(
+            BusinessActionContext actionContext, @BusinessActionContextParameter("sagaParam") SagaParam param) {
         isCommit = false;
         return true;
     }

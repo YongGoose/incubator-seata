@@ -17,7 +17,6 @@
 package org.apache.seata.rm.datasource.exec;
 
 import java.sql.Statement;
-
 import org.apache.seata.rm.datasource.StatementProxy;
 
 /**

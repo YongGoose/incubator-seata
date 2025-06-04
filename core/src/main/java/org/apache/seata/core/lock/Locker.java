@@ -30,7 +30,7 @@ public interface Locker {
      * @param rowLock the row lock
      * @return the boolean
      */
-    boolean acquireLock(List<RowLock> rowLock) ;
+    boolean acquireLock(List<RowLock> rowLock);
 
     /**
      * Acquire lock boolean.
@@ -88,6 +88,4 @@ public interface Locker {
      *
      */
     void updateLockStatus(String xid, LockStatus lockStatus);
-
 }
-

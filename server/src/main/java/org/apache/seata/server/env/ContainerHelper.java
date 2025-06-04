@@ -16,10 +16,10 @@
  */
 package org.apache.seata.server.env;
 
+import static org.apache.seata.core.constants.ConfigurationKeys.ENV_SEATA_PORT_KEY;
+
 import org.apache.seata.common.util.NumberUtils;
 import org.apache.seata.common.util.StringUtils;
-
-import static org.apache.seata.core.constants.ConfigurationKeys.ENV_SEATA_PORT_KEY;
 
 /**
  */
@@ -98,5 +98,4 @@ public class ContainerHelper {
     public static String getLockStoreMode() {
         return StringUtils.trimToNull(System.getenv(ENV_LOCK_STORE_MODE_KEY));
     }
-
 }

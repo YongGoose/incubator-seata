@@ -16,10 +16,10 @@
  */
 package org.apache.seata.core.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.seata.common.LockStrategyMode;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The GlobalLockConfig Test

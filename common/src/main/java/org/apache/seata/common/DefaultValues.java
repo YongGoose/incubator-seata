@@ -245,7 +245,7 @@ public interface DefaultValues {
     /**
      * The constant SERVICE_DEFAULT_PORT.
      */
-    //currently not use and will be delete in the next version
+    // currently not use and will be delete in the next version
     @Deprecated
     int SERVICE_DEFAULT_PORT = 8091;
 

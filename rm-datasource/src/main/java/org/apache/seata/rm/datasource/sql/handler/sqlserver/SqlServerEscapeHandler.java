@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.sql.handler.sqlserver;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.sqlparser.EscapeHandler;
 import org.apache.seata.sqlparser.EscapeSymbol;
@@ -791,7 +790,6 @@ public class SqlServerEscapeHandler implements EscapeHandler {
             this.name = name;
         }
     }
-
 
     @Override
     public boolean checkIfKeyWords(String fieldOrTableName) {

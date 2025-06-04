@@ -16,6 +16,9 @@
  */
 package org.apache.seata.namingserver.filter;
 
+import static org.apache.seata.common.Constants.RAFT_GROUP_HEADER;
+import static org.apache.seata.namingserver.contants.NamingConstant.CONSOLE_PATTERN;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -49,10 +52,6 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
 
-
-import static org.apache.seata.common.Constants.RAFT_GROUP_HEADER;
-import static org.apache.seata.namingserver.contants.NamingConstant.CONSOLE_PATTERN;
-
 public class ConsoleRemotingFilter implements Filter {
 
     private final NamingManager namingManager;
@@ -70,32 +69,38 @@ public class ConsoleRemotingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
         if (servletRequest instanceof HttpServletRequest) {
-            if (urlPattern.matcher(((HttpServletRequest)servletRequest).getRequestURI()).matches()) {
+            if (urlPattern
+                    .matcher(((HttpServletRequest) servletRequest).getRequestURI())
+                    .matches()) {
                 CachedBodyHttpServletRequest request =
-                    new CachedBodyHttpServletRequest((HttpServletRequest)servletRequest);
-                HttpServletResponse response = (HttpServletResponse)servletResponse;
+                        new CachedBodyHttpServletRequest((HttpServletRequest) servletRequest);
+                HttpServletResponse response = (HttpServletResponse) servletResponse;
                 String namespace = request.getHeader("x-seata-namespace");
                 String cluster = request.getHeader("x-seata-cluster");
                 String vgroup = request.getParameter("vgroup");
                 if (StringUtils.isNotBlank(namespace)
-                    && (StringUtils.isNotBlank(cluster) || StringUtils.isNotBlank(vgroup))) {
+                        && (StringUtils.isNotBlank(cluster) || StringUtils.isNotBlank(vgroup))) {
                     List<Node> list = null;
                     if (StringUtils.isNotBlank(vgroup)) {
-                        list = namingManager.getInstancesByVgroupAndNamespace(namespace, vgroup, StringUtils.equalsIgnoreCase(request.getMethod(), HttpMethod.GET.name()));
+                        list = namingManager.getInstancesByVgroupAndNamespace(
+                                namespace,
+                                vgroup,
+                                StringUtils.equalsIgnoreCase(request.getMethod(), HttpMethod.GET.name()));
                     } else if (StringUtils.isNotBlank(cluster)) {
                         list = namingManager.getInstances(namespace, cluster);
                     }
                     if (CollectionUtils.isNotEmpty(list)) {
                         // Randomly select a node from the list
-                        NamingServerNode node = (NamingServerNode) list.get(ThreadLocalRandom.current().nextInt(list.size()));
+                        NamingServerNode node = (NamingServerNode)
+                                list.get(ThreadLocalRandom.current().nextInt(list.size()));
                         Node.Endpoint controlEndpoint = node.getControl();
                         if (controlEndpoint != null) {
                             // Construct the target URL
                             String targetUrl = "http://" + controlEndpoint.getHost() + ":" + controlEndpoint.getPort()
-                                + request.getRequestURI()
-                                + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+                                    + request.getRequestURI()
+                                    + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
 
                             // Copy headers from the original request
                             HttpHeaders headers = new HttpHeaders();
@@ -103,7 +108,7 @@ public class ConsoleRemotingFilter implements Filter {
                                 headers.add(RAFT_GROUP_HEADER, node.getUnit());
                             }
                             Collections.list(request.getHeaderNames())
-                                .forEach(headerName -> headers.add(headerName, request.getHeader(headerName)));
+                                    .forEach(headerName -> headers.add(headerName, request.getHeader(headerName)));
 
                             // Create the HttpEntity with headers and body
                             HttpEntity<byte[]> httpEntity = new HttpEntity<>(request.getCachedBody(), headers);
@@ -112,8 +117,10 @@ public class ConsoleRemotingFilter implements Filter {
                             AsyncContext asyncContext = servletRequest.startAsync();
                             asyncContext.setTimeout(5000L);
                             ListenableFuture<ResponseEntity<byte[]>> responseEntityFuture = asyncRestTemplate.exchange(
-                                URI.create(targetUrl), Objects.requireNonNull(HttpMethod.resolve(request.getMethod())),
-                                httpEntity, byte[].class);
+                                    URI.create(targetUrl),
+                                    Objects.requireNonNull(HttpMethod.resolve(request.getMethod())),
+                                    httpEntity,
+                                    byte[].class);
                             responseEntityFuture.addCallback(new ListenableFutureCallback<ResponseEntity<byte[]>>() {
                                 @Override
                                 public void onFailure(Throwable ex) {
@@ -133,14 +140,15 @@ public class ConsoleRemotingFilter implements Filter {
                                     });
                                     response.setStatus(responseEntity.getStatusCodeValue());
                                     // Write response body
-                                    Optional.ofNullable(responseEntity.getBody()).ifPresent(body -> {
-                                        try (ServletOutputStream outputStream = response.getOutputStream()) {
-                                            outputStream.write(body);
-                                            outputStream.flush();
-                                        } catch (IOException e) {
-                                            logger.error(e.getMessage(), e);
-                                        }
-                                    });
+                                    Optional.ofNullable(responseEntity.getBody())
+                                            .ifPresent(body -> {
+                                                try (ServletOutputStream outputStream = response.getOutputStream()) {
+                                                    outputStream.write(body);
+                                                    outputStream.flush();
+                                                } catch (IOException e) {
+                                                    logger.error(e.getMessage(), e);
+                                                }
+                                            });
                                     asyncContext.complete();
                                 }
                             });
@@ -152,5 +160,4 @@ public class ConsoleRemotingFilter implements Filter {
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
-
 }

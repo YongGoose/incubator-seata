@@ -19,10 +19,8 @@ package org.apache.seata.rm.datasource.mock;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
-
 import org.apache.seata.common.util.ReflectionUtil;
 import org.apache.seata.sqlparser.struct.ColumnMeta;
-
 
 public class MockResultSetMetaData implements ResultSetMetaData {
 
@@ -163,7 +161,7 @@ public class MockResultSetMetaData implements ResultSetMetaData {
      * @param column
      * @return
      */
-    public ColumnMeta getColumn(int column){
+    public ColumnMeta getColumn(int column) {
         return columns.get(column - 1);
     }
 }

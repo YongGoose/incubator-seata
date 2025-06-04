@@ -16,17 +16,16 @@
  */
 package org.apache.seata.discovery.registry.eureka;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 public class EurekaRegistryProviderTest {
 
     @Test
-    void testProvide(){
+    void testProvide() {
         EurekaRegistryProvider provider = new EurekaRegistryProvider();
         assertThat(provider.provide()).isInstanceOf(EurekaRegistryServiceImpl.class);
         assertThat(provider.provide()).isSameAs(provider.provide());
-
     }
 }

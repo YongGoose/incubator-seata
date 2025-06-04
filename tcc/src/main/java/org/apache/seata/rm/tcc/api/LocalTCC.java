@@ -16,13 +16,12 @@
  */
 package org.apache.seata.rm.tcc.api;
 
-import org.apache.seata.rm.tcc.remoting.parser.LocalTCCRemotingParser;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.apache.seata.rm.tcc.remoting.parser.LocalTCCRemotingParser;
 
 /**
  * Local TCC bean annotation, add on the TCC interface
@@ -33,5 +32,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-public @interface LocalTCC {
-}
+public @interface LocalTCC {}

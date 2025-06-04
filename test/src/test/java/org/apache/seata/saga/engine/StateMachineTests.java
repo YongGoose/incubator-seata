@@ -19,7 +19,6 @@ package org.apache.seata.saga.engine;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.SagaCostPrint;
 import org.apache.seata.saga.engine.mock.DemoService.Engineer;
 import org.apache.seata.saga.engine.mock.DemoService.People;
@@ -43,7 +42,8 @@ public class StateMachineTests {
 
     @BeforeAll
     public static void initApplicationContext() {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:saga/spring/statemachine_engine_test.xml");
+        ApplicationContext applicationContext =
+                new ClassPathXmlApplicationContext("classpath:saga/spring/statemachine_engine_test.xml");
         stateMachineEngine = applicationContext.getBean("stateMachineEngine", StateMachineEngine.class);
     }
 
@@ -104,8 +104,8 @@ public class StateMachineTests {
             Assertions.assertNotNull(businessKey);
             System.out.println("====== businessKey :" + businessKey);
 
-            String contextBusinessKey = (String)inst.getEndParams().get(
-                    inst.getStateList().get(0).getName() + DomainConstants.VAR_NAME_BUSINESSKEY);
+            String contextBusinessKey = (String) inst.getEndParams()
+                    .get(inst.getStateList().get(0).getName() + DomainConstants.VAR_NAME_BUSINESSKEY);
             Assertions.assertNotNull(contextBusinessKey);
             System.out.println("====== context businessKey :" + businessKey);
         });
@@ -217,7 +217,6 @@ public class StateMachineTests {
             paramMap.put("a", 2);
             paramMap.put("barThrowException", "true");
 
-
             StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
 
             Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
@@ -257,7 +256,7 @@ public class StateMachineTests {
         people4.setName("lilei4");
         people4.setAge(21);
 
-        people1.setChildrenArray(new People[]{people2});
+        people1.setChildrenArray(new People[] {people2});
         people1.setChildrenList(Collections.singletonList(people3));
         Map<String, People> map1 = new HashMap<>(1);
         map1.put("lilei4", people4);
@@ -285,7 +284,7 @@ public class StateMachineTests {
 
             StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            People peopleResult = (People)inst.getEndParams().get("complexParameterMethodResult");
+            People peopleResult = (People) inst.getEndParams().get("complexParameterMethodResult");
             Assertions.assertNotNull(peopleResult);
             Assertions.assertEquals(people.getName(), peopleResult.getName());
 

@@ -16,14 +16,12 @@
  */
 package org.apache.seata.core.store.db.sql.distributed.lock;
 
-
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DistributedLockSqlFactory {
 

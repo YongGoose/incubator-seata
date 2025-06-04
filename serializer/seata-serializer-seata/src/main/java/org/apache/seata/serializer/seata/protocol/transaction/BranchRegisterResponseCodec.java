@@ -16,10 +16,9 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
+import io.netty.buffer.ByteBuf;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-
-import io.netty.buffer.ByteBuf;
 import org.apache.seata.core.protocol.transaction.BranchRegisterResponse;
 
 /**
@@ -37,7 +36,7 @@ public class BranchRegisterResponseCodec extends AbstractTransactionResponseCode
     public <T> void encode(T t, ByteBuf out) {
         super.encode(t, out);
 
-        BranchRegisterResponse branchRegisterResponse = (BranchRegisterResponse)t;
+        BranchRegisterResponse branchRegisterResponse = (BranchRegisterResponse) t;
         out.writeLong(branchRegisterResponse.getBranchId());
     }
 
@@ -45,8 +44,7 @@ public class BranchRegisterResponseCodec extends AbstractTransactionResponseCode
     public <T> void decode(T t, ByteBuffer in) {
         super.decode(t, in);
 
-        BranchRegisterResponse branchRegisterResponse = (BranchRegisterResponse)t;
+        BranchRegisterResponse branchRegisterResponse = (BranchRegisterResponse) t;
         branchRegisterResponse.setBranchId(in.getLong());
     }
-
 }

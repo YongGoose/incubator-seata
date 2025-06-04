@@ -16,12 +16,11 @@
  */
 package org.apache.seata.core.lock;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.core.model.LockStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The LocalDBLocker Test

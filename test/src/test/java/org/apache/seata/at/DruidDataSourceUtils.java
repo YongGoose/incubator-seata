@@ -16,11 +16,9 @@
  */
 package org.apache.seata.at;
 
-import java.sql.SQLException;
-
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.util.JdbcUtils;
-
+import java.sql.SQLException;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.slf4j.Logger;
@@ -39,6 +37,7 @@ public class DruidDataSourceUtils {
      * test2: jdbc:oracle:thin:@localhost:1521:helowin name:system password:helowin
      */
     public static final String ORACLE_JDBC_URL = "jdbc:oracle:thin:@localhost:49161:xe";
+
     public static final String ORACLE_USERNAME = "system";
     public static final String ORACLE_PASSWORD = "oracle";
     public static final String ORACLE_DRIVER_CLASSNAME = JdbcUtils.ORACLE_DRIVER;
@@ -48,6 +47,7 @@ public class DruidDataSourceUtils {
      *
      */
     public static final String POSTGRESQL_JDBC_URL = "";
+
     public static final String POSTGRESQL_USERNAME = "";
     public static final String POSTGRESQL_PASSWORD = "";
     public static final String POSTGRESQL_DRIVER_CLASSNAME = JdbcUtils.POSTGRESQL_DRIVER;
@@ -86,5 +86,4 @@ public class DruidDataSourceUtils {
         druidDataSource.init();
         LOGGER.info("datasource init success");
     }
-
 }

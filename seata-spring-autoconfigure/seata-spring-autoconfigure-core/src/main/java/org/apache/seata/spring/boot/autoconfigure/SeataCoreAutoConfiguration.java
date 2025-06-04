@@ -16,16 +16,15 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.common.Constants.BEAN_NAME_SPRING_APPLICATION_CONTEXT_PROVIDER;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
+
 import org.apache.seata.spring.boot.autoconfigure.provider.SpringApplicationContextProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import static org.apache.seata.common.Constants.BEAN_NAME_SPRING_APPLICATION_CONTEXT_PROVIDER;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
-
 
 @ConditionalOnProperty(prefix = SEATA_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @ComponentScan(basePackages = "org.apache.seata.spring.boot.autoconfigure.properties")

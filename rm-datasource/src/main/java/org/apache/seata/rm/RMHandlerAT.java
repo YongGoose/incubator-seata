@@ -20,7 +20,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
-
 import org.apache.seata.common.util.DateUtil;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.core.model.ResourceManager;
@@ -45,7 +44,7 @@ public class RMHandlerAT extends AbstractRMHandler {
     @Override
     public void handle(UndoLogDeleteRequest request) {
         String resourceId = request.getResourceId();
-        DataSourceManager dataSourceManager = (DataSourceManager)getResourceManager();
+        DataSourceManager dataSourceManager = (DataSourceManager) getResourceManager();
         DataSourceProxy dataSourceProxy = dataSourceManager.get(resourceId);
         if (dataSourceProxy == null) {
             LOGGER.warn("Failed to get dataSourceProxy for delete undolog on {}", resourceId);

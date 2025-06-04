@@ -53,7 +53,6 @@ public class ColumnMetaTest {
         // Test equality with the copy
         assertTrue(column1.equals(column3));
         assertEquals(column1.hashCode(), column3.hashCode());
-
     }
 
     @Test
@@ -184,5 +183,4 @@ public class ColumnMetaTest {
         columnMeta.setCaseSensitive(true);
         assertTrue(columnMeta.isCaseSensitive());
     }
-
 }

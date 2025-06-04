@@ -22,12 +22,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import org.apache.seata.common.loader.LoadLevel;
-import org.apache.seata.saga.statelang.parser.JsonParser;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.seata.common.loader.LoadLevel;
+import org.apache.seata.saga.statelang.parser.JsonParser;
 
 /**
  * JsonParser implement by Jackson
@@ -74,17 +73,16 @@ public class JacksonJsonParser implements JsonParser {
             if (prettyPrint) {
                 if (ignoreAutoType) {
                     return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
-                }
-                else {
-                    return objectMapperWithAutoType.writerWithDefaultPrettyPrinter().writeValueAsString(o);
+                } else {
+                    return objectMapperWithAutoType
+                            .writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(o);
                 }
 
-            }
-            else {
+            } else {
                 if (ignoreAutoType) {
                     return objectMapper.writeValueAsString(o);
-                }
-                else {
+                } else {
                     return objectMapperWithAutoType.writeValueAsString(o);
                 }
             }
@@ -101,8 +99,7 @@ public class JacksonJsonParser implements JsonParser {
             }
             if (ignoreAutoType) {
                 return objectMapper.readValue(json, type);
-            }
-            else {
+            } else {
                 return objectMapperWithAutoType.readValue(json, type);
             }
         } catch (IOException e) {

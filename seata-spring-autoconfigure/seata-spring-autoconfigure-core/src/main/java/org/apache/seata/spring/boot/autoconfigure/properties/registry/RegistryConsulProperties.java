@@ -16,11 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.registry;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.REGISTRY_CONSUL_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = REGISTRY_CONSUL_PREFIX)

@@ -16,6 +16,11 @@
  */
 package org.apache.seata.rm.datasource;
 
+import static org.apache.seata.common.Constants.AUTO_COMMIT;
+import static org.apache.seata.common.Constants.SKIP_CHECK_LOCK;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.ArrayList;
@@ -27,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.seata.common.LockStrategyMode;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.util.CollectionUtils;
@@ -38,9 +40,6 @@ import org.apache.seata.core.context.GlobalLockConfigHolder;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalLockConfig;
 import org.apache.seata.rm.datasource.undo.SQLUndoLog;
-
-import static org.apache.seata.common.Constants.AUTO_COMMIT;
-import static org.apache.seata.common.Constants.SKIP_CHECK_LOCK;
 
 /**
  * The type Connection context.
@@ -112,7 +111,9 @@ public class ConnectionContext {
      * @param sqlUndoLog the sql undo log
      */
     void appendUndoItem(SQLUndoLog sqlUndoLog) {
-        sqlUndoItemsBuffer.computeIfAbsent(currentSavepoint, k -> new ArrayList<>()).add(sqlUndoLog);
+        sqlUndoItemsBuffer
+                .computeIfAbsent(currentSavepoint, k -> new ArrayList<>())
+                .add(sqlUndoLog);
     }
 
     /**
@@ -152,13 +153,15 @@ public class ConnectionContext {
         for (Savepoint sp : afterSavepoints) {
             List<SQLUndoLog> savepointSQLUndoLogs = sqlUndoItemsBuffer.remove(sp);
             if (CollectionUtils.isNotEmpty(savepointSQLUndoLogs)) {
-                sqlUndoItemsBuffer.computeIfAbsent(currentSavepoint, k -> new ArrayList<>(savepointSQLUndoLogs.size()))
+                sqlUndoItemsBuffer
+                        .computeIfAbsent(currentSavepoint, k -> new ArrayList<>(savepointSQLUndoLogs.size()))
                         .addAll(savepointSQLUndoLogs);
             }
 
             Set<String> savepointLockKeys = lockKeysBuffer.remove(sp);
             if (CollectionUtils.isNotEmpty(savepointLockKeys)) {
-                lockKeysBuffer.computeIfAbsent(currentSavepoint, k -> new HashSet<>())
+                lockKeysBuffer
+                        .computeIfAbsent(currentSavepoint, k -> new HashSet<>())
                         .addAll(savepointLockKeys);
             }
         }
@@ -195,7 +198,8 @@ public class ConnectionContext {
             setXid(xid);
         } else {
             if (!this.xid.equals(xid)) {
-                throw new ShouldNeverHappenException(String.format("bind xid: %s, while current xid: %s", xid, this.xid));
+                throw new ShouldNeverHappenException(
+                        String.format("bind xid: %s, while current xid: %s", xid, this.xid));
             }
         }
     }
@@ -282,7 +286,7 @@ public class ConnectionContext {
         // lock retry times > 1 & skip first check lock / before image is empty
         Optional.ofNullable(globalLockConfig).ifPresent(lockConfig -> {
             if ((lockConfig.getLockRetryTimes() == -1 || lockConfig.getLockRetryTimes() > 1)
-                && (lockConfig.getLockStrategyMode() == LockStrategyMode.OPTIMISTIC || allBeforeImageEmpty())) {
+                    && (lockConfig.getLockStrategyMode() == LockStrategyMode.OPTIMISTIC || allBeforeImageEmpty())) {
                 if (!applicationData.containsKey(SKIP_CHECK_LOCK)) {
                     this.applicationData.put(SKIP_CHECK_LOCK, true);
                 } else {
@@ -373,7 +377,6 @@ public class ConnectionContext {
         return undoItems;
     }
 
-
     /**
      * Get the savepoints after target savepoint(include the param savepoint)
      *
@@ -409,5 +412,4 @@ public class ConnectionContext {
     public String toString() {
         return StringUtils.toString(this);
     }
-
 }

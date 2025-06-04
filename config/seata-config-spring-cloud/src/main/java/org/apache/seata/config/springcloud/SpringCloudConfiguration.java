@@ -17,7 +17,6 @@
 package org.apache.seata.config.springcloud;
 
 import java.util.Set;
-
 import org.apache.seata.common.holder.ObjectHolder;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.AbstractConfiguration;
@@ -43,9 +42,7 @@ public class SpringCloudConfiguration extends AbstractConfiguration {
         return instance;
     }
 
-    private SpringCloudConfiguration() {
-
-    }
+    private SpringCloudConfiguration() {}
 
     @Override
     public String getTypeName() {
@@ -83,8 +80,7 @@ public class SpringCloudConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    public void removeConfigListener(String dataId, ConfigurationChangeListener listener) {
-    }
+    public void removeConfigListener(String dataId, ConfigurationChangeListener listener) {}
 
     @Override
     public Set<ConfigurationChangeListener> getConfigListeners(String dataId) {

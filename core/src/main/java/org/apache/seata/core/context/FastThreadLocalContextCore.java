@@ -17,10 +17,9 @@
 package org.apache.seata.core.context;
 
 import io.netty.util.concurrent.FastThreadLocal;
-import org.apache.seata.common.loader.LoadLevel;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.seata.common.loader.LoadLevel;
 
 /**
  * The type Fast Thread local context core.

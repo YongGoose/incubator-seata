@@ -16,9 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
@@ -28,6 +25,8 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLSelectRecognizer;
@@ -66,7 +65,7 @@ public class SqlServerSelectForUpdateRecognizer extends BaseSqlServerRecognizer 
             throw new SQLParsingException("should never happen!");
         }
         if (selectQueryBlock.getTop() != null) {
-            //deal with top sql
+            // deal with top sql
             dealTop(ast);
         }
         return selectQueryBlock;
@@ -96,7 +95,8 @@ public class SqlServerSelectForUpdateRecognizer extends BaseSqlServerRecognizer 
     }
 
     @Override
-    public String getWhereCondition(ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
         SQLSelectQueryBlock selectQueryBlock = getSelect();
         SQLExpr where = selectQueryBlock.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);

@@ -16,14 +16,13 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.druid.AbstractRecognizerTest;
@@ -159,10 +158,8 @@ public class SqlServerDeleteRecognizerTest extends AbstractRecognizerTest {
 
         Assertions.assertEquals(sql, sqlServerDeleteRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerDeleteRecognizer.getTableName());
-        Assertions.assertEquals("EXISTS (\n" +
-                "\tSELECT *\n" +
-                "\tFROM t1\n" +
-                ")", sqlServerDeleteRecognizer.getWhereCondition());
+        Assertions.assertEquals(
+                "EXISTS (\n" + "\tSELECT *\n" + "\tFROM t1\n" + ")", sqlServerDeleteRecognizer.getWhereCondition());
     }
 
     /**

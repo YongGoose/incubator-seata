@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +59,7 @@ public class CollectionUtilsTest {
 
         // case 3: not empty
         list.add("1");
-        array = new String[]{"1"};
+        array = new String[] {"1"};
         map.put("test", "test");
         Assertions.assertFalse(CollectionUtils.isEmpty(list));
         Assertions.assertFalse(CollectionUtils.isEmpty(array));
@@ -151,7 +150,7 @@ public class CollectionUtilsTest {
         Assertions.assertEquals(CollectionUtils.toUpperList(sourceList), CollectionUtils.toUpperList(anotherList));
         anotherList.add("D");
         Assertions.assertTrue(
-            CollectionUtils.toUpperList(anotherList).containsAll(CollectionUtils.toUpperList(sourceList)));
+                CollectionUtils.toUpperList(anotherList).containsAll(CollectionUtils.toUpperList(sourceList)));
 
         List<String> listWithNull = new ArrayList<>();
         listWithNull.add("foo");
@@ -213,7 +212,8 @@ public class CollectionUtilsTest {
 
         Assertions.assertEquals("null", CollectionUtils.toString(nullMap));
         Assertions.assertEquals("{}", CollectionUtils.toString(emptyMap));
-        Assertions.assertEquals("{\"aaa\"->\"111\", \"bbb\"->\"222\", \"self\"->(this HashMap)}", CollectionUtils.toString(filledMap));
+        Assertions.assertEquals(
+                "{\"aaa\"->\"111\", \"bbb\"->\"222\", \"self\"->(this HashMap)}", CollectionUtils.toString(filledMap));
     }
 
     @Test

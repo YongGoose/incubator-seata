@@ -16,15 +16,12 @@
  */
 package org.apache.seata.namingserver.listener;
 
-import org.springframework.context.ApplicationEvent;
-
 import java.time.Clock;
-
+import org.springframework.context.ApplicationEvent;
 
 public class ClusterChangeEvent extends ApplicationEvent {
 
     private String group;
-
 
     private long term;
 
