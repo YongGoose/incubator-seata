@@ -30,7 +30,8 @@ public class ExpressionFactoryManager {
 
     public static final String DEFAULT_EXPRESSION_TYPE = "Default";
 
-    private ExpressionFactoryManager(org.apache.seata.saga.engine.expression.ExpressionFactoryManager actual) {
+    private ExpressionFactoryManager(
+            org.apache.seata.saga.engine.expression.ExpressionFactoryManager actual) {
         this.actual = actual;
     }
 
@@ -38,16 +39,27 @@ public class ExpressionFactoryManager {
         actual = new org.apache.seata.saga.engine.expression.ExpressionFactoryManager();
     }
 
-
     public ExpressionFactory getExpressionFactory(String expressionType) {
-        org.apache.seata.saga.engine.expression.ExpressionFactory expressionFactory = actual.getExpressionFactory(expressionType);
+        org.apache.seata.saga.engine.expression.ExpressionFactory expressionFactory =
+                actual.getExpressionFactory(expressionType);
         return expressionFactory::createExpression;
     }
 
     public void setExpressionFactoryMap(Map<String, ExpressionFactory> expressionFactoryMap) {
-        Map<String, org.apache.seata.saga.engine.expression.ExpressionFactory> actualExpressionFactoryMap = expressionFactoryMap.entrySet().stream()
-                .map(e -> new AbstractMap.SimpleEntry<String, org.apache.seata.saga.engine.expression.ExpressionFactory>(e.getKey(), e.getValue()))
-                .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+        Map<String, org.apache.seata.saga.engine.expression.ExpressionFactory>
+                actualExpressionFactoryMap =
+                        expressionFactoryMap.entrySet().stream()
+                                .map(
+                                        e ->
+                                                new AbstractMap.SimpleEntry<
+                                                        String,
+                                                        org.apache.seata.saga.engine.expression
+                                                                .ExpressionFactory>(
+                                                        e.getKey(), e.getValue()))
+                                .collect(
+                                        Collectors.toMap(
+                                                AbstractMap.SimpleEntry::getKey,
+                                                AbstractMap.SimpleEntry::getValue));
         actual.setExpressionFactoryMap(actualExpressionFactoryMap);
     }
 
@@ -59,7 +71,8 @@ public class ExpressionFactoryManager {
         return actual;
     }
 
-    public static ExpressionFactoryManager wrap(org.apache.seata.saga.engine.expression.ExpressionFactoryManager actual) {
+    public static ExpressionFactoryManager wrap(
+            org.apache.seata.saga.engine.expression.ExpressionFactoryManager actual) {
         return new ExpressionFactoryManager(actual);
     }
 }

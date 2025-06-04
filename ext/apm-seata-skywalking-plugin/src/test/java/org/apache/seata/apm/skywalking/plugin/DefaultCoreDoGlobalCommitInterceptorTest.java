@@ -16,6 +16,14 @@
  */
 package org.apache.seata.apm.skywalking.plugin;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.lang.reflect.Method;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.protocol.transaction.GlobalCommitRequest;
 import org.apache.skywalking.apm.agent.core.context.ContextManager;
@@ -27,15 +35,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import java.lang.reflect.Method;
-
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 public class DefaultCoreDoGlobalCommitInterceptorTest {
 
@@ -60,12 +59,15 @@ public class DefaultCoreDoGlobalCommitInterceptorTest {
         request.setXid("test-xid");
         rpcMessage.setBody(request);
 
-        Object[] allArguments = new Object[] { rpcMessage };
-        Class<?>[] argumentTypes = new Class[] { RpcMessage.class };
+        Object[] allArguments = new Object[] {rpcMessage};
+        Class<?>[] argumentTypes = new Class[] {RpcMessage.class};
 
-        try (MockedStatic<ContextManager> contextManagerMockedStatic = Mockito.mockStatic(ContextManager.class)) {
+        try (MockedStatic<ContextManager> contextManagerMockedStatic =
+                Mockito.mockStatic(ContextManager.class)) {
             AbstractSpan span = mock(AbstractSpan.class);
-            contextManagerMockedStatic.when(() -> ContextManager.createLocalSpan(anyString())).thenReturn(span);
+            contextManagerMockedStatic
+                    .when(() -> ContextManager.createLocalSpan(anyString()))
+                    .thenReturn(span);
 
             // When
             interceptor.beforeMethod(enhancedInstance, method, allArguments, argumentTypes, result);
@@ -76,7 +78,8 @@ public class DefaultCoreDoGlobalCommitInterceptorTest {
         }
 
         // afterMethod should call ContextManager.stopSpan if body is AbstractMessage
-        try (MockedStatic<ContextManager> contextManagerMockedStatic = Mockito.mockStatic(ContextManager.class)) {
+        try (MockedStatic<ContextManager> contextManagerMockedStatic =
+                Mockito.mockStatic(ContextManager.class)) {
             contextManagerMockedStatic.when(ContextManager::stopSpan).then(invocation -> null);
 
             // When

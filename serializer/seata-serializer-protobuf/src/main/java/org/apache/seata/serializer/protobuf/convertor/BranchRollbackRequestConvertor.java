@@ -17,51 +17,70 @@
 package org.apache.seata.serializer.protobuf.convertor;
 
 import org.apache.seata.core.model.BranchType;
+import org.apache.seata.core.protocol.transaction.BranchRollbackRequest;
 import org.apache.seata.serializer.protobuf.generated.AbstractBranchEndRequestProto;
 import org.apache.seata.serializer.protobuf.generated.AbstractMessageProto;
 import org.apache.seata.serializer.protobuf.generated.AbstractTransactionRequestProto;
 import org.apache.seata.serializer.protobuf.generated.BranchRollbackRequestProto;
 import org.apache.seata.serializer.protobuf.generated.BranchTypeProto;
 import org.apache.seata.serializer.protobuf.generated.MessageTypeProto;
-import org.apache.seata.core.protocol.transaction.BranchRollbackRequest;
 
-
-public class BranchRollbackRequestConvertor implements PbConvertor<BranchRollbackRequest, BranchRollbackRequestProto> {
+public class BranchRollbackRequestConvertor
+        implements PbConvertor<BranchRollbackRequest, BranchRollbackRequestProto> {
     @Override
     public BranchRollbackRequestProto convert2Proto(BranchRollbackRequest branchRollbackRequest) {
         final short typeCode = branchRollbackRequest.getTypeCode();
 
-        final AbstractMessageProto abstractMessage = AbstractMessageProto.newBuilder().setMessageType(
-            MessageTypeProto.forNumber(typeCode)).build();
+        final AbstractMessageProto abstractMessage =
+                AbstractMessageProto.newBuilder()
+                        .setMessageType(MessageTypeProto.forNumber(typeCode))
+                        .build();
 
-        final AbstractTransactionRequestProto abstractTransactionRequestProto = AbstractTransactionRequestProto
-            .newBuilder().setAbstractMessage(abstractMessage).build();
+        final AbstractTransactionRequestProto abstractTransactionRequestProto =
+                AbstractTransactionRequestProto.newBuilder()
+                        .setAbstractMessage(abstractMessage)
+                        .build();
 
         final String applicationData = branchRollbackRequest.getApplicationData();
         final String resourceId = branchRollbackRequest.getResourceId();
-        final AbstractBranchEndRequestProto abstractBranchEndRequestProto = AbstractBranchEndRequestProto.newBuilder().
-            setAbstractTransactionRequest(abstractTransactionRequestProto).setXid(branchRollbackRequest.getXid())
-            .setBranchId(branchRollbackRequest.getBranchId()).setBranchType(
-                BranchTypeProto.valueOf(branchRollbackRequest.getBranchType().name())).setApplicationData(
-                applicationData == null ? "" : applicationData).setResourceId(resourceId == null ? "" : resourceId)
-            .build();
+        final AbstractBranchEndRequestProto abstractBranchEndRequestProto =
+                AbstractBranchEndRequestProto.newBuilder()
+                        .setAbstractTransactionRequest(abstractTransactionRequestProto)
+                        .setXid(branchRollbackRequest.getXid())
+                        .setBranchId(branchRollbackRequest.getBranchId())
+                        .setBranchType(
+                                BranchTypeProto.valueOf(
+                                        branchRollbackRequest.getBranchType().name()))
+                        .setApplicationData(applicationData == null ? "" : applicationData)
+                        .setResourceId(resourceId == null ? "" : resourceId)
+                        .build();
 
-        BranchRollbackRequestProto result = BranchRollbackRequestProto.newBuilder().setAbstractBranchEndRequest(
-            abstractBranchEndRequestProto).build();
+        BranchRollbackRequestProto result =
+                BranchRollbackRequestProto.newBuilder()
+                        .setAbstractBranchEndRequest(abstractBranchEndRequestProto)
+                        .build();
 
         return result;
     }
 
     @Override
-    public BranchRollbackRequest convert2Model(BranchRollbackRequestProto branchRollbackRequestProto) {
+    public BranchRollbackRequest convert2Model(
+            BranchRollbackRequestProto branchRollbackRequestProto) {
         BranchRollbackRequest branchCommitRequest = new BranchRollbackRequest();
         branchCommitRequest.setApplicationData(
-            branchRollbackRequestProto.getAbstractBranchEndRequest().getApplicationData());
-        branchCommitRequest.setBranchId(branchRollbackRequestProto.getAbstractBranchEndRequest().getBranchId());
-        branchCommitRequest.setResourceId(branchRollbackRequestProto.getAbstractBranchEndRequest().getResourceId());
-        branchCommitRequest.setXid(branchRollbackRequestProto.getAbstractBranchEndRequest().getXid());
+                branchRollbackRequestProto.getAbstractBranchEndRequest().getApplicationData());
+        branchCommitRequest.setBranchId(
+                branchRollbackRequestProto.getAbstractBranchEndRequest().getBranchId());
+        branchCommitRequest.setResourceId(
+                branchRollbackRequestProto.getAbstractBranchEndRequest().getResourceId());
+        branchCommitRequest.setXid(
+                branchRollbackRequestProto.getAbstractBranchEndRequest().getXid());
         branchCommitRequest.setBranchType(
-            BranchType.valueOf(branchRollbackRequestProto.getAbstractBranchEndRequest().getBranchType().name()));
+                BranchType.valueOf(
+                        branchRollbackRequestProto
+                                .getAbstractBranchEndRequest()
+                                .getBranchType()
+                                .name()));
 
         return branchCommitRequest;
     }

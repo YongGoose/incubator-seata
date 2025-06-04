@@ -27,12 +27,12 @@ import java.util.concurrent.atomic.LongAdder;
  */
 public class RpcStatus {
 
-    private static final ConcurrentMap<String, RpcStatus> SERVICE_STATUS_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, RpcStatus> SERVICE_STATUS_MAP =
+            new ConcurrentHashMap<>();
     private final AtomicLong active = new AtomicLong();
     private final LongAdder total = new LongAdder();
 
-    private RpcStatus() {
-    }
+    private RpcStatus() {}
 
     /**
      * get the RpcStatus of this service

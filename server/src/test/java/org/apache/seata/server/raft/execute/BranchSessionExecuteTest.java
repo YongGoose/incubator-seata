@@ -16,11 +16,13 @@
  */
 package org.apache.seata.server.raft.execute;
 
-import org.apache.seata.common.store.LockMode;
-import org.apache.seata.common.store.SessionMode;
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.seata.common.XID;
+import org.apache.seata.common.store.LockMode;
+import org.apache.seata.common.store.SessionMode;
 import org.apache.seata.common.util.NetUtil;
 import org.apache.seata.common.util.UUIDGenerator;
 import org.apache.seata.config.ConfigurationCache;
@@ -43,9 +45,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
-
 
 /**
  */
@@ -80,11 +79,10 @@ class BranchSessionExecuteTest {
         LockerManagerFactory.destroy();
     }
 
-
-
     @Test
     public void testAdd() throws Throwable {
-        BranchSession expected = mockBranchSession(GLOBAL_SESSION.getXid(), GLOBAL_SESSION.getTransactionId());
+        BranchSession expected =
+                mockBranchSession(GLOBAL_SESSION.getXid(), GLOBAL_SESSION.getTransactionId());
 
         AddBranchSessionExecute execute = new AddBranchSessionExecute();
         boolean success = execute.execute(convertToBranchSessionMsg(expected));
@@ -110,7 +108,8 @@ class BranchSessionExecuteTest {
 
     @Test
     public void testUpdate() throws Throwable {
-        BranchSession branchSession = mockBranchSession(GLOBAL_SESSION.getXid(), GLOBAL_SESSION.getTransactionId());
+        BranchSession branchSession =
+                mockBranchSession(GLOBAL_SESSION.getXid(), GLOBAL_SESSION.getTransactionId());
         GLOBAL_SESSION.add(branchSession);
 
         branchSession = GLOBAL_SESSION.getBranch(branchSession.getBranchId());
@@ -135,7 +134,7 @@ class BranchSessionExecuteTest {
         return session;
     }
 
-    private static BranchSession mockBranchSession(String xid,long transactionId) {
+    private static BranchSession mockBranchSession(String xid, long transactionId) {
         BranchSession session = new BranchSession();
         session.setXid(xid);
         session.setTransactionId(transactionId);
@@ -149,7 +148,8 @@ class BranchSessionExecuteTest {
         return session;
     }
 
-    private static void assertBranchSessionValid(BranchSession expected, BranchSession branchSession) {
+    private static void assertBranchSessionValid(
+            BranchSession expected, BranchSession branchSession) {
         Assertions.assertNotNull(branchSession);
         Assertions.assertEquals(expected.getTransactionId(), branchSession.getTransactionId());
         Assertions.assertEquals(expected.getBranchId(), branchSession.getBranchId());

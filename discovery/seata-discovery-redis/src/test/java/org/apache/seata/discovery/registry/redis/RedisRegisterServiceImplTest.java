@@ -16,14 +16,10 @@
  */
 package org.apache.seata.discovery.registry.redis;
 
-import org.apache.seata.common.util.NetUtil;
-import org.apache.seata.config.Configuration;
-import org.apache.seata.config.ConfigurationFactory;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
-import org.mockito.MockedStatic;
-import org.mockito.internal.util.collections.Sets;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -32,12 +28,13 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-
+import org.apache.seata.common.util.NetUtil;
+import org.apache.seata.config.Configuration;
+import org.apache.seata.config.ConfigurationFactory;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.mockito.MockedStatic;
+import org.mockito.internal.util.collections.Sets;
 
 @EnabledIfSystemProperty(named = "redisCaseEnabled", matches = "true")
 public class RedisRegisterServiceImplTest {
@@ -69,27 +66,36 @@ public class RedisRegisterServiceImplTest {
 
     @Test
     public void testRemoveServerAddressByPushEmptyProtection()
-            throws NoSuchFieldException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+            throws NoSuchFieldException,
+                    NoSuchMethodException,
+                    InvocationTargetException,
+                    IllegalAccessException {
 
-        MockedStatic<ConfigurationFactory> configurationFactoryMockedStatic = mockStatic(ConfigurationFactory.class);
+        MockedStatic<ConfigurationFactory> configurationFactoryMockedStatic =
+                mockStatic(ConfigurationFactory.class);
         Configuration configuration = mock(Configuration.class);
         when(configuration.getConfig(anyString())).thenReturn("cluster");
 
-        configurationFactoryMockedStatic.when(ConfigurationFactory::getInstance).thenReturn(configuration);
+        configurationFactoryMockedStatic
+                .when(ConfigurationFactory::getInstance)
+                .thenReturn(configuration);
 
         Field field = RedisRegistryServiceImpl.class.getDeclaredField("CLUSTER_ADDRESS_MAP");
         field.setAccessible(true);
 
-        ConcurrentMap<String, Set<InetSocketAddress>> CLUSTER_ADDRESS_MAP = (ConcurrentMap<String, Set<InetSocketAddress>>)field.get(null);
-        CLUSTER_ADDRESS_MAP.put("cluster", Sets.newSet(NetUtil.toInetSocketAddress("127.0.0.1:8091")));
+        ConcurrentMap<String, Set<InetSocketAddress>> CLUSTER_ADDRESS_MAP =
+                (ConcurrentMap<String, Set<InetSocketAddress>>) field.get(null);
+        CLUSTER_ADDRESS_MAP.put(
+                "cluster", Sets.newSet(NetUtil.toInetSocketAddress("127.0.0.1:8091")));
 
-        Method method = RedisRegistryServiceImpl.class.getDeclaredMethod("removeServerAddressByPushEmptyProtection", String.class, String.class);
+        Method method =
+                RedisRegistryServiceImpl.class.getDeclaredMethod(
+                        "removeServerAddressByPushEmptyProtection", String.class, String.class);
         method.setAccessible(true);
         method.invoke(redisRegistryService, "cluster", "127.0.0.1:8091");
 
         // test the push empty protection situation
         Assertions.assertEquals(1, CLUSTER_ADDRESS_MAP.get("cluster").size());
-
 
         when(configuration.getConfig(anyString())).thenReturn("mycluster");
 
@@ -99,5 +105,4 @@ public class RedisRegisterServiceImplTest {
         // test the normal remove situation
         Assertions.assertEquals(0, CLUSTER_ADDRESS_MAP.get("cluster").size());
     }
-
 }

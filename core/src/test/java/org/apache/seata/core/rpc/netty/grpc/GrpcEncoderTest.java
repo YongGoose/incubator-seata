@@ -16,10 +16,15 @@
  */
 package org.apache.seata.core.rpc.netty.grpc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http2.DefaultHttp2DataFrame;
 import io.netty.handler.codec.http2.DefaultHttp2HeadersFrame;
+import java.util.HashMap;
 import org.apache.seata.core.protocol.HeartbeatMessage;
 import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.RpcMessage;
@@ -28,20 +33,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.HashMap;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 public class GrpcEncoderTest {
     private GrpcEncoder grpcEncoder;
 
-    @Mock
-    private ChannelHandlerContext ctx;
+    @Mock private ChannelHandlerContext ctx;
 
-    @Mock
-    private ChannelPromise promise;
+    @Mock private ChannelPromise promise;
 
     @BeforeEach
     public void setUp() {

@@ -16,10 +16,6 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties;
 
-import org.apache.seata.core.rpc.netty.NettyBaseConfig.WorkThreadMode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_BOSS_THREAD_PREFIX;
 import static org.apache.seata.common.DefaultValues.DEFAULT_BOSS_THREAD_SIZE;
 import static org.apache.seata.common.DefaultValues.DEFAULT_EXECUTOR_THREAD_PREFIX;
@@ -29,6 +25,9 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_SELECTOR_THREAD_SIZE
 import static org.apache.seata.common.DefaultValues.DEFAULT_WORKER_THREAD_PREFIX;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.THREAD_FACTORY_PREFIX_KEBAB_STYLE;
 
+import org.apache.seata.core.rpc.netty.NettyBaseConfig.WorkThreadMode;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = THREAD_FACTORY_PREFIX_KEBAB_STYLE)
@@ -40,10 +39,12 @@ public class ThreadFactoryProperties {
     private String clientSelectorThreadPrefix = DEFAULT_SELECTOR_THREAD_PREFIX;
     private int clientSelectorThreadSize = DEFAULT_SELECTOR_THREAD_SIZE;
     private String clientWorkerThreadPrefix = DEFAULT_WORKER_THREAD_PREFIX;
+
     /**
      * netty boss thread size
      */
     private int bossThreadSize = DEFAULT_BOSS_THREAD_SIZE;
+
     /**
      * auto default pin or 8
      */
@@ -71,7 +72,8 @@ public class ThreadFactoryProperties {
         return serverExecutorThreadPrefix;
     }
 
-    public ThreadFactoryProperties setServerExecutorThreadPrefix(String serverExecutorThreadPrefix) {
+    public ThreadFactoryProperties setServerExecutorThreadPrefix(
+            String serverExecutorThreadPrefix) {
         this.serverExecutorThreadPrefix = serverExecutorThreadPrefix;
         return this;
     }
@@ -89,7 +91,8 @@ public class ThreadFactoryProperties {
         return clientSelectorThreadPrefix;
     }
 
-    public ThreadFactoryProperties setClientSelectorThreadPrefix(String clientSelectorThreadPrefix) {
+    public ThreadFactoryProperties setClientSelectorThreadPrefix(
+            String clientSelectorThreadPrefix) {
         this.clientSelectorThreadPrefix = clientSelectorThreadPrefix;
         return this;
     }

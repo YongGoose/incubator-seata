@@ -16,15 +16,15 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.model.BranchStatus;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchRollbackResponse;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Branch rollback response codec test.
@@ -41,25 +41,30 @@ public class BranchRollbackResponseSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         BranchRollbackResponse branchRollbackResponse = new BranchRollbackResponse();
         branchRollbackResponse.setBranchId(112232);
         branchRollbackResponse.setXid("123");
         branchRollbackResponse.setBranchStatus(BranchStatus.PhaseOne_Done);
         branchRollbackResponse.setResultCode(ResultCode.Success);
         branchRollbackResponse.setMsg("abc");
-        branchRollbackResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchTransactionNotExist);
+        branchRollbackResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchTransactionNotExist);
 
         byte[] bytes = seataSerializer.serialize(branchRollbackResponse);
 
         BranchRollbackResponse branchRollbackResponse2 = seataSerializer.deserialize(bytes);
 
-        assertThat(branchRollbackResponse2.getBranchId()).isEqualTo(branchRollbackResponse.getBranchId());
-        assertThat(branchRollbackResponse2.getBranchStatus()).isEqualTo(branchRollbackResponse.getBranchStatus());
-        assertThat(branchRollbackResponse2.getResultCode()).isEqualTo(branchRollbackResponse.getResultCode());
+        assertThat(branchRollbackResponse2.getBranchId())
+                .isEqualTo(branchRollbackResponse.getBranchId());
+        assertThat(branchRollbackResponse2.getBranchStatus())
+                .isEqualTo(branchRollbackResponse.getBranchStatus());
+        assertThat(branchRollbackResponse2.getResultCode())
+                .isEqualTo(branchRollbackResponse.getResultCode());
         assertThat(branchRollbackResponse2.getXid()).isEqualTo(branchRollbackResponse.getXid());
-        assertThat(branchRollbackResponse2.getBranchStatus()).isEqualTo(branchRollbackResponse.getBranchStatus());
-        assertThat(branchRollbackResponse2.getTransactionExceptionCode()).isEqualTo(branchRollbackResponse.getTransactionExceptionCode());
-
+        assertThat(branchRollbackResponse2.getBranchStatus())
+                .isEqualTo(branchRollbackResponse.getBranchStatus());
+        assertThat(branchRollbackResponse2.getTransactionExceptionCode())
+                .isEqualTo(branchRollbackResponse.getTransactionExceptionCode());
     }
 }

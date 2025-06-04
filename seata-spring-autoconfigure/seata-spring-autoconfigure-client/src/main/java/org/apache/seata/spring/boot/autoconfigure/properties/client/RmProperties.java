@@ -16,10 +16,7 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.client;
 
-import org.apache.seata.sqlparser.SqlParserType;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
+import static org.apache.seata.common.DefaultValues.DEFAULT_APPLICATION_DATA_SIZE_LIMIT;
 import static org.apache.seata.common.DefaultValues.DEFAULT_CLIENT_ASYNC_COMMIT_BUFFER_LIMIT;
 import static org.apache.seata.common.DefaultValues.DEFAULT_CLIENT_REPORT_RETRY_COUNT;
 import static org.apache.seata.common.DefaultValues.DEFAULT_CLIENT_REPORT_SUCCESS_ENABLE;
@@ -29,12 +26,14 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_CLIENT_SAGA_RETRY_PE
 import static org.apache.seata.common.DefaultValues.DEFAULT_CLIENT_TABLE_META_CHECK_ENABLE;
 import static org.apache.seata.common.DefaultValues.DEFAULT_SAGA_JSON_PARSER;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TABLE_META_CHECKER_INTERVAL;
-import static org.apache.seata.common.DefaultValues.TCC_ACTION_INTERCEPTOR_ORDER;
 import static org.apache.seata.common.DefaultValues.DEFAULT_XA_BRANCH_EXECUTION_TIMEOUT;
 import static org.apache.seata.common.DefaultValues.DEFAULT_XA_CONNECTION_TWO_PHASE_HOLD_TIMEOUT;
-import static org.apache.seata.common.DefaultValues.DEFAULT_APPLICATION_DATA_SIZE_LIMIT;
+import static org.apache.seata.common.DefaultValues.TCC_ACTION_INTERCEPTOR_ORDER;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_RM_PREFIX;
 
+import org.apache.seata.sqlparser.SqlParserType;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = CLIENT_RM_PREFIX)
@@ -47,7 +46,8 @@ public class RmProperties {
     private boolean sagaBranchRegisterEnable = DEFAULT_CLIENT_SAGA_BRANCH_REGISTER_ENABLE;
     private String sagaJsonParser = DEFAULT_SAGA_JSON_PARSER;
     private boolean sagaRetryPersistModeUpdate = DEFAULT_CLIENT_SAGA_RETRY_PERSIST_MODE_UPDATE;
-    private boolean sagaCompensatePersistModeUpdate = DEFAULT_CLIENT_SAGA_COMPENSATE_PERSIST_MODE_UPDATE;
+    private boolean sagaCompensatePersistModeUpdate =
+            DEFAULT_CLIENT_SAGA_COMPENSATE_PERSIST_MODE_UPDATE;
     private int tccActionInterceptorOrder = TCC_ACTION_INTERCEPTOR_ORDER;
     private int branchExecutionTimeoutXA = DEFAULT_XA_BRANCH_EXECUTION_TIMEOUT;
     private int connectionTwoPhaseHoldTimeoutXA = DEFAULT_XA_CONNECTION_TWO_PHASE_HOLD_TIMEOUT;
@@ -107,7 +107,6 @@ public class RmProperties {
     public void setSagaJsonParser(String sagaJsonParser) {
         this.sagaJsonParser = sagaJsonParser;
     }
-
 
     public long getTableMetaCheckerInterval() {
         return tableMetaCheckerInterval;

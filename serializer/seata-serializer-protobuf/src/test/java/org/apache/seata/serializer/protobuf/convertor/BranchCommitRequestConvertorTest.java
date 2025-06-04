@@ -16,13 +16,12 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.BranchCommitRequestProto;
-import org.apache.seata.core.model.BranchType;
-import org.apache.seata.core.protocol.transaction.BranchCommitRequest;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.seata.core.model.BranchType;
+import org.apache.seata.core.protocol.transaction.BranchCommitRequest;
+import org.apache.seata.serializer.protobuf.generated.BranchCommitRequestProto;
+import org.junit.jupiter.api.Test;
 
 public class BranchCommitRequestConvertorTest {
 
@@ -36,9 +35,10 @@ public class BranchCommitRequestConvertorTest {
         branchCommitRequest.setBranchId(123);
         branchCommitRequest.setApplicationData("app");
 
-        BranchCommitRequestConvertor branchCommitRequestConvertor = new BranchCommitRequestConvertor();
-        BranchCommitRequestProto proto = branchCommitRequestConvertor.convert2Proto(
-            branchCommitRequest);
+        BranchCommitRequestConvertor branchCommitRequestConvertor =
+                new BranchCommitRequestConvertor();
+        BranchCommitRequestProto proto =
+                branchCommitRequestConvertor.convert2Proto(branchCommitRequest);
         BranchCommitRequest realRequest = branchCommitRequestConvertor.convert2Model(proto);
 
         assertThat(realRequest.getTypeCode()).isEqualTo(branchCommitRequest.getTypeCode());
@@ -46,7 +46,7 @@ public class BranchCommitRequestConvertorTest {
         assertThat(realRequest.getXid()).isEqualTo(branchCommitRequest.getXid());
         assertThat(realRequest.getResourceId()).isEqualTo(branchCommitRequest.getResourceId());
         assertThat(realRequest.getBranchId()).isEqualTo(branchCommitRequest.getBranchId());
-        assertThat(realRequest.getApplicationData()).isEqualTo(branchCommitRequest.getApplicationData());
-
+        assertThat(realRequest.getApplicationData())
+                .isEqualTo(branchCommitRequest.getApplicationData());
     }
 }

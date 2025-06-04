@@ -16,6 +16,11 @@
  */
 package org.apache.seata.rm.datasource;
 
+import static org.apache.seata.common.Constants.AUTO_COMMIT;
+import static org.apache.seata.common.Constants.SKIP_CHECK_LOCK;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.ArrayList;
@@ -27,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.seata.common.LockStrategyMode;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.util.CollectionUtils;
@@ -39,25 +41,23 @@ import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalLockConfig;
 import org.apache.seata.rm.datasource.undo.SQLUndoLog;
 
-import static org.apache.seata.common.Constants.AUTO_COMMIT;
-import static org.apache.seata.common.Constants.SKIP_CHECK_LOCK;
-
 /**
  * The type Connection context.
  *
  */
 public class ConnectionContext {
-    private static final Savepoint DEFAULT_SAVEPOINT = new Savepoint() {
-        @Override
-        public int getSavepointId() throws SQLException {
-            return 0;
-        }
+    private static final Savepoint DEFAULT_SAVEPOINT =
+            new Savepoint() {
+                @Override
+                public int getSavepointId() throws SQLException {
+                    return 0;
+                }
 
-        @Override
-        public String getSavepointName() throws SQLException {
-            return "DEFAULT_SEATA_SAVEPOINT";
-        }
-    };
+                @Override
+                public String getSavepointName() throws SQLException {
+                    return "DEFAULT_SEATA_SAVEPOINT";
+                }
+            };
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -72,6 +72,7 @@ public class ConnectionContext {
      * the lock keys buffer
      */
     private final Map<Savepoint, Set<String>> lockKeysBuffer = new LinkedHashMap<>();
+
     /**
      * the undo items buffer
      */
@@ -112,7 +113,9 @@ public class ConnectionContext {
      * @param sqlUndoLog the sql undo log
      */
     void appendUndoItem(SQLUndoLog sqlUndoLog) {
-        sqlUndoItemsBuffer.computeIfAbsent(currentSavepoint, k -> new ArrayList<>()).add(sqlUndoLog);
+        sqlUndoItemsBuffer
+                .computeIfAbsent(currentSavepoint, k -> new ArrayList<>())
+                .add(sqlUndoLog);
     }
 
     /**
@@ -140,25 +143,30 @@ public class ConnectionContext {
         }
 
         savepoints.removeAll(afterSavepoints);
-        currentSavepoint = savepoints.size() == 0 ? DEFAULT_SAVEPOINT : savepoints.get(savepoints.size() - 1);
+        currentSavepoint =
+                savepoints.size() == 0 ? DEFAULT_SAVEPOINT : savepoints.get(savepoints.size() - 1);
     }
 
     public void releaseSavepoint(Savepoint savepoint) {
         List<Savepoint> afterSavepoints = getAfterSavepoints(savepoint);
         savepoints.removeAll(afterSavepoints);
-        currentSavepoint = savepoints.size() == 0 ? DEFAULT_SAVEPOINT : savepoints.get(savepoints.size() - 1);
+        currentSavepoint =
+                savepoints.size() == 0 ? DEFAULT_SAVEPOINT : savepoints.get(savepoints.size() - 1);
 
         // move the undo items & lock keys to current savepoint
         for (Savepoint sp : afterSavepoints) {
             List<SQLUndoLog> savepointSQLUndoLogs = sqlUndoItemsBuffer.remove(sp);
             if (CollectionUtils.isNotEmpty(savepointSQLUndoLogs)) {
-                sqlUndoItemsBuffer.computeIfAbsent(currentSavepoint, k -> new ArrayList<>(savepointSQLUndoLogs.size()))
+                sqlUndoItemsBuffer
+                        .computeIfAbsent(
+                                currentSavepoint, k -> new ArrayList<>(savepointSQLUndoLogs.size()))
                         .addAll(savepointSQLUndoLogs);
             }
 
             Set<String> savepointLockKeys = lockKeysBuffer.remove(sp);
             if (CollectionUtils.isNotEmpty(savepointLockKeys)) {
-                lockKeysBuffer.computeIfAbsent(currentSavepoint, k -> new HashSet<>())
+                lockKeysBuffer
+                        .computeIfAbsent(currentSavepoint, k -> new HashSet<>())
                         .addAll(savepointLockKeys);
             }
         }
@@ -195,7 +203,8 @@ public class ConnectionContext {
             setXid(xid);
         } else {
             if (!this.xid.equals(xid)) {
-                throw new ShouldNeverHappenException(String.format("bind xid: %s, while current xid: %s", xid, this.xid));
+                throw new ShouldNeverHappenException(
+                        String.format("bind xid: %s, while current xid: %s", xid, this.xid));
             }
         }
     }
@@ -280,16 +289,21 @@ public class ConnectionContext {
     public String getApplicationData() throws TransactionException {
         GlobalLockConfig globalLockConfig = GlobalLockConfigHolder.getCurrentGlobalLockConfig();
         // lock retry times > 1 & skip first check lock / before image is empty
-        Optional.ofNullable(globalLockConfig).ifPresent(lockConfig -> {
-            if ((lockConfig.getLockRetryTimes() == -1 || lockConfig.getLockRetryTimes() > 1)
-                && (lockConfig.getLockStrategyMode() == LockStrategyMode.OPTIMISTIC || allBeforeImageEmpty())) {
-                if (!applicationData.containsKey(SKIP_CHECK_LOCK)) {
-                    this.applicationData.put(SKIP_CHECK_LOCK, true);
-                } else {
-                    this.applicationData.put(SKIP_CHECK_LOCK, false);
-                }
-            }
-        });
+        Optional.ofNullable(globalLockConfig)
+                .ifPresent(
+                        lockConfig -> {
+                            if ((lockConfig.getLockRetryTimes() == -1
+                                            || lockConfig.getLockRetryTimes() > 1)
+                                    && (lockConfig.getLockStrategyMode()
+                                                    == LockStrategyMode.OPTIMISTIC
+                                            || allBeforeImageEmpty())) {
+                                if (!applicationData.containsKey(SKIP_CHECK_LOCK)) {
+                                    this.applicationData.put(SKIP_CHECK_LOCK, true);
+                                } else {
+                                    this.applicationData.put(SKIP_CHECK_LOCK, false);
+                                }
+                            }
+                        });
 
         boolean autoCommit = this.isAutoCommitChanged();
         // when transaction are enabled, it must be false
@@ -373,7 +387,6 @@ public class ConnectionContext {
         return undoItems;
     }
 
-
     /**
      * Get the savepoints after target savepoint(include the param savepoint)
      *
@@ -385,7 +398,8 @@ public class ConnectionContext {
             return new ArrayList<>(savepoints);
         }
 
-        return new ArrayList<>(savepoints.subList(savepoints.indexOf(savepoint), savepoints.size()));
+        return new ArrayList<>(
+                savepoints.subList(savepoints.indexOf(savepoint), savepoints.size()));
     }
 
     /**
@@ -409,5 +423,4 @@ public class ConnectionContext {
     public String toString() {
         return StringUtils.toString(this);
     }
-
 }

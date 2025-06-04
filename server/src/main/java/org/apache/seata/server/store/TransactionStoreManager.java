@@ -16,11 +16,10 @@
  */
 package org.apache.seata.server.store;
 
+import java.util.List;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.server.session.GlobalSession;
 import org.apache.seata.server.session.SessionCondition;
-
-import java.util.List;
 
 /**
  * The interface Transaction store manager.
@@ -36,7 +35,6 @@ public interface TransactionStoreManager {
      * @return the boolean
      */
     boolean writeSession(LogOperation logOperation, SessionStorable session);
-
 
     /**
      * Read global session global session.
@@ -62,6 +60,7 @@ public interface TransactionStoreManager {
      * @return the global session
      */
     List<GlobalSession> readSortByTimeoutBeginSessions(boolean withBranchSessions);
+
     /**
      * Read session global session.
      *
@@ -84,7 +83,6 @@ public interface TransactionStoreManager {
      */
     void shutdown();
 
-
     /**
      * The enum Log operation.
      */
@@ -93,27 +91,27 @@ public interface TransactionStoreManager {
         /**
          * Global add log operation.
          */
-        GLOBAL_ADD((byte)1),
+        GLOBAL_ADD((byte) 1),
         /**
          * Global update log operation.
          */
-        GLOBAL_UPDATE((byte)2),
+        GLOBAL_UPDATE((byte) 2),
         /**
          * Global remove log operation.
          */
-        GLOBAL_REMOVE((byte)3),
+        GLOBAL_REMOVE((byte) 3),
         /**
          * Branch add log operation.
          */
-        BRANCH_ADD((byte)4),
+        BRANCH_ADD((byte) 4),
         /**
          * Branch update log operation.
          */
-        BRANCH_UPDATE((byte)5),
+        BRANCH_UPDATE((byte) 5),
         /**
          * Branch remove log operation.
          */
-        BRANCH_REMOVE((byte)6);
+        BRANCH_REMOVE((byte) 6);
 
         private byte code;
 

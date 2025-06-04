@@ -16,15 +16,14 @@
  */
 package org.apache.seata.rm.datasource.xa;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Tests for DataSourceProxyXANative
@@ -49,10 +48,11 @@ public class DataSourceProxyXANativeTest {
         Connection connFromDataSourceProxyXANative = dataSourceProxyXANative.getConnection();
 
         Assertions.assertTrue(connFromDataSourceProxyXANative instanceof ConnectionProxyXA);
-        XAConnection xaConnectionFromProxy = ((ConnectionProxyXA)connFromDataSourceProxyXANative).getWrappedXAConnection();
+        XAConnection xaConnectionFromProxy =
+                ((ConnectionProxyXA) connFromDataSourceProxyXANative).getWrappedXAConnection();
         Assertions.assertSame(xaConnection, xaConnectionFromProxy);
-        Connection connectionFromProxy = ((ConnectionProxyXA)connFromDataSourceProxyXANative).getWrappedConnection();
+        Connection connectionFromProxy =
+                ((ConnectionProxyXA) connFromDataSourceProxyXANative).getWrappedConnection();
         Assertions.assertSame(connection, connectionFromProxy);
-
     }
 }

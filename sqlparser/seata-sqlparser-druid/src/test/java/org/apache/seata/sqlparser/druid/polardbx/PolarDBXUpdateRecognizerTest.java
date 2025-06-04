@@ -16,6 +16,11 @@
  */
 package org.apache.seata.sqlparser.druid.polardbx;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleDatetimeExpr;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,12 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleDatetimeExpr;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLType;
@@ -93,27 +92,25 @@ public class PolarDBXUpdateRecognizerTest extends AbstractPolarDBXRecognizerTest
         Assertions.assertEquals(2, recognizer.getUpdateColumns().size());
 
         // case3: test with error
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String sql2 = "UPDATE t SET id = 1";
-            SQLUpdateStatement ast2 = (SQLUpdateStatement) getSQLStatement(sql2);
-            List<SQLUpdateSetItem> updateSetItems = ast2.getItems();
-            for (SQLUpdateSetItem updateSetItem : updateSetItems) {
-                updateSetItem.setColumn(new SQLCharExpr());
-            }
-            PolarDBXUpdateRecognizer recognizer2 = new PolarDBXUpdateRecognizer(sql2, ast2);
-            recognizer2.getUpdateColumns();
-        });
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String sql2 = "UPDATE t SET id = 1";
+                    SQLUpdateStatement ast2 = (SQLUpdateStatement) getSQLStatement(sql2);
+                    List<SQLUpdateSetItem> updateSetItems = ast2.getItems();
+                    for (SQLUpdateSetItem updateSetItem : updateSetItems) {
+                        updateSetItem.setColumn(new SQLCharExpr());
+                    }
+                    PolarDBXUpdateRecognizer recognizer2 = new PolarDBXUpdateRecognizer(sql2, ast2);
+                    recognizer2.getUpdateColumns();
+                });
     }
 
     @Test
     public void testGetUpdateValues() {
         // case1: test expressions of value
         // VALUES(value, variant ref(placeholder etc.), null, default, not placeholder)
-        String sql = "UPDATE t\n" +
-                "SET\n" +
-                "\tid = 1,\n" +
-                "\tno = ?,\n" +
-                "\tage = 'test'";
+        String sql = "UPDATE t\n" + "SET\n" + "\tid = 1,\n" + "\tno = ?,\n" + "\tage = 'test'";
         SQLStatement ast = getSQLStatement(sql);
 
         PolarDBXUpdateRecognizer recognizer = new PolarDBXUpdateRecognizer(sql, ast);
@@ -125,14 +122,16 @@ public class PolarDBXUpdateRecognizerTest extends AbstractPolarDBXRecognizerTest
         Assertions.assertEquals("test", updateValues.get(2));
 
         // case2: unrecognized expression of value
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String sql2 = "UPDATE t SET id = ?";
-            SQLUpdateStatement ast2 = (SQLUpdateStatement) getSQLStatement(sql2);
-            List<SQLUpdateSetItem> updateSetItems = ast2.getItems();
-            updateSetItems.get(0).setValue(new OracleDatetimeExpr());
-            PolarDBXUpdateRecognizer recognizer2 = new PolarDBXUpdateRecognizer(sql2, ast2);
-            recognizer2.getUpdateValues();
-        });
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String sql2 = "UPDATE t SET id = ?";
+                    SQLUpdateStatement ast2 = (SQLUpdateStatement) getSQLStatement(sql2);
+                    List<SQLUpdateSetItem> updateSetItems = ast2.getItems();
+                    updateSetItems.get(0).setValue(new OracleDatetimeExpr());
+                    PolarDBXUpdateRecognizer recognizer2 = new PolarDBXUpdateRecognizer(sql2, ast2);
+                    recognizer2.getUpdateValues();
+                });
     }
 
     @Test
@@ -144,12 +143,18 @@ public class PolarDBXUpdateRecognizerTest extends AbstractPolarDBXRecognizerTest
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList("test"))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(1))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1,
+                                                new ArrayList<>(Collections.singletonList("test"))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(1))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
-        Assertions.assertEquals(Collections.singletonList(Collections.singletonList(1)), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Collections.singletonList(1)), paramAppenderList);
         Assertions.assertEquals("id = ?", whereCondition);
     }
 
@@ -162,10 +167,14 @@ public class PolarDBXUpdateRecognizerTest extends AbstractPolarDBXRecognizerTest
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1, new ArrayList<>(Collections.singletonList(1))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(2))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2)), paramAppenderList);
         Assertions.assertEquals("id IN (?, ?)", whereCondition);
@@ -180,11 +189,17 @@ public class PolarDBXUpdateRecognizerTest extends AbstractPolarDBXRecognizerTest
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList("test"))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(3, new ArrayList<>(Collections.singletonList(2))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1,
+                                                new ArrayList<>(Collections.singletonList("test"))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(1))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                3, new ArrayList<>(Collections.singletonList(2))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2)), paramAppenderList);
         Assertions.assertEquals("id BETWEEN ? AND ?", whereCondition);

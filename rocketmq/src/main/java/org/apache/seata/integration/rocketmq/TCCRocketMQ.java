@@ -16,16 +16,14 @@
  */
 package org.apache.seata.integration.rocketmq;
 
-import org.apache.seata.core.exception.TransactionException;
-import org.apache.seata.rm.tcc.api.BusinessActionContext;
-
 import java.net.UnknownHostException;
-
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
+import org.apache.seata.core.exception.TransactionException;
+import org.apache.seata.rm.tcc.api.BusinessActionContext;
 
 /**
  * The interface Tcc rocket mq.
@@ -59,7 +57,11 @@ public interface TCCRocketMQ {
      * @throws InterruptedException
      */
     boolean commit(BusinessActionContext context)
-            throws UnknownHostException, MQBrokerException, RemotingException, InterruptedException, TransactionException;
+            throws UnknownHostException,
+                    MQBrokerException,
+                    RemotingException,
+                    InterruptedException,
+                    TransactionException;
 
     /**
      * RocketMQ half send rollback
@@ -72,7 +74,9 @@ public interface TCCRocketMQ {
      * @throws InterruptedException
      */
     boolean rollback(BusinessActionContext context)
-            throws UnknownHostException, MQBrokerException, RemotingException, InterruptedException, TransactionException;
-
-
+            throws UnknownHostException,
+                    MQBrokerException,
+                    RemotingException,
+                    InterruptedException,
+                    TransactionException;
 }

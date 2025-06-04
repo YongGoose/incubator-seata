@@ -47,9 +47,12 @@ public abstract class AbstractLockManager implements LockManager {
     }
 
     @Override
-    public boolean acquireLock(BranchSession branchSession, boolean autoCommit, boolean skipCheckLock) throws TransactionException {
+    public boolean acquireLock(
+            BranchSession branchSession, boolean autoCommit, boolean skipCheckLock)
+            throws TransactionException {
         if (branchSession == null) {
-            throw new IllegalArgumentException("branchSession can't be null for memory/file locker.");
+            throw new IllegalArgumentException(
+                    "branchSession can't be null for memory/file locker.");
         }
         String lockKey = branchSession.getLockKey();
         if (StringUtils.isNullOrEmpty(lockKey)) {
@@ -68,7 +71,8 @@ public abstract class AbstractLockManager implements LockManager {
     @Override
     public boolean releaseLock(BranchSession branchSession) throws TransactionException {
         if (branchSession == null) {
-            throw new IllegalArgumentException("branchSession can't be null for memory/file locker.");
+            throw new IllegalArgumentException(
+                    "branchSession can't be null for memory/file locker.");
         }
         List<RowLock> locks = collectRowLocks(branchSession);
         try {
@@ -80,7 +84,8 @@ public abstract class AbstractLockManager implements LockManager {
     }
 
     @Override
-    public boolean isLockable(String xid, String resourceId, String lockKey) throws TransactionException {
+    public boolean isLockable(String xid, String resourceId, String lockKey)
+            throws TransactionException {
         if (StringUtils.isBlank(lockKey)) {
             // no lock
             return true;
@@ -89,11 +94,15 @@ public abstract class AbstractLockManager implements LockManager {
         try {
             return getLocker().isLockable(locks);
         } catch (Exception t) {
-            LOGGER.error("isLockable error, xid:{} resourceId:{}, lockKey:{}", xid, resourceId, lockKey, t);
+            LOGGER.error(
+                    "isLockable error, xid:{} resourceId:{}, lockKey:{}",
+                    xid,
+                    resourceId,
+                    lockKey,
+                    t);
             return false;
         }
     }
-
 
     @Override
     public void cleanAllLocks() throws TransactionException {
@@ -154,8 +163,8 @@ public abstract class AbstractLockManager implements LockManager {
      * @param branchID      the branch id
      * @return the list
      */
-    protected List<RowLock> collectRowLocks(String lockKey, String resourceId, String xid, Long transactionId,
-        Long branchID) {
+    protected List<RowLock> collectRowLocks(
+            String lockKey, String resourceId, String xid, Long transactionId, Long branchID) {
         List<RowLock> locks = new ArrayList<>();
 
         String[] tableGroupedLockKeys = lockKey.split(";");
@@ -188,10 +197,9 @@ public abstract class AbstractLockManager implements LockManager {
         }
         return locks;
     }
-    
+
     @Override
     public void updateLockStatus(String xid, LockStatus lockStatus) {
         this.getLocker().updateLockStatus(xid, lockStatus);
     }
-
 }

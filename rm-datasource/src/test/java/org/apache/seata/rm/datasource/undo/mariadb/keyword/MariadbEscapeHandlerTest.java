@@ -56,7 +56,8 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setTableName("`lock`");
         sqlUndoLog.setSqlType(SQLType.UPDATE);
 
-        TableRecords beforeImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords beforeImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row beforeRow = new Row();
 
@@ -81,7 +82,8 @@ public class MariadbEscapeHandlerTest {
 
         beforeImage.add(beforeRow);
 
-        TableRecords afterImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords afterImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row afterRow = new Row();
 
@@ -109,12 +111,13 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setBeforeImage(beforeImage);
         sqlUndoLog.setAfterImage(afterImage);
 
-        MariadbEscapeHandlerTest.MariadbUndoUpdateExecutorExtension mariadbUndoUpdateExecutorExtension =
-            new MariadbEscapeHandlerTest.MariadbUndoUpdateExecutorExtension(sqlUndoLog);
+        MariadbEscapeHandlerTest.MariadbUndoUpdateExecutorExtension
+                mariadbUndoUpdateExecutorExtension =
+                        new MariadbEscapeHandlerTest.MariadbUndoUpdateExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("UPDATE `lock` SET `desc` = ?, since = ? WHERE `key` = ?",
-            mariadbUndoUpdateExecutorExtension.getSql().trim());
-
+        Assertions.assertEquals(
+                "UPDATE `lock` SET `desc` = ?, since = ? WHERE `key` = ?",
+                mariadbUndoUpdateExecutorExtension.getSql().trim());
     }
 
     /**
@@ -126,9 +129,11 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setTableName("`lock`");
         sqlUndoLog.setSqlType(SQLType.INSERT);
 
-        TableRecords beforeImage = TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords beforeImage =
+                TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
 
-        TableRecords afterImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords afterImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row afterRow1 = new Row();
 
@@ -178,12 +183,13 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setBeforeImage(beforeImage);
         sqlUndoLog.setAfterImage(afterImage);
 
-        MariadbEscapeHandlerTest.MariadbUndoInsertExecutorExtension mariadbUndoInsertExecutorExtension =
-            new MariadbEscapeHandlerTest.MariadbUndoInsertExecutorExtension(sqlUndoLog);
+        MariadbEscapeHandlerTest.MariadbUndoInsertExecutorExtension
+                mariadbUndoInsertExecutorExtension =
+                        new MariadbEscapeHandlerTest.MariadbUndoInsertExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("DELETE FROM `lock` WHERE `key` = ?",
-            mariadbUndoInsertExecutorExtension.getSql().trim());
-
+        Assertions.assertEquals(
+                "DELETE FROM `lock` WHERE `key` = ?",
+                mariadbUndoInsertExecutorExtension.getSql().trim());
     }
 
     /**
@@ -195,9 +201,11 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setTableName("`lock`");
         sqlUndoLog.setSqlType(SQLType.DELETE);
 
-        TableRecords afterImage = TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords afterImage =
+                TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
 
-        TableRecords beforeImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords beforeImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row afterRow1 = new Row();
 
@@ -247,12 +255,13 @@ public class MariadbEscapeHandlerTest {
         sqlUndoLog.setAfterImage(afterImage);
         sqlUndoLog.setBeforeImage(beforeImage);
 
-        MariadbEscapeHandlerTest.MariadbUndoDeleteExecutorExtension mariadbUndoDeleteExecutorExtension =
-            new MariadbEscapeHandlerTest.MariadbUndoDeleteExecutorExtension(sqlUndoLog);
+        MariadbEscapeHandlerTest.MariadbUndoDeleteExecutorExtension
+                mariadbUndoDeleteExecutorExtension =
+                        new MariadbEscapeHandlerTest.MariadbUndoDeleteExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("INSERT INTO `lock` (`desc`, since, `key`) VALUES (?, ?, ?)",
-            mariadbUndoDeleteExecutorExtension.getSql());
-
+        Assertions.assertEquals(
+                "INSERT INTO `lock` (`desc`, since, `key`) VALUES (?, ?, ?)",
+                mariadbUndoDeleteExecutorExtension.getSql());
     }
 
     private static class MariadbUndoUpdateExecutorExtension extends MariadbUndoUpdateExecutor {

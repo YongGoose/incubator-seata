@@ -16,12 +16,19 @@
  */
 package org.apache.seata.core.rpc.processor.client;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import io.netty.channel.ChannelHandlerContext;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.seata.core.protocol.AbstractResultMessage;
 import org.apache.seata.core.protocol.BatchResultMessage;
 import org.apache.seata.core.protocol.MergeMessage;
@@ -40,14 +47,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * The type Client on response processor test.
@@ -81,10 +80,13 @@ class ClientOnResponseProcessorTest {
 
         // Mock static logger
         mockedLogger = Mockito.mockStatic(LoggerFactory.class);
-        mockedLogger.when(() -> LoggerFactory.getLogger(ClientOnResponseProcessor.class)).thenReturn(mockLogger);
+        mockedLogger
+                .when(() -> LoggerFactory.getLogger(ClientOnResponseProcessor.class))
+                .thenReturn(mockLogger);
 
-        processor = new ClientOnResponseProcessor(mergeMsgMap, futures, childToParentMap,
-            mockTransactionMessageHandler);
+        processor =
+                new ClientOnResponseProcessor(
+                        mergeMsgMap, futures, childToParentMap, mockTransactionMessageHandler);
     }
 
     /**
@@ -134,8 +136,8 @@ class ClientOnResponseProcessorTest {
         BatchResultMessage mockBatchResult = mock(BatchResultMessage.class);
         when(mockRpcMessage.getBody()).thenReturn(mockBatchResult);
         when(mockBatchResult.getMsgIds()).thenReturn(Collections.singletonList(789));
-        when(mockBatchResult.getResultMessages()).thenReturn(
-            Collections.singletonList(mock(AbstractResultMessage.class)));
+        when(mockBatchResult.getResultMessages())
+                .thenReturn(Collections.singletonList(mock(AbstractResultMessage.class)));
 
         // Configure child-parent mapping
         childToParentMap.put(789, 101112);
@@ -220,4 +222,3 @@ class ClientOnResponseProcessorTest {
         }
     }
 }
-

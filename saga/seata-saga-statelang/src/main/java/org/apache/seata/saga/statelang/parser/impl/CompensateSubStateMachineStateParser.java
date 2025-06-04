@@ -27,19 +27,21 @@ import org.apache.seata.saga.statelang.parser.StateParser;
  *
  */
 public class CompensateSubStateMachineStateParser extends AbstractTaskStateParser
-    implements StateParser<ServiceTaskState> {
+        implements StateParser<ServiceTaskState> {
 
     @Override
     public ServiceTaskState parse(Object node) {
 
-        CompensateSubStateMachineStateImpl compensateSubStateMachineState = new CompensateSubStateMachineStateImpl();
+        CompensateSubStateMachineStateImpl compensateSubStateMachineState =
+                new CompensateSubStateMachineStateImpl();
         compensateSubStateMachineState.setForCompensation(true);
         if (node != null) {
             parseTaskAttributes(compensateSubStateMachineState, node);
         }
         if (StringUtils.isEmpty(compensateSubStateMachineState.getName())) {
             compensateSubStateMachineState.setName(
-                DomainConstants.COMPENSATE_SUB_MACHINE_STATE_NAME_PREFIX + compensateSubStateMachineState.hashCode());
+                    DomainConstants.COMPENSATE_SUB_MACHINE_STATE_NAME_PREFIX
+                            + compensateSubStateMachineState.hashCode());
         }
         return compensateSubStateMachineState;
     }

@@ -20,18 +20,24 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 class YamlConfigurationFactoryTest {
 
     @Test
     public void getInstance() {
         System.setProperty(ConfigProperty.ENV_PROPERTY_KEY, "test-yaml");
-        System.setProperty(ConfigProperty.SYSTEM_PROPERTY_SEATA_CONFIG_NAME, ConfigProperty.REGISTRY_CONF_DEFAULT);
+        System.setProperty(
+                ConfigProperty.SYSTEM_PROPERTY_SEATA_CONFIG_NAME,
+                ConfigProperty.REGISTRY_CONF_DEFAULT);
         ConfigurationFactory.reload();
-        Assertions.assertEquals(ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.name"), "file-test-yaml.conf");
-        Assertions.assertEquals(ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.testBlank"), "");
-        Assertions.assertNull(ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.testNull"));
-        Assertions.assertNull(ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.testExist"));
+        Assertions.assertEquals(
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.name"),
+                "file-test-yaml.conf");
+        Assertions.assertEquals(
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.testBlank"), "");
+        Assertions.assertNull(
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.testNull"));
+        Assertions.assertNull(
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig("config.file.testExist"));
         Configuration instance = ConfigurationFactory.getInstance();
         Assertions.assertEquals(instance.getConfig("transport.heartbeat"), "true");
         Assertions.assertEquals(instance.getConfig("service.default.grouplist"), "127.0.0.1:8093");

@@ -16,6 +16,7 @@
  */
 package org.apache.seata.discovery.registry.custom;
 
+import java.util.stream.Stream;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.StringUtils;
@@ -23,9 +24,6 @@ import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.discovery.registry.RegistryProvider;
 import org.apache.seata.discovery.registry.RegistryService;
 import org.apache.seata.discovery.registry.RegistryType;
-
-import java.util.stream.Stream;
-
 
 @LoadLevel(name = "Custom")
 public class CustomRegistryProvider implements RegistryProvider {
@@ -36,11 +34,12 @@ public class CustomRegistryProvider implements RegistryProvider {
     public CustomRegistryProvider() {
         String name = ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(FILE_CONFIG_KEY_PREFIX);
         if (StringUtils.isBlank(name)) {
-            throw new IllegalArgumentException("name value of custom registry type must not be blank");
+            throw new IllegalArgumentException(
+                    "name value of custom registry type must not be blank");
         }
-        if (Stream.of(RegistryType.values())
-                .anyMatch(ct -> ct.name().equalsIgnoreCase(name))) {
-            throw new IllegalArgumentException(String.format("custom registry type name %s is not allowed", name));
+        if (Stream.of(RegistryType.values()).anyMatch(ct -> ct.name().equalsIgnoreCase(name))) {
+            throw new IllegalArgumentException(
+                    String.format("custom registry type name %s is not allowed", name));
         }
         customName = name;
     }

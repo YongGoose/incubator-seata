@@ -16,9 +16,8 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import java.nio.ByteBuffer;
-
 import io.netty.buffer.ByteBuf;
+import java.nio.ByteBuffer;
 import org.apache.seata.core.protocol.transaction.GlobalLockQueryResponse;
 
 /**
@@ -36,16 +35,16 @@ public class GlobalLockQueryResponseCodec extends AbstractTransactionResponseCod
     public <T> void encode(T t, ByteBuf out) {
         super.encode(t, out);
 
-        GlobalLockQueryResponse globalLockQueryResponse = (GlobalLockQueryResponse)t;
+        GlobalLockQueryResponse globalLockQueryResponse = (GlobalLockQueryResponse) t;
         boolean lockable = globalLockQueryResponse.isLockable();
-        out.writeShort((short)(lockable ? 1 : 0));
+        out.writeShort((short) (lockable ? 1 : 0));
     }
 
     @Override
     public <T> void decode(T t, ByteBuffer in) {
         super.decode(t, in);
 
-        GlobalLockQueryResponse globalLockQueryResponse = (GlobalLockQueryResponse)t;
+        GlobalLockQueryResponse globalLockQueryResponse = (GlobalLockQueryResponse) t;
         globalLockQueryResponse.setLockable(in.getShort() == 1);
     }
 }

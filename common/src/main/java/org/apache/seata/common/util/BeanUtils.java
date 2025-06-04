@@ -21,7 +21,6 @@ import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +114,6 @@ public class BeanUtils {
         }
     }
 
-
     /**
      * object to map
      *
@@ -138,7 +136,8 @@ public class BeanUtils {
                         map.put(field.getName(), String.valueOf(date.getTime()));
                     }
                 } else {
-                    map.put(field.getName(),
+                    map.put(
+                            field.getName(),
                             field.get(object) == null ? "" : field.get(object).toString());
                 }
                 field.setAccessible(accessible);
@@ -149,5 +148,4 @@ public class BeanUtils {
         }
         return map;
     }
-
 }

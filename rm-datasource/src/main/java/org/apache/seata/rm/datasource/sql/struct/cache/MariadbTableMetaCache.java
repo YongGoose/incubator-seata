@@ -16,15 +16,14 @@
  */
 package org.apache.seata.rm.datasource.sql.struct.cache;
 
-import org.apache.seata.common.loader.LoadLevel;
-import org.apache.seata.sqlparser.struct.TableMeta;
-import org.apache.seata.sqlparser.util.ColumnUtils;
-import org.apache.seata.sqlparser.util.JdbcConstants;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.apache.seata.common.loader.LoadLevel;
+import org.apache.seata.sqlparser.struct.TableMeta;
+import org.apache.seata.sqlparser.util.ColumnUtils;
+import org.apache.seata.sqlparser.util.JdbcConstants;
 
 /**
  * The type Table meta cache.
@@ -35,9 +34,12 @@ public class MariadbTableMetaCache extends MysqlTableMetaCache {
 
     @Override
     protected TableMeta fetchSchema(Connection connection, String tableName) throws SQLException {
-        String sql = "SELECT * FROM " + ColumnUtils.addEscape(tableName, JdbcConstants.MARIADB) + " LIMIT 1";
+        String sql =
+                "SELECT * FROM "
+                        + ColumnUtils.addEscape(tableName, JdbcConstants.MARIADB)
+                        + " LIMIT 1";
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(sql)) {
             return resultSetMetaToSchema(rs.getMetaData(), connection.getMetaData(), tableName);
         } catch (SQLException sqlEx) {
             throw sqlEx;
@@ -45,5 +47,4 @@ public class MariadbTableMetaCache extends MysqlTableMetaCache {
             throw new SQLException(String.format("Failed to fetch schema of %s", tableName), e);
         }
     }
-
 }

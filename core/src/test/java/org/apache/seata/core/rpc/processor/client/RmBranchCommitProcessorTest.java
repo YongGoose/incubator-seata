@@ -52,7 +52,8 @@ import org.slf4j.LoggerFactory;
  * The type Rm branch commit processor test.
  */
 public class RmBranchCommitProcessorTest {
-    private static final String CLASS_NAME = "org.apache.seata.core.rpc.processor.client.RmBranchCommitProcessor";
+    private static final String CLASS_NAME =
+            "org.apache.seata.core.rpc.processor.client.RmBranchCommitProcessor";
 
     private final List<Logger> watchedLoggers = new ArrayList<>();
     private final ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
@@ -111,7 +112,8 @@ public class RmBranchCommitProcessorTest {
         processor.process(mockCtx, mockRpcMessage);
 
         verify(mockHandler).onRequest(mockRequest, null);
-        verify(mockRemotingClient).sendAsyncResponse("127.0.0.1:8091", mockRpcMessage, mockResponse);
+        verify(mockRemotingClient)
+                .sendAsyncResponse("127.0.0.1:8091", mockRpcMessage, mockResponse);
     }
 
     /**
@@ -135,11 +137,15 @@ public class RmBranchCommitProcessorTest {
         when(mockHandler.onRequest(mockRequest, null)).thenReturn(mockResponse);
 
         Throwable simulatedError = new RuntimeException("Network failure");
-        doThrow(simulatedError).when(mockRemotingClient).sendAsyncResponse(anyString(), any(), any());
+        doThrow(simulatedError)
+                .when(mockRemotingClient)
+                .sendAsyncResponse(anyString(), any(), any());
 
         processor.process(mockCtx, mockRpcMessage);
 
-        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.equals("branch commit error: Network failure")));
+        assertTrue(
+                getLogs(Level.ERROR).stream()
+                        .anyMatch(log -> log.equals("branch commit error: Network failure")));
     }
 
     /**
@@ -164,14 +170,17 @@ public class RmBranchCommitProcessorTest {
         processor.process(mockCtx, mockRpcMessage);
 
         assertTrue(
-                getLogs(Level.INFO).stream().anyMatch(log -> log.startsWith("rm client handle branch commit process:"))
-        );
+                getLogs(Level.INFO).stream()
+                        .anyMatch(
+                                log -> log.startsWith("rm client handle branch commit process:")));
     }
 
     private List<String> getLogs(Level level) {
         return logWatcher.list.stream()
-                .filter(event -> event.getLoggerName().endsWith(CLASS_NAME)
-                        && event.getLevel().equals(level))
+                .filter(
+                        event ->
+                                event.getLoggerName().endsWith(CLASS_NAME)
+                                        && event.getLevel().equals(level))
                 .map(ILoggingEvent::getFormattedMessage)
                 .collect(Collectors.toList());
     }

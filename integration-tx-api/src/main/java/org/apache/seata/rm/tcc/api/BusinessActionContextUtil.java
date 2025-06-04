@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm.tcc.api;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.util.CollectionUtils;
@@ -28,18 +31,13 @@ import org.apache.seata.rm.DefaultResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * the api of sharing business action context to tcc phase 2
  *
  */
 public final class BusinessActionContextUtil {
 
-    private BusinessActionContextUtil() {
-    }
+    private BusinessActionContextUtil() {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusinessActionContextUtil.class);
 
@@ -105,13 +103,16 @@ public final class BusinessActionContextUtil {
 
         try {
             // branch report
-            DefaultResourceManager.get().branchReport(
-                    actionContext.getBranchType(),
-                    actionContext.getXid(),
-                    actionContext.getBranchId(),
-                    BranchStatus.Registered,
-                    JsonUtil.toJSONString(Collections.singletonMap(Constants.TX_ACTION_CONTEXT, actionContext.getActionContext()))
-            );
+            DefaultResourceManager.get()
+                    .branchReport(
+                            actionContext.getBranchType(),
+                            actionContext.getXid(),
+                            actionContext.getBranchId(),
+                            BranchStatus.Registered,
+                            JsonUtil.toJSONString(
+                                    Collections.singletonMap(
+                                            Constants.TX_ACTION_CONTEXT,
+                                            actionContext.getActionContext())));
 
             // reset to un_updated
             actionContext.setUpdated(null);
@@ -144,8 +145,8 @@ public final class BusinessActionContextUtil {
      * @param applicationData the application data
      * @return business action context
      */
-    public static BusinessActionContext getBusinessActionContext(String xid, long branchId, String resourceId,
-                                                                 String applicationData) {
+    public static BusinessActionContext getBusinessActionContext(
+            String xid, long branchId, String resourceId, String applicationData) {
         Map actionContextMap = null;
         if (StringUtils.isNotBlank(applicationData)) {
             Map tccContext = JsonUtil.parseObject(applicationData, Map.class);
@@ -155,11 +156,10 @@ public final class BusinessActionContextUtil {
             actionContextMap = new HashMap<>(2);
         }
 
-        //instance the action context
-        BusinessActionContext businessActionContext = new BusinessActionContext(
-                xid, String.valueOf(branchId), actionContextMap);
+        // instance the action context
+        BusinessActionContext businessActionContext =
+                new BusinessActionContext(xid, String.valueOf(branchId), actionContextMap);
         businessActionContext.setActionName(resourceId);
         return businessActionContext;
     }
-
 }

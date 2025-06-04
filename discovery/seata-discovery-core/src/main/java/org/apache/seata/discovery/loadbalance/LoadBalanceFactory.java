@@ -16,10 +16,10 @@
  */
 package org.apache.seata.discovery.loadbalance;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_LOAD_BALANCE;
+
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.config.ConfigurationFactory;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_LOAD_BALANCE;
 
 /**
  * The type Load balance factory.
@@ -28,6 +28,7 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_LOAD_BALANCE;
 public class LoadBalanceFactory {
 
     private static final String CLIENT_PREFIX = "client.";
+
     /**
      * The constant LOAD_BALANCE_PREFIX.
      */
@@ -45,14 +46,15 @@ public class LoadBalanceFactory {
 
     public static final String LEAST_ACTIVE_LOAD_BALANCE = "LeastActiveLoadBalance";
 
-
     /**
      * Get instance.
      *
      * @return the instance
      */
     public static LoadBalance getInstance() {
-        String config = ConfigurationFactory.getInstance().getConfig(LOAD_BALANCE_TYPE, DEFAULT_LOAD_BALANCE);
+        String config =
+                ConfigurationFactory.getInstance()
+                        .getConfig(LOAD_BALANCE_TYPE, DEFAULT_LOAD_BALANCE);
         return EnhancedServiceLoader.load(LoadBalance.class, config);
     }
 }

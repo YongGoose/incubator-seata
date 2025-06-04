@@ -16,10 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SERVER_RATELIMIT_PREFIX;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SERVER_RATELIMIT_PREFIX;
 
 @Component
 @ConfigurationProperties(prefix = SERVER_RATELIMIT_PREFIX)

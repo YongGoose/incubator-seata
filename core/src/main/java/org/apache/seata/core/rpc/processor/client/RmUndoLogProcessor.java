@@ -55,7 +55,9 @@ public class RmUndoLogProcessor implements RemotingProcessor {
         try {
             handler.onRequest(undoLogDeleteRequest, null);
         } catch (Exception e) {
-            LOGGER.error("Failed to delete undo log by undoLogDeleteRequest on" + undoLogDeleteRequest.getResourceId());
+            LOGGER.error(
+                    "Failed to delete undo log by undoLogDeleteRequest on"
+                            + undoLogDeleteRequest.getResourceId());
         }
     }
 }

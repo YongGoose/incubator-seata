@@ -16,10 +16,8 @@
  */
 package org.apache.seata.server.console.entity.param;
 
-import org.apache.seata.common.result.BaseParam;
-
 import java.io.Serializable;
-
+import org.apache.seata.common.result.BaseParam;
 
 /**
  * Global lock param
@@ -32,22 +30,27 @@ public class GlobalLockParam extends BaseParam implements Serializable {
      * the xid
      */
     private String xid;
+
     /**
      * the table name
      */
     private String tableName;
+
     /**
      * the transaction id
      */
     private String transactionId;
+
     /**
      * the branch id
      */
     private String branchId;
+
     /**
      * the primary Key
      */
     private String pk;
+
     /**
      * the resourceId
      */
@@ -103,13 +106,25 @@ public class GlobalLockParam extends BaseParam implements Serializable {
 
     @Override
     public String toString() {
-        return "GlobalLockParam{" +
-                "xid='" + xid + '\'' +
-                ", tableName='" + tableName + '\'' +
-                ", transactionId='" + transactionId + '\'' +
-                ", branchId='" + branchId + '\'' +
-                ", pk='" + pk + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                '}';
+        return "GlobalLockParam{"
+                + "xid='"
+                + xid
+                + '\''
+                + ", tableName='"
+                + tableName
+                + '\''
+                + ", transactionId='"
+                + transactionId
+                + '\''
+                + ", branchId='"
+                + branchId
+                + '\''
+                + ", pk='"
+                + pk
+                + '\''
+                + ", resourceId='"
+                + resourceId
+                + '\''
+                + '}';
     }
 }

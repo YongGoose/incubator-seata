@@ -20,7 +20,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
-
 import org.apache.seata.core.constants.ServerTableColumnsName;
 
 /**
@@ -50,20 +49,18 @@ public class BranchSessionVO {
 
     private Long gmtModified;
 
+    public BranchSessionVO() {}
 
-    public BranchSessionVO(){
-
-    }
-
-    public BranchSessionVO(String xid,
-                           Long transactionId,
-                           Long branchId,
-                           String resourceGroupId,
-                           String resourceId,
-                           String branchType,
-                           Integer status,
-                           String clientId,
-                           String applicationData) {
+    public BranchSessionVO(
+            String xid,
+            Long transactionId,
+            Long branchId,
+            String resourceGroupId,
+            String resourceId,
+            String branchType,
+            Integer status,
+            String clientId,
+            String applicationData) {
         this.xid = xid;
         this.transactionId = String.valueOf(transactionId);
         this.branchId = String.valueOf(branchId);
@@ -166,14 +163,19 @@ public class BranchSessionVO {
     public static BranchSessionVO convert(ResultSet rs) throws SQLException {
         BranchSessionVO branchSessionVO = new BranchSessionVO();
         branchSessionVO.setXid(rs.getString(ServerTableColumnsName.BRANCH_TABLE_XID));
-        branchSessionVO.setTransactionId(rs.getLong(ServerTableColumnsName.BRANCH_TABLE_TRANSACTION_ID));
+        branchSessionVO.setTransactionId(
+                rs.getLong(ServerTableColumnsName.BRANCH_TABLE_TRANSACTION_ID));
         branchSessionVO.setBranchId(rs.getLong(ServerTableColumnsName.BRANCH_TABLE_BRANCH_ID));
-        branchSessionVO.setResourceGroupId(rs.getString(ServerTableColumnsName.BRANCH_TABLE_RESOURCE_GROUP_ID));
-        branchSessionVO.setResourceId(rs.getString(ServerTableColumnsName.BRANCH_TABLE_RESOURCE_ID));
-        branchSessionVO.setBranchType(rs.getString(ServerTableColumnsName.BRANCH_TABLE_BRANCH_TYPE));
+        branchSessionVO.setResourceGroupId(
+                rs.getString(ServerTableColumnsName.BRANCH_TABLE_RESOURCE_GROUP_ID));
+        branchSessionVO.setResourceId(
+                rs.getString(ServerTableColumnsName.BRANCH_TABLE_RESOURCE_ID));
+        branchSessionVO.setBranchType(
+                rs.getString(ServerTableColumnsName.BRANCH_TABLE_BRANCH_TYPE));
         branchSessionVO.setStatus(rs.getInt(ServerTableColumnsName.BRANCH_TABLE_STATUS));
         branchSessionVO.setClientId(rs.getString(ServerTableColumnsName.BRANCH_TABLE_CLIENT_ID));
-        branchSessionVO.setApplicationData(rs.getString(ServerTableColumnsName.BRANCH_TABLE_APPLICATION_DATA));
+        branchSessionVO.setApplicationData(
+                rs.getString(ServerTableColumnsName.BRANCH_TABLE_APPLICATION_DATA));
         Date gmtCreateTimestamp = rs.getDate(ServerTableColumnsName.BRANCH_TABLE_GMT_CREATE);
         if (gmtCreateTimestamp != null) {
             branchSessionVO.setGmtCreate(gmtCreateTimestamp.getTime());
@@ -209,7 +211,8 @@ public class BranchSessionVO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(xid,
+        return Objects.hash(
+                xid,
                 transactionId,
                 branchId,
                 resourceGroupId,
@@ -224,18 +227,35 @@ public class BranchSessionVO {
 
     @Override
     public String toString() {
-        return "BranchSessionVO{" +
-                "xid='" + xid + '\'' +
-                ", transactionId=" + transactionId +
-                ", branchId=" + branchId +
-                ", resourceGroupId='" + resourceGroupId + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", branchType='" + branchType + '\'' +
-                ", status=" + status +
-                ", clientId='" + clientId + '\'' +
-                ", applicationData='" + applicationData + '\'' +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                '}';
+        return "BranchSessionVO{"
+                + "xid='"
+                + xid
+                + '\''
+                + ", transactionId="
+                + transactionId
+                + ", branchId="
+                + branchId
+                + ", resourceGroupId='"
+                + resourceGroupId
+                + '\''
+                + ", resourceId='"
+                + resourceId
+                + '\''
+                + ", branchType='"
+                + branchType
+                + '\''
+                + ", status="
+                + status
+                + ", clientId='"
+                + clientId
+                + '\''
+                + ", applicationData='"
+                + applicationData
+                + '\''
+                + ", gmtCreate="
+                + gmtCreate
+                + ", gmtModified="
+                + gmtModified
+                + '}';
     }
 }

@@ -16,11 +16,9 @@
  */
 package org.apache.seata.integration.http;
 
-import com.alibaba.fastjson.JSONObject;
-import org.apache.seata.common.util.StringUtils;
-import org.apache.seata.core.context.RootContext;
+import static org.apache.seata.integration.http.AbstractHttpExecutor.convertParamOfJsonString;
 
-import javax.servlet.http.HttpServletRequest;
+import com.alibaba.fastjson.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,50 +27,52 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.apache.seata.integration.http.AbstractHttpExecutor.convertParamOfJsonString;
-
+import javax.servlet.http.HttpServletRequest;
+import org.apache.seata.common.util.StringUtils;
+import org.apache.seata.core.context.RootContext;
 
 public class MockWebServer {
 
     private Map<String, String> urlServletMap = new HashMap<>();
 
-
     public void start(int port) {
         initServletMapping();
-        new Thread(() -> {
-            ServerSocket serverSocket = null;
-            try {
-                serverSocket = new ServerSocket(port);
-                Socket socket = serverSocket.accept();
-                InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
+        new Thread(
+                        () -> {
+                            ServerSocket serverSocket = null;
+                            try {
+                                serverSocket = new ServerSocket(port);
+                                Socket socket = serverSocket.accept();
+                                InputStream inputStream = socket.getInputStream();
+                                OutputStream outputStream = socket.getOutputStream();
 
-                MockRequest myRequest = new MockRequest(inputStream);
-                MockResponse myResponse = new MockResponse(outputStream);
+                                MockRequest myRequest = new MockRequest(inputStream);
+                                MockResponse myResponse = new MockResponse(outputStream);
 
-                dispatch(myRequest, myResponse);
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            } finally {
-                if (serverSocket != null) {
-                    try {
-                        serverSocket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-
+                                dispatch(myRequest, myResponse);
+                                socket.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            } finally {
+                                if (serverSocket != null) {
+                                    try {
+                                        serverSocket.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        })
+                .start();
     }
 
     public void initServletMapping() {
         for (ServletMapping servletMapping : ServletMapping.servletMappingList) {
-            urlServletMap.put(servletMapping.getPath(), servletMapping.getClazz() + "_" + servletMapping.getMethod());
+            urlServletMap.put(
+                    servletMapping.getPath(),
+                    servletMapping.getClazz() + "_" + servletMapping.getMethod());
         }
     }
 
@@ -125,8 +125,7 @@ public class MockWebServer {
 
     private HttpTest.Person boxing(MockRequest myRequest) {
         Map params = null;
-        if ("get".equals(myRequest.getMethod()))
-            params = getUrlParams(myRequest.getUrl());
+        if ("get".equals(myRequest.getMethod())) params = getUrlParams(myRequest.getUrl());
         else if ("post".equals(myRequest.getMethod())) {
             params = getBodyParams(myRequest.getBody());
         }
@@ -137,7 +136,6 @@ public class MockWebServer {
         Map<String, String> map = convertParamOfJsonString(body, HttpTest.Person.class);
         return map;
     }
-
 
     public static Map<String, Object> getUrlParams(String param) {
         Map<String, Object> map = new HashMap<String, Object>(0);
@@ -157,6 +155,5 @@ public class MockWebServer {
             }
         }
         return map;
-
     }
 }

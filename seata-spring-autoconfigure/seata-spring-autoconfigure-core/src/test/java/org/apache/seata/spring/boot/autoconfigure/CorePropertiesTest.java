@@ -16,6 +16,11 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.seata.spring.boot.autoconfigure.properties.LogProperties;
 import org.apache.seata.spring.boot.autoconfigure.properties.ShutdownProperties;
 import org.apache.seata.spring.boot.autoconfigure.properties.ThreadFactoryProperties;
@@ -34,32 +39,38 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-
 public class CorePropertiesTest {
     private static AnnotationConfigApplicationContext context;
 
     @BeforeAll
     public static void initContext() {
-        context = new AnnotationConfigApplicationContext("org.apache.seata.spring.boot.autoconfigure.properties");
+        context =
+                new AnnotationConfigApplicationContext(
+                        "org.apache.seata.spring.boot.autoconfigure.properties");
     }
-
 
     @Test
     public void testThreadFactoryProperties() {
-        assertEquals("NettyBoss", context.getBean(ThreadFactoryProperties.class).getBossThreadPrefix());
-        assertEquals("NettyServerNIOWorker", context.getBean(ThreadFactoryProperties.class).getWorkerThreadPrefix());
-        assertEquals("NettyServerBizHandler", context.getBean(ThreadFactoryProperties.class).getServerExecutorThreadPrefix());
+        assertEquals(
+                "NettyBoss", context.getBean(ThreadFactoryProperties.class).getBossThreadPrefix());
+        assertEquals(
+                "NettyServerNIOWorker",
+                context.getBean(ThreadFactoryProperties.class).getWorkerThreadPrefix());
+        assertEquals(
+                "NettyServerBizHandler",
+                context.getBean(ThreadFactoryProperties.class).getServerExecutorThreadPrefix());
         assertFalse(context.getBean(ThreadFactoryProperties.class).isShareBossWorker());
-        assertEquals("NettyClientSelector", context.getBean(ThreadFactoryProperties.class).getClientSelectorThreadPrefix());
-        assertEquals(-1, context.getBean(ThreadFactoryProperties.class).getClientSelectorThreadSize());
-        assertEquals("NettyClientWorkerThread", context.getBean(ThreadFactoryProperties.class).getClientWorkerThreadPrefix());
+        assertEquals(
+                "NettyClientSelector",
+                context.getBean(ThreadFactoryProperties.class).getClientSelectorThreadPrefix());
+        assertEquals(
+                -1, context.getBean(ThreadFactoryProperties.class).getClientSelectorThreadSize());
+        assertEquals(
+                "NettyClientWorkerThread",
+                context.getBean(ThreadFactoryProperties.class).getClientWorkerThreadPrefix());
         assertEquals(1, context.getBean(ThreadFactoryProperties.class).getBossThreadSize());
-        assertEquals("Default", context.getBean(ThreadFactoryProperties.class).getWorkerThreadSize());
+        assertEquals(
+                "Default", context.getBean(ThreadFactoryProperties.class).getWorkerThreadSize());
     }
 
     @Test
@@ -83,35 +94,41 @@ public class CorePropertiesTest {
         assertEquals(100, context.getBean(LogProperties.class).getExceptionRate());
     }
 
-
     @Test
     public void testRegistryConsulProperties() {
         assertEquals("default", context.getBean(RegistryConsulProperties.class).getCluster());
-        assertEquals("127.0.0.1:8500", context.getBean(RegistryConsulProperties.class).getServerAddr());
+        assertEquals(
+                "127.0.0.1:8500", context.getBean(RegistryConsulProperties.class).getServerAddr());
     }
 
     @Test
     public void testRegistryEtcd3Properties() {
         assertEquals("default", context.getBean(RegistryEtcd3Properties.class).getCluster());
-        assertEquals("http://localhost:2379", context.getBean(RegistryEtcd3Properties.class).getServerAddr());
+        assertEquals(
+                "http://localhost:2379",
+                context.getBean(RegistryEtcd3Properties.class).getServerAddr());
     }
 
     @Test
     public void testRegistryEurekaProperties() {
         assertEquals("default", context.getBean(RegistryEurekaProperties.class).getApplication());
-        assertEquals("http://localhost:8761/eureka", context.getBean(RegistryEurekaProperties.class).getServiceUrl());
+        assertEquals(
+                "http://localhost:8761/eureka",
+                context.getBean(RegistryEurekaProperties.class).getServiceUrl());
         assertEquals("1", context.getBean(RegistryEurekaProperties.class).getWeight());
     }
 
     @Test
     public void testRegistryNacosProperties() {
-        assertEquals("localhost:8848", context.getBean(RegistryNacosProperties.class).getServerAddr());
+        assertEquals(
+                "localhost:8848", context.getBean(RegistryNacosProperties.class).getServerAddr());
         assertNull(context.getBean(RegistryNacosProperties.class).getNamespace());
         assertEquals("SEATA_GROUP", context.getBean(RegistryNacosProperties.class).getGroup());
         assertEquals("default", context.getBean(RegistryNacosProperties.class).getCluster());
         assertNull(context.getBean(RegistryNacosProperties.class).getUsername());
         assertNull(context.getBean(RegistryNacosProperties.class).getPassword());
-        assertEquals("seata-server", context.getBean(RegistryNacosProperties.class).getApplication());
+        assertEquals(
+                "seata-server", context.getBean(RegistryNacosProperties.class).getApplication());
     }
 
     @Test
@@ -119,10 +136,10 @@ public class CorePropertiesTest {
         assertEquals("file", context.getBean(RegistryProperties.class).getType());
     }
 
-
     @Test
     public void testRegistryRedisProperties() {
-        assertEquals("localhost:6379", context.getBean(RegistryRedisProperties.class).getServerAddr());
+        assertEquals(
+                "localhost:6379", context.getBean(RegistryRedisProperties.class).getServerAddr());
         assertEquals(0, context.getBean(RegistryRedisProperties.class).getDb());
         assertNull(context.getBean(RegistryRedisProperties.class).getPassword());
         assertEquals("default", context.getBean(RegistryRedisProperties.class).getCluster());
@@ -131,10 +148,12 @@ public class CorePropertiesTest {
 
     @Test
     public void testRegistrySofaProperties() {
-        assertEquals("127.0.0.1:9603", context.getBean(RegistrySofaProperties.class).getServerAddr());
+        assertEquals(
+                "127.0.0.1:9603", context.getBean(RegistrySofaProperties.class).getServerAddr());
         assertEquals("default", context.getBean(RegistrySofaProperties.class).getApplication());
         assertEquals("DEFAULT_ZONE", context.getBean(RegistrySofaProperties.class).getRegion());
-        assertEquals("DefaultDataCenter", context.getBean(RegistrySofaProperties.class).getDatacenter());
+        assertEquals(
+                "DefaultDataCenter", context.getBean(RegistrySofaProperties.class).getDatacenter());
         assertEquals("default", context.getBean(RegistrySofaProperties.class).getCluster());
         assertEquals("SEATA_GROUP", context.getBean(RegistrySofaProperties.class).getGroup());
         assertEquals("3000", context.getBean(RegistrySofaProperties.class).getAddressWaitTime());
@@ -143,7 +162,9 @@ public class CorePropertiesTest {
     @Test
     public void testRegistryZooKeeperProperties() {
         assertEquals("default", context.getBean(RegistryZooKeeperProperties.class).getCluster());
-        assertEquals("127.0.0.1:2181", context.getBean(RegistryZooKeeperProperties.class).getServerAddr());
+        assertEquals(
+                "127.0.0.1:2181",
+                context.getBean(RegistryZooKeeperProperties.class).getServerAddr());
         assertEquals(6000L, context.getBean(RegistryZooKeeperProperties.class).getSessionTimeout());
         assertEquals(2000L, context.getBean(RegistryZooKeeperProperties.class).getConnectTimeout());
     }
@@ -152,7 +173,6 @@ public class CorePropertiesTest {
     public void testRegistryCustomProperties() {
         assertNull(context.getBean(RegistryCustomProperties.class).getName());
     }
-
 
     @AfterAll
     public static void closeContext() {

@@ -16,14 +16,14 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchRegisterResponse;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Branch register response codec test.
@@ -40,21 +40,24 @@ public class BranchRegisterResponseSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         BranchRegisterResponse branchRegisterResponse = new BranchRegisterResponse();
         branchRegisterResponse.setBranchId(1346);
         branchRegisterResponse.setMsg("addd");
         branchRegisterResponse.setResultCode(ResultCode.Failed);
-        branchRegisterResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchTransactionNotExist);
+        branchRegisterResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchTransactionNotExist);
 
         byte[] bytes = seataSerializer.serialize(branchRegisterResponse);
 
         BranchRegisterResponse branchRegisterResponse2 = seataSerializer.deserialize(bytes);
 
-        assertThat(branchRegisterResponse2.getBranchId()).isEqualTo(branchRegisterResponse.getBranchId());
+        assertThat(branchRegisterResponse2.getBranchId())
+                .isEqualTo(branchRegisterResponse.getBranchId());
         assertThat(branchRegisterResponse2.getMsg()).isEqualTo(branchRegisterResponse.getMsg());
-        assertThat(branchRegisterResponse2.getResultCode()).isEqualTo(branchRegisterResponse.getResultCode());
-        assertThat(branchRegisterResponse2.getTransactionExceptionCode()).isEqualTo(branchRegisterResponse.getTransactionExceptionCode());
+        assertThat(branchRegisterResponse2.getResultCode())
+                .isEqualTo(branchRegisterResponse.getResultCode());
+        assertThat(branchRegisterResponse2.getTransactionExceptionCode())
+                .isEqualTo(branchRegisterResponse.getTransactionExceptionCode());
     }
-
 }

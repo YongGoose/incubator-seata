@@ -16,22 +16,24 @@
  */
 package org.apache.seata.core.exception;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 public class TransactionExceptionTest {
 
     @Test
     public void testConstructorWithCode() {
-        TransactionException exception = new TransactionException(TransactionExceptionCode.GlobalTransactionNotExist);
+        TransactionException exception =
+                new TransactionException(TransactionExceptionCode.GlobalTransactionNotExist);
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
     }
 
     @Test
     public void testConstructorWithCodeAndCause() {
         Throwable cause = new RuntimeException("test");
-        TransactionException exception = new TransactionException(TransactionExceptionCode.GlobalTransactionNotExist, cause);
+        TransactionException exception =
+                new TransactionException(TransactionExceptionCode.GlobalTransactionNotExist, cause);
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
         assertEquals(cause, exception.getCause());
     }
@@ -44,7 +46,9 @@ public class TransactionExceptionTest {
 
     @Test
     public void testConstructorWithCodeAndMessage() {
-        TransactionException exception = new TransactionException(TransactionExceptionCode.GlobalTransactionNotExist, "test message");
+        TransactionException exception =
+                new TransactionException(
+                        TransactionExceptionCode.GlobalTransactionNotExist, "test message");
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
         assertEquals("test message", exception.getMessage());
     }
@@ -67,7 +71,9 @@ public class TransactionExceptionTest {
     @Test
     public void testConstructorWithCodeMessageAndCause() {
         Throwable cause = new RuntimeException("test");
-        TransactionException exception = new TransactionException(TransactionExceptionCode.GlobalTransactionNotExist, "test message", cause);
+        TransactionException exception =
+                new TransactionException(
+                        TransactionExceptionCode.GlobalTransactionNotExist, "test message", cause);
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
         assertEquals("test message", exception.getMessage());
         assertEquals(cause, exception.getCause());

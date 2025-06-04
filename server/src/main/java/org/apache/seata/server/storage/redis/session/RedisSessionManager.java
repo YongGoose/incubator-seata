@@ -18,7 +18,6 @@ package org.apache.seata.server.storage.redis.session;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.seata.common.exception.StoreException;
 import org.apache.seata.common.executor.Initialize;
 import org.apache.seata.common.loader.LoadLevel;
@@ -30,21 +29,19 @@ import org.apache.seata.server.session.AbstractSessionManager;
 import org.apache.seata.server.session.BranchSession;
 import org.apache.seata.server.session.GlobalSession;
 import org.apache.seata.server.session.SessionCondition;
-import org.apache.seata.server.store.TransactionStoreManager.LogOperation;
 import org.apache.seata.server.storage.redis.store.RedisTransactionStoreManagerFactory;
+import org.apache.seata.server.store.TransactionStoreManager.LogOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  */
 @LoadLevel(name = "redis", scope = Scope.PROTOTYPE)
-public class RedisSessionManager extends AbstractSessionManager
-    implements Initialize {
+public class RedisSessionManager extends AbstractSessionManager implements Initialize {
     /**
      * The constant LOGGER.
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(RedisSessionManager.class);
-    
 
     /**
      * Instantiates a new Data base session manager.
@@ -52,7 +49,6 @@ public class RedisSessionManager extends AbstractSessionManager
     public RedisSessionManager() {
         super();
     }
-    
 
     @Override
     public void init() {
@@ -68,7 +64,8 @@ public class RedisSessionManager extends AbstractSessionManager
     }
 
     @Override
-    public void updateGlobalSessionStatus(GlobalSession session, GlobalStatus status) throws TransactionException {
+    public void updateGlobalSessionStatus(GlobalSession session, GlobalStatus status)
+            throws TransactionException {
         session.setStatus(status);
         boolean ret = transactionStoreManager.writeSession(LogOperation.GLOBAL_UPDATE, session);
         if (!ret) {
@@ -93,7 +90,8 @@ public class RedisSessionManager extends AbstractSessionManager
     }
 
     @Override
-    public void addBranchSession(GlobalSession globalSession, BranchSession session) throws TransactionException {
+    public void addBranchSession(GlobalSession globalSession, BranchSession session)
+            throws TransactionException {
         boolean ret = transactionStoreManager.writeSession(LogOperation.BRANCH_ADD, session);
         if (!ret) {
             throw new StoreException("addBranchSession failed.");
@@ -101,7 +99,8 @@ public class RedisSessionManager extends AbstractSessionManager
     }
 
     @Override
-    public void updateBranchSessionStatus(BranchSession session, BranchStatus status) throws TransactionException {
+    public void updateBranchSessionStatus(BranchSession session, BranchStatus status)
+            throws TransactionException {
         boolean ret = transactionStoreManager.writeSession(LogOperation.BRANCH_UPDATE, session);
         if (!ret) {
             throw new StoreException("updateBranchSessionStatus failed.");
@@ -109,7 +108,8 @@ public class RedisSessionManager extends AbstractSessionManager
     }
 
     @Override
-    public void removeBranchSession(GlobalSession globalSession, BranchSession session) throws TransactionException {
+    public void removeBranchSession(GlobalSession globalSession, BranchSession session)
+            throws TransactionException {
         boolean ret = transactionStoreManager.writeSession(LogOperation.BRANCH_REMOVE, session);
         if (!ret) {
             throw new StoreException("removeBranchSession failed.");
@@ -129,10 +129,19 @@ public class RedisSessionManager extends AbstractSessionManager
     @Override
     public Collection<GlobalSession> allSessions() {
         return findGlobalSessions(
-            new SessionCondition(GlobalStatus.UnKnown, GlobalStatus.Begin, GlobalStatus.Committing,
-                GlobalStatus.CommitRetrying, GlobalStatus.Rollbacking, GlobalStatus.RollbackRetrying,
-                GlobalStatus.TimeoutRollbacking, GlobalStatus.TimeoutRollbackRetrying, GlobalStatus.AsyncCommitting,
-                GlobalStatus.StopRollbackOrRollbackRetry, GlobalStatus.StopCommitOrCommitRetry, GlobalStatus.Deleting));
+                new SessionCondition(
+                        GlobalStatus.UnKnown,
+                        GlobalStatus.Begin,
+                        GlobalStatus.Committing,
+                        GlobalStatus.CommitRetrying,
+                        GlobalStatus.Rollbacking,
+                        GlobalStatus.RollbackRetrying,
+                        GlobalStatus.TimeoutRollbacking,
+                        GlobalStatus.TimeoutRollbackRetrying,
+                        GlobalStatus.AsyncCommitting,
+                        GlobalStatus.StopRollbackOrRollbackRetry,
+                        GlobalStatus.StopCommitOrCommitRetry,
+                        GlobalStatus.Deleting));
     }
 
     @Override
@@ -142,8 +151,9 @@ public class RedisSessionManager extends AbstractSessionManager
     }
 
     @Override
-    public <T> T lockAndExecute(GlobalSession globalSession, GlobalSession.LockCallable<T> lockCallable)
-        throws TransactionException {
+    public <T> T lockAndExecute(
+            GlobalSession globalSession, GlobalSession.LockCallable<T> lockCallable)
+            throws TransactionException {
         return lockCallable.call();
     }
 }

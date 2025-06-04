@@ -16,12 +16,12 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
-import org.apache.seata.core.protocol.transaction.GlobalStatusRequest;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.seata.core.protocol.ProtocolConstants;
+import org.apache.seata.core.protocol.transaction.GlobalStatusRequest;
+import org.apache.seata.serializer.seata.SeataSerializer;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Global status request codec test.
@@ -38,7 +38,7 @@ public class GlobalStatusRequestCodecTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         GlobalStatusRequest globalStatusRequest = new GlobalStatusRequest();
         globalStatusRequest.setExtraData("aaaa");
         globalStatusRequest.setXid("aaa123");
@@ -46,7 +46,8 @@ public class GlobalStatusRequestCodecTest {
         byte[] bytes = seataSerializer.serialize(globalStatusRequest);
 
         GlobalStatusRequest globalStatusRequest2 = seataSerializer.deserialize(bytes);
-        assertThat(globalStatusRequest2.getExtraData()).isEqualTo(globalStatusRequest.getExtraData());
+        assertThat(globalStatusRequest2.getExtraData())
+                .isEqualTo(globalStatusRequest.getExtraData());
         assertThat(globalStatusRequest2.getXid()).isEqualTo(globalStatusRequest.getXid());
     }
 }

@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.integration.tx.api.interceptor.handler.ProxyInvocationHandler;
@@ -32,7 +31,6 @@ import org.apache.seata.integration.tx.api.interceptor.handler.ProxyInvocationHa
 public class DefaultInterfaceParser implements InterfaceParser {
 
     protected static final List<InterfaceParser> ALL_INTERFACE_PARSERS = new ArrayList<>();
-
 
     private static class SingletonHolder {
         private static final DefaultInterfaceParser INSTANCE = new DefaultInterfaceParser();
@@ -50,7 +48,8 @@ public class DefaultInterfaceParser implements InterfaceParser {
      * init parsers
      */
     protected void initInterfaceParser() {
-        List<InterfaceParser> interfaceParsers = EnhancedServiceLoader.loadAll(InterfaceParser.class);
+        List<InterfaceParser> interfaceParsers =
+                EnhancedServiceLoader.loadAll(InterfaceParser.class);
         if (CollectionUtils.isNotEmpty(interfaceParsers)) {
             ALL_INTERFACE_PARSERS.addAll(interfaceParsers);
         }
@@ -67,21 +66,28 @@ public class DefaultInterfaceParser implements InterfaceParser {
      * @throws Exception
      */
     @Override
-    public ProxyInvocationHandler parserInterfaceToProxy(Object target, String objectName) throws Exception {
+    public ProxyInvocationHandler parserInterfaceToProxy(Object target, String objectName)
+            throws Exception {
         List<ProxyInvocationHandler> invocationHandlerList = new ArrayList<>();
         Set<String> invocationHandlerRepeatCheck = new HashSet<>();
 
         for (InterfaceParser interfaceParser : ALL_INTERFACE_PARSERS) {
-            ProxyInvocationHandler proxyInvocationHandler = interfaceParser.parserInterfaceToProxy(target, objectName);
+            ProxyInvocationHandler proxyInvocationHandler =
+                    interfaceParser.parserInterfaceToProxy(target, objectName);
             if (proxyInvocationHandler != null) {
                 if (!invocationHandlerRepeatCheck.add(proxyInvocationHandler.type())) {
-                    throw new RuntimeException("there is already an annotation of type " + proxyInvocationHandler.type() + " for class: " + target.getClass().getName());
+                    throw new RuntimeException(
+                            "there is already an annotation of type "
+                                    + proxyInvocationHandler.type()
+                                    + " for class: "
+                                    + target.getClass().getName());
                 }
                 invocationHandlerList.add(proxyInvocationHandler);
             }
         }
 
-        Collections.sort(invocationHandlerList, Comparator.comparingInt(ProxyInvocationHandler::order));
+        Collections.sort(
+                invocationHandlerList, Comparator.comparingInt(ProxyInvocationHandler::order));
 
         ProxyInvocationHandler first = null;
         ProxyInvocationHandler last = null;
@@ -108,5 +114,4 @@ public class DefaultInterfaceParser implements InterfaceParser {
         }
         return new IfNeedEnhanceBean();
     }
-
 }

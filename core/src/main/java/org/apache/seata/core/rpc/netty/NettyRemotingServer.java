@@ -16,11 +16,11 @@
  */
 package org.apache.seata.core.rpc.netty;
 
+import io.netty.channel.Channel;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import io.netty.channel.Channel;
 import org.apache.seata.common.thread.NamedThreadFactory;
 import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.rpc.ShutdownHook;
@@ -45,10 +45,17 @@ public class NettyRemotingServer extends AbstractNettyRemotingServer {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    private final ThreadPoolExecutor branchResultMessageExecutor = new ThreadPoolExecutor(NettyServerConfig.getMinBranchResultPoolSize(),
-            NettyServerConfig.getMaxBranchResultPoolSize(), NettyServerConfig.getKeepAliveTime(), TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(NettyServerConfig.getMaxTaskQueueSize()),
-            new NamedThreadFactory("BranchResultHandlerThread", NettyServerConfig.getMaxBranchResultPoolSize()), new ThreadPoolExecutor.CallerRunsPolicy());
+    private final ThreadPoolExecutor branchResultMessageExecutor =
+            new ThreadPoolExecutor(
+                    NettyServerConfig.getMinBranchResultPoolSize(),
+                    NettyServerConfig.getMaxBranchResultPoolSize(),
+                    NettyServerConfig.getKeepAliveTime(),
+                    TimeUnit.SECONDS,
+                    new LinkedBlockingQueue<>(NettyServerConfig.getMaxTaskQueueSize()),
+                    new NamedThreadFactory(
+                            "BranchResultHandlerThread",
+                            NettyServerConfig.getMaxBranchResultPoolSize()),
+                    new ThreadPoolExecutor.CallerRunsPolicy());
 
     @Override
     public void init() {
@@ -68,7 +75,8 @@ public class NettyRemotingServer extends AbstractNettyRemotingServer {
         super(messageExecutor, new NettyServerConfig());
     }
 
-    public NettyRemotingServer(ThreadPoolExecutor messageExecutor, NettyServerConfig nettyServerConfig) {
+    public NettyRemotingServer(
+            ThreadPoolExecutor messageExecutor, NettyServerConfig nettyServerConfig) {
         super(messageExecutor, nettyServerConfig);
     }
 
@@ -97,22 +105,35 @@ public class NettyRemotingServer extends AbstractNettyRemotingServer {
     private void registerProcessor() {
         // 1. registry on request message processor
         ServerOnRequestProcessor onRequestProcessor =
-            new ServerOnRequestProcessor(this, getHandler());
+                new ServerOnRequestProcessor(this, getHandler());
         ShutdownHook.getInstance().addDisposable(onRequestProcessor);
-        super.registerProcessor(MessageType.TYPE_BRANCH_REGISTER, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_BRANCH_STATUS_REPORT, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_REGISTER, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_STATUS_REPORT, onRequestProcessor, messageExecutor);
         super.registerProcessor(MessageType.TYPE_GLOBAL_BEGIN, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_COMMIT, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_LOCK_QUERY, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_REPORT, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_ROLLBACK, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_STATUS, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_COMMIT, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_LOCK_QUERY, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_REPORT, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_ROLLBACK, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_STATUS, onRequestProcessor, messageExecutor);
         super.registerProcessor(MessageType.TYPE_SEATA_MERGE, onRequestProcessor, messageExecutor);
         // 2. registry on response message processor
         ServerOnResponseProcessor onResponseProcessor =
-            new ServerOnResponseProcessor(getHandler(), getFutures());
-        super.registerProcessor(MessageType.TYPE_BRANCH_COMMIT_RESULT, onResponseProcessor, branchResultMessageExecutor);
-        super.registerProcessor(MessageType.TYPE_BRANCH_ROLLBACK_RESULT, onResponseProcessor, branchResultMessageExecutor);
+                new ServerOnResponseProcessor(getHandler(), getFutures());
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_COMMIT_RESULT,
+                onResponseProcessor,
+                branchResultMessageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_ROLLBACK_RESULT,
+                onResponseProcessor,
+                branchResultMessageExecutor);
         // 3. registry rm message processor
         RegRmProcessor regRmProcessor = new RegRmProcessor(this);
         super.registerProcessor(MessageType.TYPE_REG_RM, regRmProcessor, messageExecutor);

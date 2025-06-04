@@ -17,11 +17,10 @@
 package org.apache.seata.core.rpc.netty.v1;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.seata.common.Constants;
-import org.apache.seata.common.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.seata.common.Constants;
+import org.apache.seata.common.util.StringUtils;
 
 /**
  * Common serializer of map (this generally refers to header).
@@ -32,9 +31,7 @@ public class HeadMapSerializer {
 
     private static final HeadMapSerializer INSTANCE = new HeadMapSerializer();
 
-    private HeadMapSerializer() {
-
-    }
+    private HeadMapSerializer() {}
 
     public static HeadMapSerializer getInstance() {
         return INSTANCE;
@@ -102,6 +99,7 @@ public class HeadMapSerializer {
             out.writeBytes(bs);
         }
     }
+
     /**
      * Read string
      *

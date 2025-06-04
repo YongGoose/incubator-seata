@@ -48,7 +48,8 @@ public class DistributedLockerFactory {
                     DistributedLocker distributedLocker = null;
                     try {
                         if (!"file".equals(lockerType)) {
-                            distributedLocker = EnhancedServiceLoader.load(DistributedLocker.class, lockerType);
+                            distributedLocker =
+                                    EnhancedServiceLoader.load(DistributedLocker.class, lockerType);
                         }
                     } catch (EnhancedServiceNotFoundException ex) {
                         LOGGER.error("Get distributed locker failed: {}", ex.getMessage(), ex);

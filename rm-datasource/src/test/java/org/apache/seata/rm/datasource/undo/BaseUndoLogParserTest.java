@@ -21,21 +21,17 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.rm.datasource.DataCompareUtils;
 import org.apache.seata.rm.datasource.sql.struct.Field;
 import org.apache.seata.rm.datasource.sql.struct.KeyType;
 import org.apache.seata.rm.datasource.sql.struct.Row;
-import org.apache.seata.rm.datasource.undo.SQLUndoLog;
-import org.apache.seata.rm.datasource.undo.UndoLogParser;
-import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.rm.datasource.sql.struct.TableRecords;
 import org.apache.seata.sqlparser.SQLType;
+import org.apache.seata.sqlparser.struct.TableMeta;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public abstract class BaseUndoLogParserTest extends BaseH2Test {
 
@@ -49,14 +45,18 @@ public abstract class BaseUndoLogParserTest extends BaseH2Test {
         execSQL("INSERT INTO table_name(id, name) VALUES (12345,'aaa');");
         execSQL("INSERT INTO table_name(id, name) VALUES (12346,'aaa');");
 
-        TableRecords beforeImage = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords beforeImage =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
         execSQL("update table_name set name = 'xxx' where id in (12345, 12346);");
-        TableRecords afterImage = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords afterImage =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
 
-        TableRecords beforeImage2 = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords beforeImage2 =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
         execSQL("INSERT INTO table_name(id, name) VALUES (12347,'aaa');");
         execSQL("INSERT INTO table_name(id, name) VALUES (12348,'aaa');");
-        TableRecords afterImage2 = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords afterImage2 =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
 
         SQLUndoLog sqlUndoLog00 = new SQLUndoLog();
         sqlUndoLog00.setSqlType(SQLType.UPDATE);
@@ -98,15 +98,23 @@ public abstract class BaseUndoLogParserTest extends BaseH2Test {
         Assertions.assertEquals(sqlUndoLog00.getSqlType(), sqlUndoLog10.getSqlType());
         Assertions.assertEquals(sqlUndoLog00.getTableName(), sqlUndoLog10.getTableName());
         Assertions.assertTrue(
-            DataCompareUtils.isRecordsEquals(sqlUndoLog00.getBeforeImage(), sqlUndoLog10.getBeforeImage()).getResult());
+                DataCompareUtils.isRecordsEquals(
+                                sqlUndoLog00.getBeforeImage(), sqlUndoLog10.getBeforeImage())
+                        .getResult());
         Assertions.assertTrue(
-            DataCompareUtils.isRecordsEquals(sqlUndoLog00.getAfterImage(), sqlUndoLog10.getAfterImage()).getResult());
+                DataCompareUtils.isRecordsEquals(
+                                sqlUndoLog00.getAfterImage(), sqlUndoLog10.getAfterImage())
+                        .getResult());
         Assertions.assertEquals(sqlUndoLog01.getSqlType(), sqlUndoLog11.getSqlType());
         Assertions.assertEquals(sqlUndoLog01.getTableName(), sqlUndoLog11.getTableName());
         Assertions.assertTrue(
-            DataCompareUtils.isRecordsEquals(sqlUndoLog01.getBeforeImage(), sqlUndoLog11.getBeforeImage()).getResult());
+                DataCompareUtils.isRecordsEquals(
+                                sqlUndoLog01.getBeforeImage(), sqlUndoLog11.getBeforeImage())
+                        .getResult());
         Assertions.assertTrue(
-            DataCompareUtils.isRecordsEquals(sqlUndoLog01.getAfterImage(), sqlUndoLog11.getAfterImage()).getResult());
+                DataCompareUtils.isRecordsEquals(
+                                sqlUndoLog01.getAfterImage(), sqlUndoLog11.getAfterImage())
+                        .getResult());
     }
 
     @Test
@@ -115,14 +123,18 @@ public abstract class BaseUndoLogParserTest extends BaseH2Test {
         execSQL("INSERT INTO table_name(id, name) VALUES (12345,'aaa');");
         execSQL("INSERT INTO table_name(id, name) VALUES (12346,'aaa');");
 
-        TableRecords beforeImage = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords beforeImage =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
         execSQL("update table_name set name = 'xxx' where id in (12345, 12346);");
-        TableRecords afterImage = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords afterImage =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
 
-        TableRecords beforeImage2 = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords beforeImage2 =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
         execSQL("INSERT INTO table_name(id, name) VALUES (12347,'aaa');");
         execSQL("INSERT INTO table_name(id, name) VALUES (12348,'aaa');");
-        TableRecords afterImage2 = execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
+        TableRecords afterImage2 =
+                execQuery(tableMeta, "SELECT * FROM table_name WHERE id IN (12345, 12346);");
 
         SQLUndoLog sqlUndoLog00 = new SQLUndoLog();
         sqlUndoLog00.setSqlType(SQLType.UPDATE);
@@ -200,9 +212,17 @@ public abstract class BaseUndoLogParserTest extends BaseH2Test {
         branchUndoLog.setSqlUndoLogs(sqlUndoLogs);
         byte[] encode = getParser().encode(branchUndoLog);
         BranchUndoLog decodeBranchLog = getParser().decode(encode);
-        Timestamp timestampDecode = (Timestamp)(decodeBranchLog.getSqlUndoLogs().get(0).getAfterImage().getRows().get(0)
-            .getFields().get(0).getValue());
+        Timestamp timestampDecode =
+                (Timestamp)
+                        (decodeBranchLog
+                                .getSqlUndoLogs()
+                                .get(0)
+                                .getAfterImage()
+                                .getRows()
+                                .get(0)
+                                .getFields()
+                                .get(0)
+                                .getValue());
         Assertions.assertEquals(timestampEncode, timestampDecode);
-
     }
 }

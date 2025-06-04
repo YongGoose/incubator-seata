@@ -16,25 +16,22 @@
  */
 package org.apache.seata.sqlparser.druid.mariadb;
 
+import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.seata.sqlparser.druid.AbstractRecognizerTest;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLType;
+import org.apache.seata.sqlparser.druid.AbstractRecognizerTest;
 import org.apache.seata.sqlparser.util.JdbcConstants;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Mariadb select for update recognizer test.
@@ -51,7 +48,8 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer = new MariadbSelectForUpdateRecognizer(sql, statement);
+        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer =
+                new MariadbSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, selectForUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", selectForUpdateRecognizer.getTableName());
@@ -68,24 +66,29 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer = new MariadbSelectForUpdateRecognizer(sql, statement);
+        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer =
+                new MariadbSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, selectForUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", selectForUpdateRecognizer.getTableName());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = selectForUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> idParam = new ArrayList<>();
-                idParam.add("id1");
-                Map result = new HashMap();
-                result.put(1, idParam);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                selectForUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> idParam = new ArrayList<>();
+                                idParam.add("id1");
+                                Map result = new HashMap();
+                                result.put(1, idParam);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
         Assertions.assertEquals("id = ?", whereCondition);
     }
 
@@ -99,25 +102,30 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer = new MariadbSelectForUpdateRecognizer(sql, statement);
+        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer =
+                new MariadbSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, selectForUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", selectForUpdateRecognizer.getTableName());
 
         // test overflow parameters
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = selectForUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> id1Param = new ArrayList<>();
-                id1Param.add("id1");
-                Map result = new HashMap();
-                result.put(1, id1Param);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                selectForUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> id1Param = new ArrayList<>();
+                                id1Param.add("id1");
+                                Map result = new HashMap();
+                                result.put(1, id1Param);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
         Assertions.assertEquals("id = ?", whereCondition);
     }
 
@@ -131,28 +139,33 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer = new MariadbSelectForUpdateRecognizer(sql, statement);
+        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer =
+                new MariadbSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, selectForUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", selectForUpdateRecognizer.getTableName());
 
         // test overflow parameters
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = selectForUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> id1Param = new ArrayList<>();
-                id1Param.add("id1");
-                ArrayList<Object> id2Param = new ArrayList<>();
-                id2Param.add("id2");
-                Map result = new HashMap();
-                result.put(1, id1Param);
-                result.put(2, id2Param);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                selectForUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> id1Param = new ArrayList<>();
+                                id1Param.add("id1");
+                                ArrayList<Object> id2Param = new ArrayList<>();
+                                id2Param.add("id2");
+                                Map result = new HashMap();
+                                result.put(1, id1Param);
+                                result.put(2, id2Param);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
         Assertions.assertEquals("id IN (?, ?)", whereCondition);
     }
 
@@ -166,28 +179,33 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer = new MariadbSelectForUpdateRecognizer(sql, statement);
+        MariadbSelectForUpdateRecognizer selectForUpdateRecognizer =
+                new MariadbSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, selectForUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", selectForUpdateRecognizer.getTableName());
 
         // test overflow parameters
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = selectForUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> id1Param = new ArrayList<>();
-                id1Param.add("id1");
-                ArrayList<Object> id2Param = new ArrayList<>();
-                id2Param.add("id2");
-                Map result = new HashMap();
-                result.put(1, id1Param);
-                result.put(2, id2Param);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                selectForUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> id1Param = new ArrayList<>();
+                                id1Param.add("id1");
+                                ArrayList<Object> id2Param = new ArrayList<>();
+                                id2Param.add("id2");
+                                Map result = new HashMap();
+                                result.put(1, id1Param);
+                                result.put(2, id2Param);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
         Assertions.assertEquals("id BETWEEN ? AND ?", whereCondition);
     }
 
@@ -196,28 +214,35 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
         String sql = "select * from t for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, JdbcConstants.MARIADB);
 
-        MariadbSelectForUpdateRecognizer recognizer = new MariadbSelectForUpdateRecognizer(sql, asts.get(0));
+        MariadbSelectForUpdateRecognizer recognizer =
+                new MariadbSelectForUpdateRecognizer(sql, asts.get(0));
         String whereCondition = recognizer.getWhereCondition();
 
         Assertions.assertEquals("", whereCondition);
 
-        //test for select was null
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "select * from t for update";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, JdbcConstants.MARIADB);
-            SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
-            selectAst.setSelect(null);
-            new MariadbSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
-        });
+        // test for select was null
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "select * from t for update";
+                    List<SQLStatement> sqlStatements =
+                            SQLUtils.parseStatements(s, JdbcConstants.MARIADB);
+                    SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
+                    selectAst.setSelect(null);
+                    new MariadbSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
+                });
 
-        //test for query was null
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "select * from t";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, JdbcConstants.MARIADB);
-            SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
-            selectAst.getSelect().setQuery(null);
-            new MariadbSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
-        });
+        // test for query was null
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "select * from t";
+                    List<SQLStatement> sqlStatements =
+                            SQLUtils.parseStatements(s, JdbcConstants.MARIADB);
+                    SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
+                    selectAst.getSelect().setQuery(null);
+                    new MariadbSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
+                });
     }
 
     @Test
@@ -225,7 +250,8 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, JdbcConstants.MARIADB);
 
-        MariadbSelectForUpdateRecognizer recognizer = new MariadbSelectForUpdateRecognizer(sql, asts.get(0));
+        MariadbSelectForUpdateRecognizer recognizer =
+                new MariadbSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertEquals(recognizer.getSQLType(), SQLType.SELECT_FOR_UPDATE);
     }
 
@@ -234,7 +260,8 @@ public class MariadbSelectForUpdateRecognizerTest extends AbstractRecognizerTest
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, JdbcConstants.MARIADB);
 
-        MariadbSelectForUpdateRecognizer recognizer = new MariadbSelectForUpdateRecognizer(sql, asts.get(0));
+        MariadbSelectForUpdateRecognizer recognizer =
+                new MariadbSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertNull(recognizer.getTableAlias());
     }
 

@@ -16,17 +16,14 @@
  */
 package org.apache.seata.rm;
 
-import org.apache.seata.rm.GlobalLockExecutor;
-import org.apache.seata.rm.GlobalLockTemplate;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.seata.core.context.GlobalLockConfigHolder;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.model.GlobalLockConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 
 public class GlobalLockTemplateTest {
 
@@ -44,67 +41,96 @@ public class GlobalLockTemplateTest {
 
     @Test
     void testSingle() {
-        assertDoesNotThrow(() -> {
-            template.execute(new GlobalLockExecutor() {
-                @Override
-                public Object execute() {
-                    assertTrue(RootContext.requireGlobalLock(), "fail to bind global lock flag");
-                    assertSame(config1, GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
-                            "global lock config changed during execution");
-                    return null;
-                }
+        assertDoesNotThrow(
+                () -> {
+                    template.execute(
+                            new GlobalLockExecutor() {
+                                @Override
+                                public Object execute() {
+                                    assertTrue(
+                                            RootContext.requireGlobalLock(),
+                                            "fail to bind global lock flag");
+                                    assertSame(
+                                            config1,
+                                            GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
+                                            "global lock config changed during execution");
+                                    return null;
+                                }
 
-                @Override
-                public GlobalLockConfig getGlobalLockConfig() {
-                    return config1;
-                }
-            });
-        });
+                                @Override
+                                public GlobalLockConfig getGlobalLockConfig() {
+                                    return config1;
+                                }
+                            });
+                });
     }
 
     @Test
     void testNested() {
-        assertDoesNotThrow(() -> {
-            template.execute(new GlobalLockExecutor() {
-                @Override
-                public Object execute() {
-                    assertTrue(RootContext.requireGlobalLock(), "fail to bind global lock flag");
-                    assertSame(config1, GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
-                            "global lock config changed during execution");
-                    assertDoesNotThrow(() -> {
-                        template.execute(new GlobalLockExecutor() {
-                            @Override
-                            public Object execute() {
-                                assertTrue(RootContext.requireGlobalLock(), "inner lost global lock flag");
-                                assertSame(config2, GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
-                                        "fail to set inner global lock config");
-                                return null;
-                            }
+        assertDoesNotThrow(
+                () -> {
+                    template.execute(
+                            new GlobalLockExecutor() {
+                                @Override
+                                public Object execute() {
+                                    assertTrue(
+                                            RootContext.requireGlobalLock(),
+                                            "fail to bind global lock flag");
+                                    assertSame(
+                                            config1,
+                                            GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
+                                            "global lock config changed during execution");
+                                    assertDoesNotThrow(
+                                            () -> {
+                                                template.execute(
+                                                        new GlobalLockExecutor() {
+                                                            @Override
+                                                            public Object execute() {
+                                                                assertTrue(
+                                                                        RootContext
+                                                                                .requireGlobalLock(),
+                                                                        "inner lost global lock"
+                                                                                + " flag");
+                                                                assertSame(
+                                                                        config2,
+                                                                        GlobalLockConfigHolder
+                                                                                .getCurrentGlobalLockConfig(),
+                                                                        "fail to set inner global"
+                                                                                + " lock config");
+                                                                return null;
+                                                            }
 
-                            @Override
-                            public GlobalLockConfig getGlobalLockConfig() {
-                                return config2;
-                            }
-                        });
-                    });
-                    assertTrue(RootContext.requireGlobalLock(), "outer lost global lock flag");
-                    assertSame(config1, GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
-                            "outer global lock config was not restored");
-                    return null;
-                }
+                                                            @Override
+                                                            public GlobalLockConfig
+                                                                    getGlobalLockConfig() {
+                                                                return config2;
+                                                            }
+                                                        });
+                                            });
+                                    assertTrue(
+                                            RootContext.requireGlobalLock(),
+                                            "outer lost global lock flag");
+                                    assertSame(
+                                            config1,
+                                            GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
+                                            "outer global lock config was not restored");
+                                    return null;
+                                }
 
-                @Override
-                public GlobalLockConfig getGlobalLockConfig() {
-                    return config1;
-                }
-            });
-        });
+                                @Override
+                                public GlobalLockConfig getGlobalLockConfig() {
+                                    return config1;
+                                }
+                            });
+                });
     }
 
     @AfterEach
     void tearDown() {
         assertFalse(RootContext.requireGlobalLock(), "fail to unbind global lock flag");
-        assertNull(GlobalLockConfigHolder.getCurrentGlobalLockConfig(), "fail to clean global lock config");
+        assertNull(
+                GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
+                "fail to clean global lock config");
     }
 
     private GlobalLockConfig generateGlobalLockConfig() {

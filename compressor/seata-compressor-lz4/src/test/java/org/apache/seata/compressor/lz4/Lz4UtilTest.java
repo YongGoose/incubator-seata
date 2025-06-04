@@ -19,20 +19,22 @@ package org.apache.seata.compressor.lz4;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 class Lz4UtilTest {
     @Test
     public void testCompress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            Lz4Util.compress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    Lz4Util.compress(null);
+                });
     }
 
     @Test
     public void testDecompress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            Lz4Util.decompress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    Lz4Util.decompress(null);
+                });
     }
-
 }

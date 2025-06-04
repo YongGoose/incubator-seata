@@ -41,9 +41,11 @@ public class HttpDispatchHandler extends SimpleChannelInboundHandler<HttpRequest
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HttpRequest httpRequest) throws Exception {
-        final boolean keepAlive = HttpUtil.isKeepAlive(httpRequest)
-                && httpRequest.protocolVersion().isKeepAliveDefault();
+    protected void channelRead0(ChannelHandlerContext ctx, HttpRequest httpRequest)
+            throws Exception {
+        final boolean keepAlive =
+                HttpUtil.isKeepAlive(httpRequest)
+                        && httpRequest.protocolVersion().isKeepAliveDefault();
         QueryStringDecoder queryStringDecoder = new QueryStringDecoder(httpRequest.uri());
         String path = queryStringDecoder.path();
 
@@ -54,7 +56,8 @@ public class HttpDispatchHandler extends SimpleChannelInboundHandler<HttpRequest
         }
 
         ObjectNode requestDataNode = OBJECT_MAPPER.createObjectNode();
-        requestDataNode.putIfAbsent("param", ParameterParser.convertParamMap(queryStringDecoder.parameters()));
+        requestDataNode.putIfAbsent(
+                "param", ParameterParser.convertParamMap(queryStringDecoder.parameters()));
         requestDataNode.putPOJO("channel", ctx.channel());
 
         if (httpRequest.method() == HttpMethod.POST) {
@@ -62,8 +65,10 @@ public class HttpDispatchHandler extends SimpleChannelInboundHandler<HttpRequest
             try {
                 httpPostRequestDecoder = new HttpPostRequestDecoder(httpRequest);
                 ObjectNode bodyDataNode = OBJECT_MAPPER.createObjectNode();
-                for (InterfaceHttpData interfaceHttpData : httpPostRequestDecoder.getBodyHttpDatas()) {
-                    if (interfaceHttpData.getHttpDataType() != InterfaceHttpData.HttpDataType.Attribute) {
+                for (InterfaceHttpData interfaceHttpData :
+                        httpPostRequestDecoder.getBodyHttpDatas()) {
+                    if (interfaceHttpData.getHttpDataType()
+                            != InterfaceHttpData.HttpDataType.Attribute) {
                         continue;
                     }
                     Attribute attribute = (Attribute) interfaceHttpData;
@@ -79,7 +84,9 @@ public class HttpDispatchHandler extends SimpleChannelInboundHandler<HttpRequest
 
         Object httpController = httpInvocation.getController();
         Method handleMethod = httpInvocation.getMethod();
-        Object[] args = ParameterParser.getArgValues(httpInvocation.getParamMetaData(), handleMethod, requestDataNode);
+        Object[] args =
+                ParameterParser.getArgValues(
+                        httpInvocation.getParamMetaData(), handleMethod, requestDataNode);
         Object result = handleMethod.invoke(httpController, args);
 
         if (requestDataNode.get("channel") == null) {
@@ -88,12 +95,18 @@ public class HttpDispatchHandler extends SimpleChannelInboundHandler<HttpRequest
         FullHttpResponse response;
         if (result != null) {
             byte[] body = OBJECT_MAPPER.writeValueAsBytes(result);
-            response = new DefaultFullHttpResponse(
-                    HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.wrappedBuffer(body));
+            response =
+                    new DefaultFullHttpResponse(
+                            HttpVersion.HTTP_1_1,
+                            HttpResponseStatus.OK,
+                            Unpooled.wrappedBuffer(body));
             response.headers().set(HttpHeaderNames.CONTENT_LENGTH, body.length);
         } else {
-            response = new DefaultFullHttpResponse(
-                    HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.wrappedBuffer(Unpooled.EMPTY_BUFFER));
+            response =
+                    new DefaultFullHttpResponse(
+                            HttpVersion.HTTP_1_1,
+                            HttpResponseStatus.OK,
+                            Unpooled.wrappedBuffer(Unpooled.EMPTY_BUFFER));
         }
         if (!keepAlive) {
             ctx.writeAndFlush(response).addListeners(ChannelFutureListener.CLOSE);
@@ -103,8 +116,11 @@ public class HttpDispatchHandler extends SimpleChannelInboundHandler<HttpRequest
     }
 
     private void sendNotFound(ChannelHandlerContext ctx, boolean keepAlive) {
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND, Unpooled.wrappedBuffer(Unpooled.EMPTY_BUFFER));
+        FullHttpResponse response =
+                new DefaultFullHttpResponse(
+                        HttpVersion.HTTP_1_1,
+                        HttpResponseStatus.NOT_FOUND,
+                        Unpooled.wrappedBuffer(Unpooled.EMPTY_BUFFER));
         if (!keepAlive) {
             ctx.writeAndFlush(response).addListeners(ChannelFutureListener.CLOSE);
         } else {

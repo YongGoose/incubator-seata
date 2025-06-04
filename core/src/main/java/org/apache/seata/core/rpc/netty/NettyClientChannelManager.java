@@ -16,6 +16,7 @@
  */
 package org.apache.seata.core.rpc.netty;
 
+import io.netty.channel.Channel;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import io.netty.channel.Channel;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.exception.FrameworkException;
@@ -40,7 +40,6 @@ import org.apache.seata.core.protocol.Version;
 import org.apache.seata.discovery.registry.FileRegistryServiceImpl;
 import org.apache.seata.discovery.registry.RegistryFactory;
 import org.apache.seata.discovery.registry.RegistryService;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +61,10 @@ class NettyClientChannelManager {
 
     private Function<String, NettyPoolKey> poolKeyFunction;
 
-    NettyClientChannelManager(final NettyPoolableFactory keyPoolableFactory, final Function<String, NettyPoolKey> poolKeyFunction,
-                                     final NettyClientConfig clientConfig) {
+    NettyClientChannelManager(
+            final NettyPoolableFactory keyPoolableFactory,
+            final Function<String, NettyPoolKey> poolKeyFunction,
+            final NettyClientConfig clientConfig) {
         nettyClientKeyPool = new GenericKeyedObjectPool<>(keyPoolableFactory);
         nettyClientKeyPool.setConfig(getNettyPoolConfig(clientConfig));
         this.poolKeyFunction = poolKeyFunction;
@@ -106,7 +107,8 @@ class NettyClientChannelManager {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("will connect to {}", serverAddress);
         }
-        Object lockObj = CollectionUtils.computeIfAbsent(channelLocks, serverAddress, key -> new Object());
+        Object lockObj =
+                CollectionUtils.computeIfAbsent(channelLocks, serverAddress, key -> new Object());
         synchronized (lockObj) {
             return doConnect(serverAddress);
         }
@@ -119,7 +121,9 @@ class NettyClientChannelManager {
      * @param serverAddress server address
      */
     void releaseChannel(Channel channel, String serverAddress) {
-        if (channel == null || serverAddress == null) { return; }
+        if (channel == null || serverAddress == null) {
+            return;
+        }
         try {
             synchronized (channelLocks.get(serverAddress)) {
                 Channel ch = channels.get(serverAddress);
@@ -148,7 +152,9 @@ class NettyClientChannelManager {
      * @param channel channel
      */
     void destroyChannel(String serverAddress, Channel channel) {
-        if (channel == null) { return; }
+        if (channel == null) {
+            return;
+        }
         try {
             if (channel.equals(channels.get(serverAddress))) {
                 channels.remove(serverAddress);
@@ -196,7 +202,9 @@ class NettyClientChannelManager {
             String clusterName = registryService.getServiceGroup(transactionServiceGroup);
 
             if (StringUtils.isBlank(clusterName)) {
-                LOGGER.error("can not get cluster name in registry config '{}{}', please make sure registry config correct",
+                LOGGER.error(
+                        "can not get cluster name in registry config '{}{}', please make sure"
+                                + " registry config correct",
                         ConfigurationKeys.SERVICE_GROUP_MAPPING_PREFIX,
                         transactionServiceGroup);
                 throwFailFastException(failFast, "can not get cluster name in registry config.");
@@ -204,7 +212,10 @@ class NettyClientChannelManager {
             }
 
             if (!(registryService instanceof FileRegistryServiceImpl)) {
-                LOGGER.error("no available service found in cluster '{}', please make sure registry config correct and keep your seata server running", clusterName);
+                LOGGER.error(
+                        "no available service found in cluster '{}', please make sure registry"
+                                + " config correct and keep your seata server running",
+                        clusterName);
             }
             throwFailFastException(failFast, "no available service found in cluster.");
             return;
@@ -239,14 +250,23 @@ class NettyClientChannelManager {
             }
             if (failedMap.size() > 0) {
                 if (LOGGER.isInfoEnabled()) {
-                    LOGGER.error("{} can not connect to {} cause:{}", FrameworkErrorCode.NetConnect.getErrCode(),
+                    LOGGER.error(
+                            "{} can not connect to {} cause:{}",
+                            FrameworkErrorCode.NetConnect.getErrCode(),
                             failedMap.keySet(),
-                            failedMap.values().stream().map(Throwable::getMessage).collect(Collectors.toSet()));
+                            failedMap.values().stream()
+                                    .map(Throwable::getMessage)
+                                    .collect(Collectors.toSet()));
                 } else if (LOGGER.isDebugEnabled()) {
-                    failedMap.forEach((key, value) -> {
-                        LOGGER.error("{} can not connect to {} cause:{} trace information:",
-                                FrameworkErrorCode.NetConnect.getErrCode(), key, value.getMessage(), value);
-                    });
+                    failedMap.forEach(
+                            (key, value) -> {
+                                LOGGER.error(
+                                        "{} can not connect to {} cause:{} trace information:",
+                                        FrameworkErrorCode.NetConnect.getErrCode(),
+                                        key,
+                                        value.getMessage(),
+                                        value);
+                            });
                 }
             }
             if (availList.size() == failedMap.size()) {
@@ -260,9 +280,11 @@ class NettyClientChannelManager {
                     String[] array = NetUtil.splitIPPortStr(address);
                     aliveAddress.add(new InetSocketAddress(array[0], Integer.parseInt(array[1])));
                 }
-                RegistryFactory.getInstance().refreshAliveLookup(transactionServiceGroup, aliveAddress);
+                RegistryFactory.getInstance()
+                        .refreshAliveLookup(transactionServiceGroup, aliveAddress);
             } else {
-                RegistryFactory.getInstance().refreshAliveLookup(transactionServiceGroup, Collections.emptyList());
+                RegistryFactory.getInstance()
+                        .refreshAliveLookup(transactionServiceGroup, Collections.emptyList());
             }
         }
     }
@@ -299,8 +321,8 @@ class NettyClientChannelManager {
     }
 
     private List<String> getAvailServerList(String transactionServiceGroup) throws Exception {
-        List<InetSocketAddress> availInetSocketAddressList = RegistryFactory.getInstance()
-                .lookup(transactionServiceGroup);
+        List<InetSocketAddress> availInetSocketAddressList =
+                RegistryFactory.getInstance().lookup(transactionServiceGroup);
         if (CollectionUtils.isEmpty(availInetSocketAddressList)) {
             return Collections.emptyList();
         }
@@ -340,6 +362,4 @@ class NettyClientChannelManager {
             throw new FrameworkException(message);
         }
     }
-
 }
-

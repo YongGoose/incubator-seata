@@ -16,15 +16,6 @@
  */
 package org.apache.seata.rm.datasource.undo.parser;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.sql.Timestamp;
-import java.util.List;
-
-import org.apache.seata.rm.datasource.undo.BranchUndoLog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.protostuff.Input;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.Output;
@@ -36,14 +27,21 @@ import io.protostuff.runtime.DefaultIdStrategy;
 import io.protostuff.runtime.Delegate;
 import io.protostuff.runtime.RuntimeEnv;
 import io.protostuff.runtime.RuntimeSchema;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.sql.Timestamp;
+import java.util.List;
 import org.apache.seata.common.executor.Initialize;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
 import org.apache.seata.common.loader.LoadLevel;
-import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.BufferUtils;
+import org.apache.seata.common.util.CollectionUtils;
+import org.apache.seata.rm.datasource.undo.BranchUndoLog;
 import org.apache.seata.rm.datasource.undo.UndoLogParser;
 import org.apache.seata.rm.datasource.undo.parser.spi.ProtostuffDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The type protostuff based undo log parser.
@@ -58,16 +56,19 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
 
     private final DefaultIdStrategy idStrategy = (DefaultIdStrategy) RuntimeEnv.ID_STRATEGY;
 
-    private final Schema<BranchUndoLog> schema = RuntimeSchema.getSchema(BranchUndoLog.class, idStrategy);
+    private final Schema<BranchUndoLog> schema =
+            RuntimeSchema.getSchema(BranchUndoLog.class, idStrategy);
 
     @Override
     public void init() {
         try {
-            List<ProtostuffDelegate> delegates = EnhancedServiceLoader.loadAll(ProtostuffDelegate.class);
+            List<ProtostuffDelegate> delegates =
+                    EnhancedServiceLoader.loadAll(ProtostuffDelegate.class);
             if (CollectionUtils.isNotEmpty(delegates)) {
                 for (ProtostuffDelegate delegate : delegates) {
                     idStrategy.registerDelegate(delegate.create());
-                    LOGGER.info("protostuff undo log parser load [{}].", delegate.getClass().getName());
+                    LOGGER.info(
+                            "protostuff undo log parser load [{}].", delegate.getClass().getName());
                 }
             }
         } catch (EnhancedServiceNotFoundException e) {
@@ -140,7 +141,8 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
         }
 
         @Override
-        public void writeTo(Output output, int number, java.sql.Timestamp value, boolean repeated) throws IOException {
+        public void writeTo(Output output, int number, java.sql.Timestamp value, boolean repeated)
+                throws IOException {
             ByteBuffer buffer = ByteBuffer.allocate(12);
             buffer.putLong(value.getTime());
             buffer.putInt(value.getNanos());
@@ -149,7 +151,8 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
         }
 
         @Override
-        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated) throws IOException {
+        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated)
+                throws IOException {
             output.writeBytes(number, input.readByteBuffer(), repeated);
         }
     }
@@ -176,12 +179,14 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
         }
 
         @Override
-        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated) throws IOException {
+        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated)
+                throws IOException {
             output.writeFixed64(number, input.readFixed64(), repeated);
         }
 
         @Override
-        public void writeTo(Output output, int number, java.sql.Date value, boolean repeated) throws IOException {
+        public void writeTo(Output output, int number, java.sql.Date value, boolean repeated)
+                throws IOException {
             output.writeFixed64(number, value.getTime(), repeated);
         }
     }
@@ -208,12 +213,14 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
         }
 
         @Override
-        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated) throws IOException {
+        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated)
+                throws IOException {
             output.writeFixed64(number, input.readFixed64(), repeated);
         }
 
         @Override
-        public void writeTo(Output output, int number, java.sql.Time value, boolean repeated) throws IOException {
+        public void writeTo(Output output, int number, java.sql.Time value, boolean repeated)
+                throws IOException {
             output.writeFixed64(number, value.getTime(), repeated);
         }
     }
@@ -240,12 +247,14 @@ public class ProtostuffUndoLogParser implements UndoLogParser, Initialize {
         }
 
         @Override
-        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated) throws IOException {
+        public void transfer(Pipe pipe, Input input, Output output, int number, boolean repeated)
+                throws IOException {
             output.writeFixed64(number, input.readFixed64(), repeated);
         }
 
         @Override
-        public void writeTo(Output output, int number, java.util.Date value, boolean repeated) throws IOException {
+        public void writeTo(Output output, int number, java.util.Date value, boolean repeated)
+                throws IOException {
             output.writeFixed64(number, value.getTime(), repeated);
         }
     }

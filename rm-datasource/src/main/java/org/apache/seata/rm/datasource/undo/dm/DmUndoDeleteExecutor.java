@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm.datasource.undo.dm;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.rm.datasource.sql.struct.Field;
@@ -25,10 +28,6 @@ import org.apache.seata.rm.datasource.undo.AbstractUndoExecutor;
 import org.apache.seata.rm.datasource.undo.SQLUndoLog;
 import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The type dm undo delete executor.
@@ -59,27 +58,27 @@ public class DmUndoDeleteExecutor extends AbstractUndoExecutor {
         }
         Row row = beforeImageRows.get(0);
         List<Field> fields = new ArrayList<>(row.nonPrimaryKeys());
-        fields.addAll(getOrderedPkList(beforeImage,row,JdbcConstants.DM));
+        fields.addAll(getOrderedPkList(beforeImage, row, JdbcConstants.DM));
 
         // delete sql undo log before image all field come from table meta, need add escape.
         // see BaseTransactionalExecutor#buildTableRecords
-        String insertColumns = fields.stream()
-            .map(field -> ColumnUtils.addEscape(field.getName(), JdbcConstants.DM))
-            .collect(Collectors.joining(", "));
-        String insertValues = fields.stream().map(field -> "?")
-            .collect(Collectors.joining(", "));
+        String insertColumns =
+                fields.stream()
+                        .map(field -> ColumnUtils.addEscape(field.getName(), JdbcConstants.DM))
+                        .collect(Collectors.joining(", "));
+        String insertValues = fields.stream().map(field -> "?").collect(Collectors.joining(", "));
 
-        return "SET IDENTITY_INSERT " +
-                sqlUndoLog.getTableName() +
-                " ON; INSERT INTO " +
-                sqlUndoLog.getTableName() +
-                " (" +
-                insertColumns +
-                ") VALUES (" +
-                insertValues +
-                "); SET IDENTITY_INSERT " +
-                sqlUndoLog.getTableName() +
-                " OFF;";
+        return "SET IDENTITY_INSERT "
+                + sqlUndoLog.getTableName()
+                + " ON; INSERT INTO "
+                + sqlUndoLog.getTableName()
+                + " ("
+                + insertColumns
+                + ") VALUES ("
+                + insertValues
+                + "); SET IDENTITY_INSERT "
+                + sqlUndoLog.getTableName()
+                + " OFF;";
     }
 
     @Override

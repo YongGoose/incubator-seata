@@ -16,6 +16,9 @@
  */
 package org.apache.seata.tm.api;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TM_COMMIT_RETRY_COUNT;
+import static org.apache.seata.common.DefaultValues.DEFAULT_TM_ROLLBACK_RETRY_COUNT;
+
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 import org.apache.seata.core.context.RootContext;
@@ -26,9 +29,6 @@ import org.apache.seata.tm.TransactionManagerHolder;
 import org.apache.seata.tm.api.transaction.SuspendedResourcesHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TM_COMMIT_RETRY_COUNT;
-import static org.apache.seata.common.DefaultValues.DEFAULT_TM_ROLLBACK_RETRY_COUNT;
 
 /**
  * The type Default global transaction.
@@ -57,11 +57,17 @@ public class DefaultGlobalTransaction implements GlobalTransaction {
      */
     private long createTime;
 
-    private static final int COMMIT_RETRY_COUNT = ConfigurationFactory.getInstance().getInt(
-        ConfigurationKeys.CLIENT_TM_COMMIT_RETRY_COUNT, DEFAULT_TM_COMMIT_RETRY_COUNT);
+    private static final int COMMIT_RETRY_COUNT =
+            ConfigurationFactory.getInstance()
+                    .getInt(
+                            ConfigurationKeys.CLIENT_TM_COMMIT_RETRY_COUNT,
+                            DEFAULT_TM_COMMIT_RETRY_COUNT);
 
-    private static final int ROLLBACK_RETRY_COUNT = ConfigurationFactory.getInstance().getInt(
-        ConfigurationKeys.CLIENT_TM_ROLLBACK_RETRY_COUNT, DEFAULT_TM_ROLLBACK_RETRY_COUNT);
+    private static final int ROLLBACK_RETRY_COUNT =
+            ConfigurationFactory.getInstance()
+                    .getInt(
+                            ConfigurationKeys.CLIENT_TM_ROLLBACK_RETRY_COUNT,
+                            DEFAULT_TM_ROLLBACK_RETRY_COUNT);
 
     /**
      * Instantiates a new Default global transaction.
@@ -107,8 +113,10 @@ public class DefaultGlobalTransaction implements GlobalTransaction {
         assertXIDNull();
         String currentXid = RootContext.getXID();
         if (currentXid != null) {
-            throw new IllegalStateException("Global transaction already exists," +
-                " can't begin a new global transaction, currentXid = " + currentXid);
+            throw new IllegalStateException(
+                    "Global transaction already exists,"
+                            + " can't begin a new global transaction, currentXid = "
+                            + currentXid);
         }
         xid = transactionManager.begin(null, null, name, timeout);
         status = GlobalStatus.Begin;
@@ -140,7 +148,11 @@ public class DefaultGlobalTransaction implements GlobalTransaction {
                     status = transactionManager.commit(xid);
                     break;
                 } catch (Throwable ex) {
-                    LOGGER.error("Failed to report global commit [{}],Retry Countdown: {}, reason: {}", this.getXid(), retry, ex.getMessage());
+                    LOGGER.error(
+                            "Failed to report global commit [{}],Retry Countdown: {}, reason: {}",
+                            this.getXid(),
+                            retry,
+                            ex.getMessage());
                     if (retry == 0) {
                         throw new TransactionException("Failed to report global commit", ex);
                     }
@@ -171,7 +183,8 @@ public class DefaultGlobalTransaction implements GlobalTransaction {
             LOGGER.info("transaction {} will be rollback", xid);
         }
 
-        int retry = ROLLBACK_RETRY_COUNT <= 0 ? DEFAULT_TM_ROLLBACK_RETRY_COUNT : ROLLBACK_RETRY_COUNT;
+        int retry =
+                ROLLBACK_RETRY_COUNT <= 0 ? DEFAULT_TM_ROLLBACK_RETRY_COUNT : ROLLBACK_RETRY_COUNT;
         try {
             while (retry > 0) {
                 try {
@@ -179,7 +192,11 @@ public class DefaultGlobalTransaction implements GlobalTransaction {
                     status = transactionManager.rollback(xid);
                     break;
                 } catch (Throwable ex) {
-                    LOGGER.error("Failed to report global rollback [{}],Retry Countdown: {}, reason: {}", this.getXid(), retry, ex.getMessage());
+                    LOGGER.error(
+                            "Failed to report global rollback [{}],Retry Countdown: {}, reason: {}",
+                            this.getXid(),
+                            retry,
+                            ex.getMessage());
                     if (retry == 0) {
                         throw new TransactionException("Failed to report global rollback", ex);
                     }
@@ -220,7 +237,8 @@ public class DefaultGlobalTransaction implements GlobalTransaction {
     }
 
     @Override
-    public void resume(SuspendedResourcesHolder suspendedResourcesHolder) throws TransactionException {
+    public void resume(SuspendedResourcesHolder suspendedResourcesHolder)
+            throws TransactionException {
         if (suspendedResourcesHolder == null) {
             return;
         }

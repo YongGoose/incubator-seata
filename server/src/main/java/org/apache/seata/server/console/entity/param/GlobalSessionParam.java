@@ -16,10 +16,8 @@
  */
 package org.apache.seata.server.console.entity.param;
 
-import org.apache.seata.common.result.BaseParam;
-
 import java.io.Serializable;
-
+import org.apache.seata.common.result.BaseParam;
 
 /**
  * Global session param
@@ -27,18 +25,22 @@ import java.io.Serializable;
 public class GlobalSessionParam extends BaseParam implements Serializable {
 
     private static final long serialVersionUID = 115488252809011284L;
+
     /**
      * the xid
      */
     private String xid;
+
     /**
      * the application id
      */
     private String applicationId;
+
     /**
      * the global session status
      */
     private Integer status;
+
     /**
      * the transaction name
      */
@@ -48,7 +50,7 @@ public class GlobalSessionParam extends BaseParam implements Serializable {
      * the vgroup
      */
     private String vgroup;
-    
+
     /**
      * if with branch
      * true: with branch session
@@ -106,9 +108,23 @@ public class GlobalSessionParam extends BaseParam implements Serializable {
 
     @Override
     public String toString() {
-        return "GlobalSessionParam{" + "xid='" + xid + '\'' + ", applicationId='" + applicationId + '\'' + ", status="
-            + status + ", transactionName='" + transactionName + '\'' + ", vgroup='" + vgroup + '\'' + ", withBranch="
-            + withBranch + '}';
+        return "GlobalSessionParam{"
+                + "xid='"
+                + xid
+                + '\''
+                + ", applicationId='"
+                + applicationId
+                + '\''
+                + ", status="
+                + status
+                + ", transactionName='"
+                + transactionName
+                + '\''
+                + ", vgroup='"
+                + vgroup
+                + '\''
+                + ", withBranch="
+                + withBranch
+                + '}';
     }
-    
 }

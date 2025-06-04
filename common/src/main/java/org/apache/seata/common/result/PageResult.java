@@ -30,31 +30,35 @@ public class PageResult<T> extends Result<T> implements Serializable {
      * the page size
      */
     private Integer pageSize;
+
     /**
      * current page number
      */
     private Integer pageNum;
+
     /**
      * total result number
      */
     private Integer total = 0;
+
     /**
      * total page number
      */
     private Integer pages = 0;
+
     /**
      * the data
      */
     private List<T> data;
 
-    public PageResult() {
-    }
+    public PageResult() {}
 
     public PageResult(String code, String message) {
         super(code, message);
     }
 
-    public PageResult(List<T> data, Integer total, Integer pages, Integer pageNum, Integer pageSize) {
+    public PageResult(
+            List<T> data, Integer total, Integer pages, Integer pageNum, Integer pageSize) {
         super(SUCCESS_CODE, SUCCESS_MSG);
         this.total = total;
         this.pages = pages;
@@ -72,14 +76,11 @@ public class PageResult<T> extends Result<T> implements Serializable {
         final int offset = pageSize * (pageNum - 1);
         return PageResult.success(
                 list.subList(
-                        Math.min(offset, list.size()),
-                        Math.min(offset + pageSize, list.size())
-                ),
+                        Math.min(offset, list.size()), Math.min(offset + pageSize, list.size())),
                 list.size(),
                 pages,
                 pageNum,
-                pageSize
-        );
+                pageSize);
     }
 
     public PageResult(List<T> data, Integer total, Integer pageNum, Integer pageSize) {
@@ -104,10 +105,13 @@ public class PageResult<T> extends Result<T> implements Serializable {
         return new PageResult<>(SUCCESS_CODE, SUCCESS_MSG);
     }
 
-    public static <T> PageResult<T> success(List<T> data, Integer total, Integer pages, Integer pageNum, Integer pageSize) {
+    public static <T> PageResult<T> success(
+            List<T> data, Integer total, Integer pages, Integer pageNum, Integer pageSize) {
         return new PageResult<>(data, total, pages, pageNum, pageSize);
     }
-    public static <T> PageResult<T> success(List<T> data, Integer total, Integer pageNum, Integer pageSize) {
+
+    public static <T> PageResult<T> success(
+            List<T> data, Integer total, Integer pageNum, Integer pageSize) {
         return new PageResult<>(data, total, pageNum, pageSize);
     }
 

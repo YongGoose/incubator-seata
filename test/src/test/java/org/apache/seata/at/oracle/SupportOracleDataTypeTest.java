@@ -16,29 +16,6 @@
  */
 package org.apache.seata.at.oracle;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import com.alibaba.druid.pool.DruidDataSource;
-
-import org.apache.seata.core.context.RootContext;
-import org.apache.seata.core.exception.TransactionException;
-import org.apache.seata.core.model.BranchStatus;
-import org.apache.seata.core.model.BranchType;
-import org.apache.seata.rm.DefaultResourceManager;
-import org.apache.seata.rm.datasource.DataCompareUtils;
-import org.apache.seata.rm.datasource.DataSourceManager;
-import org.apache.seata.rm.datasource.DataSourceProxy;
-import org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory;
-import org.apache.seata.rm.datasource.sql.struct.TableRecords;
-import org.apache.seata.sqlparser.struct.TableMeta;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static org.apache.seata.at.DruidDataSourceUtils.ORACLE;
 import static org.apache.seata.at.DruidDataSourceUtils.createNewDruidDataSource;
 import static org.apache.seata.at.oracle.OracleSqlConstant.BINARY_TABLE_NAME;
@@ -58,6 +35,27 @@ import static org.apache.seata.at.oracle.OracleSqlConstant.TEST_NUMBER_TYPE_UPDA
 import static org.apache.seata.at.oracle.OracleSqlConstant.TEST_RECORD_ID;
 import static org.apache.seata.at.oracle.OracleSqlConstant.TEST_STRING_TYPE_INSERT_SQL;
 import static org.apache.seata.at.oracle.OracleSqlConstant.TEST_STRING_TYPE_UPDATE_SQL;
+
+import com.alibaba.druid.pool.DruidDataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import org.apache.seata.core.context.RootContext;
+import org.apache.seata.core.exception.TransactionException;
+import org.apache.seata.core.model.BranchStatus;
+import org.apache.seata.core.model.BranchType;
+import org.apache.seata.rm.DefaultResourceManager;
+import org.apache.seata.rm.datasource.DataCompareUtils;
+import org.apache.seata.rm.datasource.DataSourceManager;
+import org.apache.seata.rm.datasource.DataSourceProxy;
+import org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory;
+import org.apache.seata.rm.datasource.sql.struct.TableRecords;
+import org.apache.seata.sqlparser.struct.TableMeta;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * add AT transaction mode tests to support database data types (Oracle)
@@ -112,8 +110,9 @@ public class SupportOracleDataTypeTest {
     }
 
     @Test
-    public void testTypeSql(int sqlType, boolean globalCommit, String insertSql, String tableName, String updateSql)
-        throws Throwable {
+    public void testTypeSql(
+            int sqlType, boolean globalCommit, String insertSql, String tableName, String updateSql)
+            throws Throwable {
         doExecute(sqlType, insertSql);
         doTestOracleTypePhase(sqlType, globalCommit, tableName, updateSql);
     }
@@ -128,8 +127,9 @@ public class SupportOracleDataTypeTest {
         LOGGER.info("insert sql success sql:[{}]", prepareSql);
     }
 
-    private void doTestOracleTypePhase(int sqlType, boolean globalCommit, String tableName, String updateSql)
-        throws Throwable {
+    private void doTestOracleTypePhase(
+            int sqlType, boolean globalCommit, String tableName, String updateSql)
+            throws Throwable {
         // init DataSource: helper
         DruidDataSource helperDS = createNewDruidDataSource(sqlType);
 
@@ -150,10 +150,17 @@ public class SupportOracleDataTypeTest {
         // get before image
         helperConn = helperDS.getConnection();
         helperStat = helperConn.createStatement();
-        helperRes = helperStat.executeQuery("select * from " + tableName + " where id = " + TEST_RECORD_ID);
+        helperRes =
+                helperStat.executeQuery(
+                        "select * from " + tableName + " where id = " + TEST_RECORD_ID);
         LOGGER.info("the helperRes is:[{}]", helperRes);
-        TableMeta tableMeta = TableMetaCacheFactory.getTableMetaCache(org.apache.seata.sqlparser.util.JdbcConstants.ORACLE)
-            .getTableMeta(dataSourceProxy.getPlainConnection(), tableName, dataSourceProxy.getResourceId());
+        TableMeta tableMeta =
+                TableMetaCacheFactory.getTableMetaCache(
+                                org.apache.seata.sqlparser.util.JdbcConstants.ORACLE)
+                        .getTableMeta(
+                                dataSourceProxy.getPlainConnection(),
+                                tableName,
+                                dataSourceProxy.getResourceId());
         TableRecords beforeImage = TableRecords.buildRecords(tableMeta, helperRes);
 
         // if not throw exception update record
@@ -165,18 +172,32 @@ public class SupportOracleDataTypeTest {
         RootContext.unbind();
 
         if (globalCommit) {
-            Assertions
-                .assertDoesNotThrow(() -> DefaultResourceManager.get().branchCommit(dataSourceProxy.getBranchType(),
-                    MOCK_XID, MOCK_BRANCH_ID, dataSourceProxy.getResourceId(), null));
+            Assertions.assertDoesNotThrow(
+                    () ->
+                            DefaultResourceManager.get()
+                                    .branchCommit(
+                                            dataSourceProxy.getBranchType(),
+                                            MOCK_XID,
+                                            MOCK_BRANCH_ID,
+                                            dataSourceProxy.getResourceId(),
+                                            null));
         } else {
-            DefaultResourceManager.get().branchRollback(dataSourceProxy.getBranchType(), MOCK_XID, MOCK_BRANCH_ID,
-                dataSourceProxy.getResourceId(), null);
+            DefaultResourceManager.get()
+                    .branchRollback(
+                            dataSourceProxy.getBranchType(),
+                            MOCK_XID,
+                            MOCK_BRANCH_ID,
+                            dataSourceProxy.getResourceId(),
+                            null);
             helperConn = helperDS.getConnection();
             helperStat = helperConn.createStatement();
-            helperRes = helperStat.executeQuery("select * from " + tableName + " where id = " + TEST_RECORD_ID);
+            helperRes =
+                    helperStat.executeQuery(
+                            "select * from " + tableName + " where id = " + TEST_RECORD_ID);
             TableRecords currentImage = TableRecords.buildRecords(tableMeta, helperRes);
             LOGGER.info("the currentImage Rows is:[{}]", currentImage.getRows());
-            Assertions.assertTrue(DataCompareUtils.isRecordsEquals(beforeImage, currentImage).getResult());
+            Assertions.assertTrue(
+                    DataCompareUtils.isRecordsEquals(beforeImage, currentImage).getResult());
             helperRes.close();
             helperStat.close();
             helperConn.close();
@@ -187,17 +208,29 @@ public class SupportOracleDataTypeTest {
         // init RM
         DefaultResourceManager.get();
         // mock the RM of AT
-        DefaultResourceManager.mockResourceManager(BranchType.AT, new DataSourceManager() {
-            @Override
-            public Long branchRegister(BranchType branchType, String resourceId, String clientId, String xid,
-                String applicationData, String lockKeys) throws TransactionException {
-                return MOCK_BRANCH_ID;
-            }
+        DefaultResourceManager.mockResourceManager(
+                BranchType.AT,
+                new DataSourceManager() {
+                    @Override
+                    public Long branchRegister(
+                            BranchType branchType,
+                            String resourceId,
+                            String clientId,
+                            String xid,
+                            String applicationData,
+                            String lockKeys)
+                            throws TransactionException {
+                        return MOCK_BRANCH_ID;
+                    }
 
-            @Override
-            public void branchReport(BranchType branchType, String xid, long branchId, BranchStatus status,
-                String applicationData) throws TransactionException {}
-        });
-
+                    @Override
+                    public void branchReport(
+                            BranchType branchType,
+                            String xid,
+                            long branchId,
+                            BranchStatus status,
+                            String applicationData)
+                            throws TransactionException {}
+                });
     }
 }

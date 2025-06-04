@@ -16,15 +16,16 @@
  */
 package org.apache.seata.rm.datasource;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_LOG_TABLE;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.sql.DataSource;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
@@ -38,11 +39,8 @@ import org.apache.seata.rm.datasource.undo.UndoLogManager;
 import org.apache.seata.rm.datasource.undo.UndoLogManagerFactory;
 import org.apache.seata.rm.datasource.util.JdbcUtils;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_LOG_TABLE;
 
 /**
  * The type Data source proxy.
@@ -75,7 +73,7 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
      * POLARDB-X 2.X & MySQL 5.6 -> PXC
      * POLARDB-X 2.X & MySQL 5.7 -> AliSQL-X
      */
-    private static final String[] POLARDB_X_PRODUCT_KEYWORD = {"TDDL","AliSQL-X","PXC"};
+    private static final String[] POLARDB_X_PRODUCT_KEYWORD = {"TDDL", "AliSQL-X", "PXC"};
 
     /**
      * Instantiates a new Data source proxy.
@@ -94,7 +92,9 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
      */
     public DataSourceProxy(DataSource targetDataSource, String resourceGroupId) {
         if (targetDataSource instanceof SeataDataSourceProxy) {
-            LOGGER.info("Unwrap the target data source, because the type is: {}", targetDataSource.getClass().getName());
+            LOGGER.info(
+                    "Unwrap the target data source, because the type is: {}",
+                    targetDataSource.getClass().getName());
             targetDataSource = ((SeataDataSourceProxy) targetDataSource).getTargetDataSource();
         }
         this.targetDataSource = targetDataSource;
@@ -118,13 +118,14 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
             throw new IllegalStateException("can not init dataSource", e);
         }
         if (JdbcConstants.SQLSERVER.equals(dbType)) {
-            LOGGER.info("SQLServer support in AT mode is currently an experimental function, " +
-                    "if you have any problems in use, please feedback to us");
+            LOGGER.info(
+                    "SQLServer support in AT mode is currently an experimental function, "
+                            + "if you have any problems in use, please feedback to us");
         }
         initResourceId();
         DefaultResourceManager.get().registerResource(this);
         TableMetaCacheFactory.registerTableMeta(this);
-        //Set the default branch type to 'AT' in the RootContext.
+        // Set the default branch type to 'AT' in the RootContext.
         RootContext.setDefaultBranchType(this.getBranchType());
     }
 
@@ -174,8 +175,11 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
 
         boolean undoLogTableExist = undoLogManager.hasUndoLogTable(conn);
         if (!undoLogTableExist) {
-            String undoLogTableName = ConfigurationFactory.getInstance()
-                    .getConfig(ConfigurationKeys.TRANSACTION_UNDO_LOG_TABLE, DEFAULT_TRANSACTION_UNDO_LOG_TABLE);
+            String undoLogTableName =
+                    ConfigurationFactory.getInstance()
+                            .getConfig(
+                                    ConfigurationKeys.TRANSACTION_UNDO_LOG_TABLE,
+                                    DEFAULT_TRANSACTION_UNDO_LOG_TABLE);
             String errMsg = String.format("in AT mode, %s table not exist", undoLogTableName);
             throw new IllegalStateException(errMsg);
         }
@@ -426,7 +430,7 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
             return;
         }
         try (PreparedStatement preparedStatement = connection.prepareStatement("SHOW VARIABLES");
-             ResultSet rs = preparedStatement.executeQuery()) {
+                ResultSet rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
                 String name = rs.getString(1);
                 String value = rs.getString(2);

@@ -16,16 +16,14 @@
  */
 package org.apache.seata.common.util;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
-
-import javax.sql.rowset.serial.SerialBlob;
-
-import org.apache.seata.common.Constants;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
+import javax.sql.rowset.serial.SerialBlob;
+import org.apache.seata.common.Constants;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Blob utils test.
@@ -41,8 +39,8 @@ public class BlobUtilsTest {
     @Test
     public void testString2blob() throws SQLException {
         assertNull(BlobUtils.string2blob(null));
-        assertThat(BlobUtils.string2blob("123abc")).isEqualTo(
-            new SerialBlob("123abc".getBytes(Constants.DEFAULT_CHARSET)));
+        assertThat(BlobUtils.string2blob("123abc"))
+                .isEqualTo(new SerialBlob("123abc".getBytes(Constants.DEFAULT_CHARSET)));
     }
 
     /**
@@ -53,23 +51,23 @@ public class BlobUtilsTest {
     @Test
     public void testBlob2string() throws SQLException {
         assertNull(BlobUtils.blob2string(null));
-        assertThat(BlobUtils.blob2string(new SerialBlob("123absent".getBytes(Constants.DEFAULT_CHARSET)))).isEqualTo(
-            "123absent");
+        assertThat(
+                        BlobUtils.blob2string(
+                                new SerialBlob("123absent".getBytes(Constants.DEFAULT_CHARSET))))
+                .isEqualTo("123absent");
     }
 
     @Test
     public void testBytes2Blob() throws UnsupportedEncodingException, SQLException {
         assertNull(BlobUtils.bytes2Blob(null));
         byte[] bs = "xxaaadd".getBytes(Constants.DEFAULT_CHARSET_NAME);
-        assertThat(BlobUtils.bytes2Blob(bs)).isEqualTo(
-                new SerialBlob(bs));
+        assertThat(BlobUtils.bytes2Blob(bs)).isEqualTo(new SerialBlob(bs));
     }
 
     @Test
     public void testBlob2Bytes() throws UnsupportedEncodingException, SQLException {
         assertNull(BlobUtils.blob2Bytes(null));
         byte[] bs = "xxaaadd".getBytes(Constants.DEFAULT_CHARSET_NAME);
-        assertThat(BlobUtils.blob2Bytes(new SerialBlob(bs))).isEqualTo(
-                bs);
+        assertThat(BlobUtils.blob2Bytes(new SerialBlob(bs))).isEqualTo(bs);
     }
 }

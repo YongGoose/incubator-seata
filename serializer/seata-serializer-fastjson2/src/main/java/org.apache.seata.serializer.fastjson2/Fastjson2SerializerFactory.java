@@ -26,33 +26,41 @@ public class Fastjson2SerializerFactory {
 
     private JSONReader.Feature[] jsonReaderFeature;
 
-    private  JSONWriter.Feature[] jsonWriterFeature;
+    private JSONWriter.Feature[] jsonWriterFeature;
+
     private static final class InstanceHolder {
         public static final Fastjson2SerializerFactory INSTANCE = new Fastjson2SerializerFactory();
     }
 
     public Fastjson2SerializerFactory() {
-        autoTypeFilter = JSONReader.autoTypeFilter(true, SerializerSecurityRegistry.getAllowClassType().toArray(new Class[]{}));
+        autoTypeFilter =
+                JSONReader.autoTypeFilter(
+                        true,
+                        SerializerSecurityRegistry.getAllowClassType().toArray(new Class[] {}));
 
-        jsonReaderFeature = new JSONReader.Feature[]{
-            JSONReader.Feature.UseDefaultConstructorAsPossible,
-            // If not configured, it will be serialized based on public field and getter methods by default.
-            // After configuration, it will be deserialized based on non-static fields (including private).
-            // It will be safer under FieldBased configuration
-            JSONReader.Feature.FieldBased,
-            JSONReader.Feature.IgnoreAutoTypeNotMatch,
-            JSONReader.Feature.UseNativeObject
-        };
+        jsonReaderFeature =
+                new JSONReader.Feature[] {
+                    JSONReader.Feature.UseDefaultConstructorAsPossible,
+                    // If not configured, it will be serialized based on public field and getter
+                    // methods by default.
+                    // After configuration, it will be deserialized based on non-static fields
+                    // (including private).
+                    // It will be safer under FieldBased configuration
+                    JSONReader.Feature.FieldBased,
+                    JSONReader.Feature.IgnoreAutoTypeNotMatch,
+                    JSONReader.Feature.UseNativeObject
+                };
 
-        jsonWriterFeature = new JSONWriter.Feature[]{
-            JSONWriter.Feature.WriteClassName,
-            JSONWriter.Feature.FieldBased,
-            JSONWriter.Feature.ReferenceDetection,
-            JSONWriter.Feature.WriteNulls,
-            JSONWriter.Feature.NotWriteDefaultValue,
-            JSONWriter.Feature.NotWriteHashMapArrayListClassName,
-            JSONWriter.Feature.WriteNameAsSymbol
-        };
+        jsonWriterFeature =
+                new JSONWriter.Feature[] {
+                    JSONWriter.Feature.WriteClassName,
+                    JSONWriter.Feature.FieldBased,
+                    JSONWriter.Feature.ReferenceDetection,
+                    JSONWriter.Feature.WriteNulls,
+                    JSONWriter.Feature.NotWriteDefaultValue,
+                    JSONWriter.Feature.NotWriteHashMapArrayListClassName,
+                    JSONWriter.Feature.WriteNameAsSymbol
+                };
     }
 
     public static Fastjson2SerializerFactory getInstance() {

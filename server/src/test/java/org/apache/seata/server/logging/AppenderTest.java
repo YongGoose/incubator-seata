@@ -20,6 +20,8 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.github.danielwegener.logback.kafka.KafkaAppender;
+import java.lang.reflect.Field;
+import java.util.Iterator;
 import net.logstash.logback.appender.LogstashTcpSocketAppender;
 import org.apache.seata.server.logging.logback.appender.MetricLogbackAppender;
 import org.junit.jupiter.api.Assertions;
@@ -27,10 +29,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.lang.reflect.Field;
-import java.util.Iterator;
-
 
 @SpringBootTest
 public class AppenderTest {
@@ -46,15 +44,18 @@ public class AppenderTest {
     @Test
     public void testAppenderEnabled() {
         LoggerContext lc = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
-        Iterator<Appender<ILoggingEvent>> appenderIterator = lc.getLogger("ROOT").iteratorForAppenders();
+        Iterator<Appender<ILoggingEvent>> appenderIterator =
+                lc.getLogger("ROOT").iteratorForAppenders();
 
         while (appenderIterator.hasNext()) {
             Appender<ILoggingEvent> appender = appenderIterator.next();
             if (appender.getName().equals("KAFKA")) {
-                KafkaAppender<ILoggingEvent> kafkaAppender = (KafkaAppender<ILoggingEvent>) appender;
+                KafkaAppender<ILoggingEvent> kafkaAppender =
+                        (KafkaAppender<ILoggingEvent>) appender;
 
                 try {
-                    // use reflection to obtain the "protect topic" fields of the abstract class inherited by the appender instance
+                    // use reflection to obtain the "protect topic" fields of the abstract class
+                    // inherited by the appender instance
                     Class<?> kafkaAppenderClass = kafkaAppender.getClass();
                     Field topicField = getDeclaredFieldRecursive(kafkaAppenderClass, "topic");
                     topicField.setAccessible(true);

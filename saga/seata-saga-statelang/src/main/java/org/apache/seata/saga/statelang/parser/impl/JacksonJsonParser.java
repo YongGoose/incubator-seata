@@ -22,12 +22,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import org.apache.seata.common.loader.LoadLevel;
-import org.apache.seata.saga.statelang.parser.JsonParser;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.seata.common.loader.LoadLevel;
+import org.apache.seata.saga.statelang.parser.JsonParser;
 
 /**
  * JsonParser implement by Jackson
@@ -36,17 +35,19 @@ import java.util.List;
 @LoadLevel(name = JacksonJsonParser.NAME)
 public class JacksonJsonParser implements JsonParser {
 
-    private final ObjectMapper objectMapperWithAutoType = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .enableDefaultTypingAsProperty(DefaultTyping.NON_FINAL, "@type")
-            .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
-            .setSerializationInclusion(Include.NON_NULL);
+    private final ObjectMapper objectMapperWithAutoType =
+            new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .enableDefaultTypingAsProperty(DefaultTyping.NON_FINAL, "@type")
+                    .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
+                    .setSerializationInclusion(Include.NON_NULL);
 
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .disableDefaultTyping()
-            .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
-            .setSerializationInclusion(Include.NON_NULL);
+    private final ObjectMapper objectMapper =
+            new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .disableDefaultTyping()
+                    .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
+                    .setSerializationInclusion(Include.NON_NULL);
 
     public static final String NAME = "jackson";
 
@@ -74,17 +75,16 @@ public class JacksonJsonParser implements JsonParser {
             if (prettyPrint) {
                 if (ignoreAutoType) {
                     return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
-                }
-                else {
-                    return objectMapperWithAutoType.writerWithDefaultPrettyPrinter().writeValueAsString(o);
+                } else {
+                    return objectMapperWithAutoType
+                            .writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(o);
                 }
 
-            }
-            else {
+            } else {
                 if (ignoreAutoType) {
                     return objectMapper.writeValueAsString(o);
-                }
-                else {
+                } else {
                     return objectMapperWithAutoType.writeValueAsString(o);
                 }
             }
@@ -101,8 +101,7 @@ public class JacksonJsonParser implements JsonParser {
             }
             if (ignoreAutoType) {
                 return objectMapper.readValue(json, type);
-            }
-            else {
+            } else {
                 return objectMapperWithAutoType.readValue(json, type);
             }
         } catch (IOException e) {

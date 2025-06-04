@@ -16,18 +16,17 @@
  */
 package org.apache.seata.core.protocol;
 
-import com.alibaba.fastjson.JSON;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.alibaba.fastjson.JSON;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Message future test.
@@ -48,17 +47,32 @@ public class MessageFutureTest {
      */
     @Test
     public void testFieldSetGet() {
-        String fromJson = "{\n" +
-            "\t\"requestMessage\":{\n" +
-            "\t\t\"body\":\"" + BODY_FIELD + "\",\n" +
-            "\t\t\"codec\":" + CODEC_FIELD + ",\n" +
-            "\t\t\"compressor\":" + COMPRESS_FIELD + ",\n" +
-            "\t\t\"headMap\":" + HEAD_FIELD + ",\n" +
-            "\t\t\"id\":" + ID_FIELD + ",\n" +
-            "\t\t\"messageType\":" + MSG_TYPE_FIELD + "\n" +
-            "\t},\n" +
-            "\t\"timeout\":" + TIME_OUT_FIELD + "\n" +
-            "}";
+        String fromJson =
+                "{\n"
+                        + "\t\"requestMessage\":{\n"
+                        + "\t\t\"body\":\""
+                        + BODY_FIELD
+                        + "\",\n"
+                        + "\t\t\"codec\":"
+                        + CODEC_FIELD
+                        + ",\n"
+                        + "\t\t\"compressor\":"
+                        + COMPRESS_FIELD
+                        + ",\n"
+                        + "\t\t\"headMap\":"
+                        + HEAD_FIELD
+                        + ",\n"
+                        + "\t\t\"id\":"
+                        + ID_FIELD
+                        + ",\n"
+                        + "\t\t\"messageType\":"
+                        + MSG_TYPE_FIELD
+                        + "\n"
+                        + "\t},\n"
+                        + "\t\"timeout\":"
+                        + TIME_OUT_FIELD
+                        + "\n"
+                        + "}";
         MessageFuture fromJsonFuture = JSON.parseObject(fromJson, MessageFuture.class);
         assertThat(fromJsonFuture.getTimeout()).isEqualTo(TIME_OUT_FIELD);
         MessageFuture toJsonFuture = new MessageFuture();
@@ -80,7 +94,6 @@ public class MessageFutureTest {
         assertThat(messageFuture.isTimeout()).isFalse();
         Thread.sleep(TIME_OUT_FIELD + 1);
         assertThat(messageFuture.isTimeout()).isTrue();
-
     }
 
     /**
@@ -88,12 +101,14 @@ public class MessageFutureTest {
      */
     @Test
     public void testGetNoResultWithTimeOutException() {
-        Assertions.assertThrows(TimeoutException.class, () -> {
-            MessageFuture messageFuture = new MessageFuture();
-            messageFuture.setRequestMessage(buildRepcMessage());
-            messageFuture.setTimeout(TIME_OUT_FIELD);
-            messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
-        });
+        Assertions.assertThrows(
+                TimeoutException.class,
+                () -> {
+                    MessageFuture messageFuture = new MessageFuture();
+                    messageFuture.setRequestMessage(buildRepcMessage());
+                    messageFuture.setTimeout(TIME_OUT_FIELD);
+                    messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
+                });
     }
 
     /**
@@ -101,23 +116,26 @@ public class MessageFutureTest {
      */
     @Test
     public void testGetHasResultWithTimeOutException() {
-        Assertions.assertThrows(TimeoutException.class, () -> {
-            MessageFuture messageFuture = new MessageFuture();
-            messageFuture.setRequestMessage(buildRepcMessage());
-            messageFuture.setTimeout(TIME_OUT_FIELD);
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            CountDownLatch downLatch = new CountDownLatch(1);
-            executorService.execute(() -> {
-                try {
-                    downLatch.await();
-                    messageFuture.setResultMessage("has_result");
-                } catch (InterruptedException e) {
+        Assertions.assertThrows(
+                TimeoutException.class,
+                () -> {
+                    MessageFuture messageFuture = new MessageFuture();
+                    messageFuture.setRequestMessage(buildRepcMessage());
+                    messageFuture.setTimeout(TIME_OUT_FIELD);
+                    ExecutorService executorService = Executors.newSingleThreadExecutor();
+                    CountDownLatch downLatch = new CountDownLatch(1);
+                    executorService.execute(
+                            () -> {
+                                try {
+                                    downLatch.await();
+                                    messageFuture.setResultMessage("has_result");
+                                } catch (InterruptedException e) {
 
-                }
-            });
-            messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
-            downLatch.countDown();
-        });
+                                }
+                            });
+                    messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
+                    downLatch.countDown();
+                });
     }
 
     /**
@@ -125,13 +143,15 @@ public class MessageFutureTest {
      */
     @Test
     public void testGetHasResultWithRunTimeException() {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            MessageFuture messageFuture = new MessageFuture();
-            messageFuture.setRequestMessage(buildRepcMessage());
-            messageFuture.setTimeout(TIME_OUT_FIELD);
-            messageFuture.setResultMessage(new RuntimeException());
-            messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
-        });
+        Assertions.assertThrows(
+                RuntimeException.class,
+                () -> {
+                    MessageFuture messageFuture = new MessageFuture();
+                    messageFuture.setRequestMessage(buildRepcMessage());
+                    messageFuture.setTimeout(TIME_OUT_FIELD);
+                    messageFuture.setResultMessage(new RuntimeException());
+                    messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
+                });
     }
 
     /**
@@ -158,13 +178,15 @@ public class MessageFutureTest {
      */
     @Test
     public void testGetHasResultWithThrowable() {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            MessageFuture messageFuture = new MessageFuture();
-            messageFuture.setRequestMessage(buildRepcMessage());
-            messageFuture.setTimeout(TIME_OUT_FIELD);
-            messageFuture.setResultMessage(new Throwable());
-            messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
-        });
+        Assertions.assertThrows(
+                RuntimeException.class,
+                () -> {
+                    MessageFuture messageFuture = new MessageFuture();
+                    messageFuture.setRequestMessage(buildRepcMessage());
+                    messageFuture.setTimeout(TIME_OUT_FIELD);
+                    messageFuture.setResultMessage(new Throwable());
+                    messageFuture.get(TIME_OUT_FIELD, TimeUnit.MILLISECONDS);
+                });
     }
 
     /**

@@ -16,12 +16,11 @@
  */
 package org.apache.seata.core.protocol;
 
-import com.alibaba.fastjson.JSON;
-import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.alibaba.fastjson.JSON;
+import java.util.HashMap;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Rpc message test.
@@ -41,14 +40,27 @@ public class RpcMessageTest {
      */
     @Test
     public void testFieldGetSetFromJson() {
-        String fromJson = "{\n" +
-            "\t\"body\":\"" + BODY_FIELD + "\",\n" +
-            "\t\"codec\":" + CODEC_FIELD + ",\n" +
-            "\t\"compressor\":" + COMPRESS_FIELD + ",\n" +
-            "\t\"headMap\":" + HEAD_FIELD + ",\n" +
-            "\t\"id\":" + ID_FIELD + ",\n" +
-            "\t\"messageType\":" + MSG_TYPE_FIELD + "\n" +
-            "}";
+        String fromJson =
+                "{\n"
+                        + "\t\"body\":\""
+                        + BODY_FIELD
+                        + "\",\n"
+                        + "\t\"codec\":"
+                        + CODEC_FIELD
+                        + ",\n"
+                        + "\t\"compressor\":"
+                        + COMPRESS_FIELD
+                        + ",\n"
+                        + "\t\"headMap\":"
+                        + HEAD_FIELD
+                        + ",\n"
+                        + "\t\"id\":"
+                        + ID_FIELD
+                        + ",\n"
+                        + "\t\"messageType\":"
+                        + MSG_TYPE_FIELD
+                        + "\n"
+                        + "}";
         RpcMessage fromJsonMessage = JSON.parseObject(fromJson, RpcMessage.class);
         assertThat(fromJsonMessage.getBody()).isEqualTo(BODY_FIELD);
         assertThat(fromJsonMessage.getId()).isEqualTo(ID_FIELD);

@@ -16,13 +16,13 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
-import org.apache.seata.core.model.BranchType;
-import org.apache.seata.core.protocol.transaction.BranchRegisterRequest;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.seata.core.model.BranchType;
+import org.apache.seata.core.protocol.ProtocolConstants;
+import org.apache.seata.core.protocol.transaction.BranchRegisterRequest;
+import org.apache.seata.serializer.seata.SeataSerializer;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Branch register request codec test.
@@ -39,7 +39,7 @@ public class BranchRegisterRequestSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         BranchRegisterRequest branchRegisterRequest = new BranchRegisterRequest();
         branchRegisterRequest.setBranchType(BranchType.AT);
         branchRegisterRequest.setApplicationData("abc");
@@ -51,12 +51,14 @@ public class BranchRegisterRequestSerializerTest {
 
         BranchRegisterRequest branchRegisterRequest2 = seataSerializer.deserialize(bytes);
 
-        assertThat(branchRegisterRequest2.getBranchType()).isEqualTo(branchRegisterRequest.getBranchType());
-        assertThat(branchRegisterRequest2.getApplicationData()).isEqualTo(branchRegisterRequest.getApplicationData());
-        assertThat(branchRegisterRequest2.getLockKey()).isEqualTo(branchRegisterRequest.getLockKey());
-        assertThat(branchRegisterRequest2.getResourceId()).isEqualTo(branchRegisterRequest.getResourceId());
+        assertThat(branchRegisterRequest2.getBranchType())
+                .isEqualTo(branchRegisterRequest.getBranchType());
+        assertThat(branchRegisterRequest2.getApplicationData())
+                .isEqualTo(branchRegisterRequest.getApplicationData());
+        assertThat(branchRegisterRequest2.getLockKey())
+                .isEqualTo(branchRegisterRequest.getLockKey());
+        assertThat(branchRegisterRequest2.getResourceId())
+                .isEqualTo(branchRegisterRequest.getResourceId());
         assertThat(branchRegisterRequest2.getXid()).isEqualTo(branchRegisterRequest.getXid());
-
     }
-
 }

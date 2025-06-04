@@ -16,14 +16,12 @@
  */
 package org.apache.seata.metrics.exporter.prometheus;
 
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.TimeUnit;
 import org.apache.seata.metrics.registry.compact.TimerValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TimerValueTest {
     private TimerValue timerValue;

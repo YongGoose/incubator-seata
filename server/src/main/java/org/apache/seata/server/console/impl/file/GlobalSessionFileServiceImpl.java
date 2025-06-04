@@ -16,25 +16,24 @@
  */
 package org.apache.seata.server.console.impl.file;
 
+import static java.util.Objects.isNull;
+import static org.apache.seata.common.util.StringUtils.isBlank;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import org.apache.seata.server.console.impl.AbstractGlobalService;
-import org.apache.seata.server.console.entity.param.GlobalSessionParam;
 import org.apache.seata.common.result.PageResult;
+import org.apache.seata.server.console.entity.param.GlobalSessionParam;
 import org.apache.seata.server.console.entity.vo.GlobalSessionVO;
+import org.apache.seata.server.console.impl.AbstractGlobalService;
 import org.apache.seata.server.console.service.GlobalSessionService;
 import org.apache.seata.server.session.GlobalSession;
 import org.apache.seata.server.session.SessionHolder;
 import org.apache.seata.server.storage.SessionConverter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.common.util.StringUtils.isBlank;
-import static java.util.Objects.isNull;
 
 /**
  * Global Session File ServiceImpl
@@ -43,7 +42,8 @@ import static java.util.Objects.isNull;
 @Component
 @org.springframework.context.annotation.Configuration
 @ConditionalOnExpression("#{'file'.equals('${sessionMode}')}")
-public class GlobalSessionFileServiceImpl extends AbstractGlobalService implements GlobalSessionService {
+public class GlobalSessionFileServiceImpl extends AbstractGlobalService
+        implements GlobalSessionService {
 
     @Override
     public PageResult<GlobalSessionVO> query(GlobalSessionParam param) {
@@ -51,17 +51,19 @@ public class GlobalSessionFileServiceImpl extends AbstractGlobalService implemen
             throw new IllegalArgumentException("wrong pageSize or pageNum");
         }
 
-        final Collection<GlobalSession> allSessions = SessionHolder.getRootSessionManager().allSessions();
+        final Collection<GlobalSession> allSessions =
+                SessionHolder.getRootSessionManager().allSessions();
 
-        final List<GlobalSession> filteredSessions = allSessions
-                .parallelStream()
-                .filter(obtainPredicate(param))
-                .collect(Collectors.toList());
+        final List<GlobalSession> filteredSessions =
+                allSessions.parallelStream()
+                        .filter(obtainPredicate(param))
+                        .collect(Collectors.toList());
 
-        return PageResult.build(SessionConverter.convertGlobalSession(filteredSessions), param.getPageNum(), param.getPageSize());
+        return PageResult.build(
+                SessionConverter.convertGlobalSession(filteredSessions),
+                param.getPageNum(),
+                param.getPageSize());
     }
-
-
 
     /**
      * obtain the condition
@@ -73,35 +75,33 @@ public class GlobalSessionFileServiceImpl extends AbstractGlobalService implemen
 
         return session -> {
             return
-                // xid
-                (isBlank(param.getXid()) || session.getXid().contains(param.getXid()))
+            // xid
+            (isBlank(param.getXid()) || session.getXid().contains(param.getXid()))
+                    &&
+                    // applicationId
+                    (isBlank(param.getApplicationId())
+                            || session.getApplicationId().contains(param.getApplicationId()))
+                    &&
+                    // status
+                    (isNull(param.getStatus())
+                            || Objects.equals(session.getStatus().getCode(), param.getStatus()))
+                    &&
+                    // transactionName
+                    (isBlank(param.getTransactionName())
+                            || session.getTransactionName().contains(param.getTransactionName()))
+                    &&
 
-                &&
-                // applicationId
-                (isBlank(param.getApplicationId()) || session.getApplicationId().contains(param.getApplicationId()))
-
-                &&
-                // status
-                (isNull(param.getStatus()) || Objects.equals(session.getStatus().getCode(), param.getStatus()))
-
-                &&
-                // transactionName
-                (isBlank(param.getTransactionName()) || session.getTransactionName().contains(param.getTransactionName()))
-                &&
-
-                // vgroup
-                (isBlank(param.getVgroup()) || session.getTransactionServiceGroup().equals(param.getVgroup()))
-
-                &&
-                // timeStart
-                (isNull(param.getTimeStart()) || param.getTimeStart() / 1000 >= session.getBeginTime() / 1000)
-
-                &&
-                // timeEnd
-                (isNull(param.getTimeEnd()) || param.getTimeEnd() / 1000 <= session.getBeginTime() / 1000);
-
+                    // vgroup
+                    (isBlank(param.getVgroup())
+                            || session.getTransactionServiceGroup().equals(param.getVgroup()))
+                    &&
+                    // timeStart
+                    (isNull(param.getTimeStart())
+                            || param.getTimeStart() / 1000 >= session.getBeginTime() / 1000)
+                    &&
+                    // timeEnd
+                    (isNull(param.getTimeEnd())
+                            || param.getTimeEnd() / 1000 <= session.getBeginTime() / 1000);
         };
     }
-
-
 }

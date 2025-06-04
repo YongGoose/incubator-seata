@@ -18,7 +18,6 @@ package org.apache.seata.common;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -44,24 +43,30 @@ public class ApplicationKeeper {
     }
 
     private void addShutdownHook(final AbstractApplicationContext applicationContext) {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    applicationContext.close();
-                    LOGGER.info("ApplicationContext " + applicationContext + " is closed.");
-                } catch (Exception e) {
-                    LOGGER.error("Failed to close ApplicationContext", e);
-                }
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            applicationContext.close();
+                                            LOGGER.info(
+                                                    "ApplicationContext "
+                                                            + applicationContext
+                                                            + " is closed.");
+                                        } catch (Exception e) {
+                                            LOGGER.error("Failed to close ApplicationContext", e);
+                                        }
 
-                try {
-                    LOCK.lock();
-                    STOP.signal();
-                } finally {
-                    LOCK.unlock();
-                }
-            }
-        }));
+                                        try {
+                                            LOCK.lock();
+                                            STOP.signal();
+                                        } finally {
+                                            LOCK.unlock();
+                                        }
+                                    }
+                                }));
     }
 
     /**

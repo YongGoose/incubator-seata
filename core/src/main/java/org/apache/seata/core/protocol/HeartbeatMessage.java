@@ -25,10 +25,12 @@ import java.io.Serializable;
 public class HeartbeatMessage implements MessageTypeAware, Serializable {
     private static final long serialVersionUID = -985316399527884899L;
     private boolean ping = true;
+
     /**
      * The constant PING.
      */
     public static final HeartbeatMessage PING = new HeartbeatMessage(true);
+
     /**
      * The constant PONG.
      */

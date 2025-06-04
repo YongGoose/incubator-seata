@@ -43,11 +43,9 @@ class ResourceCleanupTest {
 
     private AbstractNettyRemotingClient client;
 
-    @Mock
-    private Channel channel;
+    @Mock private Channel channel;
 
-    @Mock
-    private ChannelId channelId;
+    @Mock private ChannelId channelId;
 
     private Map<Integer, MessageFuture> futures;
     private Map<Integer, MergeMessage> mergeMsgMap;
@@ -71,15 +69,18 @@ class ResourceCleanupTest {
         basketMapField.setAccessible(true);
         basketMap = (Map<String, BlockingQueue<RpcMessage>>) basketMapField.get(client);
 
-        Field channelManagerField = AbstractNettyRemotingClient.class.getDeclaredField("clientChannelManager");
+        Field channelManagerField =
+                AbstractNettyRemotingClient.class.getDeclaredField("clientChannelManager");
         channelManagerField.setAccessible(true);
-        NettyClientChannelManager clientChannelManager = (NettyClientChannelManager) channelManagerField.get(client);
+        NettyClientChannelManager clientChannelManager =
+                (NettyClientChannelManager) channelManagerField.get(client);
 
         Field channelsField = clientChannelManager.getClass().getDeclaredField("channels");
         channelsField.setAccessible(true);
         channels = (Map<String, Channel>) channelsField.get(clientChannelManager);
 
-        Field childToParentMapField = AbstractNettyRemotingClient.class.getDeclaredField("childToParentMap");
+        Field childToParentMapField =
+                AbstractNettyRemotingClient.class.getDeclaredField("childToParentMap");
         childToParentMapField.setAccessible(true);
         childToParentMap = (Map<Integer, Integer>) childToParentMapField.get(client);
     }
@@ -127,8 +128,12 @@ class ResourceCleanupTest {
         assertNull(childToParentMap.get(1), "Child to parent map should not contain ID 1");
         assertNull(childToParentMap.get(2), "Child to parent map should not contain ID 2");
 
-        assertThrows(RuntimeException.class, () -> messageFuture1.get(0, java.util.concurrent.TimeUnit.MILLISECONDS));
-        assertThrows(RuntimeException.class, () -> messageFuture2.get(0, java.util.concurrent.TimeUnit.MILLISECONDS));
+        assertThrows(
+                RuntimeException.class,
+                () -> messageFuture1.get(0, java.util.concurrent.TimeUnit.MILLISECONDS));
+        assertThrows(
+                RuntimeException.class,
+                () -> messageFuture2.get(0, java.util.concurrent.TimeUnit.MILLISECONDS));
     }
 
     @Test

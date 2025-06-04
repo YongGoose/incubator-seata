@@ -16,17 +16,14 @@
  */
 package org.apache.seata.integration.tx.api.interceptor.parser;
 
-import org.apache.seata.common.loader.EnhancedServiceLoader;
-import org.apache.seata.common.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.seata.common.loader.EnhancedServiceLoader;
+import org.apache.seata.common.util.CollectionUtils;
 
 public class DefaultTargetClassParser implements TargetClassParser {
 
     protected static List<TargetClassParser> allTargetClassParsers = new ArrayList<>();
-
 
     private static class SingletonHolder {
         private static final DefaultTargetClassParser INSTANCE = new DefaultTargetClassParser();
@@ -44,7 +41,8 @@ public class DefaultTargetClassParser implements TargetClassParser {
      * init parsers
      */
     protected void initTargetClassParser() {
-        List<TargetClassParser> targetClassParsers = EnhancedServiceLoader.loadAll(TargetClassParser.class);
+        List<TargetClassParser> targetClassParsers =
+                EnhancedServiceLoader.loadAll(TargetClassParser.class);
         if (CollectionUtils.isNotEmpty(targetClassParsers)) {
             allTargetClassParsers.addAll(targetClassParsers);
         }

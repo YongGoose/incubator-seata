@@ -16,6 +16,8 @@
  */
 package org.apache.seata.server.storage.redis.store;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.seata.common.exception.RedisException;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.metadata.Instance;
@@ -24,9 +26,6 @@ import org.apache.seata.core.store.MappingDO;
 import org.apache.seata.server.storage.redis.JedisPooledFactory;
 import org.apache.seata.server.store.VGroupMappingStoreManager;
 import redis.clients.jedis.Jedis;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @LoadLevel(name = "redis")
 public class RedisVGroupMappingStoreManager implements VGroupMappingStoreManager {
@@ -71,11 +70,12 @@ public class RedisVGroupMappingStoreManager implements VGroupMappingStoreManager
         try (Jedis jedis = JedisPooledFactory.getJedisInstance()) {
             Map<String, String> mappingKeyMap = jedis.hgetAll(namespace);
             HashMap<String, Object> result = new HashMap<>();
-            mappingKeyMap.forEach((vgroup,clusterNameValue) -> {
-                if (StringUtils.equals(clusterName, clusterNameValue)) {
-                    result.put(vgroup, null);
-                }
-            });
+            mappingKeyMap.forEach(
+                    (vgroup, clusterNameValue) -> {
+                        if (StringUtils.equals(clusterName, clusterNameValue)) {
+                            result.put(vgroup, null);
+                        }
+                    });
             return result;
         } catch (Exception ex) {
             throw new RedisException(ex);

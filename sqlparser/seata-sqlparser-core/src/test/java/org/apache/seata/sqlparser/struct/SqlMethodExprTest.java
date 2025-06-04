@@ -32,5 +32,4 @@ public class SqlMethodExprTest {
         String expected = "SQL_METHOD";
         assertEquals(expected.trim(), SqlMethodExpr.get().toString().trim());
     }
-
 }

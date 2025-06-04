@@ -23,7 +23,8 @@ public class SagaAsyncThreadPoolPropertiesTest {
 
     @Test
     public void testSagaAsyncThreadPoolProperties() {
-        SagaAsyncThreadPoolProperties sagaAsyncThreadPoolProperties = new SagaAsyncThreadPoolProperties();
+        SagaAsyncThreadPoolProperties sagaAsyncThreadPoolProperties =
+                new SagaAsyncThreadPoolProperties();
         sagaAsyncThreadPoolProperties.setCorePoolSize(1);
         Assertions.assertEquals(1, sagaAsyncThreadPoolProperties.getCorePoolSize());
 

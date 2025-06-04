@@ -27,15 +27,19 @@ public class BZip2UtilTest {
 
     @Test
     public void test_compress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            BZip2Util.compress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    BZip2Util.compress(null);
+                });
     }
 
     @Test
     public void test_decompress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            BZip2Util.decompress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    BZip2Util.decompress(null);
+                });
     }
 }

@@ -16,10 +16,21 @@
  */
 package org.apache.seata.discovery.registry.consul;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ecwid.consul.transport.RawResponse;
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.health.model.HealthService;
+import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.config.exception.ConfigNotFoundException;
@@ -28,19 +39,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 
 public class ConsulRegistryServiceImplTest {
 
@@ -84,7 +82,8 @@ public class ConsulRegistryServiceImplTest {
         ExecutorService executorService = mock(ExecutorService.class);
         setExecutorService(executorService);
 
-        Response<List<HealthService>> response = new Response<>(new ArrayList<>(), mock(RawResponse.class));
+        Response<List<HealthService>> response =
+                new Response<>(new ArrayList<>(), mock(RawResponse.class));
         when(client.getHealthServices(any(), any())).thenReturn(response);
 
         service.subscribe(TEST_CLUSTER_NAME, consulListener);
@@ -93,8 +92,11 @@ public class ConsulRegistryServiceImplTest {
         Assertions.assertNotNull(getMap("notifiers").get(TEST_CLUSTER_NAME));
         verify(executorService).submit(any(Runnable.class));
 
-        try (MockedStatic<ConfigurationFactory> configurationFactoryMockedStatic = Mockito.mockStatic(ConfigurationFactory.class)) {
-            configurationFactoryMockedStatic.when(ConfigurationFactory::getInstance).thenReturn(configuration);
+        try (MockedStatic<ConfigurationFactory> configurationFactoryMockedStatic =
+                Mockito.mockStatic(ConfigurationFactory.class)) {
+            configurationFactoryMockedStatic
+                    .when(ConfigurationFactory::getInstance)
+                    .thenReturn(configuration);
 
             // normal condition
             when(configuration.getConfig(any())).thenReturn(TEST_CLUSTER_NAME);
@@ -104,24 +106,27 @@ public class ConsulRegistryServiceImplTest {
 
             // when config exc
             when(configuration.getConfig(any())).thenReturn(null);
-            Assertions.assertThrows(ConfigNotFoundException.class, () -> {
-                service.lookup("testGroup");
-            });
+            Assertions.assertThrows(
+                    ConfigNotFoundException.class,
+                    () -> {
+                        service.lookup("testGroup");
+                    });
         }
 
         service.unsubscribe(TEST_CLUSTER_NAME, consulListener);
         Assertions.assertNull(getMap("notifiers").get(TEST_CLUSTER_NAME));
     }
 
-
-    private void setClient(ConsulRegistryServiceImpl service, ConsulClient client) throws Exception {
+    private void setClient(ConsulRegistryServiceImpl service, ConsulClient client)
+            throws Exception {
         Field clientField = ConsulRegistryServiceImpl.class.getDeclaredField("client");
         clientField.setAccessible(true);
         clientField.set(service, client);
     }
 
     private void setExecutorService(ExecutorService executorService) throws Exception {
-        Field executorServiceField = ConsulRegistryServiceImpl.class.getDeclaredField("notifierExecutor");
+        Field executorServiceField =
+                ConsulRegistryServiceImpl.class.getDeclaredField("notifierExecutor");
         executorServiceField.setAccessible(true);
         executorServiceField.set(service, executorService);
     }

@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClientHeartbeatProcessorTest {
-    private static final String CLASS_NAME = "org.apache.seata.core.rpc.processor.client.ClientHeartbeatProcessor";
+    private static final String CLASS_NAME =
+            "org.apache.seata.core.rpc.processor.client.ClientHeartbeatProcessor";
 
     private final List<Logger> watchedLoggers = new ArrayList<>();
     private final ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
@@ -98,7 +99,8 @@ public class ClientHeartbeatProcessorTest {
 
         // Assert
         assertTrue(
-                getLogs(Level.DEBUG).stream().anyMatch(log -> log.equals("received PONG from " + mockRemoteAddress)));
+                getLogs(Level.DEBUG).stream()
+                        .anyMatch(log -> log.equals("received PONG from " + mockRemoteAddress)));
     }
 
     /**
@@ -121,8 +123,10 @@ public class ClientHeartbeatProcessorTest {
 
     private List<String> getLogs(Level level) {
         return logWatcher.list.stream()
-                .filter(event -> event.getLoggerName().endsWith(CLASS_NAME)
-                        && event.getLevel().equals(level))
+                .filter(
+                        event ->
+                                event.getLoggerName().endsWith(CLASS_NAME)
+                                        && event.getLevel().equals(level))
                 .map(ILoggingEvent::getFormattedMessage)
                 .collect(Collectors.toList());
     }

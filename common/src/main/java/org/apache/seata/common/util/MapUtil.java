@@ -58,6 +58,7 @@ public class MapUtil {
         }
         return result;
     }
+
     /**
      * get flattened Map
      *
@@ -70,7 +71,8 @@ public class MapUtil {
         return result;
     }
 
-    private static void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, String path) {
+    private static void buildFlattenedMap(
+            Map<String, Object> result, Map<String, Object> source, String path) {
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             String key = entry.getKey();
             if (StringUtils.isNotBlank(path)) {
@@ -94,8 +96,8 @@ public class MapUtil {
                 Collection<Object> collection = (Collection<Object>) value;
                 int count = 0;
                 for (Object object : collection) {
-                    buildFlattenedMap(result,
-                            Collections.singletonMap("[" + (count++) + "]", object), key);
+                    buildFlattenedMap(
+                            result, Collections.singletonMap("[" + (count++) + "]", object), key);
                 }
             } else {
                 result.put(key, value != null ? value : "");

@@ -62,7 +62,8 @@ public interface CommonFenceStore {
      * @param oldStatus the old status
      * @return the boolean
      */
-    boolean updateCommonFenceDO(Connection conn, String xid, Long branchId, int newStatus, int oldStatus);
+    boolean updateCommonFenceDO(
+            Connection conn, String xid, Long branchId, int newStatus, int oldStatus);
 
     /**
      * Delete common fence do boolean.
@@ -86,5 +87,4 @@ public interface CommonFenceStore {
      * @param logTableName logTableName
      */
     void setLogTableName(String logTableName);
-
 }

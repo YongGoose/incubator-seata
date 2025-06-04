@@ -16,15 +16,15 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.model.BranchStatus;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Branch commit response codec test.
@@ -41,9 +41,10 @@ public class BranchCommitResponseSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         BranchCommitResponse branchCommitResponse = new BranchCommitResponse();
-        branchCommitResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchTransactionNotExist);
+        branchCommitResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchTransactionNotExist);
         branchCommitResponse.setBranchId(123);
         branchCommitResponse.setBranchStatus(BranchStatus.PhaseOne_Done);
         branchCommitResponse.setMsg("abc");
@@ -54,11 +55,13 @@ public class BranchCommitResponseSerializerTest {
 
         BranchCommitResponse branchCommitResponse2 = seataSerializer.deserialize(bytes);
 
-        assertThat(branchCommitResponse2.getBranchStatus()).isEqualTo(branchCommitResponse.getBranchStatus());
-        assertThat(branchCommitResponse2.getBranchId()).isEqualTo(branchCommitResponse.getBranchId());
+        assertThat(branchCommitResponse2.getBranchStatus())
+                .isEqualTo(branchCommitResponse.getBranchStatus());
+        assertThat(branchCommitResponse2.getBranchId())
+                .isEqualTo(branchCommitResponse.getBranchId());
         assertThat(branchCommitResponse2.getMsg()).isEqualTo(branchCommitResponse.getMsg());
         assertThat(branchCommitResponse2.getXid()).isEqualTo(branchCommitResponse.getXid());
-        assertThat(branchCommitResponse2.getResultCode()).isEqualTo(branchCommitResponse.getResultCode());
+        assertThat(branchCommitResponse2.getResultCode())
+                .isEqualTo(branchCommitResponse.getResultCode());
     }
-
 }

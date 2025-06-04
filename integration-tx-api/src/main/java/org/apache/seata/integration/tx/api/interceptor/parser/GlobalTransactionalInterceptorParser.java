@@ -19,7 +19,6 @@ package org.apache.seata.integration.tx.api.interceptor.parser;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.ReflectionUtil;
@@ -45,13 +44,17 @@ public class GlobalTransactionalInterceptorParser implements InterfaceParser {
      * @see GlobalLock // GlobalLock annotation
      */
     @Override
-    public ProxyInvocationHandler parserInterfaceToProxy(Object target, String objectName) throws Exception {
+    public ProxyInvocationHandler parserInterfaceToProxy(Object target, String objectName)
+            throws Exception {
         Class<?> serviceInterface = DefaultTargetClassParser.get().findTargetClass(target);
         Class<?>[] interfacesIfJdk = DefaultTargetClassParser.get().findInterfaces(target);
 
         if (existsAnnotation(serviceInterface) || existsAnnotation(interfacesIfJdk)) {
             ProxyInvocationHandler proxyInvocationHandler = createProxyInvocationHandler();
-            ConfigurationFactory.getInstance().addConfigListener(ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION, (CachedConfigurationChangeListener) proxyInvocationHandler);
+            ConfigurationFactory.getInstance()
+                    .addConfigListener(
+                            ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION,
+                            (CachedConfigurationChangeListener) proxyInvocationHandler);
             return proxyInvocationHandler;
         }
 
@@ -59,7 +62,8 @@ public class GlobalTransactionalInterceptorParser implements InterfaceParser {
     }
 
     protected ProxyInvocationHandler createProxyInvocationHandler() {
-        return new GlobalTransactionalInterceptorHandler(FailureHandlerHolder.getFailureHandler(), methodsToProxy);
+        return new GlobalTransactionalInterceptorHandler(
+                FailureHandlerHolder.getFailureHandler(), methodsToProxy);
     }
 
     @Override

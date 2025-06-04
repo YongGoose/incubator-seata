@@ -16,14 +16,15 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.GlobalBeginResponse;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 /**
  * The type Global begin response codec test.
  *
@@ -39,9 +40,10 @@ public class GlobalBeginResponseSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         GlobalBeginResponse globalBeginResponse = new GlobalBeginResponse();
-        globalBeginResponse.setTransactionExceptionCode(TransactionExceptionCode.GlobalTransactionNotActive);
+        globalBeginResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.GlobalTransactionNotActive);
         globalBeginResponse.setExtraData("absd");
         globalBeginResponse.setXid("2454");
         globalBeginResponse.setResultCode(ResultCode.Failed);
@@ -51,11 +53,13 @@ public class GlobalBeginResponseSerializerTest {
 
         GlobalBeginResponse globalBeginResponse2 = seataSerializer.deserialize(bytes);
 
-        assertThat(globalBeginResponse2.getTransactionExceptionCode()).isEqualTo(globalBeginResponse.getTransactionExceptionCode());
-        assertThat(globalBeginResponse2.getResultCode()).isEqualTo(globalBeginResponse.getResultCode());
+        assertThat(globalBeginResponse2.getTransactionExceptionCode())
+                .isEqualTo(globalBeginResponse.getTransactionExceptionCode());
+        assertThat(globalBeginResponse2.getResultCode())
+                .isEqualTo(globalBeginResponse.getResultCode());
         assertThat(globalBeginResponse2.getXid()).isEqualTo(globalBeginResponse.getXid());
-        assertThat(globalBeginResponse2.getExtraData()).isEqualTo(globalBeginResponse.getExtraData());
+        assertThat(globalBeginResponse2.getExtraData())
+                .isEqualTo(globalBeginResponse.getExtraData());
         assertThat(globalBeginResponse2.getMsg()).isEqualTo(globalBeginResponse.getMsg());
     }
-
 }

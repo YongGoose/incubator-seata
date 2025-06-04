@@ -17,7 +17,6 @@
 package org.apache.seata.rm.datasource;
 
 import javax.sql.DataSource;
-
 import org.apache.seata.core.model.BranchType;
 
 /**

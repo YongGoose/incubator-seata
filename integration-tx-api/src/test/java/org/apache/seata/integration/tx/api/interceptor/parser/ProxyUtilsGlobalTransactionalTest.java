@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-
 public class ProxyUtilsGlobalTransactionalTest {
 
     private static TransactionManager bakTransactionManager;
@@ -36,32 +35,39 @@ public class ProxyUtilsGlobalTransactionalTest {
     @BeforeAll
     public static void beforeAll() {
         bakTransactionManager = TransactionManagerHolder.get();
-        TransactionManager mockTransactionManager = new TransactionManager() {
-            @Override
-            public String begin(String applicationId, String transactionServiceGroup, String name, int timeout) throws TransactionException {
-                return XID.generateXID(UUIDGenerator.generateUUID());
-            }
+        TransactionManager mockTransactionManager =
+                new TransactionManager() {
+                    @Override
+                    public String begin(
+                            String applicationId,
+                            String transactionServiceGroup,
+                            String name,
+                            int timeout)
+                            throws TransactionException {
+                        return XID.generateXID(UUIDGenerator.generateUUID());
+                    }
 
-            @Override
-            public GlobalStatus commit(String xid) throws TransactionException {
-                return GlobalStatus.Committed;
-            }
+                    @Override
+                    public GlobalStatus commit(String xid) throws TransactionException {
+                        return GlobalStatus.Committed;
+                    }
 
-            @Override
-            public GlobalStatus rollback(String xid) throws TransactionException {
-                return null;
-            }
+                    @Override
+                    public GlobalStatus rollback(String xid) throws TransactionException {
+                        return null;
+                    }
 
-            @Override
-            public GlobalStatus getStatus(String xid) throws TransactionException {
-                return null;
-            }
+                    @Override
+                    public GlobalStatus getStatus(String xid) throws TransactionException {
+                        return null;
+                    }
 
-            @Override
-            public GlobalStatus globalReport(String xid, GlobalStatus globalStatus) throws TransactionException {
-                return null;
-            }
-        };
+                    @Override
+                    public GlobalStatus globalReport(String xid, GlobalStatus globalStatus)
+                            throws TransactionException {
+                        return null;
+                    }
+                };
 
         TransactionManagerHolder.set(mockTransactionManager);
     }
@@ -70,7 +76,6 @@ public class ProxyUtilsGlobalTransactionalTest {
     public static void afterAll() {
         TransactionManagerHolder.set(bakTransactionManager);
     }
-
 
     @Test
     public void testTcc() {
@@ -82,6 +87,4 @@ public class ProxyUtilsGlobalTransactionalTest {
 
         Assertions.assertNotNull(result);
     }
-
-
 }

@@ -16,6 +16,11 @@
  */
 package org.apache.seata.rm.tcc.interceptor.parser;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.util.ReflectionUtil;
 import org.apache.seata.common.util.StringUtils;
@@ -32,19 +37,15 @@ import org.apache.seata.rm.tcc.TCCResource;
 import org.apache.seata.rm.tcc.api.TwoPhaseBusinessAction;
 import org.apache.seata.rm.tcc.interceptor.TccActionInterceptorHandler;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public class TccActionInterceptorParser implements InterfaceParser {
 
     @Override
     public ProxyInvocationHandler parserInterfaceToProxy(Object target, String objectName)
             throws Exception {
         Class<?> targetClass = DefaultTargetClassParser.get().findTargetClass(target);
-        Map<Method, Class<?>> methodClassMap = ReflectionUtil.findMatchMethodClazzMap(targetClass, method -> method.isAnnotationPresent(getAnnotationClass()));
+        Map<Method, Class<?>> methodClassMap =
+                ReflectionUtil.findMatchMethodClazzMap(
+                        targetClass, method -> method.isAnnotationPresent(getAnnotationClass()));
         Set<Method> methodsToProxy = methodClassMap.keySet();
         if (methodsToProxy.isEmpty()) {
             return null;
@@ -53,7 +54,8 @@ public class TccActionInterceptorParser implements InterfaceParser {
         // register resource and enhance with interceptor
         registerResource(target, methodClassMap);
 
-        return new TccActionInterceptorHandler(target, methodsToProxy.stream().map(Method::getName).collect(Collectors.toSet()));
+        return new TccActionInterceptorHandler(
+                target, methodsToProxy.stream().map(Method::getName).collect(Collectors.toSet()));
     }
 
     @Override
@@ -72,8 +74,9 @@ public class TccActionInterceptorParser implements InterfaceParser {
                 Method method = methodClassEntry.getKey();
                 Annotation annotation = method.getAnnotation(getAnnotationClass());
                 if (annotation != null) {
-                    Resource resource = createResource(target, methodClassEntry.getValue(), method, annotation);
-                    //registry resource
+                    Resource resource =
+                            createResource(target, methodClassEntry.getValue(), method, annotation);
+                    // registry resource
                     DefaultResourceManager.get().registerResource(resource);
                 }
             }
@@ -82,12 +85,13 @@ public class TccActionInterceptorParser implements InterfaceParser {
         }
     }
 
-
     protected Class<? extends Annotation> getAnnotationClass() {
         return TwoPhaseBusinessAction.class;
     }
 
-    protected Resource createResource(Object target, Class<?> targetServiceClass, Method m, Annotation annotation) throws NoSuchMethodException {
+    protected Resource createResource(
+            Object target, Class<?> targetServiceClass, Method m, Annotation annotation)
+            throws NoSuchMethodException {
         TwoPhaseBusinessAction twoPhaseBusinessAction = (TwoPhaseBusinessAction) annotation;
         TCCResource tccResource = new TCCResource();
         if (StringUtils.isBlank(twoPhaseBusinessAction.name())) {
@@ -97,19 +101,26 @@ public class TccActionInterceptorParser implements InterfaceParser {
         tccResource.setTargetBean(target);
         tccResource.setPrepareMethod(m);
         tccResource.setCommitMethodName(twoPhaseBusinessAction.commitMethod());
-        tccResource.setCommitMethod(targetServiceClass.getMethod(twoPhaseBusinessAction.commitMethod(),
-                twoPhaseBusinessAction.commitArgsClasses()));
+        tccResource.setCommitMethod(
+                targetServiceClass.getMethod(
+                        twoPhaseBusinessAction.commitMethod(),
+                        twoPhaseBusinessAction.commitArgsClasses()));
         tccResource.setRollbackMethodName(twoPhaseBusinessAction.rollbackMethod());
-        tccResource.setRollbackMethod(targetServiceClass.getMethod(twoPhaseBusinessAction.rollbackMethod(),
-                twoPhaseBusinessAction.rollbackArgsClasses()));
+        tccResource.setRollbackMethod(
+                targetServiceClass.getMethod(
+                        twoPhaseBusinessAction.rollbackMethod(),
+                        twoPhaseBusinessAction.rollbackArgsClasses()));
         // set argsClasses
         tccResource.setCommitArgsClasses(twoPhaseBusinessAction.commitArgsClasses());
         tccResource.setRollbackArgsClasses(twoPhaseBusinessAction.rollbackArgsClasses());
         // set phase two method's keys
-        tccResource.setPhaseTwoCommitKeys(ActionContextUtil.getTwoPhaseArgs(tccResource.getCommitMethod(),
-                twoPhaseBusinessAction.commitArgsClasses()));
-        tccResource.setPhaseTwoRollbackKeys(ActionContextUtil.getTwoPhaseArgs(tccResource.getRollbackMethod(),
-                twoPhaseBusinessAction.rollbackArgsClasses()));
+        tccResource.setPhaseTwoCommitKeys(
+                ActionContextUtil.getTwoPhaseArgs(
+                        tccResource.getCommitMethod(), twoPhaseBusinessAction.commitArgsClasses()));
+        tccResource.setPhaseTwoRollbackKeys(
+                ActionContextUtil.getTwoPhaseArgs(
+                        tccResource.getRollbackMethod(),
+                        twoPhaseBusinessAction.rollbackArgsClasses()));
         return tccResource;
     }
 }

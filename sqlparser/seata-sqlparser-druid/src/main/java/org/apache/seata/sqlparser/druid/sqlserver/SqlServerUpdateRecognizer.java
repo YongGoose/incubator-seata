@@ -16,9 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLDefaultExpr;
@@ -35,6 +32,8 @@ import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
@@ -49,7 +48,8 @@ import org.apache.seata.sqlparser.util.ColumnUtils;
  * The type SqlServer update recognizer.
  *
  */
-public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implements SQLUpdateRecognizer {
+public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer
+        implements SQLUpdateRecognizer {
     private SQLServerUpdateStatement ast;
 
     /**
@@ -75,18 +75,20 @@ public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implement
     @Override
     public String getTableName() {
         StringBuilder sb = new StringBuilder();
-        SQLServerOutputVisitor visitor = new SQLServerOutputVisitor(sb) {
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
+        SQLServerOutputVisitor visitor =
+                new SQLServerOutputVisitor(sb) {
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
 
-            @Override
-            public boolean visit(SQLJoinTableSource x) {
-                throw new NotSupportYetException("not support the syntax of update with join table");
-            }
-        };
+                    @Override
+                    public boolean visit(SQLJoinTableSource x) {
+                        throw new NotSupportYetException(
+                                "not support the syntax of update with join table");
+                    }
+                };
 
         SQLTableSource tableSource = ast.getTableSource();
         if (tableSource instanceof SQLExprTableSource) {
@@ -111,10 +113,17 @@ public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implement
                 // This is alias case, like UPDATE xxx_tbl a SET a.name = ? WHERE a.id = ?
                 SQLExpr owner = ((SQLPropertyExpr) expr).getOwner();
                 if (owner instanceof SQLIdentifierExpr) {
-                    list.add(((SQLIdentifierExpr) owner).getName() + "." + ((SQLPropertyExpr) expr).getName());
-                    //This is table Field Full path, like update xxx_database.xxx_tbl set xxx_database.xxx_tbl.xxx_field...
+                    list.add(
+                            ((SQLIdentifierExpr) owner).getName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
+                    // This is table Field Full path, like update xxx_database.xxx_tbl set
+                    // xxx_database.xxx_tbl.xxx_field...
                 } else if (((SQLPropertyExpr) expr).getOwnerName().split("\\.").length > 1) {
-                    list.add(((SQLPropertyExpr) expr).getOwnerName() + "." + ((SQLPropertyExpr) expr).getName());
+                    list.add(
+                            ((SQLPropertyExpr) expr).getOwnerName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
                 }
             } else {
                 wrapSQLParsingException(expr);
@@ -126,7 +135,7 @@ public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implement
     @Override
     public List<Object> getUpdateValues() {
         if (ast.getTop() != null) {
-            //deal with top sql
+            // deal with top sql
             dealTop(ast);
         }
         List<SQLUpdateSetItem> updateSetItems = ast.getItems();
@@ -138,14 +147,14 @@ public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implement
             } else if (expr instanceof SQLValuableExpr) {
                 list.add(((SQLValuableExpr) expr).getValue());
             } else if (expr instanceof SQLVariantRefExpr) {
-                //add '?'
+                // add '?'
                 list.add(((SQLVariantRefExpr) expr).getName());
             } else if (expr instanceof SQLMethodInvokeExpr) {
                 list.add(SqlMethodExpr.get());
             } else if (expr instanceof SQLDefaultExpr) {
                 list.add(SqlDefaultExpr.get());
             } else if (expr instanceof SQLSequenceExpr) {
-                //Supported only since 2012 version of SQL Server,use next value for
+                // Supported only since 2012 version of SQL Server,use next value for
                 SQLSequenceExpr sequenceExpr = (SQLSequenceExpr) expr;
                 String sequence = sequenceExpr.getSequence().getSimpleName();
                 String function = sequenceExpr.getFunction().name;
@@ -169,8 +178,9 @@ public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implement
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-                                    final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }
@@ -187,7 +197,8 @@ public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implement
     }
 
     @Override
-    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getLimitCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 
@@ -197,7 +208,8 @@ public class SqlServerUpdateRecognizer extends BaseSqlServerRecognizer implement
     }
 
     @Override
-    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getOrderByCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 

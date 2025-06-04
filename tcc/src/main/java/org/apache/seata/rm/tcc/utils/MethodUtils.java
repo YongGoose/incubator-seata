@@ -17,12 +17,9 @@
 package org.apache.seata.rm.tcc.utils;
 
 import java.lang.reflect.Method;
-
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.transaction.annotation.Transactional;
-
-
 
 public class MethodUtils {
     /**
@@ -31,7 +28,8 @@ public class MethodUtils {
      * @param targetTCCBean target tcc bean
      * @return the @Transactional annotation
      */
-    public static Transactional getTransactionalAnnotationByMethod(Method interfaceMethod, Object targetTCCBean) {
+    public static Transactional getTransactionalAnnotationByMethod(
+            Method interfaceMethod, Object targetTCCBean) {
         String methodName = interfaceMethod.getName();
         Class<?>[] parameterTypes = interfaceMethod.getParameterTypes();
 
@@ -42,6 +40,7 @@ public class MethodUtils {
         } catch (NoSuchMethodException e) {
             throw new ShouldNeverHappenException(e);
         }
-        return AnnotatedElementUtils.findMergedAnnotation(implementationMethod, Transactional.class);
+        return AnnotatedElementUtils.findMergedAnnotation(
+                implementationMethod, Transactional.class);
     }
 }

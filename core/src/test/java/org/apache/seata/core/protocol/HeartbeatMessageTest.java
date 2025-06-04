@@ -27,8 +27,10 @@ class HeartbeatMessageTest {
 
     @Test
     void getTypeCode() {
-        Assertions.assertEquals(MessageType.TYPE_HEARTBEAT_MSG, HeartbeatMessage.PING.getTypeCode());
-        Assertions.assertEquals(MessageType.TYPE_HEARTBEAT_MSG, HeartbeatMessage.PONG.getTypeCode());
+        Assertions.assertEquals(
+                MessageType.TYPE_HEARTBEAT_MSG, HeartbeatMessage.PING.getTypeCode());
+        Assertions.assertEquals(
+                MessageType.TYPE_HEARTBEAT_MSG, HeartbeatMessage.PONG.getTypeCode());
     }
 
     @Test

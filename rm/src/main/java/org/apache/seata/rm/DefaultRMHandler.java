@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.CollectionUtils;
@@ -29,24 +32,22 @@ import org.apache.seata.core.protocol.transaction.BranchRollbackResponse;
 import org.apache.seata.core.protocol.transaction.UndoLogDeleteRequest;
 import org.slf4j.MDC;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * the default RM event handler implement, deal with the phase two events
  *
  */
 public class DefaultRMHandler extends AbstractRMHandler {
 
-    protected static Map<BranchType, AbstractRMHandler> allRMHandlersMap = new ConcurrentHashMap<>();
+    protected static Map<BranchType, AbstractRMHandler> allRMHandlersMap =
+            new ConcurrentHashMap<>();
 
     protected DefaultRMHandler() {
         initRMHandlers();
     }
 
     protected void initRMHandlers() {
-        List<AbstractRMHandler> allRMHandlers = EnhancedServiceLoader.loadAll(AbstractRMHandler.class);
+        List<AbstractRMHandler> allRMHandlers =
+                EnhancedServiceLoader.loadAll(AbstractRMHandler.class);
         if (CollectionUtils.isNotEmpty(allRMHandlers)) {
             for (AbstractRMHandler rmHandler : allRMHandlers) {
                 allRMHandlersMap.put(rmHandler.getBranchType(), rmHandler);

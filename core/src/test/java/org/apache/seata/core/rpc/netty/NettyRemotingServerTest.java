@@ -17,6 +17,12 @@
 package org.apache.seata.core.rpc.netty;
 
 import io.netty.channel.Channel;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.seata.common.XID;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.core.rpc.RegisterCheckAuthHandler;
@@ -27,57 +33,57 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-
 public class NettyRemotingServerTest {
 
-	private NettyRemotingServer nettyRemotingServer;
+    private NettyRemotingServer nettyRemotingServer;
 
-	@BeforeEach
-	public void init() {
-		nettyRemotingServer = new NettyRemotingServer(new ThreadPoolExecutor(1, 1, 0,
-				TimeUnit.SECONDS, new LinkedBlockingDeque<>()));
-	}
-	@Test
-	public void testInit() throws NoSuchFieldException, IllegalAccessException {
+    @BeforeEach
+    public void init() {
+        nettyRemotingServer =
+                new NettyRemotingServer(
+                        new ThreadPoolExecutor(
+                                1, 1, 0, TimeUnit.SECONDS, new LinkedBlockingDeque<>()));
+    }
 
-		MockedStatic<EnhancedServiceLoader> enhancedServiceLoaderMockedStatic = Mockito.mockStatic(EnhancedServiceLoader.class);
-		enhancedServiceLoaderMockedStatic.when(() -> EnhancedServiceLoader.load((RegisterCheckAuthHandler.class))).thenReturn(null);
+    @Test
+    public void testInit() throws NoSuchFieldException, IllegalAccessException {
 
-		MockedStatic<MultiRegistryFactory> multiRegistryFactoryMockedStatic = Mockito.mockStatic(MultiRegistryFactory.class);
-		multiRegistryFactoryMockedStatic.when(MultiRegistryFactory::getInstances).thenReturn(
-				Collections.emptyList());
+        MockedStatic<EnhancedServiceLoader> enhancedServiceLoaderMockedStatic =
+                Mockito.mockStatic(EnhancedServiceLoader.class);
+        enhancedServiceLoaderMockedStatic
+                .when(() -> EnhancedServiceLoader.load((RegisterCheckAuthHandler.class)))
+                .thenReturn(null);
 
-		XID.setIpAddress("127.0.0.1");
-		XID.setPort(8093);
+        MockedStatic<MultiRegistryFactory> multiRegistryFactoryMockedStatic =
+                Mockito.mockStatic(MultiRegistryFactory.class);
+        multiRegistryFactoryMockedStatic
+                .when(MultiRegistryFactory::getInstances)
+                .thenReturn(Collections.emptyList());
 
-		nettyRemotingServer.init();
+        XID.setIpAddress("127.0.0.1");
+        XID.setPort(8093);
 
-		multiRegistryFactoryMockedStatic.close();
-		enhancedServiceLoaderMockedStatic.close();
+        nettyRemotingServer.init();
 
-		Field field = NettyRemotingServer.class.getDeclaredField("initialized");
-		field.setAccessible(true);
+        multiRegistryFactoryMockedStatic.close();
+        enhancedServiceLoaderMockedStatic.close();
 
-		Assertions.assertTrue(((AtomicBoolean)field.get(nettyRemotingServer)).get());
-	}
+        Field field = NettyRemotingServer.class.getDeclaredField("initialized");
+        field.setAccessible(true);
 
-	@Test
-	public void testDestroyChannel() {
-		Channel channel = Mockito.mock(Channel.class);
-		nettyRemotingServer.destroyChannel("127.0.0.1:8091", channel);
-		Mockito.verify(channel).close();
-	}
+        Assertions.assertTrue(((AtomicBoolean) field.get(nettyRemotingServer)).get());
+    }
 
-	@Test
-	public void destory() {
-		nettyRemotingServer.destroy();
-		Assertions.assertTrue(nettyRemotingServer != null);
-	}
+    @Test
+    public void testDestroyChannel() {
+        Channel channel = Mockito.mock(Channel.class);
+        nettyRemotingServer.destroyChannel("127.0.0.1:8091", channel);
+        Mockito.verify(channel).close();
+    }
+
+    @Test
+    public void destory() {
+        nettyRemotingServer.destroy();
+        Assertions.assertTrue(nettyRemotingServer != null);
+    }
 }

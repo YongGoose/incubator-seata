@@ -16,23 +16,23 @@
  */
 package org.apache.seata.integration.tx.api.json;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.apache.seata.common.exception.JsonParseException;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.integration.tx.api.interceptor.TwoPhaseBusinessActionParam;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class JsonParserWrapTest {
 
     private JsonParserWrap parserWrap;
-    private final String jsonString = "{\"actionName\":\"business_action\",\"useCommonFence\":null,\"businessActionContext\":null," +
-            "\"branchType\":\"TCC\",\"delayReport\":null}";
-
+    private final String jsonString =
+            "{\"actionName\":\"business_action\",\"useCommonFence\":null,\"businessActionContext\":null,"
+                + "\"branchType\":\"TCC\",\"delayReport\":null}";
 
     @BeforeEach
     public void setUp() {
@@ -59,7 +59,8 @@ public class JsonParserWrapTest {
 
     @Test
     public void testParseObject() {
-        TwoPhaseBusinessActionParam actionParam = parserWrap.parseObject(jsonString, TwoPhaseBusinessActionParam.class);
+        TwoPhaseBusinessActionParam actionParam =
+                parserWrap.parseObject(jsonString, TwoPhaseBusinessActionParam.class);
 
         assertEquals("business_action", actionParam.getActionName());
         assertEquals(BranchType.TCC, actionParam.getBranchType());
@@ -67,7 +68,8 @@ public class JsonParserWrapTest {
 
     @Test
     public void testParseObjectThrowsException() {
-        assertThrows(JsonParseException.class, () -> parserWrap.parseObject(jsonString, Integer.class));
+        assertThrows(
+                JsonParseException.class, () -> parserWrap.parseObject(jsonString, Integer.class));
     }
 
     @Test

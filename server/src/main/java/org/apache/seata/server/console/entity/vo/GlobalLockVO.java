@@ -22,7 +22,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.core.constants.ServerTableColumnsName;
 import org.apache.seata.core.lock.RowLock;
@@ -67,12 +66,14 @@ public class GlobalLockVO {
         }
         final List<GlobalLockVO> result = new ArrayList<>(globalLockQueryBOS.size());
         for (GlobalLockQueryBO globalLockQueryBO : globalLockQueryBOS) {
-            result.add(convert(globalLockQueryBO.getRowLock(), globalLockQueryBO.getGlobalSession().getTransactionServiceGroup()));
+            result.add(
+                    convert(
+                            globalLockQueryBO.getRowLock(),
+                            globalLockQueryBO.getGlobalSession().getTransactionServiceGroup()));
         }
 
         return result;
     }
-
 
     /**
      * convert RowLock to GlobalLockVO
@@ -91,7 +92,6 @@ public class GlobalLockVO {
         globalLockVO.setVgroup(vgroup);
         return globalLockVO;
     }
-
 
     public String getXid() {
         return xid;
@@ -174,11 +174,13 @@ public class GlobalLockVO {
         globalLockVO.setResourceId(rs.getString(ServerTableColumnsName.LOCK_TABLE_RESOURCE_ID));
         globalLockVO.setTableName(rs.getString(ServerTableColumnsName.LOCK_TABLE_TABLE_NAME));
         globalLockVO.setPk(rs.getString(ServerTableColumnsName.LOCK_TABLE_PK));
-        Timestamp gmtCreateTimestamp = rs.getTimestamp(ServerTableColumnsName.LOCK_TABLE_GMT_CREATE);
+        Timestamp gmtCreateTimestamp =
+                rs.getTimestamp(ServerTableColumnsName.LOCK_TABLE_GMT_CREATE);
         if (gmtCreateTimestamp != null) {
             globalLockVO.setGmtCreate(gmtCreateTimestamp.getTime());
         }
-        Timestamp gmtModifiedTimestamp = rs.getTimestamp(ServerTableColumnsName.LOCK_TABLE_GMT_MODIFIED);
+        Timestamp gmtModifiedTimestamp =
+                rs.getTimestamp(ServerTableColumnsName.LOCK_TABLE_GMT_MODIFIED);
         if (gmtModifiedTimestamp != null) {
             globalLockVO.setGmtModified(gmtModifiedTimestamp.getTime());
         }
@@ -187,10 +189,36 @@ public class GlobalLockVO {
 
     @Override
     public String toString() {
-        return "GlobalLockVO{" + "xid='" + xid + '\'' + ", transactionId='" + transactionId + '\'' + ", branchId='"
-            + branchId + '\'' + ", resourceId='" + resourceId + '\'' + ", tableName='" + tableName + '\'' + ", pk='"
-            + pk + '\'' + ", rowKey='" + rowKey + '\'' + ", vgroup='" + vgroup + '\'' + ", gmtCreate=" + gmtCreate
-            + ", gmtModified=" + gmtModified + '}';
+        return "GlobalLockVO{"
+                + "xid='"
+                + xid
+                + '\''
+                + ", transactionId='"
+                + transactionId
+                + '\''
+                + ", branchId='"
+                + branchId
+                + '\''
+                + ", resourceId='"
+                + resourceId
+                + '\''
+                + ", tableName='"
+                + tableName
+                + '\''
+                + ", pk='"
+                + pk
+                + '\''
+                + ", rowKey='"
+                + rowKey
+                + '\''
+                + ", vgroup='"
+                + vgroup
+                + '\''
+                + ", gmtCreate="
+                + gmtCreate
+                + ", gmtModified="
+                + gmtModified
+                + '}';
     }
 
     public void setTransactionId(String transactionId) {

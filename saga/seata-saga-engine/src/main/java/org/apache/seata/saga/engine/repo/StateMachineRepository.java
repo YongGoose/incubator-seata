@@ -16,10 +16,9 @@
  */
 package org.apache.seata.saga.engine.repo;
 
-import org.apache.seata.saga.statelang.domain.StateMachine;
-
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.seata.saga.statelang.domain.StateMachine;
 
 /**
  * StateMachineRepository
@@ -69,5 +68,6 @@ public interface StateMachineRepository {
      * @param tenantId the tenant id
      * @throws IOException the io exception
      */
-    void registryByResources(InputStream[] resourceAsStreamArray, String tenantId) throws IOException;
+    void registryByResources(InputStream[] resourceAsStreamArray, String tenantId)
+            throws IOException;
 }

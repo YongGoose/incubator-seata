@@ -24,7 +24,6 @@ import org.apache.seata.spring.util.SpringProxyUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
-
 public class RemotingFactoryBeanParser extends AbstractedRemotingParser {
 
     public ApplicationContext applicationContext;
@@ -45,7 +44,7 @@ public class RemotingFactoryBeanParser extends AbstractedRemotingParser {
         if (!SpringProxyUtils.isProxy(bean)) {
             return null;
         }
-        //the FactoryBean of proxy bean
+        // the FactoryBean of proxy bean
         String factoryBeanName = getFactoryBeanName(beanName);
         Object factoryBean = null;
         if (applicationContext.containsBean(factoryBeanName)) {
@@ -83,7 +82,8 @@ public class RemotingFactoryBeanParser extends AbstractedRemotingParser {
         if (factoryBean == null) {
             return null;
         }
-        return DefaultRemotingParser.get().getServiceDesc(factoryBean, getFactoryBeanName(beanName));
+        return DefaultRemotingParser.get()
+                .getServiceDesc(factoryBean, getFactoryBeanName(beanName));
     }
 
     private String getFactoryBeanName(String beanName) {
@@ -94,5 +94,4 @@ public class RemotingFactoryBeanParser extends AbstractedRemotingParser {
     public short getProtocol() {
         return 0;
     }
-
 }

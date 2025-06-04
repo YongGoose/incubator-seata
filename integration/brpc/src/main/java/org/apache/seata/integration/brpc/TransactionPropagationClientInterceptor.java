@@ -16,13 +16,12 @@
  */
 package org.apache.seata.integration.brpc;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.baidu.brpc.interceptor.AbstractInterceptor;
 import com.baidu.brpc.interceptor.InterceptorChain;
 import com.baidu.brpc.protocol.Request;
 import com.baidu.brpc.protocol.Response;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.seata.integration.rpc.core.ConsumerRpcFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +30,15 @@ import org.slf4j.LoggerFactory;
  * load SEATA xid for brpc request
  *
  */
-public class TransactionPropagationClientInterceptor extends AbstractInterceptor implements ConsumerRpcFilter<Request> {
+public class TransactionPropagationClientInterceptor extends AbstractInterceptor
+        implements ConsumerRpcFilter<Request> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPropagationClientInterceptor.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(TransactionPropagationClientInterceptor.class);
 
     @Override
-    public void aroundProcess(Request brpcRequest, Response brpcResponse, InterceptorChain chain) throws Exception {
+    public void aroundProcess(Request brpcRequest, Response brpcResponse, InterceptorChain chain)
+            throws Exception {
 
         Map<String, String> rootContexts = getRootContexts();
         if (LOGGER.isDebugEnabled()) {

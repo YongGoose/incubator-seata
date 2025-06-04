@@ -16,32 +16,30 @@
  */
 package org.apache.seata.server.console.impl.db;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_STORE_DB_BRANCH_TABLE;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.sql.DataSource;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.exception.StoreException;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
+import org.apache.seata.common.result.PageResult;
 import org.apache.seata.common.util.IOUtil;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
-import org.apache.seata.common.result.PageResult;
 import org.apache.seata.core.store.db.DataSourceProvider;
 import org.apache.seata.core.store.db.sql.log.LogStoreSqlsFactory;
+import org.apache.seata.server.console.entity.vo.BranchSessionVO;
 import org.apache.seata.server.console.impl.AbstractBranchService;
 import org.apache.seata.server.console.service.BranchSessionService;
-import org.apache.seata.server.console.entity.vo.BranchSessionVO;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_STORE_DB_BRANCH_TABLE;
 
 /**
  * Branch Session DataBase ServiceImpl
@@ -50,7 +48,8 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_STORE_DB_BRANCH_TABL
 @Component
 @org.springframework.context.annotation.Configuration
 @ConditionalOnExpression("#{'db'.equals('${sessionMode}')}")
-public class BranchSessionDBServiceImpl extends AbstractBranchService implements BranchSessionService {
+public class BranchSessionDBServiceImpl extends AbstractBranchService
+        implements BranchSessionService {
 
     private String branchTable;
 
@@ -60,14 +59,18 @@ public class BranchSessionDBServiceImpl extends AbstractBranchService implements
 
     public BranchSessionDBServiceImpl() {
         Configuration configuration = ConfigurationFactory.getInstance();
-        branchTable = configuration.getConfig(ConfigurationKeys.STORE_DB_BRANCH_TABLE, DEFAULT_STORE_DB_BRANCH_TABLE);
+        branchTable =
+                configuration.getConfig(
+                        ConfigurationKeys.STORE_DB_BRANCH_TABLE, DEFAULT_STORE_DB_BRANCH_TABLE);
         dbType = configuration.getConfig(ConfigurationKeys.STORE_DB_TYPE);
         if (StringUtils.isBlank(dbType)) {
-            throw new IllegalArgumentException(ConfigurationKeys.STORE_DB_TYPE + " should not be blank");
+            throw new IllegalArgumentException(
+                    ConfigurationKeys.STORE_DB_TYPE + " should not be blank");
         }
         String dbDataSource = configuration.getConfig(ConfigurationKeys.STORE_DB_DATASOURCE_TYPE);
         if (StringUtils.isBlank(dbDataSource)) {
-            throw new IllegalArgumentException(ConfigurationKeys.STORE_DB_DATASOURCE_TYPE + " should not be blank");
+            throw new IllegalArgumentException(
+                    ConfigurationKeys.STORE_DB_DATASOURCE_TYPE + " should not be blank");
         }
         dataSource = EnhancedServiceLoader.load(DataSourceProvider.class, dbDataSource).provide();
     }
@@ -79,7 +82,9 @@ public class BranchSessionDBServiceImpl extends AbstractBranchService implements
         }
 
         String whereCondition = " where xid = ? ";
-        String branchSessionSQL = LogStoreSqlsFactory.getLogStoreSqls(dbType).getAllBranchSessionSQL(branchTable, whereCondition);
+        String branchSessionSQL =
+                LogStoreSqlsFactory.getLogStoreSqls(dbType)
+                        .getAllBranchSessionSQL(branchTable, whereCondition);
 
         List<BranchSessionVO> list = new ArrayList<>();
 
@@ -101,5 +106,4 @@ public class BranchSessionDBServiceImpl extends AbstractBranchService implements
         }
         return PageResult.success(list, list.size(), 0, 0, 0);
     }
-
 }

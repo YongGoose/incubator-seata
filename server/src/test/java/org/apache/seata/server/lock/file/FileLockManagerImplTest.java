@@ -16,11 +16,12 @@
  */
 package org.apache.seata.server.lock.file;
 
-import java.util.stream.Stream;
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 
+import java.util.stream.Stream;
 import org.apache.seata.common.XID;
-import org.apache.seata.core.model.BranchType;
 import org.apache.seata.common.util.UUIDGenerator;
+import org.apache.seata.core.model.BranchType;
 import org.apache.seata.server.lock.LockManager;
 import org.apache.seata.server.session.BranchSession;
 import org.junit.jupiter.api.Assertions;
@@ -30,9 +31,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
-
 
 /**
  * The type Default lock manager impl test.
@@ -50,11 +48,9 @@ public class FileLockManagerImplTest {
 
     private static final String lockKey = "tb_1:13";
 
-
     @BeforeAll
-    public static void setup(ApplicationContext context){
+    public static void setup(ApplicationContext context) {}
 
-    }
     /**
      * Acquire lock test.
      *
@@ -77,7 +73,8 @@ public class FileLockManagerImplTest {
      */
     @Test
     public void isLockableTest() throws Exception {
-        boolean resultOne = lockManager.isLockable(XID.generateXID(transactionId), resourceId, lockKey);
+        boolean resultOne =
+                lockManager.isLockable(XID.generateXID(transactionId), resourceId, lockKey);
 
         Assertions.assertTrue(resultOne);
     }
@@ -100,5 +97,4 @@ public class FileLockManagerImplTest {
         branchSession.setApplicationData("{\"data\":\"test\"}");
         return Stream.of(branchSession);
     }
-
 }

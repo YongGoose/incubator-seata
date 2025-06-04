@@ -19,7 +19,6 @@ package org.apache.seata.saga.statelang.domain.impl;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.apache.seata.saga.statelang.domain.RecoverStrategy;
 import org.apache.seata.saga.statelang.domain.State;
 import org.apache.seata.saga.statelang.domain.StateMachine;
@@ -102,7 +101,7 @@ public class StateMachineImpl implements StateMachine {
     public void putState(String stateName, State state) {
         this.states.put(stateName, state);
         if (state instanceof BaseState) {
-            ((BaseState)state).setStateMachine(this);
+            ((BaseState) state).setStateMachine(this);
         }
     }
 

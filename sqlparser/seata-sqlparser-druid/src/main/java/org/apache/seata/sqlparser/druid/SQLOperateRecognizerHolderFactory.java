@@ -18,7 +18,6 @@ package org.apache.seata.sqlparser.druid;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.CollectionUtils;
 
@@ -28,7 +27,8 @@ import org.apache.seata.common.util.CollectionUtils;
  */
 public class SQLOperateRecognizerHolderFactory {
 
-    private static final Map<String, SQLOperateRecognizerHolder> RECOGNIZER_HOLDER_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, SQLOperateRecognizerHolder> RECOGNIZER_HOLDER_MAP =
+            new ConcurrentHashMap<>();
 
     /**
      * get SQLOperateRecognizer by db type
@@ -37,7 +37,13 @@ public class SQLOperateRecognizerHolderFactory {
      * @return the SQLOperateRecognizer
      */
     public static SQLOperateRecognizerHolder getSQLRecognizerHolder(String dbType) {
-        return CollectionUtils.computeIfAbsent(RECOGNIZER_HOLDER_MAP, dbType,
-            key -> EnhancedServiceLoader.load(SQLOperateRecognizerHolder.class, dbType, SQLOperateRecognizerHolderFactory.class.getClassLoader()));
+        return CollectionUtils.computeIfAbsent(
+                RECOGNIZER_HOLDER_MAP,
+                dbType,
+                key ->
+                        EnhancedServiceLoader.load(
+                                SQLOperateRecognizerHolder.class,
+                                dbType,
+                                SQLOperateRecognizerHolderFactory.class.getClassLoader()));
     }
 }

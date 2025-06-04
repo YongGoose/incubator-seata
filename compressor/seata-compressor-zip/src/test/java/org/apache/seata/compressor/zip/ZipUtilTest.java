@@ -19,7 +19,6 @@ package org.apache.seata.compressor.zip;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 /**
  * the Zip Util test
  *
@@ -28,15 +27,19 @@ public class ZipUtilTest {
 
     @Test
     public void test_compress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            ZipUtil.compress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    ZipUtil.compress(null);
+                });
     }
 
     @Test
     public void test_decompress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            ZipUtil.decompress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    ZipUtil.decompress(null);
+                });
     }
 }

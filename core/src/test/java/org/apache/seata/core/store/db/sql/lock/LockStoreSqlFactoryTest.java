@@ -32,11 +32,13 @@ public class LockStoreSqlFactoryTest {
 
     private static LockStoreSql ORACLE_LOCK_STORE = LockStoreSqlFactory.getLogStoreSql("oracle");
 
-    private static LockStoreSql POSTGRESQL_LOCK_STORE = LockStoreSqlFactory.getLogStoreSql("postgresql");
+    private static LockStoreSql POSTGRESQL_LOCK_STORE =
+            LockStoreSqlFactory.getLogStoreSql("postgresql");
 
     private static LockStoreSql H2_LOCK_STORE = LockStoreSqlFactory.getLogStoreSql("h2");
 
-    private static LockStoreSql OCEANBASE_LOCK_STORE = LockStoreSqlFactory.getLogStoreSql("oceanbase");
+    private static LockStoreSql OCEANBASE_LOCK_STORE =
+            LockStoreSqlFactory.getLogStoreSql("oceanbase");
 
     private static LockStoreSql DM_LOCK_STORE = LockStoreSqlFactory.getLogStoreSql("dm");
 
@@ -46,17 +48,29 @@ public class LockStoreSqlFactoryTest {
 
     private static String BRANCH_TABLE = "branch_table";
 
-    private static String EXPECT_CHECK_GLOBAL_LOCKABLE_SQL = "select xid, transaction_id, branch_id, resource_id, table_name, pk, row_key, gmt_create, gmt_modified,status from " + GLOBAL_TABLE + " where row_key in ( ?,?,? ) order by status desc ";
+    private static String EXPECT_CHECK_GLOBAL_LOCKABLE_SQL =
+            "select xid, transaction_id, branch_id, resource_id, table_name, pk, row_key,"
+                    + " gmt_create, gmt_modified,status from "
+                    + GLOBAL_TABLE
+                    + " where row_key in ( ?,?,? ) order by status desc ";
 
-    private static String EXPECT_CHECK_BRANCH_LOCKABLE_SQL = "select xid, transaction_id, branch_id, resource_id, table_name, pk, row_key, gmt_create, gmt_modified,status from " + BRANCH_TABLE + " where row_key in ( ?,?,? ) order by status desc ";
+    private static String EXPECT_CHECK_BRANCH_LOCKABLE_SQL =
+            "select xid, transaction_id, branch_id, resource_id, table_name, pk, row_key,"
+                    + " gmt_create, gmt_modified,status from "
+                    + BRANCH_TABLE
+                    + " where row_key in ( ?,?,? ) order by status desc ";
 
-    private static String EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL = "delete from " + GLOBAL_TABLE + " where xid = ? and (row_key in ( ?,?,? )) ";
+    private static String EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL =
+            "delete from " + GLOBAL_TABLE + " where xid = ? and (row_key in ( ?,?,? )) ";
 
-    private static String EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL = "delete from " + BRANCH_TABLE + " where xid = ? and (row_key in ( ?,?,? )) ";
+    private static String EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL =
+            "delete from " + BRANCH_TABLE + " where xid = ? and (row_key in ( ?,?,? )) ";
 
-    private static String EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL = "delete from " + GLOBAL_TABLE + " where xid = ? ";
+    private static String EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL =
+            "delete from " + GLOBAL_TABLE + " where xid = ? ";
 
-    private static String EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL = "delete from " + BRANCH_TABLE + " where xid = ? ";
+    private static String EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL =
+            "delete from " + BRANCH_TABLE + " where xid = ? ";
 
     @Test
     public void mysqlLockTest() {
@@ -75,9 +89,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = MYSQL_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = MYSQL_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = MYSQL_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -87,9 +101,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = MYSQL_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = MYSQL_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = MYSQL_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -99,10 +113,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = MYSQL_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = MYSQL_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
-
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
 
     @Test
@@ -122,9 +135,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = MARIADB_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = MARIADB_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = MARIADB_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -134,9 +147,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = MARIADB_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = MARIADB_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = MARIADB_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -146,10 +159,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = MARIADB_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = MARIADB_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
-
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
 
     @Test
@@ -169,9 +181,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = ORACLE_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = ORACLE_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = ORACLE_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -181,9 +193,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = ORACLE_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = ORACLE_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = ORACLE_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -193,9 +205,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = ORACLE_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = ORACLE_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
 
     @Test
@@ -215,9 +227,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = POSTGRESQL_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = POSTGRESQL_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = POSTGRESQL_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -227,9 +239,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = POSTGRESQL_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = POSTGRESQL_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = POSTGRESQL_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -239,9 +251,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = POSTGRESQL_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = POSTGRESQL_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
 
     @Test
@@ -261,9 +273,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = H2_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = H2_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = H2_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -273,9 +285,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = H2_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = H2_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = H2_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -285,9 +297,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = H2_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = H2_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
 
     @Test
@@ -307,9 +319,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = OCEANBASE_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = OCEANBASE_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = OCEANBASE_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -319,9 +331,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = OCEANBASE_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = OCEANBASE_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = OCEANBASE_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -331,9 +343,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = OCEANBASE_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = OCEANBASE_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
 
     @Test
@@ -353,9 +365,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = DM_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = DM_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = DM_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -365,9 +377,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = DM_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = DM_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = DM_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -377,11 +389,10 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = DM_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = DM_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
-
 
     @Test
     public void oscarLockTest() {
@@ -400,9 +411,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = OSCAR_LOCK_STORE.getBatchDeleteLockSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_SQL, sql);
         sql = OSCAR_LOCK_STORE.getBatchDeleteLockSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_SQL, sql);
 
         // Get batch delete lock sql string.
         sql = OSCAR_LOCK_STORE.getBatchDeleteLockSqlByBranchId(GLOBAL_TABLE);
@@ -412,9 +423,9 @@ public class LockStoreSqlFactoryTest {
 
         // Get batch delete lock sql string.
         sql = OSCAR_LOCK_STORE.getBatchDeleteLockSqlByXid(GLOBAL_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_GLOBAL_DELETE_LOCK_BY_BRANCHS_SQL, sql);
         sql = OSCAR_LOCK_STORE.getBatchDeleteLockSqlByXid(BRANCH_TABLE);
-        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL,sql);
+        Assertions.assertEquals(EXPECT_BATCH_BRANCH_DELETE_LOCK_BY_BRANCHS_SQL, sql);
 
         // Get query lock sql string.
         sql = OSCAR_LOCK_STORE.getQueryLockSql(GLOBAL_TABLE);
@@ -424,8 +435,8 @@ public class LockStoreSqlFactoryTest {
 
         // Get check lock sql string.
         sql = OSCAR_LOCK_STORE.getCheckLockableSql(GLOBAL_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_GLOBAL_LOCKABLE_SQL, sql);
         sql = OSCAR_LOCK_STORE.getCheckLockableSql(BRANCH_TABLE, 3);
-        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL,sql);
+        Assertions.assertEquals(EXPECT_CHECK_BRANCH_LOCKABLE_SQL, sql);
     }
 }

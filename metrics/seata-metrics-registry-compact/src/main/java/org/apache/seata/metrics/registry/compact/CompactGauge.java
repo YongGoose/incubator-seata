@@ -18,7 +18,6 @@ package org.apache.seata.metrics.registry.compact;
 
 import java.util.Collections;
 import java.util.function.Supplier;
-
 import org.apache.seata.metrics.Clock;
 import org.apache.seata.metrics.Gauge;
 import org.apache.seata.metrics.Id;
@@ -58,6 +57,7 @@ public class CompactGauge<T extends Number> implements Gauge<T> {
 
     @Override
     public Iterable<Measurement> measure() {
-        return Collections.singletonList(new Measurement(id, clock.getCurrentMilliseconds(), get().doubleValue()));
+        return Collections.singletonList(
+                new Measurement(id, clock.getCurrentMilliseconds(), get().doubleValue()));
     }
 }

@@ -16,15 +16,15 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.model.GlobalStatus;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.GlobalRollbackResponse;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Global rollback response codec test.
@@ -41,20 +41,23 @@ public class GlobalRollbackResponseSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         GlobalRollbackResponse globalRollbackResponse = new GlobalRollbackResponse();
         globalRollbackResponse.setGlobalStatus(GlobalStatus.AsyncCommitting);
         globalRollbackResponse.setMsg("aaa");
         globalRollbackResponse.setResultCode(ResultCode.Failed);
-        globalRollbackResponse.setTransactionExceptionCode(TransactionExceptionCode.GlobalTransactionNotExist);
+        globalRollbackResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.GlobalTransactionNotExist);
 
         byte[] bytes = seataSerializer.serialize(globalRollbackResponse);
 
         GlobalRollbackResponse globalRollbackResponse2 = seataSerializer.deserialize(bytes);
-        assertThat(globalRollbackResponse2.getGlobalStatus()).isEqualTo(globalRollbackResponse.getGlobalStatus());
+        assertThat(globalRollbackResponse2.getGlobalStatus())
+                .isEqualTo(globalRollbackResponse.getGlobalStatus());
         assertThat(globalRollbackResponse2.getMsg()).isEqualTo(globalRollbackResponse.getMsg());
-        assertThat(globalRollbackResponse2.getResultCode()).isEqualTo(globalRollbackResponse.getResultCode());
-        assertThat(globalRollbackResponse2.getTransactionExceptionCode()).isEqualTo(globalRollbackResponse.getTransactionExceptionCode());
+        assertThat(globalRollbackResponse2.getResultCode())
+                .isEqualTo(globalRollbackResponse.getResultCode());
+        assertThat(globalRollbackResponse2.getTransactionExceptionCode())
+                .isEqualTo(globalRollbackResponse.getTransactionExceptionCode());
     }
-
 }

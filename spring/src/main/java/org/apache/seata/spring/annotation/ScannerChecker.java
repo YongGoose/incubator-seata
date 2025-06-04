@@ -17,7 +17,6 @@
 package org.apache.seata.spring.annotation;
 
 import javax.annotation.Nullable;
-
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
@@ -36,5 +35,7 @@ public interface ScannerChecker {
      * @return the boolean: true=need scan | false=do not scan
      * @throws Exception the exception
      */
-    boolean check(Object bean, String beanName, @Nullable ConfigurableListableBeanFactory beanFactory) throws Exception;
+    boolean check(
+            Object bean, String beanName, @Nullable ConfigurableListableBeanFactory beanFactory)
+            throws Exception;
 }

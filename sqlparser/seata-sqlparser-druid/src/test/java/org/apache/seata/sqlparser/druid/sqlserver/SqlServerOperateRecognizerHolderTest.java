@@ -37,33 +37,40 @@ public class SqlServerOperateRecognizerHolderTest extends AbstractRecognizerTest
     public void getDeleteRecognizerTest() {
         String sql = "DELETE FROM t1 WHERE id = 'id1'";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new SqlServerOperateRecognizerHolder().getDeleteRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new SqlServerOperateRecognizerHolder().getDeleteRecognizer(sql, sqlStatement));
     }
 
     @Test
     public void getInsertRecognizerTest() {
         String sql = "INSERT INTO t (name) VALUES ('name1')";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new SqlServerOperateRecognizerHolder().getInsertRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new SqlServerOperateRecognizerHolder().getInsertRecognizer(sql, sqlStatement));
     }
 
     @Test
     public void getUpdateRecognizerTest() {
         String sql = "UPDATE t1 SET name = 'name1' WHERE id = 'id1'";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new SqlServerOperateRecognizerHolder().getUpdateRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new SqlServerOperateRecognizerHolder().getUpdateRecognizer(sql, sqlStatement));
     }
 
     @Test
     public void getSelectForUpdateTest() {
-        //test with lock
+        // test with lock
         String sql = "SELECT name FROM t1 WITH (ROWLOCK, UPDLOCK) WHERE id = 'id1'";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new SqlServerOperateRecognizerHolder().getSelectForUpdateRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new SqlServerOperateRecognizerHolder()
+                        .getSelectForUpdateRecognizer(sql, sqlStatement));
 
-        //test with no lock
+        // test with no lock
         sql = "SELECT name FROM t1 WHERE id = 'id1'";
         sqlStatement = getSQLStatement(sql);
-        Assertions.assertNull(new SqlServerOperateRecognizerHolder().getSelectForUpdateRecognizer(sql, sqlStatement));
+        Assertions.assertNull(
+                new SqlServerOperateRecognizerHolder()
+                        .getSelectForUpdateRecognizer(sql, sqlStatement));
     }
 }

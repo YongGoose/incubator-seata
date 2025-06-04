@@ -18,6 +18,7 @@ package org.apache.seata.apm.skywalking.plugin;
 
 import com.alipay.sofa.common.profile.StringUtil;
 import io.netty.channel.Channel;
+import java.lang.reflect.Method;
 import org.apache.seata.apm.skywalking.plugin.common.SWSeataUtils;
 import org.apache.seata.core.protocol.AbstractMessage;
 import org.apache.seata.core.protocol.RpcMessage;
@@ -32,14 +33,16 @@ import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceM
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.MethodInterceptResult;
 import org.apache.skywalking.apm.network.trace.component.ComponentsDefine;
 
-import java.lang.reflect.Method;
-
-
 public class NettyRemotingClientSendSyncInterceptor implements InstanceMethodsAroundInterceptor {
 
     @Override
-    public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
-                             MethodInterceptResult result) throws Throwable {
+    public void beforeMethod(
+            EnhancedInstance objInst,
+            Method method,
+            Object[] allArguments,
+            Class<?>[] argumentsTypes,
+            MethodInterceptResult result)
+            throws Throwable {
         if (allArguments[0] == null) {
             return;
         }
@@ -48,7 +51,8 @@ public class NettyRemotingClientSendSyncInterceptor implements InstanceMethodsAr
         RpcMessage rpcMessage = (RpcMessage) allArguments[1];
         String operationName = SWSeataUtils.convertOperationName(rpcMessage);
         ContextCarrier contextCarrier = new ContextCarrier();
-        AbstractSpan activeSpan = ContextManager.createExitSpan(operationName, contextCarrier, peer);
+        AbstractSpan activeSpan =
+                ContextManager.createExitSpan(operationName, contextCarrier, peer);
         activeSpan.setComponent(ComponentsDefine.SEATA);
         activeSpan.setPeer(peer);
         SpanLayer.asRPCFramework(activeSpan);
@@ -65,8 +69,13 @@ public class NettyRemotingClientSendSyncInterceptor implements InstanceMethodsAr
     }
 
     @Override
-    public Object afterMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
-                              Object ret) throws Throwable {
+    public Object afterMethod(
+            EnhancedInstance objInst,
+            Method method,
+            Object[] allArguments,
+            Class<?>[] argumentsTypes,
+            Object ret)
+            throws Throwable {
         RpcMessage rpcMessage = (RpcMessage) allArguments[0];
         if (rpcMessage.getBody() instanceof AbstractMessage) {
             ContextManager.stopSpan();
@@ -75,7 +84,10 @@ public class NettyRemotingClientSendSyncInterceptor implements InstanceMethodsAr
     }
 
     @Override
-    public void handleMethodException(EnhancedInstance objInst, Method method, Object[] allArguments,
-                                      Class<?>[] argumentsTypes, Throwable t) {
-    }
+    public void handleMethodException(
+            EnhancedInstance objInst,
+            Method method,
+            Object[] allArguments,
+            Class<?>[] argumentsTypes,
+            Throwable t) {}
 }

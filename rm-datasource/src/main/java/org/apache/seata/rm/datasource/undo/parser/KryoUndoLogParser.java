@@ -17,6 +17,7 @@
 package org.apache.seata.rm.datasource.undo.parser;
 
 import com.esotericsoftware.kryo.Serializer;
+import java.util.List;
 import org.apache.seata.common.executor.Initialize;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
@@ -27,8 +28,6 @@ import org.apache.seata.rm.datasource.undo.UndoLogParser;
 import org.apache.seata.rm.datasource.undo.parser.spi.KryoTypeSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * kryo serializer
@@ -43,7 +42,8 @@ public class KryoUndoLogParser implements UndoLogParser, Initialize {
     @Override
     public void init() {
         try {
-            List<KryoTypeSerializer> serializers = EnhancedServiceLoader.loadAll(KryoTypeSerializer.class);
+            List<KryoTypeSerializer> serializers =
+                    EnhancedServiceLoader.loadAll(KryoTypeSerializer.class);
             if (CollectionUtils.isNotEmpty(serializers)) {
                 for (KryoTypeSerializer typeSerializer : serializers) {
                     if (typeSerializer != null) {
@@ -51,7 +51,9 @@ public class KryoUndoLogParser implements UndoLogParser, Initialize {
                         Serializer ser = typeSerializer.serializer();
                         if (type != null) {
                             KryoSerializerFactory.getInstance().registerSerializer(type, ser);
-                            LOGGER.info("kryo undo log parser load [{}].", typeSerializer.getClass().getName());
+                            LOGGER.info(
+                                    "kryo undo log parser load [{}].",
+                                    typeSerializer.getClass().getName());
                         }
                     }
                 }
@@ -95,5 +97,4 @@ public class KryoUndoLogParser implements UndoLogParser, Initialize {
             KryoSerializerFactory.getInstance().returnKryo(kryoSerializer);
         }
     }
-
 }

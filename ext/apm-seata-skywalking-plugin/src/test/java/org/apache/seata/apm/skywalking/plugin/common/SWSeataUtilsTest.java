@@ -24,7 +24,6 @@ import org.apache.seata.core.protocol.transaction.GlobalBeginRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class SWSeataUtilsTest {
 
     @Test
@@ -33,20 +32,23 @@ public class SWSeataUtilsTest {
             RpcMessage rpcMessage = new RpcMessage();
             AbstractMessage abstractMessage = new GlobalBeginRequest();
             rpcMessage.setBody(abstractMessage);
-            Assertions.assertEquals(SWSeataUtils.convertOperationName(rpcMessage), "Seata/TM/GlobalBeginRequest");
+            Assertions.assertEquals(
+                    SWSeataUtils.convertOperationName(rpcMessage), "Seata/TM/GlobalBeginRequest");
         }
         {
             RpcMessage rpcMessage = new RpcMessage();
             AbstractMessage abstractMessage = new RegisterRMRequest();
             rpcMessage.setBody(abstractMessage);
-            Assertions.assertEquals(SWSeataUtils.convertOperationName(rpcMessage), "Seata/RM/RegisterRMRequest");
+            Assertions.assertEquals(
+                    SWSeataUtils.convertOperationName(rpcMessage), "Seata/RM/RegisterRMRequest");
         }
         {
             SeataPluginConfig.Plugin.SEATA.SERVER = true;
             RpcMessage rpcMessage = new RpcMessage();
             AbstractMessage abstractMessage = new RegisterRMResponse();
             rpcMessage.setBody(abstractMessage);
-            Assertions.assertEquals(SWSeataUtils.convertOperationName(rpcMessage), "Seata/TC/RegisterRMResponse");
+            Assertions.assertEquals(
+                    SWSeataUtils.convertOperationName(rpcMessage), "Seata/TC/RegisterRMResponse");
         }
     }
 }

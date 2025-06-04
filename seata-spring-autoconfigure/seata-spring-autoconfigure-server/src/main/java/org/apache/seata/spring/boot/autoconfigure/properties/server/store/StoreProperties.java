@@ -16,13 +16,12 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server.store;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_LOCK_PREFIX;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_PREFIX;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_SESSION_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_LOCK_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = STORE_PREFIX)
@@ -52,7 +51,6 @@ public class StoreProperties {
         return this;
     }
 
-
     @Component
     @ConfigurationProperties(prefix = STORE_SESSION_PREFIX)
     public static class Session {
@@ -67,7 +65,6 @@ public class StoreProperties {
             return this;
         }
     }
-
 
     @Component
     @ConfigurationProperties(prefix = STORE_LOCK_PREFIX)

@@ -30,11 +30,14 @@ public interface ChannelAuthHealthChecker extends ChannelHealthChecker {
     /**
      * The constant ACTIVE.
      */
-    ChannelAuthHealthChecker ACTIVE = new ChannelAuthHealthChecker() {
-        @Override
-        public Future<Boolean> isHealthy(Channel channel) {
-            EventLoop loop = channel.eventLoop();
-            return channel.isActive() ? loop.newSucceededFuture(Boolean.TRUE) : loop.newSucceededFuture(Boolean.FALSE);
-        }
-    };
+    ChannelAuthHealthChecker ACTIVE =
+            new ChannelAuthHealthChecker() {
+                @Override
+                public Future<Boolean> isHealthy(Channel channel) {
+                    EventLoop loop = channel.eventLoop();
+                    return channel.isActive()
+                            ? loop.newSucceededFuture(Boolean.TRUE)
+                            : loop.newSucceededFuture(Boolean.FALSE);
+                }
+            };
 }

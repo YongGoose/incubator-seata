@@ -17,7 +17,6 @@
 package org.apache.seata.saga.proctrl.handler;
 
 import java.util.Map;
-
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.saga.proctrl.Instruction;
@@ -40,7 +39,8 @@ public class DefaultRouterHandler implements RouterHandler {
     private Map<String, ProcessRouter> processRouters;
 
     public static ProcessType matchProcessType(ProcessContext context) {
-        ProcessType processType = (ProcessType)context.getVariable(ProcessContext.VAR_NAME_PROCESS_TYPE);
+        ProcessType processType =
+                (ProcessType) context.getVariable(ProcessContext.VAR_NAME_PROCESS_TYPE);
         if (processType == null) {
             processType = ProcessType.STATE_LANG;
         }
@@ -61,7 +61,10 @@ public class DefaultRouterHandler implements RouterHandler {
 
             ProcessRouter processRouter = processRouters.get(processType.getCode());
             if (processRouter == null) {
-                LOGGER.error("Cannot find process router by type {}, context = {}", processType.getCode(), context);
+                LOGGER.error(
+                        "Cannot find process router by type {}, context = {}",
+                        processType.getCode(),
+                        context);
                 throw new FrameworkException(FrameworkErrorCode.ProcessRouterNotFound);
             }
 

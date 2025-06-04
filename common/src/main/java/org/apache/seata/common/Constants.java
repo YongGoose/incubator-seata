@@ -28,14 +28,17 @@ public interface Constants {
      * The constant IP_PORT_SPLIT_CHAR.
      */
     String IP_PORT_SPLIT_CHAR = ":";
+
     /**
      * The constant CLIENT_ID_SPLIT_CHAR.
      */
     String CLIENT_ID_SPLIT_CHAR = ":";
+
     /**
      * The constant ENDPOINT_BEGIN_CHAR.
      */
     String ENDPOINT_BEGIN_CHAR = "/";
+
     /**
      * The constant DBKEYS_SPLIT_CHAR.
      */
@@ -115,26 +118,32 @@ public interface Constants {
      * default charset is utf-8
      */
     Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
+
     /**
      * The constant OBJECT_KEY_SPRING_APPLICATION_CONTEXT
      */
     String OBJECT_KEY_SPRING_APPLICATION_CONTEXT = "springApplicationContext";
+
     /**
      * The constant OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT
      */
     String OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT = "springConfigurableEnvironment";
+
     /**
      * The constant BEAN_NAME_SPRING_APPLICATION_CONTEXT_PROVIDER
      */
     String BEAN_NAME_SPRING_APPLICATION_CONTEXT_PROVIDER = "springApplicationContextProvider";
+
     /**
      * The constant BEAN_NAME_SPRING_FENCE_CONFIG
      */
     String BEAN_NAME_SPRING_FENCE_CONFIG = "SpringFenceConfig";
+
     /**
      * The constant BEAN_NAME_FAILURE_HANDLER
      */
     String BEAN_NAME_FAILURE_HANDLER = "failureHandler";
+
     /**
      * The constant SAGA_TRANS_NAME_PREFIX
      */
@@ -184,6 +193,7 @@ public interface Constants {
      * The constant END
      */
     String END = "END";
+
     /**
      * The constant AUTO_COMMIT
      */
@@ -198,7 +208,7 @@ public interface Constants {
      * The constant REGISTRY_TYPE_SPLIT_CHAR.
      */
     String REGISTRY_TYPE_SPLIT_CHAR = ",";
-    
+
     /**
      * phase two compensation method name
      */
@@ -243,5 +253,4 @@ public interface Constants {
      * The constant RAFT_GROUP_HEADER
      */
     String RAFT_GROUP_HEADER = "X-SEATA-RAFT-GROUP";
-
 }

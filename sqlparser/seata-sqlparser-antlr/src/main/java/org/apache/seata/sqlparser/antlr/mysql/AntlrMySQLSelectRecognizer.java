@@ -16,6 +16,10 @@
  */
 package org.apache.seata.sqlparser.antlr.mysql;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLSelectRecognizer;
 import org.apache.seata.sqlparser.SQLType;
@@ -23,11 +27,6 @@ import org.apache.seata.sqlparser.antlr.mysql.listener.SelectSpecificationSqlLis
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlLexer;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParser;
 import org.apache.seata.sqlparser.antlr.mysql.stream.ANTLRNoCaseStringStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * AntlrMySQLSelectRecognizer
@@ -49,7 +48,8 @@ public class AntlrMySQLSelectRecognizer implements SQLSelectRecognizer {
     }
 
     @Override
-    public String getWhereCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return sqlContext.getWhereCondition();
     }
 
@@ -64,7 +64,8 @@ public class AntlrMySQLSelectRecognizer implements SQLSelectRecognizer {
     }
 
     @Override
-    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getLimitCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 
@@ -74,7 +75,8 @@ public class AntlrMySQLSelectRecognizer implements SQLSelectRecognizer {
     }
 
     @Override
-    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getOrderByCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 

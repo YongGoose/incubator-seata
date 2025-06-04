@@ -29,21 +29,21 @@ public class NamespaceBO {
 
     Map<String, ClusterBO> clusterMap = new ConcurrentHashMap<>();
 
-    public NamespaceBO() {
-    }
+    public NamespaceBO() {}
 
     public Map<String, ClusterBO> getClusterMap() {
         return clusterMap;
     }
 
-    public List<Cluster> getCluster(Map<String/* clusterName */, ClusterData> clusterDataMap) {
+    public List<Cluster> getCluster(Map<String /* clusterName */, ClusterData> clusterDataMap) {
         List<Cluster> list = new ArrayList<>();
-        clusterMap.forEach((clusterName, unitNameSet) -> {
-            ClusterData clusterData = clusterDataMap.get(clusterName);
-            if (clusterData != null) {
-                list.add(clusterData.getClusterByUnits(unitNameSet.getUnitNames()));
-            }
-        });
+        clusterMap.forEach(
+                (clusterName, unitNameSet) -> {
+                    ClusterData clusterData = clusterDataMap.get(clusterName);
+                    if (clusterData != null) {
+                        list.add(clusterData.getClusterByUnits(unitNameSet.getUnitNames()));
+                    }
+                });
         return list;
     }
 
@@ -60,10 +60,11 @@ public class NamespaceBO {
         if (clusterSet.size() <= 1) {
             return;
         }
-        clusterSet.forEach(currentClusterName -> {
-            if (!StringUtils.equals(currentClusterName, clusterName)) {
-                clusterMap.remove(currentClusterName);
-            }
-        });
+        clusterSet.forEach(
+                currentClusterName -> {
+                    if (!StringUtils.equals(currentClusterName, clusterName)) {
+                        clusterMap.remove(currentClusterName);
+                    }
+                });
     }
 }

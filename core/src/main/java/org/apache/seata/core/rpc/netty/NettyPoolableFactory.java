@@ -16,14 +16,13 @@
  */
 package org.apache.seata.core.rpc.netty;
 
-import java.net.InetSocketAddress;
-
 import io.netty.channel.Channel;
+import java.net.InetSocketAddress;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.util.NetUtil;
 import org.apache.seata.core.protocol.RegisterRMResponse;
 import org.apache.seata.core.protocol.RegisterTMResponse;
-import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,8 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
      *
      * @param rpcRemotingClient the rpc remoting client
      */
-    public NettyPoolableFactory(AbstractNettyRemotingClient rpcRemotingClient, NettyClientBootstrap clientBootstrap) {
+    public NettyPoolableFactory(
+            AbstractNettyRemotingClient rpcRemotingClient, NettyClientBootstrap clientBootstrap) {
         this.rpcRemotingClient = rpcRemotingClient;
         this.clientBootstrap = clientBootstrap;
     }
@@ -60,32 +60,45 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
         Object response;
         Channel channelToServer = null;
         if (key.getMessage() == null) {
-            throw new FrameworkException("register msg is null, role:" + key.getTransactionRole().name());
+            throw new FrameworkException(
+                    "register msg is null, role:" + key.getTransactionRole().name());
         }
         try {
             response = rpcRemotingClient.sendSyncRequest(tmpChannel, key.getMessage());
             if (!isRegisterSuccess(response, key.getTransactionRole())) {
-                rpcRemotingClient.onRegisterMsgFail(key.getAddress(), tmpChannel, response, key.getMessage());
+                rpcRemotingClient.onRegisterMsgFail(
+                        key.getAddress(), tmpChannel, response, key.getMessage());
             } else {
                 channelToServer = tmpChannel;
-                rpcRemotingClient.onRegisterMsgSuccess(key.getAddress(), tmpChannel, response, key.getMessage());
+                rpcRemotingClient.onRegisterMsgSuccess(
+                        key.getAddress(), tmpChannel, response, key.getMessage());
             }
         } catch (Exception exx) {
             if (tmpChannel != null) {
                 tmpChannel.close();
             }
             throw new FrameworkException(
-                "register " + key.getTransactionRole().name() + " error, errMsg:" + exx.getMessage());
+                    "register "
+                            + key.getTransactionRole().name()
+                            + " error, errMsg:"
+                            + exx.getMessage());
         }
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("register success, cost " + (System.currentTimeMillis() - start) + " ms, version:" + getVersion(
-                response, key.getTransactionRole()) + ",role:" + key.getTransactionRole().name() + ",channel:"
-                + channelToServer);
+            LOGGER.info(
+                    "register success, cost "
+                            + (System.currentTimeMillis() - start)
+                            + " ms, version:"
+                            + getVersion(response, key.getTransactionRole())
+                            + ",role:"
+                            + key.getTransactionRole().name()
+                            + ",channel:"
+                            + channelToServer);
         }
         return channelToServer;
     }
 
-    private boolean isRegisterSuccess(Object response, NettyPoolKey.TransactionRole transactionRole) {
+    private boolean isRegisterSuccess(
+            Object response, NettyPoolKey.TransactionRole transactionRole) {
         if (response == null) {
             return false;
         }
@@ -93,13 +106,13 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
             if (!(response instanceof RegisterTMResponse)) {
                 return false;
             }
-            RegisterTMResponse registerTMResponse = (RegisterTMResponse)response;
+            RegisterTMResponse registerTMResponse = (RegisterTMResponse) response;
             return registerTMResponse.isIdentified();
         } else if (transactionRole.equals(NettyPoolKey.TransactionRole.RMROLE)) {
             if (!(response instanceof RegisterRMResponse)) {
                 return false;
             }
-            RegisterRMResponse registerRMResponse = (RegisterRMResponse)response;
+            RegisterRMResponse registerRMResponse = (RegisterRMResponse) response;
             return registerRMResponse.isIdentified();
         }
         return false;
@@ -136,12 +149,8 @@ public class NettyPoolableFactory implements KeyedPoolableObjectFactory<NettyPoo
     }
 
     @Override
-    public void activateObject(NettyPoolKey key, Channel obj) throws Exception {
-
-    }
+    public void activateObject(NettyPoolKey key, Channel obj) throws Exception {}
 
     @Override
-    public void passivateObject(NettyPoolKey key, Channel obj) throws Exception {
-
-    }
+    public void passivateObject(NettyPoolKey key, Channel obj) throws Exception {}
 }

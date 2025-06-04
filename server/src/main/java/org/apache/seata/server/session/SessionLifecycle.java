@@ -48,7 +48,8 @@ public interface SessionLifecycle {
      * @param status        the status
      * @throws TransactionException the transaction exception
      */
-    void changeBranchStatus(BranchSession branchSession, BranchStatus status) throws TransactionException;
+    void changeBranchStatus(BranchSession branchSession, BranchStatus status)
+            throws TransactionException;
 
     /**
      * Add branch.

@@ -16,24 +16,24 @@
  */
 package org.apache.seata.server.cluster.raft.context;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_SEATA_GROUP;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.context.ContextCore;
 import org.apache.seata.core.context.ContextCoreLoader;
 
-import static org.apache.seata.common.DefaultValues.DEFAULT_SEATA_GROUP;
-
 /**
  */
 public class SeataClusterContext {
 
-    private static final String GROUP = ConfigurationFactory.getInstance().getConfig(ConfigurationKeys.SERVER_RAFT_GROUP, DEFAULT_SEATA_GROUP);
+    private static final String GROUP =
+            ConfigurationFactory.getInstance()
+                    .getConfig(ConfigurationKeys.SERVER_RAFT_GROUP, DEFAULT_SEATA_GROUP);
 
-    private SeataClusterContext() {
-    }
+    private SeataClusterContext() {}
 
     /**
      * The constant KEY_GROUP.
@@ -71,6 +71,4 @@ public class SeataClusterContext {
     public static String getGroup() {
         return (String) CONTEXT_HOLDER.get(KEY_GROUP);
     }
-
-
 }

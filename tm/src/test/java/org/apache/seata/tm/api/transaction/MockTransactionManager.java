@@ -16,14 +16,15 @@
  */
 package org.apache.seata.tm.api.transaction;
 
-
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.core.model.TransactionManager;
 
 public class MockTransactionManager implements TransactionManager {
     @Override
-    public String begin(String applicationId, String transactionServiceGroup, String name, int timeout) throws TransactionException {
+    public String begin(
+            String applicationId, String transactionServiceGroup, String name, int timeout)
+            throws TransactionException {
         return null;
     }
 
@@ -43,7 +44,8 @@ public class MockTransactionManager implements TransactionManager {
     }
 
     @Override
-    public GlobalStatus globalReport(String xid, GlobalStatus globalStatus) throws TransactionException {
+    public GlobalStatus globalReport(String xid, GlobalStatus globalStatus)
+            throws TransactionException {
         return null;
     }
 }

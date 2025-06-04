@@ -24,8 +24,7 @@ import java.lang.reflect.Array;
  */
 public class ArrayUtils {
 
-    private ArrayUtils() {
-    }
+    private ArrayUtils() {}
 
     /**
      * arrayObj cast to Object[]
@@ -66,22 +65,24 @@ public class ArrayUtils {
             return "[]";
         }
 
-        return CycleDependencyHandler.wrap(array, o -> {
-            StringBuilder sb = new StringBuilder(32);
-            sb.append("[");
-            for (Object obj : array) {
-                if (sb.length() > 1) {
-                    sb.append(", ");
-                }
-                if (obj == array) {
-                    sb.append("(this ").append(obj.getClass().getSimpleName()).append(")");
-                } else {
-                    sb.append(StringUtils.toString(obj));
-                }
-            }
-            sb.append("]");
-            return sb.toString();
-        });
+        return CycleDependencyHandler.wrap(
+                array,
+                o -> {
+                    StringBuilder sb = new StringBuilder(32);
+                    sb.append("[");
+                    for (Object obj : array) {
+                        if (sb.length() > 1) {
+                            sb.append(", ");
+                        }
+                        if (obj == array) {
+                            sb.append("(this ").append(obj.getClass().getSimpleName()).append(")");
+                        } else {
+                            sb.append(StringUtils.toString(obj));
+                        }
+                    }
+                    sb.append("]");
+                    return sb.toString();
+                });
     }
 
     /**
@@ -105,7 +106,7 @@ public class ArrayUtils {
         if (arrayObj.getClass().getComponentType().isPrimitive()) {
             return toString(toArray(arrayObj));
         } else {
-            return toString((Object[])arrayObj);
+            return toString((Object[]) arrayObj);
         }
     }
 }

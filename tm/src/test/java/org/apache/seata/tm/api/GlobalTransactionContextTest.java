@@ -16,7 +16,6 @@
  */
 package org.apache.seata.tm.api;
 
-
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.core.model.TransactionManager;
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 
 class GlobalTransactionContextTest {
     private static final String DEFAULT_XID = "1234567890";
@@ -36,32 +34,39 @@ class GlobalTransactionContextTest {
     public void init() {
         backTransactionManager = TransactionManagerHolder.get();
 
-        TransactionManagerHolder.set(new TransactionManager() {
-            @Override
-            public String begin(String applicationId, String transactionServiceGroup, String name, int timeout) throws TransactionException {
-                return DEFAULT_XID;
-            }
+        TransactionManagerHolder.set(
+                new TransactionManager() {
+                    @Override
+                    public String begin(
+                            String applicationId,
+                            String transactionServiceGroup,
+                            String name,
+                            int timeout)
+                            throws TransactionException {
+                        return DEFAULT_XID;
+                    }
 
-            @Override
-            public GlobalStatus commit(String xid) throws TransactionException {
-                return GlobalStatus.Committed;
-            }
+                    @Override
+                    public GlobalStatus commit(String xid) throws TransactionException {
+                        return GlobalStatus.Committed;
+                    }
 
-            @Override
-            public GlobalStatus rollback(String xid) throws TransactionException {
-                return GlobalStatus.Rollbacked;
-            }
+                    @Override
+                    public GlobalStatus rollback(String xid) throws TransactionException {
+                        return GlobalStatus.Rollbacked;
+                    }
 
-            @Override
-            public GlobalStatus getStatus(String xid) throws TransactionException {
-                return GlobalStatus.Begin;
-            }
+                    @Override
+                    public GlobalStatus getStatus(String xid) throws TransactionException {
+                        return GlobalStatus.Begin;
+                    }
 
-            @Override
-            public GlobalStatus globalReport(String xid, GlobalStatus globalStatus) throws TransactionException {
-                return globalStatus;
-            }
-        });
+                    @Override
+                    public GlobalStatus globalReport(String xid, GlobalStatus globalStatus)
+                            throws TransactionException {
+                        return globalStatus;
+                    }
+                });
     }
 
     @Test

@@ -27,7 +27,8 @@ import org.apache.seata.core.constants.ConfigurationKeys;
 
 /**
  */
-public class SystemPropertyLoggerContextListener extends ContextAwareBase implements LoggerContextListener, LifeCycle {
+public class SystemPropertyLoggerContextListener extends ContextAwareBase
+        implements LoggerContextListener, LifeCycle {
 
     private boolean started = false;
 
@@ -38,14 +39,14 @@ public class SystemPropertyLoggerContextListener extends ContextAwareBase implem
         }
 
         Context context = getContext();
-        context.putProperty("RPC_PORT", System.getProperty(ConfigurationKeys.SERVER_SERVICE_PORT_CAMEL));
+        context.putProperty(
+                "RPC_PORT", System.getProperty(ConfigurationKeys.SERVER_SERVICE_PORT_CAMEL));
 
         started = true;
     }
 
     @Override
-    public void stop() {
-    }
+    public void stop() {}
 
     @Override
     public boolean isStarted() {
@@ -58,18 +59,14 @@ public class SystemPropertyLoggerContextListener extends ContextAwareBase implem
     }
 
     @Override
-    public void onStart(LoggerContext context) {
-    }
+    public void onStart(LoggerContext context) {}
 
     @Override
-    public void onReset(LoggerContext context) {
-    }
+    public void onReset(LoggerContext context) {}
 
     @Override
-    public void onStop(LoggerContext context) {
-    }
+    public void onStop(LoggerContext context) {}
 
     @Override
-    public void onLevelChange(Logger logger, Level level) {
-    }
+    public void onLevelChange(Logger logger, Level level) {}
 }

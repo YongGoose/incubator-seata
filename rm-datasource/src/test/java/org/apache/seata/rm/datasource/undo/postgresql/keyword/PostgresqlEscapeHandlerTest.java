@@ -16,20 +16,18 @@
  */
 package org.apache.seata.rm.datasource.undo.postgresql.keyword;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import org.apache.seata.sqlparser.EscapeHandler;
 import org.apache.seata.sqlparser.EscapeHandlerFactory;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PostgresqlEscapeHandlerTest {
 
     @Test
     public void testOracleKeywordChecker() {
-        EscapeHandler escapeHandler = EscapeHandlerFactory.getEscapeHandler(JdbcConstants.POSTGRESQL);
+        EscapeHandler escapeHandler =
+                EscapeHandlerFactory.getEscapeHandler(JdbcConstants.POSTGRESQL);
         Assertions.assertNotNull(escapeHandler);
     }
-
 }

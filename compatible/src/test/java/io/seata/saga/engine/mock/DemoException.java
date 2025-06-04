@@ -16,11 +16,9 @@
  */
 package io.seata.saga.engine.mock;
 
-
 public class DemoException extends RuntimeException {
 
-    public DemoException() {
-    }
+    public DemoException() {}
 
     public DemoException(String message) {
         super(message);
@@ -34,7 +32,11 @@ public class DemoException extends RuntimeException {
         super(cause);
     }
 
-    public DemoException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public DemoException(
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

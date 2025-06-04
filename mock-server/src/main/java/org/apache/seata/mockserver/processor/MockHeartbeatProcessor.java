@@ -26,7 +26,8 @@ import org.apache.seata.core.rpc.TransactionMessageHandler;
  * Mock Heartbeat Processor
  **/
 public class MockHeartbeatProcessor extends MockRemotingProcessor {
-    public MockHeartbeatProcessor(RemotingServer remotingServer, TransactionMessageHandler handler) {
+    public MockHeartbeatProcessor(
+            RemotingServer remotingServer, TransactionMessageHandler handler) {
         super(remotingServer, handler);
     }
 

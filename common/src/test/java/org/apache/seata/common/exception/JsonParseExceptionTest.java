@@ -19,19 +19,24 @@ package org.apache.seata.common.exception;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class JsonParseExceptionTest {
 
     @Test
     public void testJsonParseException() {
-        Assertions.assertThrowsExactly(JsonParseException.class, () -> {
-            throw new JsonParseException("error");
-        });
-        Assertions.assertThrowsExactly(JsonParseException.class, () -> {
-            throw new JsonParseException("error", new Throwable("error"));
-        });
-        Assertions.assertThrowsExactly(JsonParseException.class, () -> {
-            throw new JsonParseException(new Throwable("error"));
-        });
+        Assertions.assertThrowsExactly(
+                JsonParseException.class,
+                () -> {
+                    throw new JsonParseException("error");
+                });
+        Assertions.assertThrowsExactly(
+                JsonParseException.class,
+                () -> {
+                    throw new JsonParseException("error", new Throwable("error"));
+                });
+        Assertions.assertThrowsExactly(
+                JsonParseException.class,
+                () -> {
+                    throw new JsonParseException(new Throwable("error"));
+                });
     }
 }

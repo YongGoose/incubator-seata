@@ -16,6 +16,9 @@
  */
 package org.apache.seata.server.store;
 
+import static org.apache.seata.common.DefaultValues.SERVER_DEFAULT_STORE_MODE;
+import static org.apache.seata.core.constants.ConfigurationKeys.STORE_FILE_PREFIX;
+
 import org.apache.seata.common.store.LockMode;
 import org.apache.seata.common.store.SessionMode;
 import org.apache.seata.common.store.StoreMode;
@@ -25,9 +28,6 @@ import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 import org.apache.seata.server.env.ContainerHelper;
 import org.apache.seata.server.storage.file.FlushDiskMode;
-
-import static org.apache.seata.common.DefaultValues.SERVER_DEFAULT_STORE_MODE;
-import static org.apache.seata.core.constants.ConfigurationKeys.STORE_FILE_PREFIX;
 
 /**
  */
@@ -73,19 +73,23 @@ public class StoreConfig {
     private static final int DEFAULT_WRITE_BUFFER_SIZE = 1024 * 16;
 
     public static int getMaxBranchSessionSize() {
-        return CONFIGURATION.getInt(STORE_FILE_PREFIX + "maxBranchSessionSize", DEFAULT_MAX_BRANCH_SESSION_SIZE);
+        return CONFIGURATION.getInt(
+                STORE_FILE_PREFIX + "maxBranchSessionSize", DEFAULT_MAX_BRANCH_SESSION_SIZE);
     }
 
     public static int getMaxGlobalSessionSize() {
-        return CONFIGURATION.getInt(STORE_FILE_PREFIX + "maxGlobalSessionSize", DEFAULT_MAX_GLOBAL_SESSION_SIZE);
+        return CONFIGURATION.getInt(
+                STORE_FILE_PREFIX + "maxGlobalSessionSize", DEFAULT_MAX_GLOBAL_SESSION_SIZE);
     }
 
     public static int getFileWriteBufferCacheSize() {
-        return CONFIGURATION.getInt(STORE_FILE_PREFIX + "fileWriteBufferCacheSize", DEFAULT_WRITE_BUFFER_SIZE);
+        return CONFIGURATION.getInt(
+                STORE_FILE_PREFIX + "fileWriteBufferCacheSize", DEFAULT_WRITE_BUFFER_SIZE);
     }
 
     public static FlushDiskMode getFlushDiskMode() {
-        return FlushDiskMode.findDiskMode(CONFIGURATION.getConfig(STORE_FILE_PREFIX + "flushDiskMode"));
+        return FlushDiskMode.findDiskMode(
+                CONFIGURATION.getConfig(STORE_FILE_PREFIX + "flushDiskMode"));
     }
 
     /**
@@ -94,31 +98,32 @@ public class StoreConfig {
      * @return
      */
     private static StoreMode getStoreMode() {
-        //startup
+        // startup
         if (null != storeMode) {
             return storeMode;
         }
-        //env
+        // env
         String storeModeEnv = ContainerHelper.getStoreMode();
         if (StringUtils.isNotBlank(storeModeEnv)) {
             return StoreMode.get(storeModeEnv);
         }
-        //config
-        String storeModeConfig = CONFIGURATION.getConfig(ConfigurationKeys.STORE_MODE, SERVER_DEFAULT_STORE_MODE);
+        // config
+        String storeModeConfig =
+                CONFIGURATION.getConfig(ConfigurationKeys.STORE_MODE, SERVER_DEFAULT_STORE_MODE);
         return StoreMode.get(storeModeConfig);
     }
 
     public static SessionMode getSessionMode() {
-        //startup
+        // startup
         if (null != sessionMode) {
             return sessionMode;
         }
-        //env
+        // env
         String sessionModeEnv = ContainerHelper.getSessionStoreMode();
         if (StringUtils.isNotBlank(sessionModeEnv)) {
             return SessionMode.get(sessionModeEnv);
         }
-        //config
+        // config
         String sessionModeConfig = CONFIGURATION.getConfig(ConfigurationKeys.STORE_SESSION_MODE);
         if (StringUtils.isNotBlank(sessionModeConfig)) {
             return SessionMode.get(sessionModeConfig);
@@ -128,16 +133,16 @@ public class StoreConfig {
     }
 
     public static LockMode getLockMode() {
-        //startup
+        // startup
         if (null != lockMode) {
             return lockMode;
         }
-        //env
+        // env
         String lockModeEnv = ContainerHelper.getLockStoreMode();
         if (StringUtils.isNotBlank(lockModeEnv)) {
             return LockMode.get(lockModeEnv);
         }
-        //config
+        // config
         String lockModeConfig = CONFIGURATION.getConfig(ConfigurationKeys.STORE_LOCK_MODE);
         if (StringUtils.isNotBlank(lockModeConfig)) {
             return LockMode.get(lockModeConfig);

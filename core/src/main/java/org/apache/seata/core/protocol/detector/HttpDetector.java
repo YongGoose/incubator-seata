@@ -23,7 +23,9 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import org.apache.seata.core.rpc.netty.http.HttpDispatchHandler;
 
 public class HttpDetector implements ProtocolDetector {
-    private static final String[] HTTP_METHODS = {"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"};
+    private static final String[] HTTP_METHODS = {
+        "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"
+    };
 
     @Override
     public boolean detect(ByteBuf in) {
@@ -52,10 +54,8 @@ public class HttpDetector implements ProtocolDetector {
 
     @Override
     public ChannelHandler[] getHandlers() {
-        return new ChannelHandler[]{
-            new HttpServerCodec(),
-            new HttpObjectAggregator(1048576),
-            new HttpDispatchHandler()
+        return new ChannelHandler[] {
+            new HttpServerCodec(), new HttpObjectAggregator(1048576), new HttpDispatchHandler()
         };
     }
 }

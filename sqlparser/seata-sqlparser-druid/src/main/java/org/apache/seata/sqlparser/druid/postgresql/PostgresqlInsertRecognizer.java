@@ -16,9 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.postgresql;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLDefaultExpr;
@@ -32,9 +29,11 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGOutputVisitor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.StringUtils;
-import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.apache.seata.sqlparser.SQLInsertRecognizer;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.struct.NotPlaceholderExpr;
@@ -42,9 +41,10 @@ import org.apache.seata.sqlparser.struct.Null;
 import org.apache.seata.sqlparser.struct.SqlDefaultExpr;
 import org.apache.seata.sqlparser.struct.SqlMethodExpr;
 import org.apache.seata.sqlparser.struct.SqlSequenceExpr;
+import org.apache.seata.sqlparser.util.ColumnUtils;
 
-
-public class PostgresqlInsertRecognizer extends BasePostgresqlRecognizer implements SQLInsertRecognizer {
+public class PostgresqlInsertRecognizer extends BasePostgresqlRecognizer
+        implements SQLInsertRecognizer {
 
     private final PGInsertStatement ast;
 
@@ -72,14 +72,15 @@ public class PostgresqlInsertRecognizer extends BasePostgresqlRecognizer impleme
     @Override
     public String getTableName() {
         StringBuilder sb = new StringBuilder();
-        PGOutputVisitor visitor = new PGOutputVisitor(sb) {
+        PGOutputVisitor visitor =
+                new PGOutputVisitor(sb) {
 
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
-        };
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
+                };
         visitor.visit(ast.getTableSource());
         return sb.toString();
     }

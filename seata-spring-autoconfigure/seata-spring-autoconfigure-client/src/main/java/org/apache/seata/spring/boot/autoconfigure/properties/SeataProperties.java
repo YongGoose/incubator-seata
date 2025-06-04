@@ -16,13 +16,12 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
+
 import org.apache.seata.common.DefaultValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
-
 
 @Component
 @ConfigurationProperties(prefix = SEATA_PREFIX)
@@ -31,40 +30,49 @@ public class SeataProperties {
      * whether enable auto configuration
      */
     private boolean enabled = true;
+
     /**
      * application id
      */
     private String applicationId;
+
     /**
      * transaction service group
      */
     private String txServiceGroup;
+
     /**
      * Whether enable auto proxying of datasource bean
      */
     private boolean enableAutoDataSourceProxy = true;
+
     /**
      * data source proxy mode
      */
     private String dataSourceProxyMode = DefaultValues.DEFAULT_DATA_SOURCE_PROXY_MODE;
+
     /**
      * Whether use JDK proxy instead of CGLIB proxy
      */
     private boolean useJdkProxy = false;
+
     /**
      * Whether to expose the proxy object through AopContext.
      * Setting this to true allows AopContext.currentProxy() to be used to obtain the current proxy,
      * which can be useful for invoking methods annotated with @GlobalTransactional within the same class.
      */
     private boolean exposeProxy = false;
+
     /**
      * The scan packages. If empty, will scan all beans.
      */
     private String[] scanPackages = {};
+
     /**
      * Specifies beans that won't be scanned in the GlobalTransactionScanner
      */
     private String[] excludesForScanning = {};
+
     /**
      * Specifies which datasource bean are not eligible for auto-proxying
      */
@@ -80,8 +88,7 @@ public class SeataProperties {
      */
     private String secretKey;
 
-    @Autowired
-    private SpringCloudAlibabaConfiguration springCloudAlibabaConfiguration;
+    @Autowired private SpringCloudAlibabaConfiguration springCloudAlibabaConfiguration;
 
     public boolean isEnabled() {
         return enabled;

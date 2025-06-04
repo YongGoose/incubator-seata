@@ -64,11 +64,11 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
         if (!ret) {
             throw new StoreException("addGlobalSession failed.");
         }
-
     }
 
     @Override
-    public void updateGlobalSessionStatus(GlobalSession session, GlobalStatus status) throws TransactionException {
+    public void updateGlobalSessionStatus(GlobalSession session, GlobalStatus status)
+            throws TransactionException {
         try {
             // set expected status threadlocal
             session.setExpectedStatusFromCurrent();
@@ -86,7 +86,7 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     /**
      * remove globalSession 1. rootSessionManager remove normal globalSession 2. retryCommitSessionManager and
      * retryRollbackSessionManager remove retry expired globalSession
-     * 
+     *
      * @param session the session
      * @throws TransactionException the transaction exception
      */
@@ -99,7 +99,8 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     }
 
     @Override
-    public void addBranchSession(GlobalSession globalSession, BranchSession session) throws TransactionException {
+    public void addBranchSession(GlobalSession globalSession, BranchSession session)
+            throws TransactionException {
         boolean ret = transactionStoreManager.writeSession(LogOperation.BRANCH_ADD, session);
         if (!ret) {
             throw new StoreException("addBranchSession failed.");
@@ -107,7 +108,8 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     }
 
     @Override
-    public void updateBranchSessionStatus(BranchSession session, BranchStatus status) throws TransactionException {
+    public void updateBranchSessionStatus(BranchSession session, BranchStatus status)
+            throws TransactionException {
         boolean ret = transactionStoreManager.writeSession(LogOperation.BRANCH_UPDATE, session);
         if (!ret) {
             throw new StoreException("updateBranchSessionStatus failed.");
@@ -115,7 +117,8 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     }
 
     @Override
-    public void removeBranchSession(GlobalSession globalSession, BranchSession session) throws TransactionException {
+    public void removeBranchSession(GlobalSession globalSession, BranchSession session)
+            throws TransactionException {
         boolean ret = transactionStoreManager.writeSession(LogOperation.BRANCH_REMOVE, session);
         if (!ret) {
             throw new StoreException("removeBranchSession failed.");
@@ -136,10 +139,19 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     public Collection<GlobalSession> allSessions() {
         // all data
         return findGlobalSessions(
-            new SessionCondition(GlobalStatus.UnKnown, GlobalStatus.Begin, GlobalStatus.Committing,
-                GlobalStatus.CommitRetrying, GlobalStatus.Rollbacking, GlobalStatus.RollbackRetrying,
-                GlobalStatus.TimeoutRollbacking, GlobalStatus.TimeoutRollbackRetrying, GlobalStatus.AsyncCommitting,
-                GlobalStatus.StopRollbackOrRollbackRetry, GlobalStatus.StopCommitOrCommitRetry, GlobalStatus.Deleting));
+                new SessionCondition(
+                        GlobalStatus.UnKnown,
+                        GlobalStatus.Begin,
+                        GlobalStatus.Committing,
+                        GlobalStatus.CommitRetrying,
+                        GlobalStatus.Rollbacking,
+                        GlobalStatus.RollbackRetrying,
+                        GlobalStatus.TimeoutRollbacking,
+                        GlobalStatus.TimeoutRollbackRetrying,
+                        GlobalStatus.AsyncCommitting,
+                        GlobalStatus.StopRollbackOrRollbackRetry,
+                        GlobalStatus.StopCommitOrCommitRetry,
+                        GlobalStatus.Deleting));
     }
 
     @Override
@@ -149,8 +161,9 @@ public class DataBaseSessionManager extends AbstractSessionManager implements In
     }
 
     @Override
-    public <T> T lockAndExecute(GlobalSession globalSession, GlobalSession.LockCallable<T> lockCallable)
-        throws TransactionException {
+    public <T> T lockAndExecute(
+            GlobalSession globalSession, GlobalSession.LockCallable<T> lockCallable)
+            throws TransactionException {
         return lockCallable.call();
     }
 }

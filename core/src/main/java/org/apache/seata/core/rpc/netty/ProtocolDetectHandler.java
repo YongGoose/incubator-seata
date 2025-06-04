@@ -20,11 +20,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import java.util.List;
 import org.apache.seata.core.protocol.detector.ProtocolDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class ProtocolDetectHandler extends ByteToMessageDecoder {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolDetectHandler.class);
@@ -36,7 +35,8 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+            throws Exception {
         for (ProtocolDetector protocolDetector : supportedProtocolDetectors) {
             if (protocolDetector.detect(in)) {
                 ChannelHandler[] protocolHandlers = protocolDetector.getHandlers();
@@ -52,7 +52,10 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
 
         byte[] preface = new byte[in.readableBytes()];
         in.readBytes(preface);
-        LOGGER.error("Can not recognize protocol from remote {}, preface = {}", ctx.channel().remoteAddress(), preface);
+        LOGGER.error(
+                "Can not recognize protocol from remote {}, preface = {}",
+                ctx.channel().remoteAddress(),
+                preface);
         in.clear();
         ctx.close();
     }

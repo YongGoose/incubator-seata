@@ -23,13 +23,12 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLReplaceStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.sqlparser.SQLRecognizer;
 import org.apache.seata.sqlparser.SQLRecognizerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * DruidSQLRecognizerFactoryImpl
@@ -38,13 +37,17 @@ import java.util.List;
 class DruidSQLRecognizerFactoryImpl implements SQLRecognizerFactory {
     @Override
     public List<SQLRecognizer> create(String sql, String dbType) {
-        List<SQLStatement> asts = SQLUtils.parseStatements(sql, DruidDbTypeAdapter.getAdaptiveDbType(dbType));
+        List<SQLStatement> asts =
+                SQLUtils.parseStatements(sql, DruidDbTypeAdapter.getAdaptiveDbType(dbType));
         if (CollectionUtils.isEmpty(asts)) {
             throw new UnsupportedOperationException("Unsupported SQL: " + sql);
         }
-        if (asts.size() > 1 && !(asts.stream().allMatch(statement -> statement instanceof SQLUpdateStatement)
-                || asts.stream().allMatch(statement -> statement instanceof SQLDeleteStatement))) {
-            throw new UnsupportedOperationException("ONLY SUPPORT SAME TYPE (UPDATE OR DELETE) MULTI SQL -" + sql);
+        if (asts.size() > 1
+                && !(asts.stream().allMatch(statement -> statement instanceof SQLUpdateStatement)
+                        || asts.stream()
+                                .allMatch(statement -> statement instanceof SQLDeleteStatement))) {
+            throw new UnsupportedOperationException(
+                    "ONLY SUPPORT SAME TYPE (UPDATE OR DELETE) MULTI SQL -" + sql);
         }
         List<SQLRecognizer> recognizers = null;
         SQLRecognizer recognizer = null;
@@ -61,11 +64,16 @@ class DruidSQLRecognizerFactoryImpl implements SQLRecognizerFactory {
                 recognizer = recognizerHolder.getSelectForUpdateRecognizer(sql, ast);
             }
 
-            // When recognizer is null, it indicates that recognizerHolder cannot allocate unsupported syntax, like merge and replace
+            // When recognizer is null, it indicates that recognizerHolder cannot allocate
+            // unsupported syntax, like merge and replace
             if (ast instanceof SQLReplaceStatement) {
-                //just like:replace into t (id,dr) values (1,'2'), (2,'3')
-                throw new NotSupportYetException("not support the sql syntax with ReplaceStatement:" + ast +
-                        "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                // just like:replace into t (id,dr) values (1,'2'), (2,'3')
+                throw new NotSupportYetException(
+                        "not support the sql syntax with ReplaceStatement:"
+                                + ast
+                                + "\n"
+                                + "please see the doc about SQL restrictions"
+                                + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
             }
 
             if (recognizer != null && recognizer.isSqlSyntaxSupports()) {

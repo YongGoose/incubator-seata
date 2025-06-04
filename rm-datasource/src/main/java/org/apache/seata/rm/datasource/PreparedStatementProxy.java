@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
-
 import org.apache.seata.rm.datasource.exec.ExecuteTemplate;
 import org.apache.seata.sqlparser.ParametersHolder;
 
@@ -30,10 +29,10 @@ import org.apache.seata.sqlparser.ParametersHolder;
  *
  */
 public class PreparedStatementProxy extends AbstractPreparedStatementProxy
-    implements PreparedStatement, ParametersHolder {
+        implements PreparedStatement, ParametersHolder {
 
     @Override
-    public Map<Integer,ArrayList<Object>> getParameters() {
+    public Map<Integer, ArrayList<Object>> getParameters() {
         return parameters;
     }
 
@@ -45,8 +44,11 @@ public class PreparedStatementProxy extends AbstractPreparedStatementProxy
      * @param targetSQL       the target sql
      * @throws SQLException the sql exception
      */
-    public PreparedStatementProxy(AbstractConnectionProxy connectionProxy, PreparedStatement targetStatement,
-                                  String targetSQL) throws SQLException {
+    public PreparedStatementProxy(
+            AbstractConnectionProxy connectionProxy,
+            PreparedStatement targetStatement,
+            String targetSQL)
+            throws SQLException {
         super(connectionProxy, targetStatement, targetSQL);
     }
 

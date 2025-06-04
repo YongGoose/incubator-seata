@@ -16,14 +16,13 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.BranchRegisterResponseProto;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchRegisterResponse;
+import org.apache.seata.serializer.protobuf.generated.BranchRegisterResponseProto;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class BranchRegisterResponseConvertorTest {
 
@@ -31,18 +30,19 @@ public class BranchRegisterResponseConvertorTest {
     public void convert2Proto() {
 
         BranchRegisterResponse branchRegisterResponse = new BranchRegisterResponse();
-        branchRegisterResponse.setTransactionExceptionCode(TransactionExceptionCode.GlobalTransactionNotActive);
+        branchRegisterResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.GlobalTransactionNotActive);
         branchRegisterResponse.setResultCode(ResultCode.Failed);
         branchRegisterResponse.setMsg("msg");
         branchRegisterResponse.setBranchId(123);
 
         BranchRegisterResponseConvertor convertor = new BranchRegisterResponseConvertor();
-        BranchRegisterResponseProto proto = convertor.convert2Proto(
-            branchRegisterResponse);
+        BranchRegisterResponseProto proto = convertor.convert2Proto(branchRegisterResponse);
 
         BranchRegisterResponse real = convertor.convert2Model(proto);
 
-        assertThat(real.getTransactionExceptionCode()).isEqualTo(branchRegisterResponse.getTransactionExceptionCode());
+        assertThat(real.getTransactionExceptionCode())
+                .isEqualTo(branchRegisterResponse.getTransactionExceptionCode());
         assertThat(real.getResultCode()).isEqualTo(branchRegisterResponse.getResultCode());
         assertThat(real.getMsg()).isEqualTo(branchRegisterResponse.getMsg());
         assertThat(real.getBranchId()).isEqualTo(branchRegisterResponse.getBranchId());

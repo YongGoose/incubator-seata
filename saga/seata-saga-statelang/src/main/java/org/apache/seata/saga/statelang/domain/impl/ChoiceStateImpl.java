@@ -18,7 +18,6 @@ package org.apache.seata.saga.statelang.domain.impl;
 
 import java.util.List;
 import java.util.Map;
-
 import org.apache.seata.saga.statelang.domain.ChoiceState;
 import org.apache.seata.saga.statelang.domain.StateType;
 
@@ -30,6 +29,7 @@ public class ChoiceStateImpl extends BaseState implements ChoiceState {
 
     private List<Choice> choices;
     private String defaultChoice;
+
     /**
      * key: Evaluator, value: Next
      **/

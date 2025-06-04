@@ -16,13 +16,12 @@
  */
 package org.apache.seata.core.lock;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.core.model.LockStatus;
 import org.apache.seata.core.store.LockDO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The AbstractLocker Test
@@ -54,67 +53,66 @@ public class AbstractLockerTest {
     }
 
     private static List<LockDO> getLockDOS() {
-        AbstractLocker locker = new AbstractLocker() {
-            @Override
-            public boolean acquireLock(List<RowLock> rowLock) {
-                return false;
-            }
+        AbstractLocker locker =
+                new AbstractLocker() {
+                    @Override
+                    public boolean acquireLock(List<RowLock> rowLock) {
+                        return false;
+                    }
 
-            @Override
-            public boolean acquireLock(List<RowLock> rowLock, boolean autoCommit, boolean skipCheckLock) {
-                return false;
-            }
+                    @Override
+                    public boolean acquireLock(
+                            List<RowLock> rowLock, boolean autoCommit, boolean skipCheckLock) {
+                        return false;
+                    }
 
-            @Override
-            public boolean releaseLock(List<RowLock> rowLock) {
-                return false;
-            }
+                    @Override
+                    public boolean releaseLock(List<RowLock> rowLock) {
+                        return false;
+                    }
 
-            @Override
-            public boolean isLockable(List<RowLock> rowLock) {
-                return false;
-            }
+                    @Override
+                    public boolean isLockable(List<RowLock> rowLock) {
+                        return false;
+                    }
 
-            @Override
-            public void updateLockStatus(String xid, LockStatus lockStatus) {
-
-            }
-        };
+                    @Override
+                    public void updateLockStatus(String xid, LockStatus lockStatus) {}
+                };
         List<RowLock> locks = getRowLocks();
 
         // Call the convertToLockDO method
         return locker.convertToLockDO(locks);
     }
 
-
     @Test
     public void testGetRowKey() {
-        AbstractLocker locker = new AbstractLocker() {
-            @Override
-            public boolean acquireLock(List<RowLock> rowLock) {
-                return false;
-            }
+        AbstractLocker locker =
+                new AbstractLocker() {
+                    @Override
+                    public boolean acquireLock(List<RowLock> rowLock) {
+                        return false;
+                    }
 
-            @Override
-            public boolean acquireLock(List<RowLock> rowLock, boolean autoCommit, boolean skipCheckLock) {
-                return false;
-            }
+                    @Override
+                    public boolean acquireLock(
+                            List<RowLock> rowLock, boolean autoCommit, boolean skipCheckLock) {
+                        return false;
+                    }
 
-            @Override
-            public boolean releaseLock(List<RowLock> rowLock) {
-                return false;
-            }
+                    @Override
+                    public boolean releaseLock(List<RowLock> rowLock) {
+                        return false;
+                    }
 
-            @Override
-            public boolean isLockable(List<RowLock> rowLock) {
-                return false;
-            }
+                    @Override
+                    public boolean isLockable(List<RowLock> rowLock) {
+                        return false;
+                    }
 
-            @Override
-            public void updateLockStatus(String xid, LockStatus lockStatus) {
-
-            }
-        };
+                    @Override
+                    public void updateLockStatus(String xid, LockStatus lockStatus) {}
+                };
 
         // Call the getRowKey method
         String rowKey = locker.getRowKey("resource1", "table1", "123");

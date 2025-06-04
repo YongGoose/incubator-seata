@@ -16,6 +16,12 @@
  */
 package org.apache.seata.rm.datasource.util;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.lock.ResourceLock;
 import org.apache.seata.rm.BaseDataSourceResource;
@@ -23,32 +29,25 @@ import org.apache.seata.rm.DefaultResourceManager;
 import org.apache.seata.sqlparser.SqlParserType;
 import org.apache.seata.sqlparser.util.DbTypeParser;
 
-import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.SQLException;
-
-
 public final class JdbcUtils {
 
     private static volatile DbTypeParser dbTypeParser;
-    private final static ResourceLock RESOURCE_LOCK = new ResourceLock();
+    private static final ResourceLock RESOURCE_LOCK = new ResourceLock();
 
     static DbTypeParser getDbTypeParser() {
         if (dbTypeParser == null) {
             try (ResourceLock ignored = RESOURCE_LOCK.obtain()) {
                 if (dbTypeParser == null) {
-                    dbTypeParser = EnhancedServiceLoader.load(DbTypeParser.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
+                    dbTypeParser =
+                            EnhancedServiceLoader.load(
+                                    DbTypeParser.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
                 }
             }
         }
         return dbTypeParser;
     }
 
-    private JdbcUtils() {
-    }
+    private JdbcUtils() {}
 
     public static String getDbType(String jdbcUrl) {
         return getDbTypeParser().parseFromJdbcUrl(jdbcUrl).toLowerCase();
@@ -61,7 +60,10 @@ public final class JdbcUtils {
      * @param dataSource the DataSource instance
      * @param resourceGroupId the given resource group ID
      */
-    public static void initDataSourceResource(BaseDataSourceResource dataSourceResource, DataSource dataSource, String resourceGroupId) {
+    public static void initDataSourceResource(
+            BaseDataSourceResource dataSourceResource,
+            DataSource dataSource,
+            String resourceGroupId) {
         dataSourceResource.setResourceGroupId(resourceGroupId);
         try (Connection connection = dataSource.getConnection()) {
             String jdbcUrl = connection.getMetaData().getURL();
@@ -70,19 +72,24 @@ public final class JdbcUtils {
             dataSourceResource.setDriver(loadDriver(driverClassName));
             dataSourceResource.setDbType(JdbcUtils.getDbType(jdbcUrl));
         } catch (SQLException e) {
-            throw new IllegalStateException("can not init DataSourceResource with " + dataSource, e);
+            throw new IllegalStateException(
+                    "can not init DataSourceResource with " + dataSource, e);
         }
         DefaultResourceManager.get().registerResource(dataSourceResource);
     }
 
-    public static void initXADataSourceResource(BaseDataSourceResource dataSourceResource, XADataSource dataSource, String resourceGroupId) {
+    public static void initXADataSourceResource(
+            BaseDataSourceResource dataSourceResource,
+            XADataSource dataSource,
+            String resourceGroupId) {
         dataSourceResource.setResourceGroupId(resourceGroupId);
         try {
             XAConnection xaConnection = dataSource.getXAConnection();
             try (Connection connection = xaConnection.getConnection()) {
                 String jdbcUrl = connection.getMetaData().getURL();
                 dataSourceResource.setResourceId(buildResourceId(jdbcUrl));
-                String driverClassName = com.alibaba.druid.util.JdbcUtils.getDriverClassName(jdbcUrl);
+                String driverClassName =
+                        com.alibaba.druid.util.JdbcUtils.getDriverClassName(jdbcUrl);
                 dataSourceResource.setDriver(loadDriver(driverClassName));
                 dataSourceResource.setDbType(JdbcUtils.getDbType(jdbcUrl));
             } finally {
@@ -91,7 +98,8 @@ public final class JdbcUtils {
                 }
             }
         } catch (SQLException e) {
-            throw new IllegalStateException("can not get XAConnection from DataSourceResource with " + dataSource, e);
+            throw new IllegalStateException(
+                    "can not get XAConnection from DataSourceResource with " + dataSource, e);
         }
         DefaultResourceManager.get().registerResource(dataSourceResource);
     }
@@ -123,7 +131,7 @@ public final class JdbcUtils {
         }
 
         try {
-            return (Driver)clazz.newInstance();
+            return (Driver) clazz.newInstance();
         } catch (IllegalAccessException | InstantiationException e) {
             throw new SQLException(e.getMessage(), e);
         }

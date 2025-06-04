@@ -17,21 +17,21 @@
 package org.apache.seata.core.rpc;
 
 import io.netty.channel.Channel;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.protocol.MessageTypeAware;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.protocol.Version;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * the type ServerSkipMsgHelper
  **/
 public class MsgVersionHelper {
 
-    private static final List<Short> SKIP_MSG_CODE_V0 = Arrays.asList(MessageType.TYPE_RM_DELETE_UNDOLOG);
+    private static final List<Short> SKIP_MSG_CODE_V0 =
+            Arrays.asList(MessageType.TYPE_RM_DELETE_UNDOLOG);
 
     public static boolean versionNotSupport(Channel channel, RpcMessage rpcMessage) {
         if (rpcMessage == null || rpcMessage.getBody() == null || channel == null) {

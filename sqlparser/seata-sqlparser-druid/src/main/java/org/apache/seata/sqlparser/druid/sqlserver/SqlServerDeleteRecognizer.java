@@ -16,9 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
@@ -26,6 +23,8 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLDeleteRecognizer;
@@ -35,7 +34,8 @@ import org.apache.seata.sqlparser.SQLType;
  * The type SqlServer delete recognizer.
  *
  */
-public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implements SQLDeleteRecognizer {
+public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer
+        implements SQLDeleteRecognizer {
     private final SQLDeleteStatement ast;
 
     /**
@@ -55,8 +55,8 @@ public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implement
 
     @Override
     public String getTableAlias() {
-        //there is different between getFrom() and getTableSource()
-        //when use "delete t1 from t t2", getTableSource().getAlias() will return null
+        // there is different between getFrom() and getTableSource()
+        // when use "delete t1 from t t2", getTableSource().getAlias() will return null
         if (ast.getFrom() == null) {
             return ast.getTableSource().getAlias();
         }
@@ -66,18 +66,20 @@ public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implement
     @Override
     public String getTableName() {
         StringBuilder sb = new StringBuilder();
-        SQLServerOutputVisitor visitor = new SQLServerOutputVisitor(sb) {
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
+        SQLServerOutputVisitor visitor =
+                new SQLServerOutputVisitor(sb) {
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
 
-            @Override
-            public boolean visit(SQLJoinTableSource x) {
-                throw new NotSupportYetException("not support the syntax of delete with join table");
-            }
-        };
+                    @Override
+                    public boolean visit(SQLJoinTableSource x) {
+                        throw new NotSupportYetException(
+                                "not support the syntax of delete with join table");
+                    }
+                };
         SQLTableSource tableSource;
         if (ast.getFrom() == null) {
             tableSource = ast.getTableSource();
@@ -96,8 +98,9 @@ public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implement
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-                                    final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }
@@ -114,7 +117,8 @@ public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implement
     }
 
     @Override
-    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getLimitCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 
@@ -124,7 +128,8 @@ public class SqlServerDeleteRecognizer extends BaseSqlServerRecognizer implement
     }
 
     @Override
-    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getOrderByCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 

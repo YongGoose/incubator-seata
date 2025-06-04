@@ -16,12 +16,11 @@
  */
 package org.apache.seata.common.exception;
 
-import java.sql.SQLException;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.SQLException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Framework exception test.
@@ -36,11 +35,15 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testGetErrcode() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print4();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print4();
+                        });
         assertThat(throwable).hasMessage(FrameworkErrorCode.UnknownAppError.getErrMessage());
-        assertThat(((FrameworkException)throwable).getErrcode()).isEqualTo(FrameworkErrorCode.UnknownAppError);
+        assertThat(((FrameworkException) throwable).getErrcode())
+                .isEqualTo(FrameworkErrorCode.UnknownAppError);
     }
 
     /**
@@ -48,9 +51,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print();
+                        });
         assertThat(throwable).hasMessage("");
     }
 
@@ -59,9 +65,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException1() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print1();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print1();
+                        });
         assertThat(throwable).hasMessage("nestedException");
     }
 
@@ -70,9 +79,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException2() {
-        Throwable throwable = Assertions.assertThrows(SQLException.class, () -> {
-            message.print2();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        SQLException.class,
+                        () -> {
+                            message.print2();
+                        });
         assertThat(throwable).hasMessageContaining("Message");
     }
 
@@ -81,9 +93,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException3() {
-        Throwable throwable = Assertions.assertThrows(SQLException.class, () -> {
-            message.print3();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        SQLException.class,
+                        () -> {
+                            message.print3();
+                        });
         assertThat(throwable).hasMessageContaining("Message");
     }
 
@@ -92,9 +107,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException5() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print5();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print5();
+                        });
         assertThat(throwable).hasMessage(FrameworkErrorCode.ExceptionCaught.getErrMessage());
     }
 
@@ -103,9 +121,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException6() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print6();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print6();
+                        });
         assertThat(throwable).hasMessage("frameworkException");
     }
 
@@ -114,9 +135,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException7() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print7();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print7();
+                        });
         assertThat(throwable).hasMessage("frameworkException");
     }
 
@@ -125,9 +149,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException8() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print8();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print8();
+                        });
         assertThat(throwable).hasMessage("throw");
     }
 
@@ -136,9 +163,12 @@ public class FrameworkExceptionTest {
      */
     @Test
     public void testNestedException9() {
-        Throwable throwable = Assertions.assertThrows(FrameworkException.class, () -> {
-            message.print9();
-        });
+        Throwable throwable =
+                Assertions.assertThrows(
+                        FrameworkException.class,
+                        () -> {
+                            message.print9();
+                        });
         assertThat(throwable).hasMessage("frameworkExceptionMsg");
     }
 
@@ -149,5 +179,4 @@ public class FrameworkExceptionTest {
         assertThat(exception).isInstanceOf(FrameworkException.class).hasMessage(expectMessage);
         assertThat(exception.getErrcode()).isEqualTo(FrameworkErrorCode.UnknownAppError);
     }
-
 }

@@ -16,15 +16,6 @@
  */
 package org.apache.seata.core.rpc.netty.v1;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.AdaptiveRecvByteBufAllocator;
@@ -38,6 +29,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import io.netty.util.concurrent.DefaultPromise;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import org.apache.seata.common.thread.NamedThreadFactory;
 import org.apache.seata.common.thread.PositiveAtomicCounter;
 import org.apache.seata.core.model.BranchType;
@@ -76,16 +75,15 @@ public class ProtocolV1Client {
         bootstrap.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32 * 1024);
         bootstrap.option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8 * 1024);
         bootstrap.option(ChannelOption.RCVBUF_ALLOCATOR, AdaptiveRecvByteBufAllocator.DEFAULT);
-        bootstrap.handler(new ChannelInitializer() {
-            @Override
-            protected void initChannel(Channel channel) throws Exception {
-                ChannelPipeline pipeline = channel.pipeline();
-                pipeline
-                    .addLast(new ProtocolDecoderV1())
-                    .addLast(new ProtocolEncoderV1());
-                pipeline.addLast(new ClientChannelHandler(ProtocolV1Client.this));
-            }
-        });
+        bootstrap.handler(
+                new ChannelInitializer() {
+                    @Override
+                    protected void initChannel(Channel channel) throws Exception {
+                        ChannelPipeline pipeline = channel.pipeline();
+                        pipeline.addLast(new ProtocolDecoderV1()).addLast(new ProtocolEncoderV1());
+                        pipeline.addLast(new ClientChannelHandler(ProtocolV1Client.this));
+                    }
+                });
         // Bind and start to accept incoming connections.
         ChannelFuture channelFuture = bootstrap.connect(host, port);
         channelFuture.awaitUninterruptibly(connectTimeout, TimeUnit.MILLISECONDS);
@@ -93,14 +91,17 @@ public class ProtocolV1Client {
             channel = channelFuture.channel();
         } else {
             Throwable cause = channelFuture.cause();
-            throw new RuntimeException("Failed to connect " + host + ":" + port +
-                (cause != null ? ". Cause by: " + cause.getMessage() : "."));
+            throw new RuntimeException(
+                    "Failed to connect "
+                            + host
+                            + ":"
+                            + port
+                            + (cause != null ? ". Cause by: " + cause.getMessage() : "."));
         }
     }
 
     private EventLoopGroup createWorkerGroup() {
-        NamedThreadFactory threadName =
-            new NamedThreadFactory("CLI-WORKER", false);
+        NamedThreadFactory threadName = new NamedThreadFactory("CLI-WORKER", false);
         return new NioEventLoopGroup(10, threadName);
     }
 
@@ -124,7 +125,6 @@ public class ProtocolV1Client {
         rpcMessage.setHeadMap(head);
         rpcMessage.setBody(body);
         rpcMessage.setMessageType(ProtocolConstants.MSGTYPE_RESQUEST_SYNC);
-
 
         if (channel != null) {
             DefaultPromise promise = new DefaultPromise(defaultEventExecutor);
@@ -156,44 +156,56 @@ public class ProtocolV1Client {
         final int threads = 50;
         final AtomicLong cnt = new AtomicLong(0);
         // no queue
-        final ThreadPoolExecutor service1 = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
-            new SynchronousQueue<Runnable>(), new NamedThreadFactory("client-", false));
+        final ThreadPoolExecutor service1 =
+                new ThreadPoolExecutor(
+                        threads,
+                        threads,
+                        0L,
+                        TimeUnit.MILLISECONDS,
+                        new SynchronousQueue<Runnable>(),
+                        new NamedThreadFactory("client-", false));
         for (int i = 0; i < threads; i++) {
-            service1.execute(() -> {
-                while (true) {
-                    try {
-                        Future future = client.sendRpc(head, body);
-                        RpcMessage resp = (RpcMessage) future.get(200, TimeUnit.MILLISECONDS);
-                        if (resp != null) {
-                            cnt.incrementAndGet();
+            service1.execute(
+                    () -> {
+                        while (true) {
+                            try {
+                                Future future = client.sendRpc(head, body);
+                                RpcMessage resp =
+                                        (RpcMessage) future.get(200, TimeUnit.MILLISECONDS);
+                                if (resp != null) {
+                                    cnt.incrementAndGet();
+                                }
+                            } catch (Exception e) {
+                                // ignore
+                            }
                         }
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                }
-            });
+                    });
         }
 
-        Thread thread = new Thread(new Runnable() {
-            private long last = 0;
+        Thread thread =
+                new Thread(
+                        new Runnable() {
+                            private long last = 0;
 
-            @Override
-            public void run() {
-                while (true) {
-                    long count = cnt.get();
-                    long tps = count - last;
-                    LOGGER.error("last 1s invoke: {}, queue: {}", tps, service1.getQueue().size());
-                    last = count;
+                            @Override
+                            public void run() {
+                                while (true) {
+                                    long count = cnt.get();
+                                    long tps = count - last;
+                                    LOGGER.error(
+                                            "last 1s invoke: {}, queue: {}",
+                                            tps,
+                                            service1.getQueue().size());
+                                    last = count;
 
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                    }
-                }
-            }
-        }, "Print-tps-THREAD");
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                    }
+                                }
+                            }
+                        },
+                        "Print-tps-THREAD");
         thread.start();
     }
-
-
 }

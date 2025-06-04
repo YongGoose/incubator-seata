@@ -67,11 +67,15 @@ public class BaseParam implements Serializable {
 
     @Override
     public String toString() {
-        return "BaseParam{" +
-                "pageNum=" + pageNum +
-                ", pageSize=" + pageSize +
-                ", timeStart=" + timeStart +
-                ", timeEnd=" + timeEnd +
-                '}';
+        return "BaseParam{"
+                + "pageNum="
+                + pageNum
+                + ", pageSize="
+                + pageSize
+                + ", timeStart="
+                + timeStart
+                + ", timeEnd="
+                + timeEnd
+                + '}';
     }
 }

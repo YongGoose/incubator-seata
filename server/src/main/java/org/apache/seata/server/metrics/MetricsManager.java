@@ -16,8 +16,9 @@
  */
 package org.apache.seata.server.metrics;
 
-import java.util.List;
+import static org.apache.seata.common.DefaultValues.DEFAULT_METRICS_ENABLED;
 
+import java.util.List;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 import org.apache.seata.metrics.exporter.Exporter;
@@ -25,8 +26,6 @@ import org.apache.seata.metrics.exporter.ExporterFactory;
 import org.apache.seata.metrics.registry.Registry;
 import org.apache.seata.metrics.registry.RegistryFactory;
 import org.apache.seata.server.event.EventBusManager;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_METRICS_ENABLED;
 
 /**
  * Metrics manager for init
@@ -48,13 +47,18 @@ public class MetricsManager {
     }
 
     public void init() {
-        boolean enabled = ConfigurationFactory.getInstance().getBoolean(
-            ConfigurationKeys.METRICS_PREFIX + ConfigurationKeys.METRICS_ENABLED, DEFAULT_METRICS_ENABLED);
+        boolean enabled =
+                ConfigurationFactory.getInstance()
+                        .getBoolean(
+                                ConfigurationKeys.METRICS_PREFIX
+                                        + ConfigurationKeys.METRICS_ENABLED,
+                                DEFAULT_METRICS_ENABLED);
         if (enabled) {
             registry = RegistryFactory.getInstance();
             if (registry != null) {
                 List<Exporter> exporters = ExporterFactory.getInstanceList();
-                //only at least one metrics exporter implement had imported in pom then need register MetricsSubscriber
+                // only at least one metrics exporter implement had imported in pom then need
+                // register MetricsSubscriber
                 if (exporters.size() != 0) {
                     exporters.forEach(exporter -> exporter.setRegistry(registry));
                     EventBusManager.get().register(new MetricsSubscriber(registry));

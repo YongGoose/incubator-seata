@@ -17,7 +17,6 @@
 package org.apache.seata.saga.engine.utils;
 
 import java.util.Map;
-
 import org.apache.seata.saga.engine.AsyncCallback;
 import org.apache.seata.saga.engine.StateMachineConfig;
 import org.apache.seata.saga.engine.StateMachineEngine;
@@ -70,32 +69,38 @@ public class ProcessContextBuilder {
         return this;
     }
 
-    public ProcessContextBuilder withStateMachineInstance(StateMachineInstance stateMachineInstance) {
+    public ProcessContextBuilder withStateMachineInstance(
+            StateMachineInstance stateMachineInstance) {
         if (stateMachineInstance != null) {
-            this.processContext.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_INST, stateMachineInstance);
-            this.processContext.setVariable(DomainConstants.VAR_NAME_STATEMACHINE,
-                stateMachineInstance.getStateMachine());
+            this.processContext.setVariable(
+                    DomainConstants.VAR_NAME_STATEMACHINE_INST, stateMachineInstance);
+            this.processContext.setVariable(
+                    DomainConstants.VAR_NAME_STATEMACHINE, stateMachineInstance.getStateMachine());
         }
         return this;
     }
 
     public ProcessContextBuilder withStateMachineEngine(StateMachineEngine stateMachineEngine) {
         if (stateMachineEngine != null) {
-            this.processContext.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_ENGINE, stateMachineEngine);
+            this.processContext.setVariable(
+                    DomainConstants.VAR_NAME_STATEMACHINE_ENGINE, stateMachineEngine);
         }
         return this;
     }
 
     public ProcessContextBuilder withStateMachineConfig(StateMachineConfig stateMachineConfig) {
         if (stateMachineConfig != null) {
-            this.processContext.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG, stateMachineConfig);
+            this.processContext.setVariable(
+                    DomainConstants.VAR_NAME_STATEMACHINE_CONFIG, stateMachineConfig);
         }
         return this;
     }
 
-    public ProcessContextBuilder withStateMachineContextVariables(Map<String, Object> contextVariables) {
+    public ProcessContextBuilder withStateMachineContextVariables(
+            Map<String, Object> contextVariables) {
         if (contextVariables != null) {
-            this.processContext.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONTEXT, contextVariables);
+            this.processContext.setVariable(
+                    DomainConstants.VAR_NAME_STATEMACHINE_CONTEXT, contextVariables);
         }
         return this;
     }
@@ -115,7 +120,8 @@ public class ProcessContextBuilder {
     }
 
     public ProcessContextBuilder withIsAsyncExecution(boolean isAsyncExecution) {
-        this.processContext.setVariable(DomainConstants.VAR_NAME_IS_ASYNC_EXECUTION, isAsyncExecution);
+        this.processContext.setVariable(
+                DomainConstants.VAR_NAME_IS_ASYNC_EXECUTION, isAsyncExecution);
         return this;
     }
 }

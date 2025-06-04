@@ -26,8 +26,7 @@ import org.apache.seata.core.model.GlobalStatus;
  */
 public class GlobalTransactionContext {
 
-    private GlobalTransactionContext() {
-    }
+    private GlobalTransactionContext() {}
 
     /**
      * Try to create a new GlobalTransaction.
@@ -48,7 +47,8 @@ public class GlobalTransactionContext {
         if (xid == null) {
             return null;
         }
-        return new DefaultGlobalTransaction(xid, GlobalStatus.Begin, GlobalTransactionRole.Participant);
+        return new DefaultGlobalTransaction(
+                xid, GlobalStatus.Begin, GlobalTransactionRole.Participant);
     }
 
     /**
@@ -72,7 +72,8 @@ public class GlobalTransactionContext {
      * @throws TransactionException the transaction exception
      */
     public static GlobalTransaction reload(String xid) throws TransactionException {
-        return new DefaultGlobalTransaction(xid, GlobalStatus.UnKnown, GlobalTransactionRole.Launcher) {
+        return new DefaultGlobalTransaction(
+                xid, GlobalStatus.UnKnown, GlobalTransactionRole.Launcher) {
             @Override
             public void begin(int timeout, String name) throws TransactionException {
                 throw new IllegalStateException("Never BEGIN on a RELOADED GlobalTransaction. ");

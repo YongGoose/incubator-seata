@@ -16,9 +16,9 @@
  */
 package org.apache.seata.common.util;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * The Net Validator util test.
@@ -28,7 +28,8 @@ public class NetAddressValidatorUtilTest {
 
     @Test
     public void isIPv6Address() {
-        assertThat(NetAddressValidatorUtil.isIPv6Address("2000:0000:0000:0000:0001:2345:6789:abcd")).isTrue();
+        assertThat(NetAddressValidatorUtil.isIPv6Address("2000:0000:0000:0000:0001:2345:6789:abcd"))
+                .isTrue();
         assertThat(NetAddressValidatorUtil.isIPv6Address("2001:DB8:0:0:8:800:200C:417A")).isTrue();
         assertThat(NetAddressValidatorUtil.isIPv6Address("2001:DB8::8:800:200C:417A")).isTrue();
         assertThat(NetAddressValidatorUtil.isIPv6Address("2001:DB8::8:800:200C141aA")).isFalse();
@@ -38,7 +39,8 @@ public class NetAddressValidatorUtilTest {
     @Test
     public void isIPv6MixedAddress() {
         assertThat(NetAddressValidatorUtil.isIPv6MixedAddress("1:0:0:0:0:0:172.12.55.18")).isTrue();
-        assertThat(NetAddressValidatorUtil.isIPv6MixedAddress("2001:DB8::8:800:200C141aA")).isFalse();
+        assertThat(NetAddressValidatorUtil.isIPv6MixedAddress("2001:DB8::8:800:200C141aA"))
+                .isFalse();
     }
 
     @Test
@@ -56,7 +58,13 @@ public class NetAddressValidatorUtilTest {
 
     @Test
     public void isLinkLocalIPv6WithZoneIndex() {
-        assertThat(NetAddressValidatorUtil.isLinkLocalIPv6WithZoneIndex("2409:8a5c:6730:4490:f0e8:b9ad:3b3d:e739%br0")).isTrue();
-        assertThat(NetAddressValidatorUtil.isLinkLocalIPv6WithZoneIndex("2409:8a5c:6730:4490:f0e8:b9ad:3b3d:e739%")).isFalse();
+        assertThat(
+                        NetAddressValidatorUtil.isLinkLocalIPv6WithZoneIndex(
+                                "2409:8a5c:6730:4490:f0e8:b9ad:3b3d:e739%br0"))
+                .isTrue();
+        assertThat(
+                        NetAddressValidatorUtil.isLinkLocalIPv6WithZoneIndex(
+                                "2409:8a5c:6730:4490:f0e8:b9ad:3b3d:e739%"))
+                .isFalse();
     }
 }

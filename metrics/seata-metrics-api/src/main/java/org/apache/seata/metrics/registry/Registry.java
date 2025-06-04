@@ -17,7 +17,6 @@
 package org.apache.seata.metrics.registry;
 
 import java.util.function.Supplier;
-
 import org.apache.seata.metrics.Counter;
 import org.apache.seata.metrics.Gauge;
 import org.apache.seata.metrics.Id;

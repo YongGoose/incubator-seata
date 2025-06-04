@@ -16,8 +16,11 @@
  */
 package org.apache.seata.server.storage.raft.lock;
 
-import java.util.concurrent.CompletableFuture;
+import static org.apache.seata.server.cluster.raft.sync.msg.RaftSyncMsgType.RELEASE_BRANCH_SESSION_LOCK;
+import static org.apache.seata.server.cluster.raft.sync.msg.RaftSyncMsgType.RELEASE_GLOBAL_SESSION_LOCK;
+
 import com.alipay.sofa.jraft.Closure;
+import java.util.concurrent.CompletableFuture;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.exception.TransactionExceptionCode;
@@ -25,36 +28,41 @@ import org.apache.seata.server.cluster.raft.sync.msg.RaftBranchSessionSyncMsg;
 import org.apache.seata.server.cluster.raft.sync.msg.RaftGlobalSessionSyncMsg;
 import org.apache.seata.server.cluster.raft.sync.msg.dto.BranchTransactionDTO;
 import org.apache.seata.server.cluster.raft.sync.msg.dto.GlobalTransactionDTO;
+import org.apache.seata.server.cluster.raft.util.RaftTaskUtil;
 import org.apache.seata.server.session.BranchSession;
 import org.apache.seata.server.session.GlobalSession;
 import org.apache.seata.server.storage.file.lock.FileLockManager;
-import org.apache.seata.server.cluster.raft.util.RaftTaskUtil;
 
-import static org.apache.seata.server.cluster.raft.sync.msg.RaftSyncMsgType.RELEASE_BRANCH_SESSION_LOCK;
-import static org.apache.seata.server.cluster.raft.sync.msg.RaftSyncMsgType.RELEASE_GLOBAL_SESSION_LOCK;
 /**
  */
 @LoadLevel(name = "raft")
 public class RaftLockManager extends FileLockManager {
 
     @Override
-    public boolean releaseGlobalSessionLock(GlobalSession globalSession) throws TransactionException {
+    public boolean releaseGlobalSessionLock(GlobalSession globalSession)
+            throws TransactionException {
         GlobalTransactionDTO globalTransactionDTO = new GlobalTransactionDTO();
         globalTransactionDTO.setXid(globalSession.getXid());
-        RaftGlobalSessionSyncMsg raftSyncMsg = new RaftGlobalSessionSyncMsg(RELEASE_GLOBAL_SESSION_LOCK, globalTransactionDTO);
+        RaftGlobalSessionSyncMsg raftSyncMsg =
+                new RaftGlobalSessionSyncMsg(RELEASE_GLOBAL_SESSION_LOCK, globalTransactionDTO);
         CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
-        Closure closure = status -> {
-            if (status.isOk()) {
-                try {
-                    completableFuture.complete(this.localReleaseGlobalSessionLock(globalSession));
-                } catch (TransactionException e) {
-                    completableFuture.completeExceptionally(e);
-                }
-            } else {
-                completableFuture.completeExceptionally(new TransactionException(TransactionExceptionCode.NotRaftLeader,
-                    "seata raft state machine exception: " + status.getErrorMsg()));
-            }
-        };
+        Closure closure =
+                status -> {
+                    if (status.isOk()) {
+                        try {
+                            completableFuture.complete(
+                                    this.localReleaseGlobalSessionLock(globalSession));
+                        } catch (TransactionException e) {
+                            completableFuture.completeExceptionally(e);
+                        }
+                    } else {
+                        completableFuture.completeExceptionally(
+                                new TransactionException(
+                                        TransactionExceptionCode.NotRaftLeader,
+                                        "seata raft state machine exception: "
+                                                + status.getErrorMsg()));
+                    }
+                };
         return RaftTaskUtil.createTask(closure, raftSyncMsg, completableFuture);
     }
 
@@ -64,29 +72,34 @@ public class RaftLockManager extends FileLockManager {
         BranchTransactionDTO branchTransactionDTO = new BranchTransactionDTO();
         branchTransactionDTO.setBranchId(branchSession.getBranchId());
         branchTransactionDTO.setXid(branchSession.getXid());
-        RaftBranchSessionSyncMsg raftSyncMsg = new RaftBranchSessionSyncMsg(RELEASE_BRANCH_SESSION_LOCK, branchTransactionDTO);
-        Closure closure = status -> {
-            if (status.isOk()) {
-                try {
-                    // ensure consistency through state machine reading
-                    completableFuture.complete(super.releaseLock(branchSession));
-                } catch (TransactionException e) {
-                    completableFuture.completeExceptionally(e);
-                }
-            } else {
-                completableFuture.completeExceptionally(new TransactionException(TransactionExceptionCode.NotRaftLeader,
-                    "seata raft state machine exception: " + status.getErrorMsg()));
-            }
-        };
+        RaftBranchSessionSyncMsg raftSyncMsg =
+                new RaftBranchSessionSyncMsg(RELEASE_BRANCH_SESSION_LOCK, branchTransactionDTO);
+        Closure closure =
+                status -> {
+                    if (status.isOk()) {
+                        try {
+                            // ensure consistency through state machine reading
+                            completableFuture.complete(super.releaseLock(branchSession));
+                        } catch (TransactionException e) {
+                            completableFuture.completeExceptionally(e);
+                        }
+                    } else {
+                        completableFuture.completeExceptionally(
+                                new TransactionException(
+                                        TransactionExceptionCode.NotRaftLeader,
+                                        "seata raft state machine exception: "
+                                                + status.getErrorMsg()));
+                    }
+                };
         return RaftTaskUtil.createTask(closure, raftSyncMsg, completableFuture);
     }
 
-    public boolean localReleaseGlobalSessionLock(GlobalSession globalSession) throws TransactionException {
+    public boolean localReleaseGlobalSessionLock(GlobalSession globalSession)
+            throws TransactionException {
         return super.releaseGlobalSessionLock(globalSession);
     }
 
     public boolean localReleaseLock(BranchSession branchSession) throws TransactionException {
         return super.releaseLock(branchSession);
     }
-
 }

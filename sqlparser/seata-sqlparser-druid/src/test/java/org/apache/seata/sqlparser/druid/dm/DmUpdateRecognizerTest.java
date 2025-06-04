@@ -21,15 +21,14 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleCursorExpr;
-import org.apache.seata.sqlparser.ParametersHolder;
-import org.apache.seata.sqlparser.SQLParsingException;
-import org.apache.seata.sqlparser.SQLType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.seata.sqlparser.ParametersHolder;
+import org.apache.seata.sqlparser.SQLParsingException;
+import org.apache.seata.sqlparser.SQLType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 
 public class DmUpdateRecognizerTest {
 
@@ -60,18 +59,22 @@ public class DmUpdateRecognizerTest {
         updateColumns = recognizer.getUpdateColumns();
         Assertions.assertEquals(updateColumns.size(), 3);
 
-        //test with error
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "update t set a = a";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
-            SQLUpdateStatement sqlUpdateStatement = (SQLUpdateStatement) sqlStatements.get(0);
-            List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
-            for (SQLUpdateSetItem updateSetItem : updateSetItems) {
-                updateSetItem.setColumn(new OracleCursorExpr());
-            }
-            DmUpdateRecognizer dmUpdateRecognizer = new DmUpdateRecognizer(s, sqlUpdateStatement);
-            dmUpdateRecognizer.getUpdateColumns();
-        });
+        // test with error
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "update t set a = a";
+                    List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
+                    SQLUpdateStatement sqlUpdateStatement =
+                            (SQLUpdateStatement) sqlStatements.get(0);
+                    List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
+                    for (SQLUpdateSetItem updateSetItem : updateSetItems) {
+                        updateSetItem.setColumn(new OracleCursorExpr());
+                    }
+                    DmUpdateRecognizer dmUpdateRecognizer =
+                            new DmUpdateRecognizer(s, sqlUpdateStatement);
+                    dmUpdateRecognizer.getUpdateColumns();
+                });
     }
 
     @Test
@@ -91,17 +94,21 @@ public class DmUpdateRecognizerTest {
         Assertions.assertEquals(updateValues.size(), 3);
 
         // test with error
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "update t set a = ?";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
-            SQLUpdateStatement sqlUpdateStatement = (SQLUpdateStatement) sqlStatements.get(0);
-            List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
-            for (SQLUpdateSetItem updateSetItem : updateSetItems) {
-                updateSetItem.setValue(new OracleCursorExpr());
-            }
-            DmUpdateRecognizer dmUpdateRecognizer = new DmUpdateRecognizer(s, sqlUpdateStatement);
-            dmUpdateRecognizer.getUpdateValues();
-        });
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "update t set a = ?";
+                    List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
+                    SQLUpdateStatement sqlUpdateStatement =
+                            (SQLUpdateStatement) sqlStatements.get(0);
+                    List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
+                    for (SQLUpdateSetItem updateSetItem : updateSetItems) {
+                        updateSetItem.setValue(new OracleCursorExpr());
+                    }
+                    DmUpdateRecognizer dmUpdateRecognizer =
+                            new DmUpdateRecognizer(s, sqlUpdateStatement);
+                    dmUpdateRecognizer.getUpdateValues();
+                });
     }
 
     @Test
@@ -111,12 +118,15 @@ public class DmUpdateRecognizerTest {
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
         DmUpdateRecognizer recognizer = new DmUpdateRecognizer(sql, asts.get(0));
-        String whereCondition = recognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer, ArrayList<Object>> getParameters() {
-                return null;
-            }
-        }, new ArrayList<>());
+        String whereCondition =
+                recognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                return null;
+                            }
+                        },
+                        new ArrayList<>());
 
         Assertions.assertEquals("", whereCondition);
     }

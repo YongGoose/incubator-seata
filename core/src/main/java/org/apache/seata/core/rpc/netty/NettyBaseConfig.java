@@ -16,6 +16,8 @@
  */
 package org.apache.seata.core.rpc.netty;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSPORT_HEARTBEAT;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ServerChannel;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
@@ -30,16 +32,14 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.NettyRuntime;
 import io.netty.util.internal.PlatformDependent;
+import org.apache.commons.lang.StringUtils;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 import org.apache.seata.core.rpc.TransportProtocolType;
 import org.apache.seata.core.rpc.TransportServerType;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSPORT_HEARTBEAT;
 
 /**
  * The type Netty base config.
@@ -52,20 +52,24 @@ public class NettyBaseConfig {
      * The constant CONFIG.
      */
     protected static final Configuration CONFIG = ConfigurationFactory.getInstance();
+
     /**
      * The constant BOSS_THREAD_PREFIX.
      */
-    protected static final String BOSS_THREAD_PREFIX = CONFIG.getConfig(ConfigurationKeys.BOSS_THREAD_PREFIX);
+    protected static final String BOSS_THREAD_PREFIX =
+            CONFIG.getConfig(ConfigurationKeys.BOSS_THREAD_PREFIX);
 
     /**
      * The constant WORKER_THREAD_PREFIX.
      */
-    protected static final String WORKER_THREAD_PREFIX = CONFIG.getConfig(ConfigurationKeys.WORKER_THREAD_PREFIX);
+    protected static final String WORKER_THREAD_PREFIX =
+            CONFIG.getConfig(ConfigurationKeys.WORKER_THREAD_PREFIX);
 
     /**
      * The constant SHARE_BOSS_WORKER.
      */
-    protected static final boolean SHARE_BOSS_WORKER = CONFIG.getBoolean(ConfigurationKeys.SHARE_BOSS_WORKER);
+    protected static final boolean SHARE_BOSS_WORKER =
+            CONFIG.getBoolean(ConfigurationKeys.SHARE_BOSS_WORKER);
 
     /**
      * The constant WORKER_THREAD_SIZE.
@@ -81,6 +85,7 @@ public class NettyBaseConfig {
      * The constant SERVER_CHANNEL_CLAZZ.
      */
     protected static final Class<? extends ServerChannel> SERVER_CHANNEL_CLAZZ;
+
     /**
      * The constant CLIENT_CHANNEL_CLAZZ.
      */
@@ -94,7 +99,6 @@ public class NettyBaseConfig {
     private static final int DEFAULT_WRITE_IDLE_SECONDS = 5;
 
     private static final int READIDLE_BASE_WRITEIDLE = 3;
-
 
     /**
      * The constant MAX_WRITE_IDLE_SECONDS.
@@ -112,7 +116,11 @@ public class NettyBaseConfig {
     protected static final int MAX_ALL_IDLE_SECONDS = 0;
 
     static {
-        TRANSPORT_PROTOCOL_TYPE = TransportProtocolType.getType(CONFIG.getConfig(ConfigurationKeys.TRANSPORT_TYPE, TransportProtocolType.TCP.name()));
+        TRANSPORT_PROTOCOL_TYPE =
+                TransportProtocolType.getType(
+                        CONFIG.getConfig(
+                                ConfigurationKeys.TRANSPORT_TYPE,
+                                TransportProtocolType.TCP.name()));
         String workerThreadSize = CONFIG.getConfig(ConfigurationKeys.WORKER_THREAD_SIZE);
         if (StringUtils.isNotBlank(workerThreadSize) && StringUtils.isNumeric(workerThreadSize)) {
             WORKER_THREAD_SIZE = Integer.parseInt(workerThreadSize);
@@ -121,7 +129,11 @@ public class NettyBaseConfig {
         } else {
             WORKER_THREAD_SIZE = WorkThreadMode.Default.getValue();
         }
-        TRANSPORT_SERVER_TYPE = TransportServerType.getType(CONFIG.getConfig(ConfigurationKeys.TRANSPORT_SERVER, TransportServerType.NIO.name()));
+        TRANSPORT_SERVER_TYPE =
+                TransportServerType.getType(
+                        CONFIG.getConfig(
+                                ConfigurationKeys.TRANSPORT_SERVER,
+                                TransportServerType.NIO.name()));
         switch (TRANSPORT_SERVER_TYPE) {
             case NIO:
                 if (TRANSPORT_PROTOCOL_TYPE == TransportProtocolType.TCP) {
@@ -140,7 +152,8 @@ public class NettyBaseConfig {
                     if (TRANSPORT_PROTOCOL_TYPE == TransportProtocolType.TCP) {
                         SERVER_CHANNEL_CLAZZ = KQueueServerSocketChannel.class;
                         CLIENT_CHANNEL_CLAZZ = KQueueSocketChannel.class;
-                    } else if (TRANSPORT_PROTOCOL_TYPE == TransportProtocolType.UNIX_DOMAIN_SOCKET) {
+                    } else if (TRANSPORT_PROTOCOL_TYPE
+                            == TransportProtocolType.UNIX_DOMAIN_SOCKET) {
                         SERVER_CHANNEL_CLAZZ = KQueueServerDomainSocketChannel.class;
                         CLIENT_CHANNEL_CLAZZ = KQueueDomainSocketChannel.class;
                     } else {
@@ -152,7 +165,8 @@ public class NettyBaseConfig {
                     if (TRANSPORT_PROTOCOL_TYPE == TransportProtocolType.TCP) {
                         SERVER_CHANNEL_CLAZZ = EpollServerSocketChannel.class;
                         CLIENT_CHANNEL_CLAZZ = EpollSocketChannel.class;
-                    } else if (TRANSPORT_PROTOCOL_TYPE == TransportProtocolType.UNIX_DOMAIN_SOCKET) {
+                    } else if (TRANSPORT_PROTOCOL_TYPE
+                            == TransportProtocolType.UNIX_DOMAIN_SOCKET) {
                         SERVER_CHANNEL_CLAZZ = EpollServerDomainSocketChannel.class;
                         CLIENT_CHANNEL_CLAZZ = EpollDomainSocketChannel.class;
                     } else {
@@ -165,7 +179,9 @@ public class NettyBaseConfig {
             default:
                 throw new IllegalArgumentException("unsupported.");
         }
-        boolean enableHeartbeat = CONFIG.getBoolean(ConfigurationKeys.TRANSPORT_HEARTBEAT, DEFAULT_TRANSPORT_HEARTBEAT);
+        boolean enableHeartbeat =
+                CONFIG.getBoolean(
+                        ConfigurationKeys.TRANSPORT_HEARTBEAT, DEFAULT_TRANSPORT_HEARTBEAT);
         if (enableHeartbeat) {
             MAX_WRITE_IDLE_SECONDS = DEFAULT_WRITE_IDLE_SECONDS;
         } else {
@@ -175,8 +191,10 @@ public class NettyBaseConfig {
     }
 
     private static void raiseUnsupportedTransportError() throws RuntimeException {
-        String errMsg = String.format("Unsupported provider type :[%s] for transport:[%s].", TRANSPORT_SERVER_TYPE,
-            TRANSPORT_PROTOCOL_TYPE);
+        String errMsg =
+                String.format(
+                        "Unsupported provider type :[%s] for transport:[%s].",
+                        TRANSPORT_SERVER_TYPE, TRANSPORT_PROTOCOL_TYPE);
         LOGGER.error(errMsg);
         throw new IllegalArgumentException(errMsg);
     }

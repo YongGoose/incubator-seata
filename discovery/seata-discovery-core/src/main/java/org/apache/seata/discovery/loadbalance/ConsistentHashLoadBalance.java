@@ -16,19 +16,18 @@
  */
 package org.apache.seata.discovery.loadbalance;
 
+import static org.apache.seata.common.DefaultValues.VIRTUAL_NODES_DEFAULT;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.config.ConfigurationFactory;
-
-import static org.apache.seata.common.DefaultValues.VIRTUAL_NODES_DEFAULT;
 
 /**
  * The type consistent hash load balance.
@@ -39,13 +38,15 @@ public class ConsistentHashLoadBalance implements LoadBalance {
     /**
      * The constant LOAD_BALANCE_CONSISTENT_HASH_VIRTUAL_NODES.
      */
-    public static final String LOAD_BALANCE_CONSISTENT_HASH_VIRTUAL_NODES = LoadBalanceFactory.LOAD_BALANCE_PREFIX
-            + "virtualNodes";
+    public static final String LOAD_BALANCE_CONSISTENT_HASH_VIRTUAL_NODES =
+            LoadBalanceFactory.LOAD_BALANCE_PREFIX + "virtualNodes";
+
     /**
      * The constant VIRTUAL_NODES_NUM.
      */
-    private static final int VIRTUAL_NODES_NUM = ConfigurationFactory.getInstance().getInt(
-            LOAD_BALANCE_CONSISTENT_HASH_VIRTUAL_NODES, VIRTUAL_NODES_DEFAULT);
+    private static final int VIRTUAL_NODES_NUM =
+            ConfigurationFactory.getInstance()
+                    .getInt(LOAD_BALANCE_CONSISTENT_HASH_VIRTUAL_NODES, VIRTUAL_NODES_DEFAULT);
 
     /**
      * The ConsistentHashSelectorWrapper that caches a {@link ConsistentHashSelector}.
@@ -58,8 +59,10 @@ public class ConsistentHashLoadBalance implements LoadBalance {
         if (selectorWrapper == null) {
             synchronized (this) {
                 if (selectorWrapper == null) {
-                    selectorWrapper = new ConsistentHashSelectorWrapper(
-                            new ConsistentHashSelector<>(invokers, VIRTUAL_NODES_NUM), invokers);
+                    selectorWrapper =
+                            new ConsistentHashSelectorWrapper(
+                                    new ConsistentHashSelector<>(invokers, VIRTUAL_NODES_NUM),
+                                    invokers);
                 }
             }
         }

@@ -16,14 +16,14 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
+
 import org.apache.seata.spring.boot.autoconfigure.StarterConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 
 /**
  * The type Spring cloud alibaba configuration.
@@ -45,7 +45,8 @@ public class SpringCloudAlibabaConfiguration implements ApplicationContextAware 
      */
     public String getApplicationId() {
         if (applicationId == null) {
-            applicationId = applicationContext.getEnvironment().getProperty(SPRING_APPLICATION_NAME_KEY);
+            applicationId =
+                    applicationContext.getEnvironment().getProperty(SPRING_APPLICATION_NAME_KEY);
         }
         return applicationId;
     }

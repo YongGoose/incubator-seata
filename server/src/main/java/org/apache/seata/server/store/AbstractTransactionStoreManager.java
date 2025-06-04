@@ -16,12 +16,11 @@
  */
 package org.apache.seata.server.store;
 
+import java.util.Collections;
+import java.util.List;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.server.session.GlobalSession;
 import org.apache.seata.server.session.SessionCondition;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The type Abstract transaction store manager.
@@ -55,6 +54,5 @@ public abstract class AbstractTransactionStoreManager implements TransactionStor
     }
 
     @Override
-    public void shutdown() {
-    }
+    public void shutdown() {}
 }

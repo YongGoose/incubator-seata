@@ -16,10 +16,9 @@
  */
 package io.seata.saga.proctrl.impl;
 
-import java.util.Map;
-
 import io.seata.saga.proctrl.HierarchicalProcessContext;
 import io.seata.saga.proctrl.ProcessContext;
+import java.util.Map;
 import org.apache.seata.saga.proctrl.Instruction;
 
 /**
@@ -116,8 +115,10 @@ public class ProcessContextImpl implements HierarchicalProcessContext, ProcessCo
     }
 
     public ProcessContext getParent() {
-        return wrap((org.apache.seata.saga.proctrl.HierarchicalProcessContext)
-                ((org.apache.seata.saga.proctrl.impl.ProcessContextImpl) actual).getParent());
+        return wrap(
+                (org.apache.seata.saga.proctrl.HierarchicalProcessContext)
+                        ((org.apache.seata.saga.proctrl.impl.ProcessContextImpl) actual)
+                                .getParent());
     }
 
     public void setParent(ProcessContext parent) {
@@ -130,7 +131,8 @@ public class ProcessContextImpl implements HierarchicalProcessContext, ProcessCo
         return actual.toString();
     }
 
-    public static ProcessContextImpl wrap(org.apache.seata.saga.proctrl.HierarchicalProcessContext target) {
+    public static ProcessContextImpl wrap(
+            org.apache.seata.saga.proctrl.HierarchicalProcessContext target) {
         return new ProcessContextImpl(target);
     }
 

@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.sql.handler.sqlserver;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.sqlparser.EscapeHandler;
 import org.apache.seata.sqlparser.EscapeSymbol;
@@ -32,9 +31,10 @@ import org.apache.seata.sqlparser.util.JdbcConstants;
  */
 @LoadLevel(name = JdbcConstants.SQLSERVER)
 public class SqlServerEscapeHandler implements EscapeHandler {
-    private Set<String> keywordSet = Arrays.stream(SqlServerEscapeHandler.SqlServerKeyword.values())
-            .map(SqlServerEscapeHandler.SqlServerKeyword::name)
-            .collect(Collectors.toSet());
+    private Set<String> keywordSet =
+            Arrays.stream(SqlServerEscapeHandler.SqlServerKeyword.values())
+                    .map(SqlServerEscapeHandler.SqlServerKeyword::name)
+                    .collect(Collectors.toSet());
 
     private static final EscapeSymbol ESCAPE_SYMBOL = new EscapeSymbol('[', ']');
 
@@ -782,6 +782,7 @@ public class SqlServerEscapeHandler implements EscapeHandler {
          * WRITETEXT is sqlserver keyword.
          */
         WRITETEXT("WRITETEXT");
+
         /**
          * The Name.
          */
@@ -791,7 +792,6 @@ public class SqlServerEscapeHandler implements EscapeHandler {
             this.name = name;
         }
     }
-
 
     @Override
     public boolean checkIfKeyWords(String fieldOrTableName) {

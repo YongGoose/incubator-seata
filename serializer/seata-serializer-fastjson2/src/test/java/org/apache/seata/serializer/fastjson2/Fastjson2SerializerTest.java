@@ -16,6 +16,8 @@
  */
 package org.apache.seata.serializer.fastjson2;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.model.BranchType;
@@ -25,9 +27,6 @@ import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 public class Fastjson2SerializerTest {
 
     private static Fastjson2Serializer fastjson2Serializer;
@@ -36,7 +35,6 @@ public class Fastjson2SerializerTest {
     public static void before() {
         fastjson2Serializer = new Fastjson2Serializer();
     }
-
 
     @Test
     public void testBranchCommitRequest() {
@@ -57,14 +55,14 @@ public class Fastjson2SerializerTest {
         assertThat(t.getResourceId()).isEqualTo(branchCommitRequest.getResourceId());
         assertThat(t.getBranchId()).isEqualTo(branchCommitRequest.getBranchId());
         assertThat(t.getApplicationData()).isEqualTo(branchCommitRequest.getApplicationData());
-
     }
 
     @Test
     public void testBranchCommitResponse() {
 
         BranchCommitResponse branchCommitResponse = new BranchCommitResponse();
-        branchCommitResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchTransactionNotExist);
+        branchCommitResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchTransactionNotExist);
         branchCommitResponse.setBranchId(20190809);
         branchCommitResponse.setBranchStatus(BranchStatus.PhaseOne_Done);
         branchCommitResponse.setMsg("20190809");
@@ -74,12 +72,11 @@ public class Fastjson2SerializerTest {
         byte[] bytes = fastjson2Serializer.serialize(branchCommitResponse);
         BranchCommitResponse t = fastjson2Serializer.deserialize(bytes);
 
-        assertThat(t.getTransactionExceptionCode()).isEqualTo(branchCommitResponse.getTransactionExceptionCode());
+        assertThat(t.getTransactionExceptionCode())
+                .isEqualTo(branchCommitResponse.getTransactionExceptionCode());
         assertThat(t.getBranchId()).isEqualTo(branchCommitResponse.getBranchId());
         assertThat(t.getBranchStatus()).isEqualTo(branchCommitResponse.getBranchStatus());
         assertThat(t.getMsg()).isEqualTo(branchCommitResponse.getMsg());
         assertThat(t.getResultCode()).isEqualTo(branchCommitResponse.getResultCode());
-
     }
-
 }

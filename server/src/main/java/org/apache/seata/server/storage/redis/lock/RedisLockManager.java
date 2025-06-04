@@ -49,13 +49,18 @@ public class RedisLockManager extends AbstractLockManager implements Initialize 
         try {
             return getLocker().releaseLock(branchSession.getXid(), branchSession.getBranchId());
         } catch (Exception t) {
-            LOGGER.error("unLock error, xid {}, branchId:{}", branchSession.getXid(), branchSession.getBranchId(), t);
+            LOGGER.error(
+                    "unLock error, xid {}, branchId:{}",
+                    branchSession.getXid(),
+                    branchSession.getBranchId(),
+                    t);
             return false;
         }
     }
 
     @Override
-    public boolean releaseGlobalSessionLock(GlobalSession globalSession) throws TransactionException {
+    public boolean releaseGlobalSessionLock(GlobalSession globalSession)
+            throws TransactionException {
         try {
             return getLocker().releaseLock(globalSession.getXid());
         } catch (Exception t) {

@@ -16,13 +16,12 @@
  */
 package io.seata.saga.statelang.domain.impl;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import io.seata.saga.statelang.domain.RecoverStrategy;
 import io.seata.saga.statelang.domain.State;
 import io.seata.saga.statelang.domain.StateMachine;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The type State machine.
@@ -74,7 +73,8 @@ public class StateMachineImpl implements StateMachine {
         }
 
         Map<String, State> resultMap = new LinkedHashMap<>();
-        for (Map.Entry<String, org.apache.seata.saga.statelang.domain.State> entry : states.entrySet()) {
+        for (Map.Entry<String, org.apache.seata.saga.statelang.domain.State> entry :
+                states.entrySet()) {
             org.apache.seata.saga.statelang.domain.State state = entry.getValue();
             resultMap.put(entry.getKey(), StateImpl.wrap(state));
         }
@@ -125,7 +125,8 @@ public class StateMachineImpl implements StateMachine {
 
     @Override
     public RecoverStrategy getRecoverStrategy() {
-        org.apache.seata.saga.statelang.domain.RecoverStrategy recoverStrategy = actual.getRecoverStrategy();
+        org.apache.seata.saga.statelang.domain.RecoverStrategy recoverStrategy =
+                actual.getRecoverStrategy();
         return RecoverStrategy.wrap(recoverStrategy);
     }
 
@@ -176,7 +177,8 @@ public class StateMachineImpl implements StateMachine {
      * @param target the target
      * @return the state machine
      */
-    public static StateMachineImpl wrap(org.apache.seata.saga.statelang.domain.StateMachine target) {
+    public static StateMachineImpl wrap(
+            org.apache.seata.saga.statelang.domain.StateMachine target) {
         if (target == null) {
             return null;
         }

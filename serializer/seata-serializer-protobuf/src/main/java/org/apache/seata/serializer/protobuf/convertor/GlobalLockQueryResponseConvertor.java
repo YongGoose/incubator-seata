@@ -18,6 +18,7 @@ package org.apache.seata.serializer.protobuf.convertor;
 
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.protocol.ResultCode;
+import org.apache.seata.core.protocol.transaction.GlobalLockQueryResponse;
 import org.apache.seata.serializer.protobuf.generated.AbstractMessageProto;
 import org.apache.seata.serializer.protobuf.generated.AbstractResultMessageProto;
 import org.apache.seata.serializer.protobuf.generated.AbstractTransactionResponseProto;
@@ -25,47 +26,63 @@ import org.apache.seata.serializer.protobuf.generated.GlobalLockQueryResponsePro
 import org.apache.seata.serializer.protobuf.generated.MessageTypeProto;
 import org.apache.seata.serializer.protobuf.generated.ResultCodeProto;
 import org.apache.seata.serializer.protobuf.generated.TransactionExceptionCodeProto;
-import org.apache.seata.core.protocol.transaction.GlobalLockQueryResponse;
-
 
 public class GlobalLockQueryResponseConvertor
-    implements PbConvertor<GlobalLockQueryResponse, GlobalLockQueryResponseProto> {
+        implements PbConvertor<GlobalLockQueryResponse, GlobalLockQueryResponseProto> {
     @Override
-    public GlobalLockQueryResponseProto convert2Proto(GlobalLockQueryResponse globalLockQueryResponse) {
+    public GlobalLockQueryResponseProto convert2Proto(
+            GlobalLockQueryResponse globalLockQueryResponse) {
         final short typeCode = globalLockQueryResponse.getTypeCode();
 
-        final AbstractMessageProto abstractMessage = AbstractMessageProto.newBuilder().setMessageType(
-            MessageTypeProto.forNumber(typeCode)).build();
+        final AbstractMessageProto abstractMessage =
+                AbstractMessageProto.newBuilder()
+                        .setMessageType(MessageTypeProto.forNumber(typeCode))
+                        .build();
 
         final String msg = globalLockQueryResponse.getMsg();
-        final AbstractResultMessageProto abstractResultMessageProto = AbstractResultMessageProto.newBuilder().setMsg(
-            msg == null ? "" : msg).setResultCode(
-            ResultCodeProto.valueOf(globalLockQueryResponse.getResultCode().name())).setAbstractMessage(abstractMessage)
-            .build();
+        final AbstractResultMessageProto abstractResultMessageProto =
+                AbstractResultMessageProto.newBuilder()
+                        .setMsg(msg == null ? "" : msg)
+                        .setResultCode(
+                                ResultCodeProto.valueOf(
+                                        globalLockQueryResponse.getResultCode().name()))
+                        .setAbstractMessage(abstractMessage)
+                        .build();
 
-        AbstractTransactionResponseProto abstractTransactionResponseProto = AbstractTransactionResponseProto
-            .newBuilder().setAbstractResultMessage(abstractResultMessageProto).setTransactionExceptionCode(
-                TransactionExceptionCodeProto.valueOf(globalLockQueryResponse.getTransactionExceptionCode().name()))
-            .build();
+        AbstractTransactionResponseProto abstractTransactionResponseProto =
+                AbstractTransactionResponseProto.newBuilder()
+                        .setAbstractResultMessage(abstractResultMessageProto)
+                        .setTransactionExceptionCode(
+                                TransactionExceptionCodeProto.valueOf(
+                                        globalLockQueryResponse
+                                                .getTransactionExceptionCode()
+                                                .name()))
+                        .build();
 
-        GlobalLockQueryResponseProto result = GlobalLockQueryResponseProto.newBuilder().setLockable(
-            globalLockQueryResponse.isLockable()).setAbstractTransactionResponse(abstractTransactionResponseProto)
-            .build();
+        GlobalLockQueryResponseProto result =
+                GlobalLockQueryResponseProto.newBuilder()
+                        .setLockable(globalLockQueryResponse.isLockable())
+                        .setAbstractTransactionResponse(abstractTransactionResponseProto)
+                        .build();
 
         return result;
     }
 
     @Override
-    public GlobalLockQueryResponse convert2Model(GlobalLockQueryResponseProto globalLockQueryResponseProto) {
+    public GlobalLockQueryResponse convert2Model(
+            GlobalLockQueryResponseProto globalLockQueryResponseProto) {
 
         GlobalLockQueryResponse branchRegisterResponse = new GlobalLockQueryResponse();
-        AbstractTransactionResponseProto branchRegisterResponseProto = globalLockQueryResponseProto
-            .getAbstractTransactionResponse();
-        final AbstractResultMessageProto abstractResultMessage = branchRegisterResponseProto.getAbstractResultMessage();
+        AbstractTransactionResponseProto branchRegisterResponseProto =
+                globalLockQueryResponseProto.getAbstractTransactionResponse();
+        final AbstractResultMessageProto abstractResultMessage =
+                branchRegisterResponseProto.getAbstractResultMessage();
         branchRegisterResponse.setMsg(abstractResultMessage.getMsg());
-        branchRegisterResponse.setResultCode(ResultCode.valueOf(abstractResultMessage.getResultCode().name()));
+        branchRegisterResponse.setResultCode(
+                ResultCode.valueOf(abstractResultMessage.getResultCode().name()));
         branchRegisterResponse.setTransactionExceptionCode(
-            TransactionExceptionCode.valueOf(branchRegisterResponseProto.getTransactionExceptionCode().name()));
+                TransactionExceptionCode.valueOf(
+                        branchRegisterResponseProto.getTransactionExceptionCode().name()));
         branchRegisterResponse.setLockable(globalLockQueryResponseProto.getLockable());
         return branchRegisterResponse;
     }

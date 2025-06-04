@@ -16,6 +16,9 @@
  */
 package org.apache.seata.server.coordinator;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.common.store.SessionMode;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.exception.TransactionExceptionCode;
@@ -27,14 +30,11 @@ import org.apache.seata.server.cluster.raft.context.SeataClusterContext;
 import org.apache.seata.server.store.StoreConfig;
 import org.springframework.context.ApplicationListener;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * The type raft tx coordinator.
  */
-public class RaftCoordinator extends DefaultCoordinator implements ApplicationListener<ClusterChangeEvent> {
+public class RaftCoordinator extends DefaultCoordinator
+        implements ApplicationListener<ClusterChangeEvent> {
 
     protected static final Map<String, Boolean> GROUP_PREVENT = new ConcurrentHashMap<>();
 
@@ -43,14 +43,16 @@ public class RaftCoordinator extends DefaultCoordinator implements ApplicationLi
     }
 
     @Override
-    public <T extends AbstractTransactionRequest, S extends AbstractTransactionResponse> void exceptionHandleTemplate(Callback<T, S> callback, T request, S response) {
+    public <T extends AbstractTransactionRequest, S extends AbstractTransactionResponse>
+            void exceptionHandleTemplate(Callback<T, S> callback, T request, S response) {
         String group = SeataClusterContext.bindGroup();
         try {
             if (!isPass(group)) {
-                throw new TransactionException(TransactionExceptionCode.NotRaftLeader,
+                throw new TransactionException(
+                        TransactionExceptionCode.NotRaftLeader,
                         " The current TC is not a leader node, interrupt processing !");
             }
-            super.exceptionHandleTemplate(callback,request,response);
+            super.exceptionHandleTemplate(callback, request, response);
         } catch (TransactionException tex) {
             LOGGER.error("Catch TransactionException while do RPC, request: {}", request, tex);
             callback.onTransactionException(request, response, tex);
@@ -70,10 +72,8 @@ public class RaftCoordinator extends DefaultCoordinator implements ApplicationLi
         }
     }
 
-
     @Override
     public void onApplicationEvent(ClusterChangeEvent event) {
         setPrevent(event.getGroup(), event.isLeader());
     }
-
 }

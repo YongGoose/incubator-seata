@@ -37,7 +37,8 @@ public class ParameterParser {
     private static final ObjectMapper OBJECT_MAPPER =
             new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    public static ObjectNode convertParamMap(Map<String, List<String>> paramMap) throws JsonProcessingException {
+    public static ObjectNode convertParamMap(Map<String, List<String>> paramMap)
+            throws JsonProcessingException {
         ObjectNode paramNode = OBJECT_MAPPER.createObjectNode();
         for (Map.Entry<String, List<String>> entry : paramMap.entrySet()) {
             List<String> list = entry.getValue();
@@ -56,7 +57,8 @@ public class ParameterParser {
         return paramNode;
     }
 
-    public static Object[] getArgValues(ParamMetaData[] paramMetaDatas, Method handleMethod, ObjectNode paramMap)
+    public static Object[] getArgValues(
+            ParamMetaData[] paramMetaDatas, Method handleMethod, ObjectNode paramMap)
             throws JsonProcessingException {
         Class<?>[] parameterTypes = handleMethod.getParameterTypes();
         Parameter[] parameters = handleMethod.getParameters();
@@ -64,7 +66,10 @@ public class ParameterParser {
     }
 
     private static Object[] getParameters(
-            Class<?>[] parameterTypes, ParamMetaData[] paramMetaDatas, Parameter[] parameters, ObjectNode paramMap)
+            Class<?>[] parameterTypes,
+            ParamMetaData[] paramMetaDatas,
+            Parameter[] parameters,
+            ObjectNode paramMap)
             throws JsonProcessingException {
         int length = parameterTypes.length;
         Object[] ret = new Object[length];
@@ -86,7 +91,10 @@ public class ParameterParser {
     }
 
     private static Object getArgValue(
-            Class<?> parameterType, String parameterName, ParamMetaData paramMetaData, ObjectNode paramMap)
+            Class<?> parameterType,
+            String parameterName,
+            ParamMetaData paramMetaData,
+            ObjectNode paramMap)
             throws JsonProcessingException {
         ParamMetaData.ParamConvertType paramConvertType = paramMetaData.getParamConvertType();
         if (parameterType.equals(Channel.class)) {

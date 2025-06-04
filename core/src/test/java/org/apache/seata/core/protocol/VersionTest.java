@@ -30,46 +30,61 @@ public class VersionTest {
         Assertions.assertTrue(Version.isAboveOrEqualVersion150("2.0.2"));
         Assertions.assertTrue(Version.isAboveOrEqualVersion150("1.5"));
         Assertions.assertFalse(Version.isAboveOrEqualVersion150("1.4.9"));
-        Assertions.assertFalse(Version.isAboveOrEqualVersion150("")); // Invalid version code will always return false.
+        Assertions.assertFalse(
+                Version.isAboveOrEqualVersion150(
+                        "")); // Invalid version code will always return false.
         Assertions.assertFalse(Version.isAboveOrEqualVersion150("abd"));
     }
 
     @Test
     public void testConvertVersion() {
         // case: success
-        Assertions.assertDoesNotThrow(() -> {
-            long v = Version.convertVersion(Version.getCurrent());
-            Assertions.assertTrue(v > 0);
-        });
-        Assertions.assertDoesNotThrow(() -> {
-            long v = Version.convertVersion("1.7.0-SNAPSHOT");
-            Assertions.assertEquals(1070000, v);
-        });
-        Assertions.assertDoesNotThrow(() -> {
-            long v = Version.convertVersion("1.7.0");
-            Assertions.assertEquals(1070000, v);
-        });
-        Assertions.assertDoesNotThrow(() -> {
-            long v = Version.convertVersion("1.7.0-native-rc1-SNAPSHOT");
-            Assertions.assertEquals(1070000, v);
-        });
-        Assertions.assertDoesNotThrow(() -> {
-            long v = Version.convertVersion("1.7.0-native-rc1");
-            Assertions.assertEquals(1070000, v);
-        });
+        Assertions.assertDoesNotThrow(
+                () -> {
+                    long v = Version.convertVersion(Version.getCurrent());
+                    Assertions.assertTrue(v > 0);
+                });
+        Assertions.assertDoesNotThrow(
+                () -> {
+                    long v = Version.convertVersion("1.7.0-SNAPSHOT");
+                    Assertions.assertEquals(1070000, v);
+                });
+        Assertions.assertDoesNotThrow(
+                () -> {
+                    long v = Version.convertVersion("1.7.0");
+                    Assertions.assertEquals(1070000, v);
+                });
+        Assertions.assertDoesNotThrow(
+                () -> {
+                    long v = Version.convertVersion("1.7.0-native-rc1-SNAPSHOT");
+                    Assertions.assertEquals(1070000, v);
+                });
+        Assertions.assertDoesNotThrow(
+                () -> {
+                    long v = Version.convertVersion("1.7.0-native-rc1");
+                    Assertions.assertEquals(1070000, v);
+                });
 
         // case: fail
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            Version.convertVersion(null);
-        });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            Version.convertVersion("     ");
-        });
-        Assertions.assertThrows(IncompatibleVersionException.class, () -> {
-            Version.convertVersion("1.7.0.native.rc1-SNAPSHOT");
-        });
-        Assertions.assertThrows(IncompatibleVersionException.class, () -> {
-            Version.convertVersion("1.7.0.native.rc1");
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    Version.convertVersion(null);
+                });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    Version.convertVersion("     ");
+                });
+        Assertions.assertThrows(
+                IncompatibleVersionException.class,
+                () -> {
+                    Version.convertVersion("1.7.0.native.rc1-SNAPSHOT");
+                });
+        Assertions.assertThrows(
+                IncompatibleVersionException.class,
+                () -> {
+                    Version.convertVersion("1.7.0.native.rc1");
+                });
     }
 }

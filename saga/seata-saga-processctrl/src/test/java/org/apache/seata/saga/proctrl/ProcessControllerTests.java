@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.seata.saga.proctrl.eventing.impl.AsyncEventBus;
 import org.apache.seata.saga.proctrl.eventing.impl.DirectEventBus;
 import org.apache.seata.saga.proctrl.eventing.impl.ProcessCtrlEventConsumer;
@@ -106,7 +105,8 @@ public class ProcessControllerTests {
 
         AsyncEventBus asyncEventBus = new AsyncEventBus();
         asyncEventBus.setThreadPoolExecutor(
-            new ThreadPoolExecutor(1, 5, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>()));
+                new ThreadPoolExecutor(
+                        1, 5, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>()));
 
         asyncEventPublisher.setEventBus(asyncEventBus);
 
@@ -115,7 +115,8 @@ public class ProcessControllerTests {
         return asyncEventPublisher;
     }
 
-    private ProcessControllerImpl createProcessorController(ProcessCtrlEventPublisher eventPublisher) throws Exception {
+    private ProcessControllerImpl createProcessorController(
+            ProcessCtrlEventPublisher eventPublisher) throws Exception {
 
         DefaultRouterHandler defaultRouterHandler = new DefaultRouterHandler();
         defaultRouterHandler.setEventPublisher(eventPublisher);

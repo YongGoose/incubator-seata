@@ -16,9 +16,10 @@
  */
 package org.apache.seata.serializer.seata.protocol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.protocol.AbstractResultMessage;
 import org.apache.seata.core.protocol.BatchResultMessage;
@@ -27,8 +28,6 @@ import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
 import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type batch result message codec test.
@@ -42,15 +41,16 @@ public class BatchResultMessageSerializerTest {
      */
     SeataSerializer seataSerializer = new SeataSerializer(ProtocolConstants.VERSION);
 
-
     @Test
     public void testCodec() {
         BatchResultMessage batchResultMessage = new BatchResultMessage();
         final List<AbstractResultMessage> msgs = new ArrayList<>();
         final List<Integer> msgIds = new ArrayList<>();
 
-        final BranchCommitResponse branchCommitResponse1 = buildBranchCommitResponsePhaseTwoCommitted();
-        final BranchCommitResponse branchCommitResponse2 = buildBranchCommitResponsePhaseOneFailed();
+        final BranchCommitResponse branchCommitResponse1 =
+                buildBranchCommitResponsePhaseTwoCommitted();
+        final BranchCommitResponse branchCommitResponse2 =
+                buildBranchCommitResponsePhaseOneFailed();
         msgs.add(branchCommitResponse1);
         msgIds.add(1111);
         msgs.add(branchCommitResponse2);
@@ -67,16 +67,20 @@ public class BatchResultMessageSerializerTest {
         assertThat(batchResultMessage2.getMsgIds().get(1)).isEqualTo(2222);
 
         // validate msgs
-        BranchCommitResponse branchCommitResponse11 = (BranchCommitResponse) batchResultMessage2.getResultMessages().get(0);
+        BranchCommitResponse branchCommitResponse11 =
+                (BranchCommitResponse) batchResultMessage2.getResultMessages().get(0);
         assertThat(branchCommitResponse11.getBranchId()).isEqualTo(12345678L);
         assertThat(branchCommitResponse11.getXid()).isEqualTo("x1");
         assertThat(branchCommitResponse11.getResultCode()).isEqualTo(ResultCode.Success);
-        assertThat(branchCommitResponse11.getBranchStatus()).isEqualTo(BranchStatus.PhaseTwo_Committed);
-        BranchCommitResponse branchCommitResponse22 = (BranchCommitResponse) batchResultMessage2.getResultMessages().get(1);
+        assertThat(branchCommitResponse11.getBranchStatus())
+                .isEqualTo(BranchStatus.PhaseTwo_Committed);
+        BranchCommitResponse branchCommitResponse22 =
+                (BranchCommitResponse) batchResultMessage2.getResultMessages().get(1);
         assertThat(branchCommitResponse22.getBranchId()).isEqualTo(87654321L);
         assertThat(branchCommitResponse22.getXid()).isEqualTo("x2");
         assertThat(branchCommitResponse11.getResultCode()).isEqualTo(ResultCode.Success);
-        assertThat(branchCommitResponse22.getBranchStatus()).isEqualTo(BranchStatus.PhaseOne_Failed);
+        assertThat(branchCommitResponse22.getBranchStatus())
+                .isEqualTo(BranchStatus.PhaseOne_Failed);
     }
 
     private BranchCommitResponse buildBranchCommitResponsePhaseTwoCommitted() {

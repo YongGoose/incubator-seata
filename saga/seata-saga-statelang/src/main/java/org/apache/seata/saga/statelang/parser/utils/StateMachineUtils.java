@@ -16,15 +16,14 @@
  */
 package org.apache.seata.saga.statelang.parser.utils;
 
-import org.apache.seata.common.util.StringUtils;
-import org.apache.seata.saga.statelang.domain.ChoiceState;
-import org.apache.seata.saga.statelang.domain.State;
-import org.apache.seata.saga.statelang.domain.TaskState;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.seata.common.util.StringUtils;
+import org.apache.seata.saga.statelang.domain.ChoiceState;
+import org.apache.seata.saga.statelang.domain.State;
+import org.apache.seata.saga.statelang.domain.TaskState;
 
 /**
  * Util class for parsing StateMachine
@@ -55,6 +54,8 @@ public class StateMachineUtils {
             default:
                 // Otherwise do nothing
         }
-        return subsequentStates.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
+        return subsequentStates.stream()
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toSet());
     }
 }

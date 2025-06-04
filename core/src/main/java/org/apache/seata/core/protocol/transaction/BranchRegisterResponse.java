@@ -17,7 +17,6 @@
 package org.apache.seata.core.protocol.transaction;
 
 import java.io.Serializable;
-
 import org.apache.seata.core.protocol.MessageType;
 
 /**
@@ -27,7 +26,6 @@ import org.apache.seata.core.protocol.MessageType;
 public class BranchRegisterResponse extends AbstractTransactionResponse implements Serializable {
 
     private long branchId;
-
 
     /**
      * Gets branch id.

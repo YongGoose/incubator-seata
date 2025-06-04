@@ -30,28 +30,33 @@ public class Fastjson2UndoLogParser implements UndoLogParser, Initialize {
 
     private JSONReader.Feature[] jsonReaderFeature;
     private JSONWriter.Feature[] jsonWriterFeature;
+
     @Override
     public void init() {
-        jsonReaderFeature = new JSONReader.Feature[]{
-            JSONReader.Feature.UseDefaultConstructorAsPossible,
-            // If not configured, it will be serialized based on public field and getter methods by default.
-            // After configuration, it will be deserialized based on non-static fields (including private).
-            // It will be safer under FieldBased configuration
-            JSONReader.Feature.FieldBased,
-            JSONReader.Feature.IgnoreAutoTypeNotMatch,
-            JSONReader.Feature.UseNativeObject,
-            JSONReader.Feature.SupportAutoType
-        };
+        jsonReaderFeature =
+                new JSONReader.Feature[] {
+                    JSONReader.Feature.UseDefaultConstructorAsPossible,
+                    // If not configured, it will be serialized based on public field and getter
+                    // methods by default.
+                    // After configuration, it will be deserialized based on non-static fields
+                    // (including private).
+                    // It will be safer under FieldBased configuration
+                    JSONReader.Feature.FieldBased,
+                    JSONReader.Feature.IgnoreAutoTypeNotMatch,
+                    JSONReader.Feature.UseNativeObject,
+                    JSONReader.Feature.SupportAutoType
+                };
 
-        jsonWriterFeature = new JSONWriter.Feature[]{
-            JSONWriter.Feature.WriteClassName,
-            JSONWriter.Feature.FieldBased,
-            JSONWriter.Feature.ReferenceDetection,
-            JSONWriter.Feature.WriteNulls,
-            JSONWriter.Feature.NotWriteDefaultValue,
-            JSONWriter.Feature.NotWriteHashMapArrayListClassName,
-            JSONWriter.Feature.WriteNameAsSymbol
-        };
+        jsonWriterFeature =
+                new JSONWriter.Feature[] {
+                    JSONWriter.Feature.WriteClassName,
+                    JSONWriter.Feature.FieldBased,
+                    JSONWriter.Feature.ReferenceDetection,
+                    JSONWriter.Feature.WriteNulls,
+                    JSONWriter.Feature.NotWriteDefaultValue,
+                    JSONWriter.Feature.NotWriteHashMapArrayListClassName,
+                    JSONWriter.Feature.WriteNameAsSymbol
+                };
     }
 
     @Override
@@ -73,5 +78,4 @@ public class Fastjson2UndoLogParser implements UndoLogParser, Initialize {
     public BranchUndoLog decode(byte[] bytes) {
         return JSONB.parseObject(bytes, BranchUndoLog.class, jsonReaderFeature);
     }
-
 }

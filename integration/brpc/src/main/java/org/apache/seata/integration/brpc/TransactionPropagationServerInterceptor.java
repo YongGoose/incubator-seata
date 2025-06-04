@@ -16,12 +16,11 @@
  */
 package org.apache.seata.integration.brpc;
 
-import java.util.Map;
-
 import com.baidu.brpc.interceptor.AbstractInterceptor;
 import com.baidu.brpc.interceptor.InterceptorChain;
 import com.baidu.brpc.protocol.Request;
 import com.baidu.brpc.protocol.Response;
+import java.util.Map;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.integration.rpc.core.ProviderRpcFilter;
 import org.slf4j.Logger;
@@ -32,9 +31,11 @@ import org.slf4j.LoggerFactory;
  * <p>2. clear SEATA xid when brpc request done in aroundProcess</p>
  *
  */
-public class TransactionPropagationServerInterceptor extends AbstractInterceptor implements ProviderRpcFilter<Request> {
+public class TransactionPropagationServerInterceptor extends AbstractInterceptor
+        implements ProviderRpcFilter<Request> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPropagationServerInterceptor.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(TransactionPropagationServerInterceptor.class);
 
     @Override
     public boolean handleRequest(Request request) {
@@ -55,7 +56,8 @@ public class TransactionPropagationServerInterceptor extends AbstractInterceptor
     }
 
     @Override
-    public void aroundProcess(Request brpcRequest, Response brpcResponse, InterceptorChain chain) throws Exception {
+    public void aroundProcess(Request brpcRequest, Response brpcResponse, InterceptorChain chain)
+            throws Exception {
 
         try {
             chain.intercept(brpcRequest, brpcResponse);
@@ -69,7 +71,10 @@ public class TransactionPropagationServerInterceptor extends AbstractInterceptor
             }
             if (null != rpcXid && !rpcXid.equalsIgnoreCase(xid)) {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("SEATA-BRPC context changed during RPC from {} to {},will be reset.", getJsonContext(rpcContexts), getJsonContext(rootContexts));
+                    LOGGER.warn(
+                            "SEATA-BRPC context changed during RPC from {} to {},will be reset.",
+                            getJsonContext(rpcContexts),
+                            getJsonContext(rootContexts));
                 }
                 resetRootContexts(rootContexts);
             }

@@ -27,16 +27,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.loader.Scope;
 import org.apache.seata.rm.datasource.StatementProxy;
 import org.apache.seata.rm.datasource.exec.BaseInsertExecutor;
 import org.apache.seata.rm.datasource.exec.StatementCallback;
-import org.apache.seata.sqlparser.struct.ColumnMeta;
 import org.apache.seata.sqlparser.SQLInsertRecognizer;
 import org.apache.seata.sqlparser.SQLRecognizer;
+import org.apache.seata.sqlparser.struct.ColumnMeta;
 import org.apache.seata.sqlparser.struct.Defaultable;
 import org.apache.seata.sqlparser.struct.Null;
 import org.apache.seata.sqlparser.struct.Sequenceable;
@@ -52,7 +51,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @LoadLevel(name = JdbcConstants.SQLSERVER, scope = Scope.PROTOTYPE)
-public class SqlServerInsertExecutor extends BaseInsertExecutor implements Sequenceable, Defaultable {
+public class SqlServerInsertExecutor extends BaseInsertExecutor
+        implements Sequenceable, Defaultable {
     private static final Logger LOGGER = LoggerFactory.getLogger(SqlServerInsertExecutor.class);
 
     /**
@@ -62,7 +62,10 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
      * @param statementCallback the statement callback
      * @param sqlRecognizer     the sql recognizer
      */
-    public SqlServerInsertExecutor(StatementProxy statementProxy, StatementCallback statementCallback, SQLRecognizer sqlRecognizer) {
+    public SqlServerInsertExecutor(
+            StatementProxy statementProxy,
+            StatementCallback statementCallback,
+            SQLRecognizer sqlRecognizer) {
         super(statementProxy, statementCallback, sqlRecognizer);
     }
 
@@ -73,7 +76,8 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
         List<String> pkColumnNameList = getTableMeta().getPrimaryKeyOnlyName();
 
         if (pkColumnNameList.size() == 1) {
-            //when there is only one pk in the table, which means only one column is used to form the primary key
+            // when there is only one pk in the table, which means only one column is used to form
+            // the primary key
             if (isContainsPk) {
                 pkValuesMap = getPkValuesByColumn();
             } else if (containsColumns()) {
@@ -83,7 +87,7 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
                 pkValuesMap = getPkValuesWithNoColumn();
             }
         } else {
-            //when there is a composite primary key
+            // when there is a composite primary key
             throw new NotSupportYetException("composite primary key is not supported in sqlserver");
         }
 
@@ -94,14 +98,14 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
     public Map<String, List<Object>> getPkValuesByColumn() throws SQLException {
         Map<String, List<Object>> pkValuesMap = parsePkValuesFromStatement();
         Set<String> keySet = new HashSet<>(pkValuesMap.keySet());
-        //auto increment
+        // auto increment
         for (String pkKey : keySet) {
             List<Object> pkValues = pkValuesMap.get(pkKey);
-            //there is generally only one generation strategy for the primary key of the same table
+            // there is generally only one generation strategy for the primary key of the same table
             if (!pkValues.isEmpty() && pkValues.get(0) instanceof SqlSequenceExpr) {
                 pkValuesMap.put(pkKey, getPkValuesBySequence((SqlSequenceExpr) pkValues.get(0)));
             } else if (!pkValues.isEmpty() && pkValues.get(0) instanceof SqlDefaultExpr) {
-                //note that the DEFAULT keyword cannot be applied to the Identity column
+                // note that the DEFAULT keyword cannot be applied to the Identity column
                 pkValuesMap.put(pkKey, getPkValuesByDefault());
             } else if (!pkValues.isEmpty() && pkValues.get(0) instanceof SqlMethodExpr) {
                 pkValuesMap.put(pkKey, getGeneratedKeys());
@@ -119,7 +123,7 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
 
     @Override
     public List<Object> getPkValuesByDefault() {
-        //Get form the tableMetaData
+        // Get form the tableMetaData
         throw new NotSupportYetException("Default value is not yet supported");
     }
 
@@ -138,7 +142,8 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
             pkValues.add(v);
         }
         if (pkValues.isEmpty()) {
-            throw new NotSupportYetException(String.format("not support sql [%s]", sqlRecognizer.getOriginalSQL()));
+            throw new NotSupportYetException(
+                    String.format("not support sql [%s]", sqlRecognizer.getOriginalSQL()));
         }
         try {
             genKeys.beforeFirst();
@@ -148,29 +153,32 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
 
         int updateCount = statementProxy.getUpdateCount();
         if (updateCount > 1 && pkValues.size() == 1) {
-            //insert multiple rows of values at once, only the latest ID will be returned
-            //just like 'insert into test values(?, ?), (?, ?),...'
+            // insert multiple rows of values at once, only the latest ID will be returned
+            // just like 'insert into test values(?, ?), (?, ?),...'
             Map<String, ColumnMeta> primaryKeyMap = getTableMeta().getPrimaryKeyMap();
             ColumnMeta pkMeta = primaryKeyMap.values().iterator().next();
             if (!pkMeta.isAutoincrement()) {
-                throw new SQLException("The primary key value is not isAutoincrement, which should not happen");
+                throw new SQLException(
+                        "The primary key value is not isAutoincrement, which should not happen");
             }
-            //get the increment
+            // get the increment
             int increment = 0;
-            final String querySql = "SELECT IDENT_INCR('" + getTableMeta().getTableName() + "') As INCR";
+            final String querySql =
+                    "SELECT IDENT_INCR('" + getTableMeta().getTableName() + "') As INCR";
             Connection conn = statementProxy.getConnection();
             try (Statement ps = conn.createStatement();
-                 ResultSet incr = ps.executeQuery(querySql)) {
+                    ResultSet incr = ps.executeQuery(querySql)) {
                 if (incr.next()) {
                     increment = incr.getInt("INCR");
                 }
             }
             if (increment < 1) {
-                throw new SQLException("the increment for " + getTableMeta().getTableName() + " is illegal");
+                throw new SQLException(
+                        "the increment for " + getTableMeta().getTableName() + " is illegal");
             }
 
-            //The sqlserver driver uses SCOPE_IDENTITY() to get the primary key value,
-            //and the return type of SCOPE_IDENTITY() is numeric(38,0)
+            // The sqlserver driver uses SCOPE_IDENTITY() to get the primary key value,
+            // and the return type of SCOPE_IDENTITY() is numeric(38,0)
             long lastPkValue;
             if (pkValues.get(0) instanceof BigDecimal) {
                 lastPkValue = ((BigDecimal) pkValues.get(0)).longValue();
@@ -199,7 +207,7 @@ public class SqlServerInsertExecutor extends BaseInsertExecutor implements Seque
         }
 
         if (insertWithNoPkValue) {
-            //like 'insert into table_name values (args1, args2)' with no column_list and pkValue
+            // like 'insert into table_name values (args1, args2)' with no column_list and pkValue
             String columnName = getTableMeta().getPrimaryKeyOnlyName().get(0);
             return Collections.singletonMap(columnName, getGeneratedKeys());
         } else {

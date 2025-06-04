@@ -41,7 +41,8 @@ public interface SessionLifecycleListener {
      * @param status        the status
      * @throws TransactionException the transaction exception
      */
-    void onStatusChange(GlobalSession globalSession, GlobalStatus status) throws TransactionException;
+    void onStatusChange(GlobalSession globalSession, GlobalStatus status)
+            throws TransactionException;
 
     /**
      * On branch status change.
@@ -51,8 +52,9 @@ public interface SessionLifecycleListener {
      * @param status        the status
      * @throws TransactionException the transaction exception
      */
-    void onBranchStatusChange(GlobalSession globalSession, BranchSession branchSession, BranchStatus status)
-        throws TransactionException;
+    void onBranchStatusChange(
+            GlobalSession globalSession, BranchSession branchSession, BranchStatus status)
+            throws TransactionException;
 
     /**
      * On add branch.
@@ -61,7 +63,8 @@ public interface SessionLifecycleListener {
      * @param branchSession the branch session
      * @throws TransactionException the transaction exception
      */
-    void onAddBranch(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    void onAddBranch(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 
     /**
      * On remove branch.
@@ -70,7 +73,8 @@ public interface SessionLifecycleListener {
      * @param branchSession the branch session
      * @throws TransactionException the transaction exception
      */
-    void onRemoveBranch(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    void onRemoveBranch(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 
     /**
      * On close.
@@ -95,5 +99,4 @@ public interface SessionLifecycleListener {
      * @throws TransactionException the transaction exception
      */
     void onFailEnd(GlobalSession globalSession) throws TransactionException;
-
 }

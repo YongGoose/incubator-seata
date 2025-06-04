@@ -24,7 +24,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.seata.common.thread.NamedThreadFactory;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.core.protocol.RpcMessage;
@@ -73,27 +72,34 @@ public class ProtocolV1SerializerTest {
             final AtomicInteger tag = new AtomicInteger(0);
             final AtomicInteger success = new AtomicInteger(0);
             // no queue
-            final ThreadPoolExecutor service1 = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
-                    new SynchronousQueue<>(), new NamedThreadFactory("client-", false));
+            final ThreadPoolExecutor service1 =
+                    new ThreadPoolExecutor(
+                            threads,
+                            threads,
+                            0L,
+                            TimeUnit.MILLISECONDS,
+                            new SynchronousQueue<>(),
+                            new NamedThreadFactory("client-", false));
             for (int i = 0; i < threads; i++) {
-                service1.execute(() -> {
-                    while (tag.getAndIncrement() < runTimes) {
-                        try {
-                            Future future = client.sendRpc(head, body);
-                            RpcMessage resp = (RpcMessage)future.get(10, TimeUnit.SECONDS);
-                            if (resp != null) {
-                                success.incrementAndGet();
+                service1.execute(
+                        () -> {
+                            while (tag.getAndIncrement() < runTimes) {
+                                try {
+                                    Future future = client.sendRpc(head, body);
+                                    RpcMessage resp = (RpcMessage) future.get(10, TimeUnit.SECONDS);
+                                    if (resp != null) {
+                                        success.incrementAndGet();
+                                    }
+                                } catch (Exception e) {
+                                    LOGGER.error("Client send error", e);
+                                } finally {
+                                    cnt.countDown();
+                                }
                             }
-                        } catch (Exception e) {
-                            LOGGER.error("Client send error", e);
-                        } finally {
-                            cnt.countDown();
-                        }
-                    }
-                });
+                        });
             }
 
-            cnt.await(10,TimeUnit.SECONDS);
+            cnt.await(10, TimeUnit.SECONDS);
             LOGGER.info("success {}/{}", success.get(), runTimes);
             Assertions.assertEquals(success.get(), runTimes);
             service1.shutdown();

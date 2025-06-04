@@ -16,7 +16,17 @@
  */
 package org.apache.seata.apm.skywalking.plugin;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.netty.channel.Channel;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.protocol.transaction.GlobalCommitRequest;
 import org.apache.skywalking.apm.agent.core.context.ContextCarrier;
@@ -29,17 +39,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class NettyRemotingClientSendSyncInterceptorTest {
 
@@ -67,13 +66,17 @@ public class NettyRemotingClientSendSyncInterceptorTest {
         rpcMessage.setBody(request);
         rpcMessage.setHeadMap(new HashMap<>());
 
-        Object[] allArguments = new Object[] { channel, rpcMessage };
-        Class<?>[] argumentTypes = new Class[] { Channel.class, RpcMessage.class };
+        Object[] allArguments = new Object[] {channel, rpcMessage};
+        Class<?>[] argumentTypes = new Class[] {Channel.class, RpcMessage.class};
 
-        try (MockedStatic<ContextManager> contextManagerMockedStatic = Mockito.mockStatic(ContextManager.class)) {
+        try (MockedStatic<ContextManager> contextManagerMockedStatic =
+                Mockito.mockStatic(ContextManager.class)) {
             AbstractSpan span = mock(AbstractSpan.class);
             contextManagerMockedStatic
-                    .when(() -> ContextManager.createExitSpan(anyString(), any(ContextCarrier.class), anyString()))
+                    .when(
+                            () ->
+                                    ContextManager.createExitSpan(
+                                            anyString(), any(ContextCarrier.class), anyString()))
                     .thenReturn(span);
 
             // When
@@ -86,8 +89,9 @@ public class NettyRemotingClientSendSyncInterceptorTest {
         }
 
         // afterMethod should call ContextManager.stopSpan if body is AbstractMessage
-        Object[] afterArgs = new Object[] { rpcMessage };
-        try (MockedStatic<ContextManager> contextManagerMockedStatic = Mockito.mockStatic(ContextManager.class)) {
+        Object[] afterArgs = new Object[] {rpcMessage};
+        try (MockedStatic<ContextManager> contextManagerMockedStatic =
+                Mockito.mockStatic(ContextManager.class)) {
             contextManagerMockedStatic.when(ContextManager::stopSpan).then(invocation -> null);
 
             // When

@@ -20,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.rm.datasource.sql.struct.Field;
 import org.apache.seata.rm.datasource.sql.struct.TableRecords;
 import org.apache.seata.rm.datasource.undo.SQLUndoLog;
@@ -41,7 +40,8 @@ public class PolarDBXUndoInsertExecutor extends MySQLUndoInsertExecutor {
     }
 
     @Override
-    protected void undoPrepare(PreparedStatement undoPST, ArrayList<Field> undoValues, List<Field> pkValueList)
+    protected void undoPrepare(
+            PreparedStatement undoPST, ArrayList<Field> undoValues, List<Field> pkValueList)
             throws SQLException {
         super.undoPrepare(undoPST, undoValues, pkValueList);
     }

@@ -16,6 +16,11 @@
  */
 package org.apache.seata.saga.statelang.parser.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.util.CollectionUtils;
@@ -24,12 +29,6 @@ import org.apache.seata.saga.statelang.domain.ExecutionStatus;
 import org.apache.seata.saga.statelang.domain.StateInstance;
 import org.apache.seata.saga.statelang.domain.StateMachineInstance;
 import org.apache.seata.saga.statelang.parser.JsonParser;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Transform designer json to standard Saga State language json
@@ -65,7 +64,10 @@ public class DesignerJsonTransformer {
         return machineJsonObject;
     }
 
-    private static void transformNode(Map<String, Object> machineJsonObject, Map<String, Object> nodeMap, Map<String, Object> nodeObj) {
+    private static void transformNode(
+            Map<String, Object> machineJsonObject,
+            Map<String, Object> nodeMap,
+            Map<String, Object> nodeObj) {
         nodeMap.put((String) nodeObj.get("id"), nodeObj);
 
         String type = (String) nodeObj.get("stateType");
@@ -75,14 +77,18 @@ public class DesignerJsonTransformer {
                 machineJsonObject.putAll((Map<String, Object>) propsObj.get("StateMachine"));
             }
         } else if (!"Catch".equals(type)) {
-            Map<String, Object> states = (Map<String, Object>) CollectionUtils.computeIfAbsent(machineJsonObject, "States",
-                key -> new LinkedHashMap<>());
+            Map<String, Object> states =
+                    (Map<String, Object>)
+                            CollectionUtils.computeIfAbsent(
+                                    machineJsonObject, "States", key -> new LinkedHashMap<>());
 
             Map<String, Object> stateJsonObject = new LinkedHashMap<>();
             String stateId = (String) nodeObj.get("stateId");
             if (states.containsKey(stateId)) {
                 throw new RuntimeException(
-                        "Transform designer json to standard json failed, stateId[" + stateId + "] already exists, please rename it.");
+                        "Transform designer json to standard json failed, stateId["
+                                + stateId
+                                + "] already exists, please rename it.");
             }
 
             String comment = (String) nodeObj.get("label");
@@ -105,7 +111,11 @@ public class DesignerJsonTransformer {
     }
 
     @SuppressWarnings("lgtm[java/dereferenced-value-may-be-null]")
-    private static void transformEdge(Map<String, Object> machineJsonObject, List<Object> nodes, Map<String, Object> nodeMap, Map<String, Object> edgeObj) {
+    private static void transformEdge(
+            Map<String, Object> machineJsonObject,
+            List<Object> nodes,
+            Map<String, Object> nodeMap,
+            Map<String, Object> edgeObj) {
         String sourceId = (String) edgeObj.get("source");
         String targetId = (String) edgeObj.get("target");
         if (StringUtils.hasLength(sourceId)) {
@@ -114,15 +124,17 @@ public class DesignerJsonTransformer {
 
             if (sourceNode != null) {
                 Map<String, Object> states = (Map<String, Object>) machineJsonObject.get("States");
-                Map<String, Object> sourceState = (Map<String, Object>) states.get((String) sourceNode.get("stateId"));
+                Map<String, Object> sourceState =
+                        (Map<String, Object>) states.get((String) sourceNode.get("stateId"));
                 String targetStateId = (String) targetNode.get("stateId");
 
                 String sourceType = (String) sourceNode.get("stateType");
                 if ("Start".equals(sourceType)) {
                     machineJsonObject.put("StartState", targetStateId);
-                    //Make sure 'StartState' is before 'States'
+                    // Make sure 'StartState' is before 'States'
                     machineJsonObject.put("States", machineJsonObject.remove("States"));
-                } else if ("ServiceTask".equals(sourceType) || "SubStateMachine".equals(sourceType)) {
+                } else if ("ServiceTask".equals(sourceType)
+                        || "SubStateMachine".equals(sourceType)) {
                     if (targetNode != null && "Compensation".equals(targetNode.get("stateType"))) {
                         sourceState.put("CompensateState", targetStateId);
                     } else {
@@ -131,11 +143,17 @@ public class DesignerJsonTransformer {
                 } else if ("Catch".equals(sourceType)) {
                     Map<String, Object> catchAttachedNode = getCatchAttachedNode(sourceNode, nodes);
                     if (catchAttachedNode == null) {
-                        throw new RuntimeException("'Catch' node[" + sourceNode.get("id") + "] is not attached on a 'ServiceTask' or 'ScriptTask'");
+                        throw new RuntimeException(
+                                "'Catch' node["
+                                        + sourceNode.get("id")
+                                        + "] is not attached on a 'ServiceTask' or 'ScriptTask'");
                     }
-                    Map<String, Object> catchAttachedState = (Map<String, Object>) states.get(catchAttachedNode.get("stateId"));
-                    List<Object> catches = (List<Object>) CollectionUtils.computeIfAbsent(catchAttachedState, "Catch",
-                        key -> new ArrayList<>());
+                    Map<String, Object> catchAttachedState =
+                            (Map<String, Object>) states.get(catchAttachedNode.get("stateId"));
+                    List<Object> catches =
+                            (List<Object>)
+                                    CollectionUtils.computeIfAbsent(
+                                            catchAttachedState, "Catch", key -> new ArrayList<>());
 
                     Map<String, Object> edgeProps = (Map<String, Object>) edgeObj.get("stateProps");
                     if (edgeProps != null) {
@@ -145,8 +163,10 @@ public class DesignerJsonTransformer {
                         catches.add(catchObj);
                     }
                 } else if ("Choice".equals(sourceType)) {
-                    List<Object> choices = (List<Object>) CollectionUtils.computeIfAbsent(sourceState, "Choices",
-                        key -> new ArrayList<>());
+                    List<Object> choices =
+                            (List<Object>)
+                                    CollectionUtils.computeIfAbsent(
+                                            sourceState, "Choices", key -> new ArrayList<>());
 
                     Map<String, Object> edgeProps = (Map<String, Object>) edgeObj.get("stateProps");
                     if (edgeProps != null) {
@@ -167,10 +187,13 @@ public class DesignerJsonTransformer {
     }
 
     public static boolean isDesignerJson(Map<String, Object> jsonObject) {
-        return jsonObject != null && jsonObject.containsKey("nodes") && jsonObject.containsKey("edges");
+        return jsonObject != null
+                && jsonObject.containsKey("nodes")
+                && jsonObject.containsKey("edges");
     }
 
-    private static Map<String, Object> getCatchAttachedNode(Map<String, Object> catchNode, List<Object> nodes) {
+    private static Map<String, Object> getCatchAttachedNode(
+            Map<String, Object> catchNode, List<Object> nodes) {
         Number catchNodeX = (Number) catchNode.get("x");
         Number catchNodeY = (Number) catchNode.get("y");
         String catchSize = (String) catchNode.get("size");
@@ -180,8 +203,8 @@ public class DesignerJsonTransformer {
 
         for (Object node : nodes) {
             Map<String, Object> nodeObj = (Map<String, Object>) node;
-            if (catchNode != nodeObj &&
-                    ("ServiceTask".equals(nodeObj.get("stateType"))
+            if (catchNode != nodeObj
+                    && ("ServiceTask".equals(nodeObj.get("stateType"))
                             || "ScriptTask".equals(nodeObj.get("stateType")))) {
 
                 Number nodeX = (Number) nodeObj.get("x");
@@ -202,8 +225,12 @@ public class DesignerJsonTransformer {
         return null;
     }
 
-    private static boolean isBordersCoincided(Number xyA, Number xyB, Number lengthA, Number lengthB) {
-        double centerPointLength = xyA.doubleValue() > xyB.doubleValue() ? xyA.doubleValue() - xyB.doubleValue() : xyB.doubleValue() - xyA.doubleValue();
+    private static boolean isBordersCoincided(
+            Number xyA, Number xyB, Number lengthA, Number lengthB) {
+        double centerPointLength =
+                xyA.doubleValue() > xyB.doubleValue()
+                        ? xyA.doubleValue() - xyB.doubleValue()
+                        : xyB.doubleValue() - xyA.doubleValue();
         return ((lengthA.doubleValue() + lengthB.doubleValue()) / 2) > centerPointLength;
     }
 
@@ -214,26 +241,34 @@ public class DesignerJsonTransformer {
      * @return the tracing graph json
      */
     @SuppressWarnings("lgtm[java/dereferenced-value-may-be-null]")
-    public static String generateTracingGraphJson(StateMachineInstance stateMachineInstance, JsonParser jsonParser) {
+    public static String generateTracingGraphJson(
+            StateMachineInstance stateMachineInstance, JsonParser jsonParser) {
 
         if (stateMachineInstance == null) {
-            throw new FrameworkException("StateMachineInstance is not exits",
+            throw new FrameworkException(
+                    "StateMachineInstance is not exits",
                     FrameworkErrorCode.StateMachineInstanceNotExists);
         }
         String stateMachineJson = stateMachineInstance.getStateMachine().getContent();
         if (StringUtils.isEmpty(stateMachineJson)) {
-            throw new FrameworkException("Cannot get StateMachine Json",
-                    FrameworkErrorCode.ObjectNotExists);
+            throw new FrameworkException(
+                    "Cannot get StateMachine Json", FrameworkErrorCode.ObjectNotExists);
         }
 
-        Map<String, Object> stateMachineJsonObj = jsonParser.parse(stateMachineJson, Map.class, true);
+        Map<String, Object> stateMachineJsonObj =
+                jsonParser.parse(stateMachineJson, Map.class, true);
         if (!DesignerJsonTransformer.isDesignerJson(stateMachineJsonObj)) {
-            throw new FrameworkException("StateMachine Json is not generated by Designer",
+            throw new FrameworkException(
+                    "StateMachine Json is not generated by Designer",
                     FrameworkErrorCode.InvalidConfiguration);
         }
-        Map<String, List<StateInstance>> stateInstanceMapGroupByName = new HashMap<>(stateMachineInstance.getStateMap().size());
+        Map<String, List<StateInstance>> stateInstanceMapGroupByName =
+                new HashMap<>(stateMachineInstance.getStateMap().size());
         for (StateInstance stateInstance : stateMachineInstance.getStateMap().values()) {
-            CollectionUtils.computeIfAbsent(stateInstanceMapGroupByName, stateInstance.getName(), key -> new ArrayList<>())
+            CollectionUtils.computeIfAbsent(
+                            stateInstanceMapGroupByName,
+                            stateInstance.getName(),
+                            key -> new ArrayList<>())
                     .add(stateInstance);
         }
         List<Object> nodesArray = (List<Object>) stateMachineJsonObj.get("nodes");
@@ -252,7 +287,7 @@ public class DesignerJsonTransformer {
                 if (stateInstanceList.size() == 1) {
                     stateInstance = stateInstanceList.get(0);
                 } else {
-                    //find out latest stateInstance
+                    // find out latest stateInstance
                     for (StateInstance stateInst : stateInstanceList) {
 
                         if (stateInstance == null
@@ -279,7 +314,8 @@ public class DesignerJsonTransformer {
             }
         }
 
-        if (stateMachineJsonObj != null) { /*lgtm[java/useless-null-check]*/
+        if (stateMachineJsonObj != null) {
+            /*lgtm[java/useless-null-check]*/
             return jsonParser.toJsonString(stateMachineJsonObj, true);
         }
         return "";

@@ -16,11 +16,6 @@
  */
 package org.apache.seata.core.rpc.netty;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeoutException;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
@@ -29,6 +24,10 @@ import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeoutException;
 import org.apache.seata.common.util.NetUtil;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.protocol.AbstractMessage;
@@ -49,7 +48,8 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.3.0
  */
-public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting implements RemotingServer {
+public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting
+        implements RemotingServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractNettyRemotingServer.class);
 
@@ -61,25 +61,29 @@ public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting 
         serverBootstrap.start();
     }
 
-    public AbstractNettyRemotingServer(ThreadPoolExecutor messageExecutor, NettyServerConfig nettyServerConfig) {
+    public AbstractNettyRemotingServer(
+            ThreadPoolExecutor messageExecutor, NettyServerConfig nettyServerConfig) {
         super(messageExecutor);
         serverBootstrap = new NettyServerBootstrap(nettyServerConfig);
         serverBootstrap.setChannelHandlers(new ServerHandler());
     }
 
     @Override
-    public Object sendSyncRequest(String resourceId, String clientId, Object msg, boolean tryOtherApp)
+    public Object sendSyncRequest(
+            String resourceId, String clientId, Object msg, boolean tryOtherApp)
             throws TimeoutException, IOException {
         Channel channel = ChannelManager.getChannel(resourceId, clientId, tryOtherApp);
         if (channel == null) {
-            throw new IOException("rm client is not connected. dbkey:" + resourceId + ",clientId:" + clientId);
+            throw new IOException(
+                    "rm client is not connected. dbkey:" + resourceId + ",clientId:" + clientId);
         }
         RpcMessage rpcMessage = buildRequestMessage(msg, ProtocolConstants.MSGTYPE_RESQUEST_SYNC);
         return super.sendSync(channel, rpcMessage, NettyServerConfig.getRpcRequestTimeout());
     }
 
     @Override
-    public Object sendSyncRequest(Channel channel, Object msg) throws TimeoutException, IOException {
+    public Object sendSyncRequest(Channel channel, Object msg)
+            throws TimeoutException, IOException {
         if (channel == null) {
             throw new IOException("client is not connected");
         }
@@ -103,18 +107,22 @@ public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting 
             clientChannel = ChannelManager.getSameClientChannel(channel);
         }
         if (clientChannel != null) {
-            RpcMessage rpcMsg = buildResponseMessage(rpcMessage, msg, msg instanceof HeartbeatMessage
-                ? ProtocolConstants.MSGTYPE_HEARTBEAT_RESPONSE
-                : ProtocolConstants.MSGTYPE_RESPONSE);
+            RpcMessage rpcMsg =
+                    buildResponseMessage(
+                            rpcMessage,
+                            msg,
+                            msg instanceof HeartbeatMessage
+                                    ? ProtocolConstants.MSGTYPE_HEARTBEAT_RESPONSE
+                                    : ProtocolConstants.MSGTYPE_RESPONSE);
             super.sendAsync(clientChannel, rpcMsg);
         } else {
             throw new RuntimeException("channel is error.");
         }
     }
 
-
     @Override
-    public void registerProcessor(int messageType, RemotingProcessor processor, ExecutorService executor) {
+    public void registerProcessor(
+            int messageType, RemotingProcessor processor, ExecutorService executor) {
         Pair<RemotingProcessor, ExecutorService> pair = new Pair<>(processor, executor);
         this.processorTable.put(messageType, pair);
     }
@@ -170,7 +178,7 @@ public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting 
         @Override
         public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
             if (msg instanceof RpcMessage) {
-                processMessage(ctx, (RpcMessage)msg);
+                processMessage(ctx, (RpcMessage) msg);
             } else {
                 LOGGER.error("rpcMessage type error");
             }
@@ -230,7 +238,8 @@ public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
             try {
-                if (cause instanceof DecoderException && null == ChannelManager.getContextFromIdentified(ctx.channel())) {
+                if (cause instanceof DecoderException
+                        && null == ChannelManager.getContextFromIdentified(ctx.channel())) {
                     return;
                 }
                 LOGGER.error("exceptionCaught:{}, channel:{}", cause.getMessage(), ctx.channel());
@@ -273,20 +282,25 @@ public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting 
             }
             super.close(ctx, future);
         }
-
     }
 
     @Override
-    protected void processMessage(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {
+    protected void processMessage(ChannelHandlerContext ctx, RpcMessage rpcMessage)
+            throws Exception {
         Object body = rpcMessage.getBody();
         RpcContext rpcContext = ChannelManager.getContextFromIdentified(ctx.channel());
-        // If the client is not version 2.3.0 or higher, splitting MergedWarpMessage will result in the client’s mergeMsgMap not being cleared
-        if (body instanceof MergedWarpMessage && (StringUtils.isNotBlank(rpcContext.getVersion())
-            && Version.isAboveOrEqualVersion230(rpcContext.getVersion()))) {
-            MergedWarpMessage mergedWarpMessage = (MergedWarpMessage)body;
+        // If the client is not version 2.3.0 or higher, splitting MergedWarpMessage will result in
+        // the client’s mergeMsgMap not being cleared
+        if (body instanceof MergedWarpMessage
+                && (StringUtils.isNotBlank(rpcContext.getVersion())
+                        && Version.isAboveOrEqualVersion230(rpcContext.getVersion()))) {
+            MergedWarpMessage mergedWarpMessage = (MergedWarpMessage) body;
             for (int i = 0; i < mergedWarpMessage.msgs.size(); i++) {
                 RpcMessage rpcMsg =
-                    buildRequestMessage(mergedWarpMessage.msgs.get(i), rpcMessage, mergedWarpMessage.msgIds.get(i));
+                        buildRequestMessage(
+                                mergedWarpMessage.msgs.get(i),
+                                rpcMessage,
+                                mergedWarpMessage.msgIds.get(i));
                 super.processMessage(ctx, rpcMsg);
             }
         } else {
@@ -294,7 +308,7 @@ public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting 
         }
     }
 
-    private RpcMessage buildRequestMessage(AbstractMessage msg, RpcMessage rpcMessage,int id) {
+    private RpcMessage buildRequestMessage(AbstractMessage msg, RpcMessage rpcMessage, int id) {
         RpcMessage rpcMsg = new RpcMessage();
         rpcMsg.setId(id);
         rpcMsg.setCodec(rpcMessage.getCodec());
@@ -302,5 +316,4 @@ public abstract class AbstractNettyRemotingServer extends AbstractNettyRemoting 
         rpcMsg.setBody(msg);
         return rpcMsg;
     }
-
 }

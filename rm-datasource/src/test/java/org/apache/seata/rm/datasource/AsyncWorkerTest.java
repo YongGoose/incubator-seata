@@ -16,10 +16,7 @@
  */
 package org.apache.seata.rm.datasource;
 
-import org.apache.seata.rm.datasource.AsyncWorker;
-import org.apache.seata.core.model.BranchStatus;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
@@ -27,9 +24,9 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import org.apache.seata.core.model.BranchStatus;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class AsyncWorkerTest {
 
@@ -45,21 +42,29 @@ class AsyncWorkerTest {
 
     @Test
     void doBranchCommitSafely() {
-        Assertions.assertDoesNotThrow(worker::doBranchCommitSafely, "this method should never throw anything");
+        Assertions.assertDoesNotThrow(
+                worker::doBranchCommitSafely, "this method should never throw anything");
     }
 
     @Test
     void groupedByResourceId() {
         List<AsyncWorker.Phase2Context> contexts = getRandomContexts();
-        Map<String, List<AsyncWorker.Phase2Context>> groupedContexts = worker.groupedByResourceId(contexts);
-        groupedContexts.forEach((resourceId, group) -> group.forEach(context -> {
-            String message = "each context in the group should has the same resourceId";
-            assertEquals(resourceId, context.resourceId, message);
-        }));
+        Map<String, List<AsyncWorker.Phase2Context>> groupedContexts =
+                worker.groupedByResourceId(contexts);
+        groupedContexts.forEach(
+                (resourceId, group) ->
+                        group.forEach(
+                                context -> {
+                                    String message =
+                                            "each context in the group should has the same"
+                                                    + " resourceId";
+                                    assertEquals(resourceId, context.resourceId, message);
+                                }));
     }
 
     private List<AsyncWorker.Phase2Context> getRandomContexts() {
-        return random.ints().limit(16)
+        return random.ints()
+                .limit(16)
                 .mapToObj(String::valueOf)
                 .flatMap(this::generateContextStream)
                 .collect(Collectors.toList());

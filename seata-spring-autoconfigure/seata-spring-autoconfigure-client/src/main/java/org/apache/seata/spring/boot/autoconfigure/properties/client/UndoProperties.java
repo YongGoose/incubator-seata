@@ -16,15 +16,14 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.client;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_ONLY_CARE_UPDATE_COLUMNS;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_DATA_VALIDATION;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_LOG_SERIALIZATION;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_LOG_TABLE;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.UNDO_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = UNDO_PREFIX)

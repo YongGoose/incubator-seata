@@ -19,7 +19,6 @@ package org.apache.seata.common.util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class IOUtilTest {
 
     @Test
@@ -44,20 +43,21 @@ public class IOUtilTest {
 
     @Test
     public void testIgnoreExceptionOnClose() {
-        FakeResource resource = new FakeResource() {
-            @Override
-            public void close() throws Exception {
-                super.close();
-                throw new Exception("Ops!");
-            }
-        };
+        FakeResource resource =
+                new FakeResource() {
+                    @Override
+                    public void close() throws Exception {
+                        super.close();
+                        throw new Exception("Ops!");
+                    }
+                };
 
         IOUtil.close(resource);
 
         Assertions.assertTrue(resource.isClose());
     }
 
-    private class FakeResource implements AutoCloseable{
+    private class FakeResource implements AutoCloseable {
         private boolean close = false;
 
         @Override

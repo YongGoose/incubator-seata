@@ -16,6 +16,7 @@
  */
 package org.apache.seata.tm;
 
+import java.util.concurrent.TimeoutException;
 import org.apache.seata.core.exception.TmTransactionException;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.exception.TransactionExceptionCode;
@@ -36,8 +37,6 @@ import org.apache.seata.core.protocol.transaction.GlobalStatusRequest;
 import org.apache.seata.core.protocol.transaction.GlobalStatusResponse;
 import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 
-import java.util.concurrent.TimeoutException;
-
 /**
  * The type Default transaction manager.
  *
@@ -45,14 +44,16 @@ import java.util.concurrent.TimeoutException;
 public class DefaultTransactionManager implements TransactionManager {
 
     @Override
-    public String begin(String applicationId, String transactionServiceGroup, String name, int timeout)
-        throws TransactionException {
+    public String begin(
+            String applicationId, String transactionServiceGroup, String name, int timeout)
+            throws TransactionException {
         GlobalBeginRequest request = new GlobalBeginRequest();
         request.setTransactionName(name);
         request.setTimeout(timeout);
         GlobalBeginResponse response = (GlobalBeginResponse) syncCall(request);
         if (response.getResultCode() == ResultCode.Failed) {
-            throw new TmTransactionException(TransactionExceptionCode.BeginFailed, response.getMsg());
+            throw new TmTransactionException(
+                    TransactionExceptionCode.BeginFailed, response.getMsg());
         }
         return response.getXid();
     }
@@ -82,7 +83,8 @@ public class DefaultTransactionManager implements TransactionManager {
     }
 
     @Override
-    public GlobalStatus globalReport(String xid, GlobalStatus globalStatus) throws TransactionException {
+    public GlobalStatus globalReport(String xid, GlobalStatus globalStatus)
+            throws TransactionException {
         GlobalReportRequest globalReport = new GlobalReportRequest();
         globalReport.setXid(xid);
         globalReport.setGlobalStatus(globalStatus);
@@ -90,9 +92,11 @@ public class DefaultTransactionManager implements TransactionManager {
         return response.getGlobalStatus();
     }
 
-    private AbstractTransactionResponse syncCall(AbstractTransactionRequest request) throws TransactionException {
+    private AbstractTransactionResponse syncCall(AbstractTransactionRequest request)
+            throws TransactionException {
         try {
-            return (AbstractTransactionResponse) TmNettyRemotingClient.getInstance().sendSyncRequest(request);
+            return (AbstractTransactionResponse)
+                    TmNettyRemotingClient.getInstance().sendSyncRequest(request);
         } catch (TimeoutException toe) {
             throw new TmTransactionException(TransactionExceptionCode.IO, "RPC timeout", toe);
         }

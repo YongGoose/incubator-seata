@@ -20,23 +20,22 @@ import com.google.protobuf.Any;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.ConfigurationTestHelper;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.protocol.generated.GrpcMessageProto;
+import org.apache.seata.core.protocol.generated.SeataServiceGrpc;
 import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
 import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.seata.core.rpc.netty.grpc.GrpcHeaderEnum;
 import org.apache.seata.core.serializer.SerializerType;
 import org.apache.seata.mockserver.MockServer;
 import org.apache.seata.serializer.protobuf.generated.*;
-import org.apache.seata.core.protocol.generated.SeataServiceGrpc;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class GrpcTest {
 
@@ -47,96 +46,130 @@ public class GrpcTest {
     @BeforeAll
     public static void before() {
         ConfigurationFactory.reload();
-        ConfigurationTestHelper.putConfig(ConfigurationKeys.SERVER_SERVICE_PORT_CAMEL, String.valueOf(ProtocolTestConstants.MOCK_SERVER_PORT));
+        ConfigurationTestHelper.putConfig(
+                ConfigurationKeys.SERVER_SERVICE_PORT_CAMEL,
+                String.valueOf(ProtocolTestConstants.MOCK_SERVER_PORT));
         MockServer.start(ProtocolTestConstants.MOCK_SERVER_PORT);
         TmNettyRemotingClient.getInstance().destroy();
         RmNettyRemotingClient.getInstance().destroy();
 
-        channel = ManagedChannelBuilder.forAddress("127.0.0.1", ProtocolTestConstants.MOCK_SERVER_PORT).usePlaintext().build();
+        channel =
+                ManagedChannelBuilder.forAddress(
+                                "127.0.0.1", ProtocolTestConstants.MOCK_SERVER_PORT)
+                        .usePlaintext()
+                        .build();
         seataServiceStub = SeataServiceGrpc.newStub(channel);
     }
 
     @AfterAll
     public static void after() {
-        //MockServer.close();
+        // MockServer.close();
         ConfigurationTestHelper.removeConfig(ConfigurationKeys.SERVER_SERVICE_PORT_CAMEL);
         TmNettyRemotingClient.getInstance().destroy();
         RmNettyRemotingClient.getInstance().destroy();
     }
 
     private GrpcMessageProto getRegisterTMRequest() {
-        AbstractIdentifyRequestProto abstractIdentifyRequestProto = AbstractIdentifyRequestProto.newBuilder()
-                .setApplicationId("test-applicationId")
-                .build();
-        RegisterTMRequestProto registerTMRequestProto = RegisterTMRequestProto.newBuilder()
-                .setAbstractIdentifyRequest(abstractIdentifyRequestProto)
-                .build();
+        AbstractIdentifyRequestProto abstractIdentifyRequestProto =
+                AbstractIdentifyRequestProto.newBuilder()
+                        .setApplicationId("test-applicationId")
+                        .build();
+        RegisterTMRequestProto registerTMRequestProto =
+                RegisterTMRequestProto.newBuilder()
+                        .setAbstractIdentifyRequest(abstractIdentifyRequestProto)
+                        .build();
 
-        return GrpcMessageProto.newBuilder().putHeadMap(GrpcHeaderEnum.CODEC_TYPE.header, String.valueOf(SerializerType.GRPC.getCode())).setBody(Any.pack(registerTMRequestProto).toByteString()).build();
+        return GrpcMessageProto.newBuilder()
+                .putHeadMap(
+                        GrpcHeaderEnum.CODEC_TYPE.header,
+                        String.valueOf(SerializerType.GRPC.getCode()))
+                .setBody(Any.pack(registerTMRequestProto).toByteString())
+                .build();
     }
 
     private GrpcMessageProto getGlobalBeginRequest() {
-        GlobalBeginRequestProto globalBeginRequestProto = GlobalBeginRequestProto.newBuilder()
-                .setTransactionName("test-transaction")
-                .setTimeout(2000)
+        GlobalBeginRequestProto globalBeginRequestProto =
+                GlobalBeginRequestProto.newBuilder()
+                        .setTransactionName("test-transaction")
+                        .setTimeout(2000)
+                        .build();
+        return GrpcMessageProto.newBuilder()
+                .putHeadMap(
+                        GrpcHeaderEnum.CODEC_TYPE.header,
+                        String.valueOf(SerializerType.GRPC.getCode()))
+                .setBody(Any.pack(globalBeginRequestProto).toByteString())
                 .build();
-        return GrpcMessageProto.newBuilder().putHeadMap(GrpcHeaderEnum.CODEC_TYPE.header, String.valueOf(SerializerType.GRPC.getCode())).setBody(Any.pack(globalBeginRequestProto).toByteString()).build();
     }
 
     private GrpcMessageProto getBranchRegisterRequest() {
-        BranchRegisterRequestProto branchRegisterRequestProto = BranchRegisterRequestProto.newBuilder()
-                .setXid("1")
-                .setLockKey("1")
-                .setResourceId("test-resource")
-                .setBranchType(BranchTypeProto.TCC)
-                .setApplicationData("{\"mock\":\"mock\"}")
-                .build();
+        BranchRegisterRequestProto branchRegisterRequestProto =
+                BranchRegisterRequestProto.newBuilder()
+                        .setXid("1")
+                        .setLockKey("1")
+                        .setResourceId("test-resource")
+                        .setBranchType(BranchTypeProto.TCC)
+                        .setApplicationData("{\"mock\":\"mock\"}")
+                        .build();
 
-        return GrpcMessageProto.newBuilder().putHeadMap(GrpcHeaderEnum.CODEC_TYPE.header, String.valueOf(SerializerType.GRPC.getCode())).setBody(Any.pack(branchRegisterRequestProto).toByteString()).build();
+        return GrpcMessageProto.newBuilder()
+                .putHeadMap(
+                        GrpcHeaderEnum.CODEC_TYPE.header,
+                        String.valueOf(SerializerType.GRPC.getCode()))
+                .setBody(Any.pack(branchRegisterRequestProto).toByteString())
+                .build();
     }
 
     private GrpcMessageProto getGlobalCommitRequest() {
-        AbstractGlobalEndRequestProto globalEndRequestProto = AbstractGlobalEndRequestProto.newBuilder()
-                .setXid("1")
-                .build();
-        GlobalCommitRequestProto globalCommitRequestProto = GlobalCommitRequestProto.newBuilder()
-                .setAbstractGlobalEndRequest(globalEndRequestProto)
-                .build();
+        AbstractGlobalEndRequestProto globalEndRequestProto =
+                AbstractGlobalEndRequestProto.newBuilder().setXid("1").build();
+        GlobalCommitRequestProto globalCommitRequestProto =
+                GlobalCommitRequestProto.newBuilder()
+                        .setAbstractGlobalEndRequest(globalEndRequestProto)
+                        .build();
 
-        return GrpcMessageProto.newBuilder().putHeadMap(GrpcHeaderEnum.CODEC_TYPE.header, String.valueOf(SerializerType.GRPC.getCode())).setBody(Any.pack(globalCommitRequestProto).toByteString()).build();
+        return GrpcMessageProto.newBuilder()
+                .putHeadMap(
+                        GrpcHeaderEnum.CODEC_TYPE.header,
+                        String.valueOf(SerializerType.GRPC.getCode()))
+                .setBody(Any.pack(globalCommitRequestProto).toByteString())
+                .build();
     }
 
     private GrpcMessageProto getGlobalRollbackRequest() {
-        AbstractGlobalEndRequestProto globalEndRequestProto = AbstractGlobalEndRequestProto.newBuilder()
-                .setXid("1")
-                .build();
-        GlobalRollbackRequestProto globalRollbackRequestProto = GlobalRollbackRequestProto.newBuilder()
-                .setAbstractGlobalEndRequest(globalEndRequestProto)
-                .build();
+        AbstractGlobalEndRequestProto globalEndRequestProto =
+                AbstractGlobalEndRequestProto.newBuilder().setXid("1").build();
+        GlobalRollbackRequestProto globalRollbackRequestProto =
+                GlobalRollbackRequestProto.newBuilder()
+                        .setAbstractGlobalEndRequest(globalEndRequestProto)
+                        .build();
 
-        return GrpcMessageProto.newBuilder().putHeadMap(GrpcHeaderEnum.CODEC_TYPE.header, String.valueOf(SerializerType.GRPC.getCode())).setBody(Any.pack(globalRollbackRequestProto).toByteString()).build();
+        return GrpcMessageProto.newBuilder()
+                .putHeadMap(
+                        GrpcHeaderEnum.CODEC_TYPE.header,
+                        String.valueOf(SerializerType.GRPC.getCode()))
+                .setBody(Any.pack(globalRollbackRequestProto).toByteString())
+                .build();
     }
 
     @Test
     public void testCommit() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(4);
-        StreamObserver<GrpcMessageProto> streamObserver = new StreamObserver<GrpcMessageProto>() {
-            @Override
-            public void onNext(GrpcMessageProto grpcMessageProto) {
-                System.out.println("receive : " + grpcMessageProto.toString());
-                countDownLatch.countDown();
-            }
+        StreamObserver<GrpcMessageProto> streamObserver =
+                new StreamObserver<GrpcMessageProto>() {
+                    @Override
+                    public void onNext(GrpcMessageProto grpcMessageProto) {
+                        System.out.println("receive : " + grpcMessageProto.toString());
+                        countDownLatch.countDown();
+                    }
 
-            @Override
-            public void onError(Throwable throwable) {
-                throwable.printStackTrace();
-            }
+                    @Override
+                    public void onError(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
 
-            @Override
-            public void onCompleted() {
-
-            }
-        };
+                    @Override
+                    public void onCompleted() {}
+                };
 
         StreamObserver<GrpcMessageProto> response = seataServiceStub.sendRequest(streamObserver);
         response.onNext(getRegisterTMRequest());
@@ -152,23 +185,22 @@ public class GrpcTest {
     @Test
     public void testRollback() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(4);
-        StreamObserver<GrpcMessageProto> streamObserver = new StreamObserver<GrpcMessageProto>() {
-            @Override
-            public void onNext(GrpcMessageProto grpcMessageProto) {
-                System.out.println("receive : " + grpcMessageProto.toString());
-                countDownLatch.countDown();
-            }
+        StreamObserver<GrpcMessageProto> streamObserver =
+                new StreamObserver<GrpcMessageProto>() {
+                    @Override
+                    public void onNext(GrpcMessageProto grpcMessageProto) {
+                        System.out.println("receive : " + grpcMessageProto.toString());
+                        countDownLatch.countDown();
+                    }
 
-            @Override
-            public void onError(Throwable throwable) {
-                throwable.printStackTrace();
-            }
+                    @Override
+                    public void onError(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
 
-            @Override
-            public void onCompleted() {
-
-            }
-        };
+                    @Override
+                    public void onCompleted() {}
+                };
 
         StreamObserver<GrpcMessageProto> response = seataServiceStub.sendRequest(streamObserver);
         response.onNext(getRegisterTMRequest());

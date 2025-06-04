@@ -21,7 +21,8 @@ package io.seata.tm.api.transaction;
  * Used by {@code suspend} and {@code resume}
  */
 @Deprecated
-public class SuspendedResourcesHolder extends org.apache.seata.tm.api.transaction.SuspendedResourcesHolder {
+public class SuspendedResourcesHolder
+        extends org.apache.seata.tm.api.transaction.SuspendedResourcesHolder {
     public SuspendedResourcesHolder(String xid) {
         super(xid);
     }

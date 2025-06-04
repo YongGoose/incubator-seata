@@ -41,7 +41,10 @@ public interface ServerMessageListener {
      * @param ctx              the ctx
      * @param checkAuthHandler the check auth handler
      */
-    void onRegRmMessage(RpcMessage request, ChannelHandlerContext ctx, RegisterCheckAuthHandler checkAuthHandler);
+    void onRegRmMessage(
+            RpcMessage request,
+            ChannelHandlerContext ctx,
+            RegisterCheckAuthHandler checkAuthHandler);
 
     /**
      * On reg tm message.
@@ -50,7 +53,10 @@ public interface ServerMessageListener {
      * @param ctx              the ctx
      * @param checkAuthHandler the check auth handler
      */
-    void onRegTmMessage(RpcMessage request, ChannelHandlerContext ctx, RegisterCheckAuthHandler checkAuthHandler);
+    void onRegTmMessage(
+            RpcMessage request,
+            ChannelHandlerContext ctx,
+            RegisterCheckAuthHandler checkAuthHandler);
 
     /**
      * On check message.
@@ -59,5 +65,4 @@ public interface ServerMessageListener {
      * @param ctx     the ctx
      */
     void onCheckMessage(RpcMessage request, ChannelHandlerContext ctx);
-
 }

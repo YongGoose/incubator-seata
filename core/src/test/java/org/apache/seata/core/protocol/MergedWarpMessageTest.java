@@ -16,13 +16,12 @@
  */
 package org.apache.seata.core.protocol;
 
-import org.apache.seata.core.protocol.transaction.GlobalBeginRequest;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import org.apache.seata.core.protocol.transaction.GlobalBeginRequest;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type MergedWarpMessageTest test.
@@ -53,9 +52,11 @@ public class MergedWarpMessageTest {
         mergedWarpMessage.msgs = Arrays.asList(registerRMResponse, registerTMResponse);
 
         assertEquals(
-                "SeataMergeMessage RegisterRMResponse{version='1', extraData='null', identified=true, resultCode=Failed, msg='null'}\nRegisterTMResponse{version='2', extraData='null', identified=true, resultCode=Success, msg='null'}\n",
-                mergedWarpMessage.toString()
-        );
+                "SeataMergeMessage RegisterRMResponse{version='1', extraData='null',"
+                        + " identified=true, resultCode=Failed, msg='null'}\n"
+                        + "RegisterTMResponse{version='2', extraData='null', identified=true,"
+                        + " resultCode=Success, msg='null'}\n",
+                mergedWarpMessage.toString());
     }
 
     private GlobalBeginRequest buildGlobalBeginRequest() {

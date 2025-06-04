@@ -16,6 +16,8 @@
  */
 package org.apache.seata.server;
 
+import static org.apache.seata.config.ConfigurationFactory.ENV_PROPERTY_KEY;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -25,36 +27,62 @@ import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.server.env.ContainerHelper;
 import org.apache.seata.server.store.StoreConfig;
 
-import static org.apache.seata.config.ConfigurationFactory.ENV_PROPERTY_KEY;
-
 /**
  * The type Parameter parser.
  *
  */
 public class ParameterParser {
 
-    private static final String PROGRAM_NAME
-        = "sh seata-server.sh(for linux and mac) or cmd seata-server.bat(for windows)";
+    private static final String PROGRAM_NAME =
+            "sh seata-server.sh(for linux and mac) or cmd seata-server.bat(for windows)";
 
     private static final Configuration CONFIG = ConfigurationFactory.getInstance();
 
     @Parameter(names = "--help", help = true)
     private boolean help;
-    @Parameter(names = {"--host", "-h"}, description = "The ip to register to registry center.", order = 1)
+
+    @Parameter(
+            names = {"--host", "-h"},
+            description = "The ip to register to registry center.",
+            order = 1)
     private String host;
-    @Parameter(names = {"--port", "-p"}, description = "The port to listen.", order = 2)
+
+    @Parameter(
+            names = {"--port", "-p"},
+            description = "The port to listen.",
+            order = 2)
     private int port;
-    @Parameter(names = {"--storeMode", "-m"}, description = "log store mode : file, db, redis", order = 3)
+
+    @Parameter(
+            names = {"--storeMode", "-m"},
+            description = "log store mode : file, db, redis",
+            order = 3)
     private String storeMode;
-    @Parameter(names = {"--serverNode", "-n"}, description = "server node id, such as 1, 2, 3.it will be generated according to the snowflake by default", order = 4)
+
+    @Parameter(
+            names = {"--serverNode", "-n"},
+            description =
+                    "server node id, such as 1, 2, 3.it will be generated according to the"
+                            + " snowflake by default",
+            order = 4)
     private Long serverNode;
-    @Parameter(names = {"--seataEnv", "-e"}, description = "The name used for multi-configuration isolation.",
-        order = 5)
+
+    @Parameter(
+            names = {"--seataEnv", "-e"},
+            description = "The name used for multi-configuration isolation.",
+            order = 5)
     private String seataEnv;
-    @Parameter(names = {"--sessionStoreMode", "-ssm"}, description = "session log store mode : file, db, redis",
-        order = 6)
+
+    @Parameter(
+            names = {"--sessionStoreMode", "-ssm"},
+            description = "session log store mode : file, db, redis",
+            order = 6)
     private String sessionStoreMode;
-    @Parameter(names = {"--lockStoreMode", "-lsm"}, description = "lock log store mode : file, db, redis", order = 7)
+
+    @Parameter(
+            names = {"--lockStoreMode", "-lsm"},
+            description = "lock log store mode : file, db, redis",
+            order = 7)
     private String lockStoreMode;
 
     /**
@@ -81,7 +109,6 @@ public class ParameterParser {
         } catch (ParameterException e) {
             printError(e);
         }
-
     }
 
     private void getCommandParameters(String[] args) {
@@ -196,5 +223,4 @@ public class ParameterParser {
             System.clearProperty(ENV_PROPERTY_KEY);
         }
     }
-
 }

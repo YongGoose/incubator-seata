@@ -16,9 +16,8 @@
  */
 package org.apache.seata.serializer.seata.protocol;
 
-import java.nio.ByteBuffer;
-
 import io.netty.buffer.ByteBuf;
+import java.nio.ByteBuffer;
 import org.apache.seata.core.protocol.RegisterRMRequest;
 
 /**
@@ -36,7 +35,7 @@ public class RegisterRMRequestCodec extends AbstractIdentifyRequestCodec {
     protected <T> void doEncode(T t, ByteBuf out) {
         super.doEncode(t, out);
 
-        RegisterRMRequest registerRMRequest = (RegisterRMRequest)t;
+        RegisterRMRequest registerRMRequest = (RegisterRMRequest) t;
         String resourceIds = registerRMRequest.getResourceIds();
 
         if (resourceIds != null) {
@@ -52,7 +51,7 @@ public class RegisterRMRequestCodec extends AbstractIdentifyRequestCodec {
 
     @Override
     public <T> void decode(T t, ByteBuffer in) {
-        RegisterRMRequest registerRMRequest = (RegisterRMRequest)t;
+        RegisterRMRequest registerRMRequest = (RegisterRMRequest) t;
 
         if (in.remaining() < 2) {
             return;
@@ -123,5 +122,4 @@ public class RegisterRMRequestCodec extends AbstractIdentifyRequestCodec {
             registerRMRequest.setResourceIds(new String(bs, UTF8));
         }
     }
-
 }

@@ -16,32 +16,25 @@
  */
 package org.apache.seata.rm.datasource;
 
+import com.alibaba.druid.mock.MockResultSet;
+import com.alibaba.druid.mock.MockStatement;
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.util.jdbc.ResultSetMetaDataBase;
+import com.google.common.collect.Lists;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
-
-import com.alibaba.druid.mock.MockResultSet;
-import com.alibaba.druid.mock.MockStatement;
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.util.jdbc.ResultSetMetaDataBase;
-
-import com.google.common.collect.Lists;
-import org.apache.seata.rm.datasource.ConnectionProxy;
-import org.apache.seata.rm.datasource.DataSourceProxy;
-import org.apache.seata.rm.datasource.StatementProxy;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.rm.datasource.mock.MockConnection;
 import org.apache.seata.rm.datasource.mock.MockDriver;
-
 import org.apache.seata.sqlparser.SQLRecognizerFactory;
 import org.apache.seata.sqlparser.SqlParserType;
 import org.apache.seata.sqlparser.druid.DruidDelegatingSQLRecognizerFactory;
 import org.apache.seata.sqlparser.druid.SQLOperateRecognizerHolder;
 import org.apache.seata.sqlparser.druid.SQLOperateRecognizerHolderFactory;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,53 +42,100 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-
 @TestMethodOrder(MethodOrderer.Alphanumeric.class)
 public class StatementProxyTest {
 
     private static List<String> returnValueColumnLabels = Lists.newArrayList("id", "name");
 
-    private static Object[][] returnValue = new Object[][] {
-        new Object[] {1, "Tom"},
-        new Object[] {2, "Jack"},
-    };
+    private static Object[][] returnValue =
+            new Object[][] {
+                new Object[] {1, "Tom"},
+                new Object[] {2, "Jack"},
+            };
 
-    private static Object[][] columnMetas = new Object[][] {
-        new Object[] {"", "", "table_statement_proxy", "id", Types.INTEGER, "INTEGER", 64, 0, 10, 1, "", "", 0, 0, 64,
-            1, "NO", "YES"},
-        new Object[] {"", "", "table_statement_proxy", "name", Types.VARCHAR, "VARCHAR", 64, 0, 10, 0, "", "", 0, 0, 64,
-            2, "YES", "NO"},
-    };
+    private static Object[][] columnMetas =
+            new Object[][] {
+                new Object[] {
+                    "",
+                    "",
+                    "table_statement_proxy",
+                    "id",
+                    Types.INTEGER,
+                    "INTEGER",
+                    64,
+                    0,
+                    10,
+                    1,
+                    "",
+                    "",
+                    0,
+                    0,
+                    64,
+                    1,
+                    "NO",
+                    "YES"
+                },
+                new Object[] {
+                    "",
+                    "",
+                    "table_statement_proxy",
+                    "name",
+                    Types.VARCHAR,
+                    "VARCHAR",
+                    64,
+                    0,
+                    10,
+                    0,
+                    "",
+                    "",
+                    0,
+                    0,
+                    64,
+                    2,
+                    "YES",
+                    "NO"
+                },
+            };
 
-    private static Object[][] indexMetas = new Object[][] {
-        new Object[] {"PRIMARY", "id", false, "", 3, 1, "A", 34},
-    };
+    private static Object[][] indexMetas =
+            new Object[][] {
+                new Object[] {"PRIMARY", "id", false, "", 3, 1, "A", 34},
+            };
 
     private static StatementProxy statementProxy;
 
     @BeforeAll
     public static void init() throws SQLException {
-        MockDriver mockDriver = new MockDriver(returnValueColumnLabels, returnValue, columnMetas, indexMetas);
+        MockDriver mockDriver =
+                new MockDriver(returnValueColumnLabels, returnValue, columnMetas, indexMetas);
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUrl("jdbc:mock:xxx");
         dataSource.setDriver(mockDriver);
 
         DataSourceProxy dataSourceProxy = DataSourceProxyTest.getDataSourceProxy(dataSource);
 
-        ConnectionProxy connectionProxy = new ConnectionProxy(dataSourceProxy,
-            dataSource.getConnection().getConnection());
+        ConnectionProxy connectionProxy =
+                new ConnectionProxy(dataSourceProxy, dataSource.getConnection().getConnection());
 
-        Statement statement = mockDriver.createMockStatement((MockConnection)connectionProxy.getTargetConnection());
+        Statement statement =
+                mockDriver.createMockStatement(
+                        (MockConnection) connectionProxy.getTargetConnection());
 
         MockResultSet mockResultSet = new MockResultSet(statement);
-        ((ResultSetMetaDataBase)mockResultSet.getMetaData()).getColumns().add(new ResultSetMetaDataBase.ColumnMetaData());
+        ((ResultSetMetaDataBase) mockResultSet.getMetaData())
+                .getColumns()
+                .add(new ResultSetMetaDataBase.ColumnMetaData());
         ((MockStatement) statement).setGeneratedKeys(mockResultSet);
 
         statementProxy = new StatementProxy(connectionProxy, statement);
-        EnhancedServiceLoader.load(SQLOperateRecognizerHolder.class, JdbcConstants.MYSQL,
-            SQLOperateRecognizerHolderFactory.class.getClassLoader());
-        DruidDelegatingSQLRecognizerFactory recognizerFactory = (DruidDelegatingSQLRecognizerFactory) EnhancedServiceLoader
-            .load(SQLRecognizerFactory.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
+        EnhancedServiceLoader.load(
+                SQLOperateRecognizerHolder.class,
+                JdbcConstants.MYSQL,
+                SQLOperateRecognizerHolderFactory.class.getClassLoader());
+        DruidDelegatingSQLRecognizerFactory recognizerFactory =
+                (DruidDelegatingSQLRecognizerFactory)
+                        EnhancedServiceLoader.load(
+                                SQLRecognizerFactory.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
     }
 
     @AfterEach
@@ -118,13 +158,15 @@ public class StatementProxyTest {
         String sql = "select * from table_statment_proxy";
         Assertions.assertNotNull(statementProxy.executeQuery(sql));
         Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(sql));
-        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS));
-        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(sql, new int[]{1}));
-        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(sql, new String[]{"id"}));
+        Assertions.assertDoesNotThrow(
+                () -> statementProxy.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS));
+        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(sql, new int[] {1}));
+        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(sql, new String[] {"id"}));
         Assertions.assertDoesNotThrow(() -> statementProxy.execute(sql));
-        Assertions.assertDoesNotThrow(() -> statementProxy.execute(sql, Statement.RETURN_GENERATED_KEYS));
-        Assertions.assertDoesNotThrow(() -> statementProxy.execute(sql, new int[]{1}));
-        Assertions.assertDoesNotThrow(() -> statementProxy.execute(sql, new String[]{"id"}));
+        Assertions.assertDoesNotThrow(
+                () -> statementProxy.execute(sql, Statement.RETURN_GENERATED_KEYS));
+        Assertions.assertDoesNotThrow(() -> statementProxy.execute(sql, new int[] {1}));
+        Assertions.assertDoesNotThrow(() -> statementProxy.execute(sql, new String[] {"id"}));
         Assertions.assertDoesNotThrow(() -> statementProxy.executeBatch());
         Assertions.assertDoesNotThrow(() -> statementProxy.clearBatch());
     }
@@ -135,7 +177,7 @@ public class StatementProxyTest {
     }
 
     @Test
-    public void testGetTargetSQL() throws SQLException{
+    public void testGetTargetSQL() throws SQLException {
         String qrySql = "select * from table_statment_proxy";
         Assertions.assertNotNull(statementProxy.executeQuery(qrySql));
         Assertions.assertNotNull(statementProxy.getTargetSQL());
@@ -143,13 +185,13 @@ public class StatementProxyTest {
         Assertions.assertNull(statementProxy.getTargetSQL());
 
         String insertSql = "insert into t(id) values (?)";
-        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(insertSql, new int[]{1}));
+        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(insertSql, new int[] {1}));
         Assertions.assertNotNull(statementProxy.getTargetSQL());
         Assertions.assertDoesNotThrow(() -> statementProxy.clearBatch());
         Assertions.assertNull(statementProxy.getTargetSQL());
 
         String updateSql = "update t set t.x=? where t.id=?";
-        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(updateSql, new int[]{1}));
+        Assertions.assertDoesNotThrow(() -> statementProxy.executeUpdate(updateSql, new int[] {1}));
         Assertions.assertNotNull(statementProxy.getTargetSQL());
         Assertions.assertDoesNotThrow(() -> statementProxy.clearBatch());
         Assertions.assertNull(statementProxy.getTargetSQL());
@@ -284,8 +326,10 @@ public class StatementProxyTest {
 
     @Test
     public void testCloseOnCompletion() {
-        Assertions.assertThrows(SQLFeatureNotSupportedException.class, () -> statementProxy.closeOnCompletion());
-        Assertions.assertThrows(SQLFeatureNotSupportedException.class, () -> statementProxy.isCloseOnCompletion());
+        Assertions.assertThrows(
+                SQLFeatureNotSupportedException.class, () -> statementProxy.closeOnCompletion());
+        Assertions.assertThrows(
+                SQLFeatureNotSupportedException.class, () -> statementProxy.isCloseOnCompletion());
     }
 
     @Test
@@ -293,5 +337,4 @@ public class StatementProxyTest {
         Assertions.assertDoesNotThrow(() -> statementProxy.unwrap(String.class));
         Assertions.assertFalse(statementProxy.isWrapperFor(String.class));
     }
-
 }

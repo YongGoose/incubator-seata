@@ -16,22 +16,19 @@
  */
 package org.apache.seata.rm.datasource.exec;
 
-import org.apache.seata.common.exception.NotSupportYetException;
-import org.apache.seata.common.util.StringUtils;
-
-
-import org.apache.seata.sqlparser.util.ColumnUtils;
-import org.apache.seata.rm.datasource.StatementProxy;
-import org.apache.seata.sqlparser.struct.TableMeta;
-import org.apache.seata.rm.datasource.sql.struct.TableRecords;
-import org.apache.seata.sqlparser.SQLDeleteRecognizer;
-import org.apache.seata.sqlparser.SQLRecognizer;
-
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import org.apache.seata.common.exception.NotSupportYetException;
+import org.apache.seata.common.util.StringUtils;
+import org.apache.seata.rm.datasource.StatementProxy;
+import org.apache.seata.rm.datasource.sql.struct.TableRecords;
+import org.apache.seata.sqlparser.SQLDeleteRecognizer;
+import org.apache.seata.sqlparser.SQLRecognizer;
+import org.apache.seata.sqlparser.struct.TableMeta;
+import org.apache.seata.sqlparser.util.ColumnUtils;
 
 /**
  * The type MultiSql executor.
@@ -40,14 +37,18 @@ import java.util.StringJoiner;
  * @param <S> the type parameter
  */
 public class MultiDeleteExecutor<T, S extends Statement> extends AbstractDMLBaseExecutor<T, S> {
-    public MultiDeleteExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback, List<SQLRecognizer> sqlRecognizers) {
+    public MultiDeleteExecutor(
+            StatementProxy<S> statementProxy,
+            StatementCallback<T, S> statementCallback,
+            List<SQLRecognizer> sqlRecognizers) {
         super(statementProxy, statementCallback, sqlRecognizers);
     }
 
     @Override
     protected TableRecords beforeImage() throws SQLException {
         if (sqlRecognizers.size() == 1) {
-            DeleteExecutor executor = new DeleteExecutor(statementProxy, statementCallback, sqlRecognizers.get(0));
+            DeleteExecutor executor =
+                    new DeleteExecutor(statementProxy, statementCallback, sqlRecognizers.get(0));
             return executor.beforeImage();
         }
         final TableMeta tmeta = getTableMeta(sqlRecognizers.get(0).getTableName());
@@ -58,10 +59,12 @@ public class MultiDeleteExecutor<T, S extends Statement> extends AbstractDMLBase
             SQLDeleteRecognizer visitor = (SQLDeleteRecognizer) recognizer;
 
             if (StringUtils.isNotBlank(visitor.getLimitCondition())) {
-                throw new NotSupportYetException("Multi delete SQL with limit condition is not support yet !");
+                throw new NotSupportYetException(
+                        "Multi delete SQL with limit condition is not support yet !");
             }
             if (StringUtils.isNotBlank(visitor.getOrderByCondition())) {
-                throw new NotSupportYetException("Multi delete SQL with orderBy condition is not support yet !");
+                throw new NotSupportYetException(
+                        "Multi delete SQL with orderBy condition is not support yet !");
             }
 
             String whereConditionStr = buildWhereCondition(visitor, paramAppenderList);

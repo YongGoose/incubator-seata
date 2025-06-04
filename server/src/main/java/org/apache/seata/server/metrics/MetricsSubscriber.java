@@ -16,7 +16,19 @@
  */
 package org.apache.seata.server.metrics;
 
+import static org.apache.seata.metrics.IdConstants.APP_ID_KEY;
+import static org.apache.seata.metrics.IdConstants.CLIENT_ID_KEY;
+import static org.apache.seata.metrics.IdConstants.GROUP_KEY;
+import static org.apache.seata.metrics.IdConstants.HOST_AND_PORT;
+import static org.apache.seata.metrics.IdConstants.LIMIT_TYPE_KEY;
+import static org.apache.seata.metrics.IdConstants.STATUS_VALUE_AFTER_COMMITTED_KEY;
+import static org.apache.seata.metrics.IdConstants.STATUS_VALUE_AFTER_ROLLBACKED_KEY;
+
 import com.google.common.eventbus.Subscribe;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import org.apache.seata.core.event.ExceptionEvent;
 import org.apache.seata.core.event.GlobalTransactionEvent;
 import org.apache.seata.core.event.RateLimitEvent;
@@ -26,19 +38,6 @@ import org.apache.seata.metrics.registry.Registry;
 import org.apache.seata.server.event.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
-import static org.apache.seata.metrics.IdConstants.APP_ID_KEY;
-import static org.apache.seata.metrics.IdConstants.CLIENT_ID_KEY;
-import static org.apache.seata.metrics.IdConstants.GROUP_KEY;
-import static org.apache.seata.metrics.IdConstants.LIMIT_TYPE_KEY;
-import static org.apache.seata.metrics.IdConstants.HOST_AND_PORT;
-import static org.apache.seata.metrics.IdConstants.STATUS_VALUE_AFTER_COMMITTED_KEY;
-import static org.apache.seata.metrics.IdConstants.STATUS_VALUE_AFTER_ROLLBACKED_KEY;
 
 /**
  * Event subscriber for metrics
@@ -63,12 +62,20 @@ public class MetricsSubscriber {
         consumerMap.put(GlobalStatus.Rollbacked.name(), this::processGlobalStatusRollbacked);
 
         consumerMap.put(GlobalStatus.CommitFailed.name(), this::processGlobalStatusCommitFailed);
-        consumerMap.put(GlobalStatus.RollbackFailed.name(), this::processGlobalStatusRollbackFailed);
-        consumerMap.put(GlobalStatus.TimeoutRollbacked.name(), this::processGlobalStatusTimeoutRollbacked);
-        consumerMap.put(GlobalStatus.TimeoutRollbackFailed.name(), this::processGlobalStatusTimeoutRollbackFailed);
+        consumerMap.put(
+                GlobalStatus.RollbackFailed.name(), this::processGlobalStatusRollbackFailed);
+        consumerMap.put(
+                GlobalStatus.TimeoutRollbacked.name(), this::processGlobalStatusTimeoutRollbacked);
+        consumerMap.put(
+                GlobalStatus.TimeoutRollbackFailed.name(),
+                this::processGlobalStatusTimeoutRollbackFailed);
 
-        consumerMap.put(GlobalStatus.CommitRetryTimeout.name(), this::processGlobalStatusCommitRetryTimeout);
-        consumerMap.put(GlobalStatus.RollbackRetryTimeout.name(), this::processGlobalStatusTimeoutRollbackRetryTimeout);
+        consumerMap.put(
+                GlobalStatus.CommitRetryTimeout.name(),
+                this::processGlobalStatusCommitRetryTimeout);
+        consumerMap.put(
+                GlobalStatus.RollbackRetryTimeout.name(),
+                this::processGlobalStatusTimeoutRollbackRetryTimeout);
 
         consumerMap.put(STATUS_VALUE_AFTER_COMMITTED_KEY, this::processAfterGlobalCommitted);
         consumerMap.put(STATUS_VALUE_AFTER_ROLLBACKED_KEY, this::processAfterGlobalRollbacked);
@@ -76,29 +83,44 @@ public class MetricsSubscriber {
     }
 
     private void increaseCounter(Id counterId, GlobalTransactionEvent event) {
-        registry.getCounter(counterId.withTag(APP_ID_KEY, event.getApplicationId())
-            .withTag(GROUP_KEY, event.getGroup())).increase(1);
+        registry.getCounter(
+                        counterId
+                                .withTag(APP_ID_KEY, event.getApplicationId())
+                                .withTag(GROUP_KEY, event.getGroup()))
+                .increase(1);
     }
+
     private void decreaseCounter(Id counterId, GlobalTransactionEvent event) {
-        registry.getCounter(counterId.withTag(APP_ID_KEY, event.getApplicationId())
-            .withTag(GROUP_KEY, event.getGroup())).decrease(1);
+        registry.getCounter(
+                        counterId
+                                .withTag(APP_ID_KEY, event.getApplicationId())
+                                .withTag(GROUP_KEY, event.getGroup()))
+                .decrease(1);
     }
 
     private void increaseSummary(Id summaryId, GlobalTransactionEvent event, long value) {
         registry.getSummary(
-            summaryId.withTag(APP_ID_KEY, event.getApplicationId()).withTag(GROUP_KEY, event.getGroup())).increase(value);
+                        summaryId
+                                .withTag(APP_ID_KEY, event.getApplicationId())
+                                .withTag(GROUP_KEY, event.getGroup()))
+                .increase(value);
     }
 
     private void increaseTimer(Id timerId, GlobalTransactionEvent event) {
         registry.getTimer(
-            timerId.withTag(APP_ID_KEY, event.getApplicationId()).withTag(GROUP_KEY, event.getGroup())).record(event.getEndTime() - event.getBeginTime(), TimeUnit.MILLISECONDS);
+                        timerId.withTag(APP_ID_KEY, event.getApplicationId())
+                                .withTag(GROUP_KEY, event.getGroup()))
+                .record(event.getEndTime() - event.getBeginTime(), TimeUnit.MILLISECONDS);
     }
 
     private void processGlobalStatusBegin(GlobalTransactionEvent event) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("accept new event,xid:{},event:{}", event.getId(), event);
             for (Object object : EventBusManager.get().getSubscribers()) {
-                LOGGER.debug("subscribe:{},threadName:{}", object.toString(), Thread.currentThread().getName());
+                LOGGER.debug(
+                        "subscribe:{},threadName:{}",
+                        object.toString(),
+                        Thread.currentThread().getName());
             }
         }
         increaseCounter(MeterIdConstants.COUNTER_ACTIVE, event);
@@ -165,14 +187,14 @@ public class MetricsSubscriber {
     private void processGlobalStatusCommitRetryTimeout(GlobalTransactionEvent event) {
         decreaseCounter(MeterIdConstants.COUNTER_ACTIVE, event);
         increaseSummary(MeterIdConstants.SUMMARY_TWO_PHASE_TIMEOUT, event, 1);
-        //The phase 2 retry timeout state should be considered a transaction failed
+        // The phase 2 retry timeout state should be considered a transaction failed
         reportFailed(event);
     }
 
     private void processGlobalStatusTimeoutRollbackRetryTimeout(GlobalTransactionEvent event) {
         decreaseCounter(MeterIdConstants.COUNTER_ACTIVE, event);
         increaseSummary(MeterIdConstants.SUMMARY_TWO_PHASE_TIMEOUT, event, 1);
-        //The phase 2 retry timeout state should be considered a transaction failed
+        // The phase 2 retry timeout state should be considered a transaction failed
         reportFailed(event);
     }
 
@@ -181,8 +203,6 @@ public class MetricsSubscriber {
         increaseTimer(MeterIdConstants.TIMER_FAILED, event);
     }
 
-
-
     @Subscribe
     public void recordGlobalTransactionEventForMetrics(GlobalTransactionEvent event) {
         if (registry != null && consumers.containsKey(event.getStatus())) {
@@ -190,20 +210,21 @@ public class MetricsSubscriber {
         }
     }
 
-
     @Subscribe
     public void exceptionEventForMetrics(ExceptionEvent event) {
-        registry.getSummary(MeterIdConstants.SUMMARY_EXP
-                .withTag(APP_ID_KEY, event.getName())).increase(1);
+        registry.getSummary(MeterIdConstants.SUMMARY_EXP.withTag(APP_ID_KEY, event.getName()))
+                .increase(1);
     }
 
     @Subscribe
     public void recordRateLimitEventForMetrics(RateLimitEvent event) {
-        registry.getSummary(MeterIdConstants.SUMMARY_RATE_LIMIT
-                .withTag(LIMIT_TYPE_KEY, event.getLimitType())
-                .withTag(APP_ID_KEY, event.getApplicationId())
-                .withTag(CLIENT_ID_KEY, event.getClientId())
-                .withTag(HOST_AND_PORT, event.getServerIpAddressAndPort())).increase(1);
+        registry.getSummary(
+                        MeterIdConstants.SUMMARY_RATE_LIMIT
+                                .withTag(LIMIT_TYPE_KEY, event.getLimitType())
+                                .withTag(APP_ID_KEY, event.getApplicationId())
+                                .withTag(CLIENT_ID_KEY, event.getClientId())
+                                .withTag(HOST_AND_PORT, event.getServerIpAddressAndPort()))
+                .increase(1);
     }
 
     @Override

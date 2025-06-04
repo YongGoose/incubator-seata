@@ -17,10 +17,9 @@
 package org.apache.seata.core.protocol;
 
 import java.io.Serializable;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.util.NetUtil;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * The type Register tm request.
@@ -49,7 +48,8 @@ public class RegisterTMRequest extends AbstractIdentifyRequest implements Serial
      * @param transactionServiceGroup the transaction service group
      * @param extraData               the extra data
      */
-    public RegisterTMRequest(String applicationId, String transactionServiceGroup, String extraData) {
+    public RegisterTMRequest(
+            String applicationId, String transactionServiceGroup, String extraData) {
         super(applicationId, transactionServiceGroup, extraData);
         StringBuilder sb = new StringBuilder();
         if (null != extraData) {
@@ -68,7 +68,6 @@ public class RegisterTMRequest extends AbstractIdentifyRequest implements Serial
             }
         }
         this.extraData = sb.toString();
-
     }
 
     /**
@@ -85,5 +84,4 @@ public class RegisterTMRequest extends AbstractIdentifyRequest implements Serial
     public short getTypeCode() {
         return MessageType.TYPE_REG_CLT;
     }
-
 }

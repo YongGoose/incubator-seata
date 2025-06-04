@@ -18,7 +18,6 @@ package org.apache.seata.saga.engine.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.seata.saga.engine.config.AbstractStateMachineConfig;
 import org.apache.seata.saga.engine.expression.ExpressionFactoryManager;
 import org.apache.seata.saga.engine.expression.spel.SpringELExpressionFactory;
@@ -36,7 +35,8 @@ import org.springframework.core.io.Resource;
  * such as expression evaluation add spring el impl, serviceInvoker add spring bean Invoker impl, etc ...
  *
  */
-public class DefaultStateMachineConfig extends AbstractStateMachineConfig implements ApplicationContextAware, InitializingBean {
+public class DefaultStateMachineConfig extends AbstractStateMachineConfig
+        implements ApplicationContextAware, InitializingBean {
 
     private ApplicationContext applicationContext;
 
@@ -63,13 +63,16 @@ public class DefaultStateMachineConfig extends AbstractStateMachineConfig implem
         for (int i = 0; i < registerResources.length; i++) {
             resourceAsStreamArray[i] = registerResources[i].getInputStream();
         }
-        getStateMachineRepository().registryByResources(resourceAsStreamArray, getDefaultTenantId());
+        getStateMachineRepository()
+                .registryByResources(resourceAsStreamArray, getDefaultTenantId());
     }
 
     private void registerSpringElExpressionFactoryManager() {
         ExpressionFactoryManager expressionFactoryManager = getExpressionFactoryManager();
-        SpringELExpressionFactory springELExpressionFactory = new SpringELExpressionFactory(getApplicationContext());
-        expressionFactoryManager.putExpressionFactory(ExpressionFactoryManager.DEFAULT_EXPRESSION_TYPE, springELExpressionFactory);
+        SpringELExpressionFactory springELExpressionFactory =
+                new SpringELExpressionFactory(getApplicationContext());
+        expressionFactoryManager.putExpressionFactory(
+                ExpressionFactoryManager.DEFAULT_EXPRESSION_TYPE, springELExpressionFactory);
     }
 
     private void registerSpringBeanServiceInvoker() {
@@ -78,7 +81,8 @@ public class DefaultStateMachineConfig extends AbstractStateMachineConfig implem
         springBeanServiceInvoker.setSagaJsonParser(getSagaJsonParser());
         springBeanServiceInvoker.setApplicationContext(getApplicationContext());
         springBeanServiceInvoker.setThreadPoolExecutor(getThreadPoolExecutor());
-        manager.putServiceInvoker(DomainConstants.SERVICE_TYPE_SPRING_BEAN, springBeanServiceInvoker);
+        manager.putServiceInvoker(
+                DomainConstants.SERVICE_TYPE_SPRING_BEAN, springBeanServiceInvoker);
     }
 
     public ApplicationContext getApplicationContext() {

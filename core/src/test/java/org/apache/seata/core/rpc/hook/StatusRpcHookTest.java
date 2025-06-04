@@ -16,12 +16,12 @@
  */
 package org.apache.seata.core.rpc.hook;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.seata.common.rpc.RpcStatus;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class StatusRpcHookTest {
 
@@ -35,7 +35,6 @@ public class StatusRpcHookTest {
         hook.doBeforeRequest("192.168.1.1:8080", new RpcMessage());
 
         assertEquals(1, status.getActive(), "Active count should be incremented");
-
     }
 
     @Test
@@ -49,7 +48,7 @@ public class StatusRpcHookTest {
 
         assertEquals(1, status.getActive(), "Active count should be incremented");
 
-        hook.doAfterResponse("192.168.2.1:8080", new RpcMessage(),null);
+        hook.doAfterResponse("192.168.2.1:8080", new RpcMessage(), null);
 
         assertEquals(0, status.getActive(), "Active count should be decremented");
         assertEquals(1, status.getTotal(), "Active count should be incremented");

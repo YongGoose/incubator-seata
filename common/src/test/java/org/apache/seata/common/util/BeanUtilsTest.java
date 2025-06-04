@@ -16,11 +16,10 @@
  */
 package org.apache.seata.common.util;
 
-import org.apache.seata.common.BranchDO;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.seata.common.BranchDO;
 import org.apache.seata.common.DefaultValues;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.rpc.RpcStatus;
@@ -48,14 +47,14 @@ public class BeanUtilsTest {
         // buffer length < 2
         Assertions.assertNotNull(BeanUtils.beanToString(new Object()));
         // null val
-        Assertions.assertNotNull(BeanUtils.beanToString(new BranchDO(null, null, null, null, null)));
+        Assertions.assertNotNull(
+                BeanUtils.beanToString(new BranchDO(null, null, null, null, null)));
     }
 
     @Test
     public void testMapToObject() {
         // null map
-        BranchDO branchDO =
-                (BranchDO) BeanUtils.mapToObject(null, BranchDO.class);
+        BranchDO branchDO = (BranchDO) BeanUtils.mapToObject(null, BranchDO.class);
         Assertions.assertNull(branchDO);
 
         Map<String, String> map = new HashMap<>();
@@ -69,7 +68,8 @@ public class BeanUtilsTest {
         map.put("testByte", "1");
         branchDO = (BranchDO) BeanUtils.mapToObject(map, BranchDO.class);
         Assertions.assertEquals(map.get("xid"), branchDO.getXid());
-        Assertions.assertEquals(Long.valueOf(map.get("transactionId")), branchDO.getTransactionId());
+        Assertions.assertEquals(
+                Long.valueOf(map.get("transactionId")), branchDO.getTransactionId());
         Assertions.assertEquals(Integer.valueOf(map.get("status")), branchDO.getStatus());
         Assertions.assertEquals(Double.valueOf(map.get("test")), branchDO.getTest());
         Assertions.assertEquals(new Date(date.getTime()), branchDO.getGmtCreate());
@@ -87,17 +87,21 @@ public class BeanUtilsTest {
         Assertions.assertNull(branchDO.getTest());
         Assertions.assertNull(branchDO.getGmtCreate());
         // InstantiationException
-        Assertions.assertThrows(NotSupportYetException.class, () -> {
-            Map<String, String> map1 = new HashMap<>();
-            map1.put("xid", "1");
-            BeanUtils.mapToObject(map1, DefaultValues.class);
-        });
+        Assertions.assertThrows(
+                NotSupportYetException.class,
+                () -> {
+                    Map<String, String> map1 = new HashMap<>();
+                    map1.put("xid", "1");
+                    BeanUtils.mapToObject(map1, DefaultValues.class);
+                });
         // IllegalAccessException
-        Assertions.assertThrows(NotSupportYetException.class, () -> {
-            Map<String, String> map1 = new HashMap<>();
-            map1.put("xid", "1");
-            BeanUtils.mapToObject(map1, RpcStatus.class);
-        });
+        Assertions.assertThrows(
+                NotSupportYetException.class,
+                () -> {
+                    Map<String, String> map1 = new HashMap<>();
+                    map1.put("xid", "1");
+                    BeanUtils.mapToObject(map1, RpcStatus.class);
+                });
     }
 
     @Test
@@ -105,10 +109,12 @@ public class BeanUtilsTest {
         BranchDO branchDO = new BranchDO("xid123123", 123L, 1, 2.2, new Date());
         Map<String, String> map = BeanUtils.objectToMap(branchDO);
         Assertions.assertEquals(branchDO.getXid(), map.get("xid"));
-        Assertions.assertEquals(branchDO.getTransactionId(), Long.valueOf(map.get("transactionId")));
+        Assertions.assertEquals(
+                branchDO.getTransactionId(), Long.valueOf(map.get("transactionId")));
         Assertions.assertEquals(branchDO.getStatus(), Integer.valueOf(map.get("status")));
         Assertions.assertEquals(branchDO.getTest(), Double.valueOf(map.get("test")));
-        Assertions.assertEquals(branchDO.getGmtCreate().getTime(),Long.valueOf(map.get("gmtCreate")));
+        Assertions.assertEquals(
+                branchDO.getGmtCreate().getTime(), Long.valueOf(map.get("gmtCreate")));
 
         Assertions.assertNull(BeanUtils.objectToMap(null));
 

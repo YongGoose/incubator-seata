@@ -16,15 +16,13 @@
  */
 package org.apache.seata.console.config;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import java.io.IOException;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 
 @Configuration(proxyBeanMethods = false)
 public class JacksonConfig {
@@ -34,15 +32,22 @@ public class JacksonConfig {
      */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer longToStringCustomizer() {
-        return jacksonObjectMapperBuilder -> jacksonObjectMapperBuilder.serializerByType(Long.class, new JsonSerializer<Long>() {
-            @Override
-            public void serialize(Long value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-                if (value == null) {
-                    jsonGenerator.writeString("");
-                } else {
-                    jsonGenerator.writeString(value.toString());
-                }
-            }
-        });
+        return jacksonObjectMapperBuilder ->
+                jacksonObjectMapperBuilder.serializerByType(
+                        Long.class,
+                        new JsonSerializer<Long>() {
+                            @Override
+                            public void serialize(
+                                    Long value,
+                                    JsonGenerator jsonGenerator,
+                                    SerializerProvider serializerProvider)
+                                    throws IOException {
+                                if (value == null) {
+                                    jsonGenerator.writeString("");
+                                } else {
+                                    jsonGenerator.writeString(value.toString());
+                                }
+                            }
+                        });
     }
 }

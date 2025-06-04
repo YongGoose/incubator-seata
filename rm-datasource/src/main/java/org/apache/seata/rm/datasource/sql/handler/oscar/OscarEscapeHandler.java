@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.sql.handler.oscar;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.sqlparser.EscapeHandler;
@@ -34,7 +33,10 @@ import org.apache.seata.sqlparser.util.JdbcConstants;
 @LoadLevel(name = JdbcConstants.OSCAR)
 public class OscarEscapeHandler implements EscapeHandler {
 
-    protected Set<String> keywordSet = Arrays.stream(OscarKeyword.values()).map(OscarKeyword::name).collect(Collectors.toSet());
+    protected Set<String> keywordSet =
+            Arrays.stream(OscarKeyword.values())
+                    .map(OscarKeyword::name)
+                    .collect(Collectors.toSet());
 
     /**
      * OSCAR keyword
@@ -2596,15 +2598,16 @@ public class OscarEscapeHandler implements EscapeHandler {
          * ZONE is oscar keyword
          */
         ZONE("ZONE");
+
         /**
          * The Name.
          */
         public final String name;
+
         OscarKeyword(String name) {
             this.name = name;
         }
     }
-
 
     @Override
     public boolean checkIfKeyWords(String fieldOrTableName) {
@@ -2615,7 +2618,6 @@ public class OscarEscapeHandler implements EscapeHandler {
             fieldOrTableName = fieldOrTableName.toUpperCase();
         }
         return keywordSet.contains(fieldOrTableName);
-
     }
 
     @Override
@@ -2634,7 +2636,7 @@ public class OscarEscapeHandler implements EscapeHandler {
         // oscar
         // we are recommend table name and column name must uppercase.
         // if exists full uppercase, the table name or column name doesn't bundle escape symbol.
-        //create\read    table TABLE "table" "TABLE"
+        // create\read    table TABLE "table" "TABLE"
         if (null != tableMeta) {
             ColumnMeta columnMeta = tableMeta.getColumnMeta(columnName);
             if (null != columnMeta) {

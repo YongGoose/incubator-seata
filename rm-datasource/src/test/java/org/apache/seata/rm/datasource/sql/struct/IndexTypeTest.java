@@ -20,15 +20,15 @@ import org.apache.seata.sqlparser.struct.IndexType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class IndexTypeTest {
 
     @Test
     public void testIndexType() {
         Assertions.assertNotNull(IndexType.valueOf(1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            IndexType.valueOf(4);
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    IndexType.valueOf(4);
+                });
     }
-
 }

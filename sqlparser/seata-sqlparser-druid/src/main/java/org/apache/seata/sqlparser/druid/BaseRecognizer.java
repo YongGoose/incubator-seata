@@ -48,7 +48,6 @@ public abstract class BaseRecognizer implements SQLRecognizer {
         public String toString() {
             return "?";
         }
-
     }
 
     /**
@@ -63,7 +62,6 @@ public abstract class BaseRecognizer implements SQLRecognizer {
      */
     public BaseRecognizer(String originalSQL) {
         this.originalSQL = originalSQL;
-
     }
 
     public void executeVisit(SQLExpr where, SQLASTVisitor visitor) {
@@ -80,10 +78,12 @@ public abstract class BaseRecognizer implements SQLRecognizer {
             if (SupportSqlWhereMethod.getInstance().checkIsSupport(whereMethod.getMethodName())) {
                 visitor.visit((SQLMethodInvokeExpr) where);
             } else {
-                throw new IllegalArgumentException("not support where method: " + whereMethod.getMethodName());
+                throw new IllegalArgumentException(
+                        "not support where method: " + whereMethod.getMethodName());
             }
         } else {
-            throw new IllegalArgumentException("unexpected WHERE expr: " + where.getClass().getSimpleName());
+            throw new IllegalArgumentException(
+                    "unexpected WHERE expr: " + where.getClass().getSimpleName());
         }
     }
 
@@ -91,9 +91,14 @@ public abstract class BaseRecognizer implements SQLRecognizer {
         String errorMsg;
         try {
             errorMsg =
-                new StringBuilder("Unknown SQLExpr: ").append(expr.getClass()).append(" ").append(expr).toString();
+                    new StringBuilder("Unknown SQLExpr: ")
+                            .append(expr.getClass())
+                            .append(" ")
+                            .append(expr)
+                            .toString();
         } catch (Exception e) {
-            // druid 1.2.6 SQLObjectImpl#toString exist NPE https://github.com/alibaba/druid/issues/4290
+            // druid 1.2.6 SQLObjectImpl#toString exist NPE
+            // https://github.com/alibaba/druid/issues/4290
             throw new SQLParsingException("Unknown SQLExpr: " + e.getMessage(), e);
         }
         throw new SQLParsingException(errorMsg);
@@ -103,7 +108,7 @@ public abstract class BaseRecognizer implements SQLRecognizer {
         visitor.visit(sqlLimit);
     }
 
-    public void executeOrderBy(SQLOrderBy sqlOrderBy,SQLASTVisitor visitor) {
+    public void executeOrderBy(SQLOrderBy sqlOrderBy, SQLASTVisitor visitor) {
         visitor.visit(sqlOrderBy);
     }
 
@@ -116,31 +121,44 @@ public abstract class BaseRecognizer implements SQLRecognizer {
 
     @Override
     public boolean isSqlSyntaxSupports() {
-        SQLASTVisitor visitor = new SQLASTVisitorAdapter() {
-            @Override
-            public boolean visit(SQLInSubQueryExpr x) {
-                //just like: ...where id in (select id from t)
-                throw new NotSupportYetException("not support the sql syntax with InSubQuery:" + x
-                        + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-            }
+        SQLASTVisitor visitor =
+                new SQLASTVisitorAdapter() {
+                    @Override
+                    public boolean visit(SQLInSubQueryExpr x) {
+                        // just like: ...where id in (select id from t)
+                        throw new NotSupportYetException(
+                                "not support the sql syntax with InSubQuery:"
+                                        + x
+                                        + "\n"
+                                        + "please see the doc about SQL restrictions"
+                                        + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                    }
 
-            @Override
-            public boolean visit(SQLSubqueryTableSource x) {
-                //just like: select * from (select * from t)
-                throw new NotSupportYetException("not support the sql syntax with SubQuery:" + x
-                        + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-            }
+                    @Override
+                    public boolean visit(SQLSubqueryTableSource x) {
+                        // just like: select * from (select * from t)
+                        throw new NotSupportYetException(
+                                "not support the sql syntax with SubQuery:"
+                                        + x
+                                        + "\n"
+                                        + "please see the doc about SQL restrictions"
+                                        + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                    }
 
-            @Override
-            public boolean visit(SQLInsertStatement x) {
-                if (null != x.getQuery()) {
-                    //just like: insert into t select * from t1
-                    throw new NotSupportYetException("not support the sql syntax insert with query:" + x
-                            + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-                }
-                return true;
-            }
-        };
+                    @Override
+                    public boolean visit(SQLInsertStatement x) {
+                        if (null != x.getQuery()) {
+                            // just like: insert into t select * from t1
+                            throw new NotSupportYetException(
+                                    "not support the sql syntax insert with query:"
+                                            + x
+                                            + "\n"
+                                            + "please see the doc about SQL restrictions"
+                                            + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                        }
+                        return true;
+                    }
+                };
         getAst().accept(visitor);
         return true;
     }

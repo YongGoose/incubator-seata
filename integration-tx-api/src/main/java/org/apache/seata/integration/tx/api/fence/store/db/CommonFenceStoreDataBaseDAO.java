@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.seata.common.DefaultValues;
 import org.apache.seata.common.exception.DataAccessException;
 import org.apache.seata.common.exception.FrameworkErrorCode;
@@ -46,6 +45,7 @@ import org.slf4j.LoggerFactory;
 public class CommonFenceStoreDataBaseDAO implements CommonFenceStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonFenceStoreDataBaseDAO.class);
+
     /**
      * Common fence log table name
      */
@@ -97,7 +97,8 @@ public class CommonFenceStoreDataBaseDAO implements CommonFenceStore {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = CommonFenceStoreSqls.getQueryEndStatusSQLByDate(logTableName, isOracle(conn));
+            String sql =
+                    CommonFenceStoreSqls.getQueryEndStatusSQLByDate(logTableName, isOracle(conn));
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, new Timestamp(datetime.getTime()));
             ps.setInt(2, limit);
@@ -130,7 +131,11 @@ public class CommonFenceStoreDataBaseDAO implements CommonFenceStore {
             ps.setTimestamp(6, now);
             return ps.executeUpdate() > 0;
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new CommonFenceException(String.format("Insert tcc fence record duplicate key exception. xid= %s, branchId= %s", commonFenceDO.getXid(), commonFenceDO.getBranchId()),
+            throw new CommonFenceException(
+                    String.format(
+                            "Insert tcc fence record duplicate key exception. xid= %s, branchId="
+                                    + " %s",
+                            commonFenceDO.getXid(), commonFenceDO.getBranchId()),
                     FrameworkErrorCode.DuplicateKeyException);
         } catch (SQLException e) {
             throw new StoreException(e);
@@ -140,7 +145,8 @@ public class CommonFenceStoreDataBaseDAO implements CommonFenceStore {
     }
 
     @Override
-    public boolean updateCommonFenceDO(Connection conn, String xid, Long branchId, int newStatus, int oldStatus) {
+    public boolean updateCommonFenceDO(
+            Connection conn, String xid, Long branchId, int newStatus, int oldStatus) {
         PreparedStatement ps = null;
         try {
             String sql = CommonFenceStoreSqls.getUpdateStatusSQLByBranchIdAndXid(logTableName);
@@ -180,7 +186,8 @@ public class CommonFenceStoreDataBaseDAO implements CommonFenceStore {
     public int deleteTCCFenceDO(Connection conn, List<String> xids) {
         PreparedStatement ps = null;
         try {
-            String paramsPlaceHolder = org.apache.commons.lang.StringUtils.repeat("?", ",", xids.size());
+            String paramsPlaceHolder =
+                    org.apache.commons.lang.StringUtils.repeat("?", ",", xids.size());
             String sql = CommonFenceStoreSqls.getDeleteSQLByXids(logTableName, paramsPlaceHolder);
             ps = conn.prepareStatement(sql);
             for (int i = 0; i < xids.size(); i++) {

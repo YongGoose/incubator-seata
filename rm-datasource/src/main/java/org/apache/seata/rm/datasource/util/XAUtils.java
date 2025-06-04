@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm.datasource.util;
 
+import com.alibaba.druid.util.JdbcUtils;
+import com.alibaba.druid.util.MySqlUtils;
+import com.alibaba.druid.util.PGUtils;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -23,14 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAException;
-
-import com.alibaba.druid.util.JdbcUtils;
-import com.alibaba.druid.util.MySqlUtils;
-import com.alibaba.druid.util.PGUtils;
-
 import org.apache.seata.rm.BaseDataSourceResource;
 import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.slf4j.Logger;
@@ -44,12 +41,15 @@ public class XAUtils {
         return JdbcUtils.getDbType(jdbcUrl, driverClassName);
     }
 
-    public static XAConnection createXAConnection(Connection physicalConn, BaseDataSourceResource dataSourceResource) throws SQLException {
-        return createXAConnection(physicalConn, dataSourceResource.getDriver(), dataSourceResource.getDbType());
+    public static XAConnection createXAConnection(
+            Connection physicalConn, BaseDataSourceResource dataSourceResource)
+            throws SQLException {
+        return createXAConnection(
+                physicalConn, dataSourceResource.getDriver(), dataSourceResource.getDbType());
     }
 
-    public static XAConnection createXAConnection(Connection physicalConn, Driver driver, String dbType)
-        throws SQLException {
+    public static XAConnection createXAConnection(
+            Connection physicalConn, Driver driver, String dbType) throws SQLException {
         if (JdbcConstants.MYSQL.equals(dbType)) {
             return MySqlUtils.createXAConnection(driver, physicalConn);
         } else {
@@ -61,16 +61,22 @@ public class XAUtils {
                         // return OracleUtils.OracleXAConnection(physicalConn);
                         String physicalConnClassName = physicalConn.getClass().getName();
                         if ("oracle.jdbc.driver.T4CConnection".equals(physicalConnClassName)) {
-                            return createXAConnection(physicalConn, "oracle.jdbc.driver.T4CXAConnection", dbType);
+                            return createXAConnection(
+                                    physicalConn, "oracle.jdbc.driver.T4CXAConnection", dbType);
                         } else {
-                            return createXAConnection(physicalConn, "oracle.jdbc.xa.client.OracleXAConnection", dbType);
+                            return createXAConnection(
+                                    physicalConn,
+                                    "oracle.jdbc.xa.client.OracleXAConnection",
+                                    dbType);
                         }
                     case JdbcConstants.MARIADB:
-                        return createXAConnection(physicalConn, "org.mariadb.jdbc.MariaXaConnection", dbType);
+                        return createXAConnection(
+                                physicalConn, "org.mariadb.jdbc.MariaXaConnection", dbType);
                     case JdbcConstants.POSTGRESQL:
                         return PGUtils.createXAConnection(physicalConn);
                     case JdbcConstants.KINGBASE:
-                        return createXAConnection(physicalConn, "com.kingbase8.xa.KBXAConnection", dbType);
+                        return createXAConnection(
+                                physicalConn, "com.kingbase8.xa.KBXAConnection", dbType);
                     default:
                         throw new SQLException("xa not support dbType: " + dbType);
                 }
@@ -80,11 +86,13 @@ public class XAUtils {
         }
     }
 
-    private static XAConnection createXAConnection(Connection physicalConnection, String xaConnectionClassName,
-                                                   String dbType) throws XAException, SQLException {
+    private static XAConnection createXAConnection(
+            Connection physicalConnection, String xaConnectionClassName, String dbType)
+            throws XAException, SQLException {
         try {
             Class<?> xaConnectionClass = Class.forName(xaConnectionClassName);
-            Constructor<XAConnection> constructor = getConstructorByDBType(xaConnectionClass, dbType);
+            Constructor<XAConnection> constructor =
+                    getConstructorByDBType(xaConnectionClass, dbType);
             if (constructor == null) {
                 throw new SQLException("xa not support dbType: " + dbType);
             }
@@ -92,27 +100,33 @@ public class XAUtils {
             List<Object> params = getInitargsByDBType(dbType, physicalConnection);
             return constructor.newInstance(params.toArray(new Object[0]));
         } catch (Exception e) {
-            LOGGER.warn("Failed to create XA Connection " + xaConnectionClassName + " on " + physicalConnection);
+            LOGGER.warn(
+                    "Failed to create XA Connection "
+                            + xaConnectionClassName
+                            + " on "
+                            + physicalConnection);
             if (e instanceof XAException) {
-                throw (XAException)e;
+                throw (XAException) e;
             } else {
                 throw new SQLException(e);
             }
         }
-
     }
 
-    private static Constructor<XAConnection> getConstructorByDBType(Class xaConnectionClass, String dbType) throws SQLException {
+    private static Constructor<XAConnection> getConstructorByDBType(
+            Class xaConnectionClass, String dbType) throws SQLException {
         try {
             switch (dbType) {
                 case JdbcConstants.ORACLE:
                     return xaConnectionClass.getConstructor(Connection.class);
                 case JdbcConstants.MARIADB:
-                    //MariaXaConnection(MariaDbConnection connection)
-                    Class<?> mariaXaConnectionClass = Class.forName("org.mariadb.jdbc.MariaDbConnection");
+                    // MariaXaConnection(MariaDbConnection connection)
+                    Class<?> mariaXaConnectionClass =
+                            Class.forName("org.mariadb.jdbc.MariaDbConnection");
                     return xaConnectionClass.getConstructor(mariaXaConnectionClass);
                 case JdbcConstants.KINGBASE:
-                    Class<?> kingbaseConnectionClass = Class.forName("com.kingbase8.core.BaseConnection");
+                    Class<?> kingbaseConnectionClass =
+                            Class.forName("com.kingbase8.core.BaseConnection");
                     return xaConnectionClass.getConstructor(kingbaseConnectionClass);
                 default:
                     throw new SQLException("xa reflect not support dbType: " + dbType);
@@ -122,7 +136,8 @@ public class XAUtils {
         }
     }
 
-    private static <T> List<T> getInitargsByDBType(String dbType, Object... params) throws SQLException {
+    private static <T> List<T> getInitargsByDBType(String dbType, Object... params)
+            throws SQLException {
         List result = new ArrayList<>();
         if (params.length == 0) {
             return null;
@@ -140,7 +155,8 @@ public class XAUtils {
                     result.add(params[0]);
                     return result;
                 case JdbcConstants.MARIADB:
-                    Class mariaDbConnectionClass = Class.forName("org.mariadb.jdbc.MariaDbConnection");
+                    Class mariaDbConnectionClass =
+                            Class.forName("org.mariadb.jdbc.MariaDbConnection");
                     if (mariaDbConnectionClass.isInstance(params[0])) {
                         Object mariaDbConnectionInstance = mariaDbConnectionClass.cast(params[0]);
                         result.add(mariaDbConnectionInstance);

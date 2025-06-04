@@ -19,21 +19,24 @@ package org.apache.seata.compressor.deflater;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class DeflaterUtilTest {
 
     @Test
     public void test_compress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            DeflaterUtil.compress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    DeflaterUtil.compress(null);
+                });
     }
 
     @Test
     public void test_decompress() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            DeflaterUtil.decompress(null);
-        });
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> {
+                    DeflaterUtil.decompress(null);
+                });
     }
 
     @Test
@@ -42,5 +45,4 @@ public class DeflaterUtilTest {
         byte[] decompress = DeflaterUtil.decompress(compress);
         Assertions.assertEquals("seata", new String(decompress));
     }
-
 }

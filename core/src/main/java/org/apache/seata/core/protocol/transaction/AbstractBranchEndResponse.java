@@ -33,6 +33,7 @@ public abstract class AbstractBranchEndResponse extends AbstractTransactionRespo
      * The Branch id.
      */
     protected long branchId;
+
     /**
      * The Branch status.
      */

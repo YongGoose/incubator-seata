@@ -16,12 +16,12 @@
  */
 package org.apache.seata.core.protocol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.seata.core.protocol.transaction.GlobalBeginResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The type MergeResultMessage test.
@@ -59,12 +59,15 @@ public class MergeResultMessageTest {
         registerTMResponse.setVersion("2");
         registerTMResponse.setIdentified(true);
         registerTMResponse.setResultCode(ResultCode.Success);
-        mergeResultMessage.msgs = new AbstractResultMessage[] {registerRMResponse, registerTMResponse};
+        mergeResultMessage.msgs =
+                new AbstractResultMessage[] {registerRMResponse, registerTMResponse};
 
         Assertions.assertEquals(
-                "MergeResultMessage RegisterRMResponse{version='1', extraData='null', identified=true, resultCode=Failed, msg='null'}\nRegisterTMResponse{version='2', extraData='null', identified=true, resultCode=Success, msg='null'}\n",
-                mergeResultMessage.toString()
-        );
+                "MergeResultMessage RegisterRMResponse{version='1', extraData='null',"
+                        + " identified=true, resultCode=Failed, msg='null'}\n"
+                        + "RegisterTMResponse{version='2', extraData='null', identified=true,"
+                        + " resultCode=Success, msg='null'}\n",
+                mergeResultMessage.toString());
     }
 
     private GlobalBeginResponse buildGlobalBeginResponse() {
@@ -75,5 +78,4 @@ public class MergeResultMessageTest {
         globalBeginResponse.setResultCode(ResultCode.Success);
         return globalBeginResponse;
     }
-
 }

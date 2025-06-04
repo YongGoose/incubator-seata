@@ -16,15 +16,13 @@
  */
 package org.apache.seata.sqlparser.druid;
 
+import java.lang.reflect.Constructor;
+import java.util.List;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLRecognizer;
 import org.apache.seata.sqlparser.SQLRecognizerFactory;
 import org.apache.seata.sqlparser.SqlParserType;
-
-import java.lang.reflect.Constructor;
-import java.util.List;
-
 
 @LoadLevel(name = SqlParserType.SQL_PARSER_TYPE_DRUID)
 public class DruidDelegatingSQLRecognizerFactory implements SQLRecognizerFactory {
@@ -41,7 +39,9 @@ public class DruidDelegatingSQLRecognizerFactory implements SQLRecognizerFactory
      */
     void setClassLoader(ClassLoader classLoader) {
         try {
-            Class<?> recognizerFactoryImplClass = classLoader.loadClass("org.apache.seata.sqlparser.druid.DruidSQLRecognizerFactoryImpl");
+            Class<?> recognizerFactoryImplClass =
+                    classLoader.loadClass(
+                            "org.apache.seata.sqlparser.druid.DruidSQLRecognizerFactoryImpl");
             Constructor<?> implConstructor = recognizerFactoryImplClass.getDeclaredConstructor();
             implConstructor.setAccessible(true);
             try {

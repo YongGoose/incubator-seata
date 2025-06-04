@@ -16,9 +16,9 @@
  */
 package org.apache.seata.common.util;
 
-
 public class SizeUtil {
     private static final long RADIX = 1024;
+
     /**
      * case size to byte length
      * example:
@@ -53,7 +53,8 @@ public class SizeUtil {
             case 't':
                 return number * RADIX * RADIX * RADIX * RADIX;
             default:
-                throw new IllegalArgumentException("could not convert '" + size + "' to byte length");
+                throw new IllegalArgumentException(
+                        "could not convert '" + size + "' to byte length");
         }
     }
 }

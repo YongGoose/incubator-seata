@@ -25,6 +25,7 @@ public class User {
      * The Username.
      */
     String username;
+
     /**
      * The Password.
      */
@@ -35,7 +36,7 @@ public class User {
         this.password = password;
     }
 
-    //region Getter && Setter
+    // region Getter && Setter
 
     public String getUsername() {
         return username;
@@ -53,5 +54,5 @@ public class User {
         this.password = password;
     }
 
-    //endregion
+    // endregion
 }

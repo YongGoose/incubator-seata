@@ -19,17 +19,17 @@ package org.apache.seata.sqlparser.druid.mysql;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import org.apache.seata.sqlparser.ParametersHolder;
-import org.apache.seata.sqlparser.SQLParsingException;
-import org.apache.seata.sqlparser.SQLType;
-import org.apache.seata.sqlparser.druid.AbstractRecognizerTest;
-import org.apache.seata.sqlparser.util.JdbcConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.seata.sqlparser.ParametersHolder;
+import org.apache.seata.sqlparser.SQLParsingException;
+import org.apache.seata.sqlparser.SQLType;
+import org.apache.seata.sqlparser.druid.AbstractRecognizerTest;
+import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +48,8 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer = new MySQLSelectForUpdateRecognizer(sql, statement);
+        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer =
+                new MySQLSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, mySQLUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", mySQLUpdateRecognizer.getTableName());
@@ -65,24 +66,29 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer = new MySQLSelectForUpdateRecognizer(sql, statement);
+        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer =
+                new MySQLSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, mySQLUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", mySQLUpdateRecognizer.getTableName());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = mySQLUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> idParam = new ArrayList<>();
-                idParam.add("id1");
-                Map result = new HashMap();
-                result.put(1, idParam);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                mySQLUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> idParam = new ArrayList<>();
+                                idParam.add("id1");
+                                Map result = new HashMap();
+                                result.put(1, idParam);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
         Assertions.assertEquals("id = ?", whereCondition);
     }
 
@@ -96,25 +102,30 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer = new MySQLSelectForUpdateRecognizer(sql, statement);
+        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer =
+                new MySQLSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, mySQLUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", mySQLUpdateRecognizer.getTableName());
 
         // test overflow parameters
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = mySQLUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> id1Param = new ArrayList<>();
-                id1Param.add("id1");
-                Map result = new HashMap();
-                result.put(1, id1Param);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                mySQLUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> id1Param = new ArrayList<>();
+                                id1Param.add("id1");
+                                Map result = new HashMap();
+                                result.put(1, id1Param);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
         Assertions.assertEquals("id = ?", whereCondition);
     }
 
@@ -128,28 +139,33 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer = new MySQLSelectForUpdateRecognizer(sql, statement);
+        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer =
+                new MySQLSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, mySQLUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", mySQLUpdateRecognizer.getTableName());
 
         // test overflow parameters
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = mySQLUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> id1Param = new ArrayList<>();
-                id1Param.add("id1");
-                ArrayList<Object> id2Param = new ArrayList<>();
-                id2Param.add("id2");
-                Map result = new HashMap();
-                result.put(1, id1Param);
-                result.put(2, id2Param);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                mySQLUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> id1Param = new ArrayList<>();
+                                id1Param.add("id1");
+                                ArrayList<Object> id2Param = new ArrayList<>();
+                                id2Param.add("id2");
+                                Map result = new HashMap();
+                                result.put(1, id1Param);
+                                result.put(2, id2Param);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
         Assertions.assertEquals("id IN (?, ?)", whereCondition);
     }
 
@@ -163,28 +179,33 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
 
         SQLStatement statement = getSQLStatement(sql);
 
-        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer = new MySQLSelectForUpdateRecognizer(sql, statement);
+        MySQLSelectForUpdateRecognizer mySQLUpdateRecognizer =
+                new MySQLSelectForUpdateRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, mySQLUpdateRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", mySQLUpdateRecognizer.getTableName());
 
         // test overflow parameters
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        String whereCondition = mySQLUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                ArrayList<Object> id1Param = new ArrayList<>();
-                id1Param.add("id1");
-                ArrayList<Object> id2Param = new ArrayList<>();
-                id2Param.add("id2");
-                Map result = new HashMap();
-                result.put(1, id1Param);
-                result.put(2, id2Param);
-                return result;
-            }
-        }, paramAppenderList);
+        String whereCondition =
+                mySQLUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                ArrayList<Object> id1Param = new ArrayList<>();
+                                id1Param.add("id1");
+                                ArrayList<Object> id2Param = new ArrayList<>();
+                                id2Param.add("id2");
+                                Map result = new HashMap();
+                                result.put(1, id1Param);
+                                result.put(2, id2Param);
+                                return result;
+                            }
+                        },
+                        paramAppenderList);
 
-        Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
         Assertions.assertEquals("id BETWEEN ? AND ?", whereCondition);
     }
 
@@ -193,28 +214,35 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
         String sql = "select * from t for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
 
-        MySQLSelectForUpdateRecognizer recognizer = new MySQLSelectForUpdateRecognizer(sql, asts.get(0));
+        MySQLSelectForUpdateRecognizer recognizer =
+                new MySQLSelectForUpdateRecognizer(sql, asts.get(0));
         String whereCondition = recognizer.getWhereCondition();
 
         Assertions.assertEquals("", whereCondition);
 
-        //test for select was null
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "select * from t for update";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, JdbcConstants.MYSQL);
-            SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
-            selectAst.setSelect(null);
-            new MySQLSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
-        });
+        // test for select was null
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "select * from t for update";
+                    List<SQLStatement> sqlStatements =
+                            SQLUtils.parseStatements(s, JdbcConstants.MYSQL);
+                    SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
+                    selectAst.setSelect(null);
+                    new MySQLSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
+                });
 
-        //test for query was null
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "select * from t";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, JdbcConstants.MYSQL);
-            SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
-            selectAst.getSelect().setQuery(null);
-            new MySQLSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
-        });
+        // test for query was null
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "select * from t";
+                    List<SQLStatement> sqlStatements =
+                            SQLUtils.parseStatements(s, JdbcConstants.MYSQL);
+                    SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
+                    selectAst.getSelect().setQuery(null);
+                    new MySQLSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
+                });
     }
 
     @Test
@@ -222,7 +250,8 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
 
-        MySQLSelectForUpdateRecognizer recognizer = new MySQLSelectForUpdateRecognizer(sql, asts.get(0));
+        MySQLSelectForUpdateRecognizer recognizer =
+                new MySQLSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertEquals(recognizer.getSQLType(), SQLType.SELECT_FOR_UPDATE);
     }
 
@@ -231,7 +260,8 @@ public class MySQLSelectForUpdateRecognizerTest extends AbstractRecognizerTest {
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
 
-        MySQLSelectForUpdateRecognizer recognizer = new MySQLSelectForUpdateRecognizer(sql, asts.get(0));
+        MySQLSelectForUpdateRecognizer recognizer =
+                new MySQLSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertNull(recognizer.getTableAlias());
     }
 

@@ -50,6 +50,7 @@ public class SpringELExpressionTest {
         ExpressionParser parser = new SpelExpressionParser();
         Expression defaultExpression = parser.parseExpression("'Hello World'.concat('!')");
         SpringELExpression springELExpression = new SpringELExpression(defaultExpression);
-        Assertions.assertEquals(springELExpression.getExpressionString(), "'Hello World'.concat('!')");
+        Assertions.assertEquals(
+                springELExpression.getExpressionString(), "'Hello World'.concat('!')");
     }
 }

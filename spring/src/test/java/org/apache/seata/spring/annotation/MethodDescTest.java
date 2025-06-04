@@ -16,9 +16,10 @@
  */
 package org.apache.seata.spring.annotation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.apache.seata.common.DefaultValues;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.core.context.RootContext;
@@ -28,13 +29,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.aop.framework.ProxyFactory;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 public class MethodDescTest {
 
-    private static final GlobalTransactionScanner GLOBAL_TRANSACTION_SCANNER = new GlobalTransactionScanner(
-        "global-trans-scanner-test");
+    private static final GlobalTransactionScanner GLOBAL_TRANSACTION_SCANNER =
+            new GlobalTransactionScanner("global-trans-scanner-test");
     private static Method method = null;
     private static Class<?> targetClass = null;
     private static GlobalTransactional transactional = null;
@@ -46,26 +44,38 @@ public class MethodDescTest {
 
     @Test
     public void testGetAnnotation() throws NoSuchMethodException {
-        GlobalTransactionalInterceptorHandler globalTransactionalInterceptor = new GlobalTransactionalInterceptorHandler(null, null, null);
+        GlobalTransactionalInterceptorHandler globalTransactionalInterceptor =
+                new GlobalTransactionalInterceptorHandler(null, null, null);
         Method method = MockBusiness.class.getDeclaredMethod("doBiz", String.class);
         targetClass = Mockito.mock(MockBusiness.class).getClass();
-        transactional = globalTransactionalInterceptor.getAnnotation(method, targetClass, GlobalTransactional.class);
+        transactional =
+                globalTransactionalInterceptor.getAnnotation(
+                        method, targetClass, GlobalTransactional.class);
         Assertions.assertEquals(transactional.timeoutMills(), 300000);
         method = null;
-        transactional = globalTransactionalInterceptor.getAnnotation(method, targetClass, GlobalTransactional.class);
-        Assertions.assertEquals(transactional.timeoutMills(), DefaultValues.DEFAULT_GLOBAL_TRANSACTION_TIMEOUT * 2);
+        transactional =
+                globalTransactionalInterceptor.getAnnotation(
+                        method, targetClass, GlobalTransactional.class);
+        Assertions.assertEquals(
+                transactional.timeoutMills(), DefaultValues.DEFAULT_GLOBAL_TRANSACTION_TIMEOUT * 2);
         targetClass = null;
-        transactional = globalTransactionalInterceptor.getAnnotation(method, targetClass, GlobalTransactional.class);
+        transactional =
+                globalTransactionalInterceptor.getAnnotation(
+                        method, targetClass, GlobalTransactional.class);
         Assertions.assertNull(transactional);
         // only class has Annotation, method is not null
         targetClass = Mockito.mock(MockMethodAnnotation.class).getClass();
         method = MockMethodAnnotation.class.getDeclaredMethod("doBiz", String.class);
-        transactional = globalTransactionalInterceptor.getAnnotation(method, targetClass, GlobalTransactional.class);
+        transactional =
+                globalTransactionalInterceptor.getAnnotation(
+                        method, targetClass, GlobalTransactional.class);
         Assertions.assertEquals(transactional.name(), "doBiz");
         // only method has Annotation, class is not null
         targetClass = Mockito.mock(MockClassAnnotation.class).getClass();
         method = MockClassAnnotation.class.getDeclaredMethod("doBiz", String.class);
-        transactional = globalTransactionalInterceptor.getAnnotation(method, targetClass, GlobalTransactional.class);
+        transactional =
+                globalTransactionalInterceptor.getAnnotation(
+                        method, targetClass, GlobalTransactional.class);
         Assertions.assertEquals(transactional.name(), "MockClassAnnotation");
     }
 
@@ -76,7 +86,7 @@ public class MethodDescTest {
         proxyFactory.setTarget(mockClassAnnotation);
         proxyFactory.addAdvice(new AspectTransactionalInterceptor());
         Object proxy = proxyFactory.getProxy();
-        mockClassAnnotation = (MockClassAnnotation)proxy;
+        mockClassAnnotation = (MockClassAnnotation) proxy;
         mockClassAnnotation.toString();
         Assertions.assertNull(RootContext.getXID());
         mockClassAnnotation.hashCode();
@@ -92,21 +102,21 @@ public class MethodDescTest {
 
     @Test
     public void testGetTransactionAnnotation()
-        throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         MethodDesc methodDesc = getMethodDesc();
         assertThat(methodDesc.getTransactionAnnotation()).isEqualTo(transactional);
-
     }
 
     @Test
-    public void testGetMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testGetMethod()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         MethodDesc methodDesc = getMethodDesc();
         assertThat(methodDesc.getMethod()).isEqualTo(method);
     }
 
     @Test
     public void testSetTransactionAnnotation()
-        throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         MethodDesc methodDesc = getMethodDesc();
         assertThat(methodDesc.getTransactionAnnotation()).isNotNull();
         methodDesc.setTransactionAnnotation(null);
@@ -114,20 +124,22 @@ public class MethodDescTest {
     }
 
     @Test
-    public void testSetMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testSetMethod()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         MethodDesc methodDesc = getMethodDesc();
         assertThat(methodDesc.getMethod()).isNotNull();
         methodDesc.setMethod(null);
         assertThat(methodDesc.getMethod()).isNull();
     }
 
-    private MethodDesc getMethodDesc() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //call the private method
-        Method m = GlobalTransactionScanner.class.getDeclaredMethod("makeMethodDesc", GlobalTransactional.class,
-            Method.class);
+    private MethodDesc getMethodDesc()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // call the private method
+        Method m =
+                GlobalTransactionScanner.class.getDeclaredMethod(
+                        "makeMethodDesc", GlobalTransactional.class, Method.class);
         m.setAccessible(true);
-        return (MethodDesc)m.invoke(GLOBAL_TRANSACTION_SCANNER, transactional, method);
-
+        return (MethodDesc) m.invoke(GLOBAL_TRANSACTION_SCANNER, transactional, method);
     }
 
     /**
@@ -160,5 +172,4 @@ public class MethodDescTest {
             return "hello " + msg;
         }
     }
-
 }

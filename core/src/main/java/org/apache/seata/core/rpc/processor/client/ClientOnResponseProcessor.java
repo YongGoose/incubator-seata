@@ -16,11 +16,10 @@
  */
 package org.apache.seata.core.rpc.processor.client;
 
+import io.netty.channel.ChannelHandlerContext;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.seata.core.protocol.AbstractResultMessage;
 import org.apache.seata.core.protocol.BatchResultMessage;
 import org.apache.seata.core.protocol.MergeMessage;
@@ -83,9 +82,11 @@ public class ClientOnResponseProcessor implements RemotingProcessor {
      */
     private final TransactionMessageHandler transactionMessageHandler;
 
-    public ClientOnResponseProcessor(Map<Integer, MergeMessage> mergeMsgMap,
-                                     ConcurrentHashMap<Integer, MessageFuture> futures, Map<Integer,Integer> childToParentMap,
-                                     TransactionMessageHandler transactionMessageHandler) {
+    public ClientOnResponseProcessor(
+            Map<Integer, MergeMessage> mergeMsgMap,
+            ConcurrentHashMap<Integer, MessageFuture> futures,
+            Map<Integer, Integer> childToParentMap,
+            TransactionMessageHandler transactionMessageHandler) {
         this.mergeMsgMap = mergeMsgMap;
         this.childToParentMap = childToParentMap;
         this.futures = futures;
@@ -96,32 +97,40 @@ public class ClientOnResponseProcessor implements RemotingProcessor {
     public void process(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {
         if (rpcMessage.getBody() instanceof MergeResultMessage) {
             MergeResultMessage results = (MergeResultMessage) rpcMessage.getBody();
-            MergedWarpMessage mergeMessage = (MergedWarpMessage) mergeMsgMap.remove(rpcMessage.getId());
+            MergedWarpMessage mergeMessage =
+                    (MergedWarpMessage) mergeMsgMap.remove(rpcMessage.getId());
             for (int i = 0; i < mergeMessage.msgs.size(); i++) {
                 int msgId = mergeMessage.msgIds.get(i);
                 MessageFuture future = futures.remove(msgId);
-                // The old version of the server will return MergeResultMessage, so it is necessary to remove the msgId from the childToParentMap.
+                // The old version of the server will return MergeResultMessage, so it is necessary
+                // to remove the msgId from the childToParentMap.
                 childToParentMap.remove(msgId);
                 if (future == null) {
-                    LOGGER.error("msg: {} is not found in futures, result message: {}", msgId,results.getMsgs()[i]);
+                    LOGGER.error(
+                            "msg: {} is not found in futures, result message: {}",
+                            msgId,
+                            results.getMsgs()[i]);
                 } else {
                     future.setResultMessage(results.getMsgs()[i]);
                 }
             }
         } else if (rpcMessage.getBody() instanceof BatchResultMessage) {
-            BatchResultMessage batchResultMessage = (BatchResultMessage)rpcMessage.getBody();
+            BatchResultMessage batchResultMessage = (BatchResultMessage) rpcMessage.getBody();
             for (int i = 0; i < batchResultMessage.getMsgIds().size(); i++) {
                 int msgId = batchResultMessage.getMsgIds().get(i);
                 MessageFuture future = futures.remove(msgId);
-                // The old version of the server will return BatchResultMessage, so it is necessary to remove the msgId
+                // The old version of the server will return BatchResultMessage, so it is necessary
+                // to remove the msgId
                 // from the childToParentMap.
                 Integer parentId = childToParentMap.remove(msgId);
                 if (parentId != null) {
                     mergeMsgMap.remove(parentId);
                 }
                 if (future == null) {
-                    LOGGER.error("msg: {} is not found in futures, result message: {}", msgId,
-                        batchResultMessage.getResultMessages().get(i));
+                    LOGGER.error(
+                            "msg: {} is not found in futures, result message: {}",
+                            msgId,
+                            batchResultMessage.getResultMessages().get(i));
                 } else {
                     future.setResultMessage(batchResultMessage.getResultMessages().get(i));
                 }
@@ -135,12 +144,14 @@ public class ClientOnResponseProcessor implements RemotingProcessor {
                 } else {
                     if (rpcMessage.getBody() instanceof AbstractResultMessage) {
                         if (transactionMessageHandler != null) {
-                            transactionMessageHandler.onResponse((AbstractResultMessage)rpcMessage.getBody(), null);
+                            transactionMessageHandler.onResponse(
+                                    (AbstractResultMessage) rpcMessage.getBody(), null);
                         }
                     }
                 }
             } finally {
-                // In version 2.3.0, the server does not return MergeResultMessage and BatchResultMessage
+                // In version 2.3.0, the server does not return MergeResultMessage and
+                // BatchResultMessage
                 // so it is necessary to clear childToParentMap and mergeMsgMap here.
                 Integer parentId = childToParentMap.remove(id);
                 if (parentId != null) {

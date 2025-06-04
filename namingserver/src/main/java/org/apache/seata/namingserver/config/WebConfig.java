@@ -16,6 +16,10 @@
  */
 package org.apache.seata.namingserver.config;
 
+import static org.apache.seata.namingserver.contants.NamingConstant.DEFAULT_CONNECTION_MAX_PER_ROUTE;
+import static org.apache.seata.namingserver.contants.NamingConstant.DEFAULT_CONNECTION_MAX_TOTAL;
+import static org.apache.seata.namingserver.contants.NamingConstant.DEFAULT_REQUEST_TIMEOUT;
+
 import javax.servlet.Filter;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -31,25 +35,25 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-
-import static org.apache.seata.namingserver.contants.NamingConstant.DEFAULT_CONNECTION_MAX_PER_ROUTE;
-import static org.apache.seata.namingserver.contants.NamingConstant.DEFAULT_CONNECTION_MAX_TOTAL;
-import static org.apache.seata.namingserver.contants.NamingConstant.DEFAULT_REQUEST_TIMEOUT;
-
 @Configuration
 public class WebConfig {
 
     @Bean
     public RestTemplate restTemplate() {
         // Create a connection manager with custom settings
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        PoolingHttpClientConnectionManager connectionManager =
+                new PoolingHttpClientConnectionManager();
         connectionManager.setMaxTotal(DEFAULT_CONNECTION_MAX_TOTAL); // Maximum total connections
-        connectionManager.setDefaultMaxPerRoute(DEFAULT_CONNECTION_MAX_PER_ROUTE); // Maximum connections per route
+        connectionManager.setDefaultMaxPerRoute(
+                DEFAULT_CONNECTION_MAX_PER_ROUTE); // Maximum connections per route
         // Create an HttpClient with the connection manager
-        CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
+        CloseableHttpClient httpClient =
+                HttpClients.custom().setConnectionManager(connectionManager).build();
         // Create a request factory with the HttpClient
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        requestFactory.setConnectTimeout(DEFAULT_REQUEST_TIMEOUT); // Connection timeout in milliseconds
+        HttpComponentsClientHttpRequestFactory requestFactory =
+                new HttpComponentsClientHttpRequestFactory(httpClient);
+        requestFactory.setConnectTimeout(
+                DEFAULT_REQUEST_TIMEOUT); // Connection timeout in milliseconds
         requestFactory.setReadTimeout(DEFAULT_REQUEST_TIMEOUT); // Read timeout in milliseconds
         // Create and return a RestTemplate with the custom request factory
         return new RestTemplate(requestFactory);
@@ -58,22 +62,25 @@ public class WebConfig {
     @Bean
     public AsyncRestTemplate asyncRestTemplate(RestTemplate restTemplate) {
         HttpComponentsAsyncClientHttpRequestFactory asyncClientHttpRequestFactory =
-            new HttpComponentsAsyncClientHttpRequestFactory();
-        asyncClientHttpRequestFactory.setConnectionRequestTimeout(DEFAULT_REQUEST_TIMEOUT); // Connection request timeout in milliseconds
-        asyncClientHttpRequestFactory.setConnectTimeout(DEFAULT_REQUEST_TIMEOUT); // Connection timeout in milliseconds
-        asyncClientHttpRequestFactory.setReadTimeout(DEFAULT_REQUEST_TIMEOUT); // Read timeout in milliseconds
+                new HttpComponentsAsyncClientHttpRequestFactory();
+        asyncClientHttpRequestFactory.setConnectionRequestTimeout(
+                DEFAULT_REQUEST_TIMEOUT); // Connection request timeout in milliseconds
+        asyncClientHttpRequestFactory.setConnectTimeout(
+                DEFAULT_REQUEST_TIMEOUT); // Connection timeout in milliseconds
+        asyncClientHttpRequestFactory.setReadTimeout(
+                DEFAULT_REQUEST_TIMEOUT); // Read timeout in milliseconds
         return new AsyncRestTemplate(asyncClientHttpRequestFactory, restTemplate);
     }
 
     @Bean
-    public FilterRegistrationBean<Filter> consoleRemotingFilter(NamingManager namingManager,
-        AsyncRestTemplate asyncRestTemplate) {
-        ConsoleRemotingFilter consoleRemotingFilter = new ConsoleRemotingFilter(namingManager, asyncRestTemplate);
+    public FilterRegistrationBean<Filter> consoleRemotingFilter(
+            NamingManager namingManager, AsyncRestTemplate asyncRestTemplate) {
+        ConsoleRemotingFilter consoleRemotingFilter =
+                new ConsoleRemotingFilter(namingManager, asyncRestTemplate);
         FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
         registration.setFilter(consoleRemotingFilter);
         registration.addUrlPatterns("/*");
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registration;
     }
-
 }

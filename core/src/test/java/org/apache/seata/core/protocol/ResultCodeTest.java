@@ -29,35 +29,43 @@ class ResultCodeTest {
     void getByte() {
         Assertions.assertEquals(ResultCode.Failed, ResultCode.get((byte) 0));
         Assertions.assertEquals(ResultCode.Success, ResultCode.get((byte) 1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ResultCode.get((byte) 2);
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    ResultCode.get((byte) 2);
+                });
     }
 
     @Test
     void getInt() {
         Assertions.assertEquals(ResultCode.Failed, ResultCode.get(0));
         Assertions.assertEquals(ResultCode.Success, ResultCode.get(1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ResultCode.get(2);
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    ResultCode.get(2);
+                });
     }
 
     @Test
     void values() {
-        Assertions.assertArrayEquals(new ResultCode[]{ResultCode.Failed, ResultCode.Success},
-                ResultCode.values());
+        Assertions.assertArrayEquals(
+                new ResultCode[] {ResultCode.Failed, ResultCode.Success}, ResultCode.values());
     }
 
     @Test
     void valueOf() {
         Assertions.assertEquals(ResultCode.Failed, ResultCode.valueOf("Failed"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ResultCode.valueOf("FAILED");
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    ResultCode.valueOf("FAILED");
+                });
         Assertions.assertEquals(ResultCode.Success, ResultCode.valueOf("Success"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ResultCode.valueOf("SUCCESS");
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    ResultCode.valueOf("SUCCESS");
+                });
     }
 }

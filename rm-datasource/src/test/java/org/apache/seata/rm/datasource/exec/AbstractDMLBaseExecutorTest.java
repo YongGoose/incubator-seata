@@ -16,19 +16,19 @@
  */
 package org.apache.seata.rm.datasource.exec;
 
-
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.sql.Connection;
+import java.util.Arrays;
+import java.util.Collections;
 import org.apache.seata.rm.datasource.ConnectionContext;
 import org.apache.seata.rm.datasource.ConnectionProxy;
 import org.apache.seata.rm.datasource.PreparedStatementProxy;
-import org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor;
-import org.apache.seata.rm.datasource.exec.LockConflictException;
-import org.apache.seata.rm.datasource.exec.LockWaitTimeoutException;
-import org.apache.seata.rm.datasource.exec.StatementCallback;
 import org.apache.seata.rm.datasource.exec.mysql.MySQLInsertExecutor;
 import org.apache.seata.rm.datasource.exec.oracle.OracleInsertExecutor;
-import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.rm.datasource.sql.struct.TableRecords;
 import org.apache.seata.sqlparser.SQLInsertRecognizer;
+import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,17 +38,14 @@ import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.Mockito;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.sql.Connection;
-import java.util.Arrays;
-import java.util.Collections;
-
 /**
  * AbstractDMLBaseExecutor test
  *
  */
-@EnabledOnJre({JRE.JAVA_8, JRE.JAVA_11}) // `ReflectionUtil.modifyStaticFinalField` does not supported java17 and above versions
+@EnabledOnJre({
+    JRE.JAVA_8,
+    JRE.JAVA_11
+}) // `ReflectionUtil.modifyStaticFinalField` does not supported java17 and above versions
 public class AbstractDMLBaseExecutorTest {
     private ConnectionProxy connectionProxy;
 
@@ -58,38 +55,36 @@ public class AbstractDMLBaseExecutorTest {
 
     @BeforeEach
     public void initBeforeEach() throws Exception {
-        branchRollbackFlagField = ConnectionProxy.LockRetryPolicy.class.getDeclaredField("LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT");
+        branchRollbackFlagField =
+                ConnectionProxy.LockRetryPolicy.class.getDeclaredField(
+                        "LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT");
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
-        modifiersField.setInt(branchRollbackFlagField, branchRollbackFlagField.getModifiers() & ~Modifier.FINAL);
+        modifiersField.setInt(
+                branchRollbackFlagField, branchRollbackFlagField.getModifiers() & ~Modifier.FINAL);
         branchRollbackFlagField.setAccessible(true);
         boolean branchRollbackFlag = (boolean) branchRollbackFlagField.get(null);
         Assertions.assertTrue(branchRollbackFlag);
 
         Connection targetConnection = Mockito.mock(Connection.class);
         connectionProxy = Mockito.mock(ConnectionProxy.class);
-        Mockito.doThrow(new LockConflictException("mock exception"))
-                .when(connectionProxy).commit();
-        Mockito.when(connectionProxy.getAutoCommit())
-                .thenReturn(Boolean.TRUE);
-        Mockito.when(connectionProxy.getTargetConnection())
-                .thenReturn(targetConnection);
-        Mockito.when(connectionProxy.getContext())
-                .thenReturn(new ConnectionContext());
+        Mockito.doThrow(new LockConflictException("mock exception")).when(connectionProxy).commit();
+        Mockito.when(connectionProxy.getAutoCommit()).thenReturn(Boolean.TRUE);
+        Mockito.when(connectionProxy.getTargetConnection()).thenReturn(targetConnection);
+        Mockito.when(connectionProxy.getContext()).thenReturn(new ConnectionContext());
         PreparedStatementProxy statementProxy = Mockito.mock(PreparedStatementProxy.class);
-        Mockito.when(statementProxy.getConnectionProxy())
-                .thenReturn(connectionProxy);
+        Mockito.when(statementProxy.getConnectionProxy()).thenReturn(connectionProxy);
         StatementCallback statementCallback = Mockito.mock(StatementCallback.class);
         SQLInsertRecognizer sqlInsertRecognizer = Mockito.mock(SQLInsertRecognizer.class);
         TableMeta tableMeta = Mockito.mock(TableMeta.class);
-        executor = Mockito.spy(new MySQLInsertExecutor(statementProxy, statementCallback, sqlInsertRecognizer));
-        Mockito.doReturn(tableMeta)
-                .when(executor).getTableMeta();
+        executor =
+                Mockito.spy(
+                        new MySQLInsertExecutor(
+                                statementProxy, statementCallback, sqlInsertRecognizer));
+        Mockito.doReturn(tableMeta).when(executor).getTableMeta();
         TableRecords tableRecords = new TableRecords();
-        Mockito.doReturn(tableRecords)
-                .when(executor).beforeImage();
-        Mockito.doReturn(tableRecords)
-                .when(executor).afterImage(tableRecords);
+        Mockito.doReturn(tableRecords).when(executor).beforeImage();
+        Mockito.doReturn(tableRecords).when(executor).afterImage(tableRecords);
     }
 
     @Test
@@ -97,8 +92,7 @@ public class AbstractDMLBaseExecutorTest {
         boolean oldBranchRollbackFlag = (boolean) branchRollbackFlagField.get(null);
         branchRollbackFlagField.set(null, true);
         Assertions.assertThrows(LockWaitTimeoutException.class, executor::execute);
-        Mockito.verify(connectionProxy.getTargetConnection(), Mockito.atLeastOnce())
-                .rollback();
+        Mockito.verify(connectionProxy.getTargetConnection(), Mockito.atLeastOnce()).rollback();
         Mockito.verify(connectionProxy, Mockito.never()).rollback();
         branchRollbackFlagField.set(null, oldBranchRollbackFlag);
     }
@@ -116,34 +110,37 @@ public class AbstractDMLBaseExecutorTest {
     @Test
     @Disabled
     public void testOnlySupportMysqlWhenUseMultiPk() throws Exception {
-        Mockito.when(connectionProxy.getContext())
-                .thenReturn(new ConnectionContext());
+        Mockito.when(connectionProxy.getContext()).thenReturn(new ConnectionContext());
         PreparedStatementProxy statementProxy = Mockito.mock(PreparedStatementProxy.class);
-        Mockito.when(statementProxy.getConnectionProxy())
-                .thenReturn(connectionProxy);
+        Mockito.when(statementProxy.getConnectionProxy()).thenReturn(connectionProxy);
         StatementCallback statementCallback = Mockito.mock(StatementCallback.class);
         SQLInsertRecognizer sqlInsertRecognizer = Mockito.mock(SQLInsertRecognizer.class);
         TableMeta tableMeta = Mockito.mock(TableMeta.class);
-        executor = Mockito.spy(new OracleInsertExecutor(statementProxy, statementCallback, sqlInsertRecognizer));
+        executor =
+                Mockito.spy(
+                        new OracleInsertExecutor(
+                                statementProxy, statementCallback, sqlInsertRecognizer));
         Mockito.when(executor.getDbType()).thenReturn(JdbcConstants.ORACLE);
         Mockito.doReturn(tableMeta).when(executor).getTableMeta();
-        Mockito.when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Arrays.asList("id","userCode"));
+        Mockito.when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Arrays.asList("id", "userCode"));
         executor.executeAutoCommitFalse(null);
     }
 
-
     @Test
     public void testExecuteAutoCommitFalse() throws Exception {
-        Mockito.when(connectionProxy.getContext())
-                .thenReturn(new ConnectionContext());
+        Mockito.when(connectionProxy.getContext()).thenReturn(new ConnectionContext());
         PreparedStatementProxy statementProxy = Mockito.mock(PreparedStatementProxy.class);
-        Mockito.when(statementProxy.getConnectionProxy())
-                .thenReturn(connectionProxy);
+        Mockito.when(statementProxy.getConnectionProxy()).thenReturn(connectionProxy);
         SQLInsertRecognizer sqlInsertRecognizer = Mockito.mock(SQLInsertRecognizer.class);
         TableMeta tableMeta = Mockito.mock(TableMeta.class);
-        executor = Mockito.spy(new OracleInsertExecutor(statementProxy, (statement, args) -> {
-            return null;
-        }, sqlInsertRecognizer));
+        executor =
+                Mockito.spy(
+                        new OracleInsertExecutor(
+                                statementProxy,
+                                (statement, args) -> {
+                                    return null;
+                                },
+                                sqlInsertRecognizer));
         Mockito.when(executor.getDbType()).thenReturn(JdbcConstants.ORACLE);
         Mockito.doReturn(tableMeta).when(executor).getTableMeta();
         Mockito.when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Collections.singletonList("id"));
@@ -151,6 +148,4 @@ public class AbstractDMLBaseExecutorTest {
         Mockito.doReturn(tableRecords).when(executor).afterImage(Mockito.any());
         Assertions.assertNull(executor.executeAutoCommitFalse(null));
     }
-
-
 }

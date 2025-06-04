@@ -43,7 +43,8 @@ public class SQLParsingExceptionTest {
     public void testConstructorWithCause() {
         Throwable cause = new IllegalArgumentException("Test cause");
         SQLParsingException exception = new SQLParsingException(cause);
-        assertEquals(cause.toString(), exception.getMessage(), "Message should be cause's toString");
+        assertEquals(
+                cause.toString(), exception.getMessage(), "Message should be cause's toString");
         assertEquals(cause, exception.getCause(), "Cause should match");
     }
 }

@@ -40,33 +40,40 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class AbstractRMHandler extends AbstractExceptionHandler
-    implements RMInboundHandler, TransactionMessageHandler {
+        implements RMInboundHandler, TransactionMessageHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRMHandler.class);
 
     @Override
     public BranchCommitResponse handle(BranchCommitRequest request) {
         BranchCommitResponse response = new BranchCommitResponse();
-        exceptionHandleTemplate(new AbstractCallback<BranchCommitRequest, BranchCommitResponse>() {
-            @Override
-            public void execute(BranchCommitRequest request, BranchCommitResponse response)
-                throws TransactionException {
-                doBranchCommit(request, response);
-            }
-        }, request, response);
+        exceptionHandleTemplate(
+                new AbstractCallback<BranchCommitRequest, BranchCommitResponse>() {
+                    @Override
+                    public void execute(BranchCommitRequest request, BranchCommitResponse response)
+                            throws TransactionException {
+                        doBranchCommit(request, response);
+                    }
+                },
+                request,
+                response);
         return response;
     }
 
     @Override
     public BranchRollbackResponse handle(BranchRollbackRequest request) {
         BranchRollbackResponse response = new BranchRollbackResponse();
-        exceptionHandleTemplate(new AbstractCallback<BranchRollbackRequest, BranchRollbackResponse>() {
-            @Override
-            public void execute(BranchRollbackRequest request, BranchRollbackResponse response)
-                throws TransactionException {
-                doBranchRollback(request, response);
-            }
-        }, request, response);
+        exceptionHandleTemplate(
+                new AbstractCallback<BranchRollbackRequest, BranchRollbackResponse>() {
+                    @Override
+                    public void execute(
+                            BranchRollbackRequest request, BranchRollbackResponse response)
+                            throws TransactionException {
+                        doBranchRollback(request, response);
+                    }
+                },
+                request,
+                response);
         return response;
     }
 
@@ -87,23 +94,36 @@ public abstract class AbstractRMHandler extends AbstractExceptionHandler
      * @throws TransactionException the transaction exception
      */
     protected void doBranchCommit(BranchCommitRequest request, BranchCommitResponse response)
-        throws TransactionException {
+            throws TransactionException {
         String xid = request.getXid();
         long branchId = request.getBranchId();
         String resourceId = request.getResourceId();
         String applicationData = request.getApplicationData();
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Branch committing: " + xid + " " + branchId + " " + resourceId + " " + applicationData);
+            LOGGER.info(
+                    "Branch committing: "
+                            + xid
+                            + " "
+                            + branchId
+                            + " "
+                            + resourceId
+                            + " "
+                            + applicationData);
         }
-        BranchStatus status = getResourceManager().branchCommit(request.getBranchType(), xid, branchId, resourceId,
-            applicationData);
+        BranchStatus status =
+                getResourceManager()
+                        .branchCommit(
+                                request.getBranchType(),
+                                xid,
+                                branchId,
+                                resourceId,
+                                applicationData);
         response.setXid(xid);
         response.setBranchId(branchId);
         response.setBranchStatus(status);
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Branch commit result: " + status);
         }
-
     }
 
     /**
@@ -114,7 +134,7 @@ public abstract class AbstractRMHandler extends AbstractExceptionHandler
      * @throws TransactionException the transaction exception
      */
     protected void doBranchRollback(BranchRollbackRequest request, BranchRollbackResponse response)
-        throws TransactionException {
+            throws TransactionException {
         String xid = request.getXid();
         long branchId = request.getBranchId();
         String resourceId = request.getResourceId();
@@ -122,8 +142,14 @@ public abstract class AbstractRMHandler extends AbstractExceptionHandler
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Branch Rollbacking: " + xid + " " + branchId + " " + resourceId);
         }
-        BranchStatus status = getResourceManager().branchRollback(request.getBranchType(), xid, branchId, resourceId,
-            applicationData);
+        BranchStatus status =
+                getResourceManager()
+                        .branchRollback(
+                                request.getBranchType(),
+                                xid,
+                                branchId,
+                                resourceId,
+                                applicationData);
         response.setXid(xid);
         response.setBranchId(branchId);
         response.setBranchStatus(status);
@@ -144,7 +170,8 @@ public abstract class AbstractRMHandler extends AbstractExceptionHandler
         if (!(request instanceof AbstractTransactionRequestToRM)) {
             throw new IllegalArgumentException();
         }
-        AbstractTransactionRequestToRM transactionRequest = (AbstractTransactionRequestToRM)request;
+        AbstractTransactionRequestToRM transactionRequest =
+                (AbstractTransactionRequestToRM) request;
         transactionRequest.setRMInboundMessageHandler(this);
 
         return transactionRequest.handle(context);
@@ -152,7 +179,8 @@ public abstract class AbstractRMHandler extends AbstractExceptionHandler
 
     @Override
     public void onResponse(AbstractResultMessage response, RpcContext context) {
-        LOGGER.info("the rm client received response msg [{}] from tc server.", response.toString());
+        LOGGER.info(
+                "the rm client received response msg [{}] from tc server.", response.toString());
     }
 
     public abstract BranchType getBranchType();

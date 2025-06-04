@@ -22,7 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ControllerManager {
 
-    private static final Map<String, HttpInvocation> HTTP_CONTROLLER_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, HttpInvocation> HTTP_CONTROLLER_MAP =
+            new ConcurrentHashMap<>();
 
     public static HttpInvocation getHttpInvocation(String path) {
         return HTTP_CONTROLLER_MAP.get(path);

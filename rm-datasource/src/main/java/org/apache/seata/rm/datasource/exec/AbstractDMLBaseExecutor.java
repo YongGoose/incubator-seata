@@ -25,7 +25,6 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.rm.datasource.AbstractConnectionProxy;
 import org.apache.seata.rm.datasource.ConnectionContext;
@@ -43,14 +42,14 @@ import org.slf4j.LoggerFactory;
  * @param <T> the type parameter
  * @param <S> the type parameter
  */
-public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends BaseTransactionalExecutor<T, S> {
+public abstract class AbstractDMLBaseExecutor<T, S extends Statement>
+        extends BaseTransactionalExecutor<T, S> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDMLBaseExecutor.class);
 
     protected static final String WHERE = " WHERE ";
 
     protected static final String GROUP_BY = " GROUP BY ";
-
 
     /**
      * Instantiates a new Abstract dml base executor.
@@ -59,8 +58,10 @@ public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends Ba
      * @param statementCallback the statement callback
      * @param sqlRecognizer     the sql recognizer
      */
-    public AbstractDMLBaseExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback,
-                                   SQLRecognizer sqlRecognizer) {
+    public AbstractDMLBaseExecutor(
+            StatementProxy<S> statementProxy,
+            StatementCallback<T, S> statementCallback,
+            SQLRecognizer sqlRecognizer) {
         super(statementProxy, statementCallback, sqlRecognizer);
     }
 
@@ -71,8 +72,10 @@ public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends Ba
      * @param statementCallback the statement callback
      * @param sqlRecognizers    the multi sql recognizer
      */
-    public AbstractDMLBaseExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback,
-                                   List<SQLRecognizer> sqlRecognizers) {
+    public AbstractDMLBaseExecutor(
+            StatementProxy<S> statementProxy,
+            StatementCallback<T, S> statementCallback,
+            List<SQLRecognizer> sqlRecognizers) {
         super(statementProxy, statementCallback, sqlRecognizers);
     }
 
@@ -101,8 +104,11 @@ public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends Ba
             prepareUndoLog(beforeImage, afterImage);
             return result;
         } catch (TableMetaException e) {
-            LOGGER.error("table meta will be refreshed later, due to TableMetaException, table:{}, column:{}",
-                e.getTableName(), e.getColumnName());
+            LOGGER.error(
+                    "table meta will be refreshed later, due to TableMetaException, table:{},"
+                            + " column:{}",
+                    e.getTableName(),
+                    e.getColumnName());
             statementProxy.getConnectionProxy().getDataSourceProxy().tableMetaRefreshEvent();
             throw e;
         }
@@ -113,8 +119,10 @@ public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends Ba
             return getTableMeta().getPrimaryKeyOnlyName().size() > 1;
         }
         if (CollectionUtils.isNotEmpty(sqlRecognizers)) {
-            List<SQLRecognizer> distinctSQLRecognizer = sqlRecognizers.stream().filter(
-                distinctByKey(t -> t.getTableName())).collect(Collectors.toList());
+            List<SQLRecognizer> distinctSQLRecognizer =
+                    sqlRecognizers.stream()
+                            .filter(distinctByKey(t -> t.getTableName()))
+                            .collect(Collectors.toList());
             for (SQLRecognizer sqlRecognizer : distinctSQLRecognizer) {
                 if (getTableMeta(sqlRecognizer.getTableName()).getPrimaryKeyOnlyName().size() > 1) {
                     return true;
@@ -129,7 +137,6 @@ public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends Ba
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
-
     /**
      * Execute auto commit true t.
      *
@@ -141,11 +148,13 @@ public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends Ba
         ConnectionProxy connectionProxy = statementProxy.getConnectionProxy();
         try {
             connectionProxy.changeAutoCommit();
-            return new LockRetryPolicy(connectionProxy).execute(() -> {
-                T result = executeAutoCommitFalse(args);
-                connectionProxy.commit();
-                return result;
-            });
+            return new LockRetryPolicy(connectionProxy)
+                    .execute(
+                            () -> {
+                                T result = executeAutoCommitFalse(args);
+                                connectionProxy.commit();
+                                return result;
+                            });
         } catch (Exception e) {
             // when exception occur in finally,this exception will lost, so just print it here
             LOGGER.error("execute executeAutoCommitTrue error:{}", e.getMessage(), e);
@@ -194,7 +203,7 @@ public abstract class AbstractDMLBaseExecutor<T, S extends Statement> extends Ba
         @Override
         protected void onException(Exception e) throws Exception {
             ConnectionContext context = connection.getContext();
-            //UndoItems can't use the Set collection class to prevent ABA
+            // UndoItems can't use the Set collection class to prevent ABA
             context.removeSavepoint(null);
             connection.getTargetConnection().rollback();
         }

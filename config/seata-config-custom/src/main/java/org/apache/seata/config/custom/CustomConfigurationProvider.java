@@ -16,32 +16,34 @@
  */
 package org.apache.seata.config.custom;
 
+import java.util.stream.Stream;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.ConfigType;
 import org.apache.seata.config.Configuration;
-import org.apache.seata.config.ConfigurationKeys;
 import org.apache.seata.config.ConfigurationFactory;
+import org.apache.seata.config.ConfigurationKeys;
 import org.apache.seata.config.ConfigurationProvider;
-
-import java.util.stream.Stream;
-
 
 @LoadLevel(name = "Custom")
 public class CustomConfigurationProvider implements ConfigurationProvider {
     @Override
     public Configuration provide() {
-        String pathDataId = ConfigurationKeys.FILE_ROOT_CONFIG + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
-                + ConfigType.Custom.name().toLowerCase() + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
-                + "name";
+        String pathDataId =
+                ConfigurationKeys.FILE_ROOT_CONFIG
+                        + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                        + ConfigType.Custom.name().toLowerCase()
+                        + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                        + "name";
         String name = ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(pathDataId);
         if (StringUtils.isBlank(name)) {
-            throw new IllegalArgumentException("name value of custom config type must not be blank");
+            throw new IllegalArgumentException(
+                    "name value of custom config type must not be blank");
         }
-        if (Stream.of(ConfigType.values())
-                .anyMatch(ct -> ct.name().equalsIgnoreCase(name))) {
-            throw new IllegalArgumentException(String.format("custom config type name %s is not allowed", name));
+        if (Stream.of(ConfigType.values()).anyMatch(ct -> ct.name().equalsIgnoreCase(name))) {
+            throw new IllegalArgumentException(
+                    String.format("custom config type name %s is not allowed", name));
         }
         return EnhancedServiceLoader.load(ConfigurationProvider.class, name).provide();
     }

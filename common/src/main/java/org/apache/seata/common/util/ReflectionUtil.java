@@ -39,11 +39,9 @@ import java.util.function.Predicate;
  */
 public final class ReflectionUtil {
 
-    private ReflectionUtil() {
-    }
+    private ReflectionUtil() {}
 
-
-    //region Constants
+    // region Constants
 
     /**
      * The constant EMPTY_FIELD_ARRAY
@@ -73,12 +71,12 @@ public final class ReflectionUtil {
     /**
      * The cache METHOD_CACHE: Class -> methodName|paramClassName1,paramClassName2,...,paramClassNameN -> Method
      */
-    private static final Map<Class<?>, Map<String, Method>> METHOD_CACHE = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Map<String, Method>> METHOD_CACHE =
+            new ConcurrentHashMap<>();
 
-    //endregion
+    // endregion
 
-
-    //region Class
+    // region Class
 
     /**
      * Gets class by name.
@@ -146,10 +144,9 @@ public final class ReflectionUtil {
         return clazz;
     }
 
-    //endregion
+    // endregion
 
-
-    //region Interface
+    // region Interface
 
     /**
      * get all interface of the clazz
@@ -172,10 +169,9 @@ public final class ReflectionUtil {
         return interfaces;
     }
 
-    //endregion
+    // endregion
 
-
-    //region Field
+    // region Field
 
     /**
      * Gets all fields, excluding static or synthetic fields
@@ -230,22 +226,29 @@ public final class ReflectionUtil {
      * @throws NoSuchFieldException if the field named {@code fieldName} does not exist
      * @throws SecurityException    the security exception
      */
-    public static Field getField(final Class<?> clazz, final String fieldName) throws NoSuchFieldException, SecurityException {
-        Map<String, Field> fieldMap = CollectionUtils.computeIfAbsent(FIELD_CACHE, clazz, k -> new ConcurrentHashMap<>());
-        Field field = CollectionUtils.computeIfAbsent(fieldMap, fieldName, k -> {
-            Class<?> cl = clazz;
-            while (cl != null && cl != Object.class && !cl.isInterface()) {
-                try {
-                    return cl.getDeclaredField(fieldName);
-                } catch (NoSuchFieldException e) {
-                    cl = cl.getSuperclass();
-                }
-            }
-            return null;
-        });
+    public static Field getField(final Class<?> clazz, final String fieldName)
+            throws NoSuchFieldException, SecurityException {
+        Map<String, Field> fieldMap =
+                CollectionUtils.computeIfAbsent(FIELD_CACHE, clazz, k -> new ConcurrentHashMap<>());
+        Field field =
+                CollectionUtils.computeIfAbsent(
+                        fieldMap,
+                        fieldName,
+                        k -> {
+                            Class<?> cl = clazz;
+                            while (cl != null && cl != Object.class && !cl.isInterface()) {
+                                try {
+                                    return cl.getDeclaredField(fieldName);
+                                } catch (NoSuchFieldException e) {
+                                    cl = cl.getSuperclass();
+                                }
+                            }
+                            return null;
+                        });
 
         if (field == null) {
-            throw new NoSuchFieldException("field not found: " + clazz.getName() + ", field: " + fieldName);
+            throw new NoSuchFieldException(
+                    "field not found: " + clazz.getName() + ", field: " + fieldName);
         }
 
         if (!field.isAccessible()) {
@@ -277,7 +280,7 @@ public final class ReflectionUtil {
                 field.setAccessible(true);
             }
             try {
-                return (T)field.get(target);
+                return (T) field.get(target);
             } catch (IllegalAccessException ignore) {
                 // avoid other threads executing `field.setAccessible(false)`
             }
@@ -379,7 +382,10 @@ public final class ReflectionUtil {
 
         // check is static field
         if (!Modifier.isStatic(staticField.getModifiers())) {
-            throw new IllegalArgumentException("the `" + fieldToString(staticField) + "` is not a static field, cannot modify value.");
+            throw new IllegalArgumentException(
+                    "the `"
+                            + fieldToString(staticField)
+                            + "` is not a static field, cannot modify value.");
         }
 
         // remove the `final` keyword from the field
@@ -406,7 +412,8 @@ public final class ReflectionUtil {
      * @throws NoSuchFieldException     if the field named {@code modifyFieldName} does not exist
      * @throws IllegalAccessException   the illegal access exception
      */
-    public static void modifyStaticFinalField(Class<?> targetClass, String staticFieldName, Object newValue)
+    public static void modifyStaticFinalField(
+            Class<?> targetClass, String staticFieldName, Object newValue)
             throws NoSuchFieldException, IllegalAccessException {
         if (targetClass == null) {
             throw new IllegalArgumentException("targetClass must be not null");
@@ -419,10 +426,9 @@ public final class ReflectionUtil {
         modifyStaticFinalField(field, newValue);
     }
 
-    //endregion
+    // endregion
 
-
-    //region Method
+    // region Method
 
     /**
      * get method.
@@ -437,29 +443,37 @@ public final class ReflectionUtil {
      * @throws NoSuchMethodException    if the method named {@code methodName} does not exist
      * @throws SecurityException        the security exception
      */
-    public static Method getMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes)
+    public static Method getMethod(
+            final Class<?> clazz, final String methodName, final Class<?>... parameterTypes)
             throws NoSuchMethodException, SecurityException {
         if (clazz == null) {
             throw new IllegalArgumentException("clazz must be not null");
         }
 
-        Map<String, Method> methodMap = CollectionUtils.computeIfAbsent(METHOD_CACHE, clazz, k -> new ConcurrentHashMap<>());
+        Map<String, Method> methodMap =
+                CollectionUtils.computeIfAbsent(
+                        METHOD_CACHE, clazz, k -> new ConcurrentHashMap<>());
 
         String cacheKey = generateMethodCacheKey(methodName, parameterTypes);
-        Method method = CollectionUtils.computeIfAbsent(methodMap, cacheKey, k -> {
-            Class<?> cl = clazz;
-            while (cl != null) {
-                try {
-                    return cl.getDeclaredMethod(methodName, parameterTypes);
-                } catch (NoSuchMethodException e) {
-                    cl = cl.getSuperclass();
-                }
-            }
-            return null;
-        });
+        Method method =
+                CollectionUtils.computeIfAbsent(
+                        methodMap,
+                        cacheKey,
+                        k -> {
+                            Class<?> cl = clazz;
+                            while (cl != null) {
+                                try {
+                                    return cl.getDeclaredMethod(methodName, parameterTypes);
+                                } catch (NoSuchMethodException e) {
+                                    cl = cl.getSuperclass();
+                                }
+                            }
+                            return null;
+                        });
 
         if (method == null) {
-            throw new NoSuchMethodException("method not found: " + methodToString(clazz, methodName, parameterTypes));
+            throw new NoSuchMethodException(
+                    "method not found: " + methodToString(clazz, methodName, parameterTypes));
         }
 
         if (!method.isAccessible()) {
@@ -504,7 +518,8 @@ public final class ReflectionUtil {
      * @param matchCondition matchCondition
      * @return Set
      */
-    public static Map<Method, Class<?>> findMatchMethodClazzMap(Class<?> clazz, Predicate<Method> matchCondition) {
+    public static Map<Method, Class<?>> findMatchMethodClazzMap(
+            Class<?> clazz, Predicate<Method> matchCondition) {
         Map<Method, Class<?>> methodClassMap = new HashMap<>();
 
         for (Method method : clazz.getMethods()) {
@@ -579,8 +594,12 @@ public final class ReflectionUtil {
      * @throws InvocationTargetException if the underlying method throws an exception.
      * @throws SecurityException         the security exception
      */
-    public static Object invokeMethod(Object target, String methodName, Class<?>[] parameterTypes, Object... args)
-            throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException, SecurityException {
+    public static Object invokeMethod(
+            Object target, String methodName, Class<?>[] parameterTypes, Object... args)
+            throws NoSuchMethodException,
+                    InvocationTargetException,
+                    IllegalArgumentException,
+                    SecurityException {
         if (target == null) {
             throw new IllegalArgumentException("target must be not null");
         }
@@ -604,7 +623,10 @@ public final class ReflectionUtil {
      * @throws SecurityException         the security exception
      */
     public static Object invokeMethod(Object target, String methodName)
-            throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException, SecurityException {
+            throws NoSuchMethodException,
+                    InvocationTargetException,
+                    IllegalArgumentException,
+                    SecurityException {
         return invokeMethod(target, methodName, EMPTY_CLASS_ARRAY, EMPTY_ARGS);
     }
 
@@ -625,7 +647,8 @@ public final class ReflectionUtil {
         }
 
         if (!Modifier.isStatic(staticMethod.getModifiers())) {
-            throw new IllegalArgumentException("`" + methodToString(staticMethod) + "` is not a static method");
+            throw new IllegalArgumentException(
+                    "`" + methodToString(staticMethod) + "` is not a static method");
         }
 
         return invokeMethod(null, staticMethod, args);
@@ -659,9 +682,15 @@ public final class ReflectionUtil {
      * @throws InvocationTargetException if the underlying method throws an exception.
      * @throws SecurityException         the security exception
      */
-    public static Object invokeStaticMethod(Class<?> targetClass, String staticMethodName,
-                                            Class<?>[] parameterTypes, Object... args)
-            throws IllegalArgumentException, NoSuchMethodException, InvocationTargetException, SecurityException {
+    public static Object invokeStaticMethod(
+            Class<?> targetClass,
+            String staticMethodName,
+            Class<?>[] parameterTypes,
+            Object... args)
+            throws IllegalArgumentException,
+                    NoSuchMethodException,
+                    InvocationTargetException,
+                    SecurityException {
         if (targetClass == null) {
             throw new IllegalArgumentException("targetClass must be not null");
         }
@@ -669,8 +698,9 @@ public final class ReflectionUtil {
         // get method
         Method staticMethod = getMethod(targetClass, staticMethodName, parameterTypes);
         if (!Modifier.isStatic(staticMethod.getModifiers())) {
-            throw new NoSuchMethodException("static method not found: "
-                    + methodToString(targetClass, staticMethodName, parameterTypes));
+            throw new NoSuchMethodException(
+                    "static method not found: "
+                            + methodToString(targetClass, staticMethodName, parameterTypes));
         }
 
         return invokeStaticMethod(staticMethod, args);
@@ -689,14 +719,16 @@ public final class ReflectionUtil {
      * @throws SecurityException         the security exception
      */
     public static Object invokeStaticMethod(Class<?> targetClass, String staticMethodName)
-            throws IllegalArgumentException, NoSuchMethodException, SecurityException, InvocationTargetException {
+            throws IllegalArgumentException,
+                    NoSuchMethodException,
+                    SecurityException,
+                    InvocationTargetException {
         return invokeStaticMethod(targetClass, staticMethodName, EMPTY_CLASS_ARRAY, EMPTY_ARGS);
     }
 
-    //endregion
+    // endregion
 
-
-    //region Annotation
+    // region Annotation
 
     /**
      * get annotation values
@@ -704,15 +736,15 @@ public final class ReflectionUtil {
      * @param annotation the annotation
      * @throws NoSuchFieldException the no such field exception
      */
-    public static Map<String, Object> getAnnotationValues(Annotation annotation) throws NoSuchFieldException {
+    public static Map<String, Object> getAnnotationValues(Annotation annotation)
+            throws NoSuchFieldException {
         InvocationHandler h = Proxy.getInvocationHandler(annotation);
         return getFieldValue(h, "memberValues");
     }
 
-    //endregion
+    // endregion
 
-
-    //region toString
+    // region toString
 
     /**
      * class to string
@@ -733,7 +765,13 @@ public final class ReflectionUtil {
      * @return the string
      */
     public static String fieldToString(Class<?> clazz, String fieldName, Class<?> fieldType) {
-        return "Field<" + clazz.getSimpleName() + ".(" + fieldType.getSimpleName() + " " + fieldName + ")>";
+        return "Field<"
+                + clazz.getSimpleName()
+                + ".("
+                + fieldType.getSimpleName()
+                + " "
+                + fieldName
+                + ")>";
     }
 
     /**
@@ -754,8 +792,14 @@ public final class ReflectionUtil {
      * @param parameterTypes the parameter types
      * @return the string
      */
-    public static String methodToString(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-        return "Method<" + clazz.getSimpleName() + "." + methodName + parameterTypesToString(parameterTypes) + ">";
+    public static String methodToString(
+            Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        return "Method<"
+                + clazz.getSimpleName()
+                + "."
+                + methodName
+                + parameterTypesToString(parameterTypes)
+                + ">";
     }
 
     /**
@@ -765,8 +809,11 @@ public final class ReflectionUtil {
      * @return the string
      */
     public static String methodToString(Method method) {
-        String methodStr = method.getDeclaringClass().getSimpleName() + "." + method.getName()
-                + parameterTypesToString(method.getParameterTypes());
+        String methodStr =
+                method.getDeclaringClass().getSimpleName()
+                        + "."
+                        + method.getName()
+                        + parameterTypesToString(method.getParameterTypes());
         if (Modifier.isStatic(method.getModifiers())) {
             methodStr = "static " + methodStr;
         }
@@ -811,5 +858,5 @@ public final class ReflectionUtil {
         return sb.toString();
     }
 
-    //endregion
+    // endregion
 }

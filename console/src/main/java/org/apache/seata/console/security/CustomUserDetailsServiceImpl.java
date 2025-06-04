@@ -34,7 +34,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomUserDetailsServiceImpl.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(CustomUserDetailsServiceImpl.class);
 
     @Value("${console.user.username:seata}")
     private String username;
@@ -56,7 +57,8 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         password = generateRandomPassword();
         LOGGER.info(
-                "No password was configured. A random password has been generated for security purposes. You may either:\n"
+                "No password was configured. A random password has been generated for security"
+                        + " purposes. You may either:\n"
                         + "1. Use the auto-generated password: [{}]\n"
                         + "2. Set a custom password in the configuration.",
                 password);

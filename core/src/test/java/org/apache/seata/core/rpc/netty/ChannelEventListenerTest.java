@@ -16,6 +16,12 @@
  */
 package org.apache.seata.core.rpc.netty;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,22 +30,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class ChannelEventListenerTest {
 
     private AbstractNettyRemotingClient client;
 
-    @Mock
-    private Channel channel;
+    @Mock private Channel channel;
 
-    @Mock
-    private ChannelId channelId;
+    @Mock private ChannelId channelId;
 
     private TestChannelEventListener testListener;
 

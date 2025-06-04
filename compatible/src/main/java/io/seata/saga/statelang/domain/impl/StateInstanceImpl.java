@@ -16,12 +16,11 @@
  */
 package io.seata.saga.statelang.domain.impl;
 
-import java.util.Date;
-
 import io.seata.saga.statelang.domain.ExecutionStatus;
 import io.seata.saga.statelang.domain.StateInstance;
 import io.seata.saga.statelang.domain.StateMachineInstance;
 import io.seata.saga.statelang.domain.StateType;
+import java.util.Date;
 
 /**
  * state execution instance
@@ -232,7 +231,7 @@ public class StateInstanceImpl implements StateInstance {
 
     @Override
     public void setCompensationState(StateInstance compensationState) {
-        actual.setCompensationState(((StateInstanceImpl)compensationState).unwrap());
+        actual.setCompensationState(((StateInstanceImpl) compensationState).unwrap());
     }
 
     @Override
@@ -295,7 +294,8 @@ public class StateInstanceImpl implements StateInstance {
         return ExecutionStatus.wrap(actual.getCompensationStatus());
     }
 
-    public static StateInstanceImpl wrap(org.apache.seata.saga.statelang.domain.StateInstance target) {
+    public static StateInstanceImpl wrap(
+            org.apache.seata.saga.statelang.domain.StateInstance target) {
         return new StateInstanceImpl(target);
     }
 

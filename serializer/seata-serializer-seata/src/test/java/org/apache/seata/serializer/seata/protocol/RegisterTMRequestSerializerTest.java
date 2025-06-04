@@ -16,17 +16,18 @@
  */
 package org.apache.seata.serializer.seata.protocol;
 
+import static io.netty.buffer.Unpooled.buffer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.netty.buffer.ByteBuf;
-import org.apache.seata.serializer.seata.SeataSerializer;
 import org.apache.seata.core.protocol.AbstractIdentifyRequest;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.RegisterTMRequest;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.apache.seata.core.protocol.ProtocolConstants;
-import static io.netty.buffer.Unpooled.buffer;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Register tm request codec test.
@@ -39,13 +40,13 @@ public class RegisterTMRequestSerializerTest {
      */
     SeataSerializer seataSerializer = new SeataSerializer(ProtocolConstants.VERSION);
 
-    private static       RegisterTMRequest       registerTMRequest;
-    private static       AbstractIdentifyRequest air;
-    private static final String                  APP_ID    = "applicationId";
-    private static final String                  TSG       = "transactionServiceGroup";
-    private static final String                  ED        = "extraData";
-    private static final short                   TYPE_CODE = 101;
-    private static final ByteBuf                 BB        = buffer(128);
+    private static RegisterTMRequest registerTMRequest;
+    private static AbstractIdentifyRequest air;
+    private static final String APP_ID = "applicationId";
+    private static final String TSG = "transactionServiceGroup";
+    private static final String ED = "extraData";
+    private static final short TYPE_CODE = 101;
+    private static final ByteBuf BB = buffer(128);
 
     /**
      * Test codec.
@@ -62,9 +63,11 @@ public class RegisterTMRequestSerializerTest {
 
         RegisterTMRequest registerTMRequest2 = seataSerializer.deserialize(body);
 
-        assertThat(registerTMRequest2.getApplicationId()).isEqualTo(registerTMRequest.getApplicationId());
+        assertThat(registerTMRequest2.getApplicationId())
+                .isEqualTo(registerTMRequest.getApplicationId());
         assertThat(registerTMRequest2.getExtraData()).isEqualTo(registerTMRequest.getExtraData());
-        assertThat(registerTMRequest2.getTransactionServiceGroup()).isEqualTo(registerTMRequest.getTransactionServiceGroup());
+        assertThat(registerTMRequest2.getTransactionServiceGroup())
+                .isEqualTo(registerTMRequest.getTransactionServiceGroup());
         assertThat(registerTMRequest2.getVersion()).isEqualTo(registerTMRequest.getVersion());
     }
 
@@ -74,9 +77,7 @@ public class RegisterTMRequestSerializerTest {
     @BeforeAll
     public static void setupNull() {
         registerTMRequest = new RegisterTMRequest();
-        air = Mockito.mock(
-                AbstractIdentifyRequest.class,
-                Mockito.CALLS_REAL_METHODS);
+        air = Mockito.mock(AbstractIdentifyRequest.class, Mockito.CALLS_REAL_METHODS);
     }
 
     /**
@@ -85,9 +86,7 @@ public class RegisterTMRequestSerializerTest {
     @BeforeAll
     public static void setupWithValues() {
         registerTMRequest = new RegisterTMRequest(APP_ID, TSG, ED);
-        air = Mockito.mock(
-                AbstractIdentifyRequest.class,
-                Mockito.CALLS_REAL_METHODS);
+        air = Mockito.mock(AbstractIdentifyRequest.class, Mockito.CALLS_REAL_METHODS);
     }
 
     /**
@@ -97,7 +96,6 @@ public class RegisterTMRequestSerializerTest {
     public void testGetTypeCode() {
         Assertions.assertEquals(TYPE_CODE, registerTMRequest.getTypeCode());
     }
-
 
     /**
      * Test decode method with empty parameter

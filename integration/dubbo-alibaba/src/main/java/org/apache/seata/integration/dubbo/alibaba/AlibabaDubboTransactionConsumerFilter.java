@@ -23,7 +23,6 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
-
 import org.apache.seata.core.constants.DubboConstants;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.model.BranchType;
@@ -33,10 +32,13 @@ import org.slf4j.LoggerFactory;
 /**
  * The type Alibaba dubbo transaction consumer filter.
  */
-@Activate(group = {DubboConstants.CONSUMER}, order = 100)
+@Activate(
+        group = {DubboConstants.CONSUMER},
+        order = 100)
 public class AlibabaDubboTransactionConsumerFilter implements Filter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AlibabaDubboTransactionConsumerFilter.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(AlibabaDubboTransactionConsumerFilter.class);
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
@@ -47,7 +49,10 @@ public class AlibabaDubboTransactionConsumerFilter implements Filter {
         BranchType branchType = RootContext.getBranchType();
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("consumer xid in RootContext[{}], branchType in RootContext[{}]", xid, branchType);
+            LOGGER.debug(
+                    "consumer xid in RootContext[{}], branchType in RootContext[{}]",
+                    xid,
+                    branchType);
         }
         if (xid != null) {
             RpcContext.getContext().setAttachment(RootContext.KEY_XID, xid);

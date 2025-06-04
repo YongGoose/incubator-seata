@@ -16,16 +16,15 @@
  */
 package org.apache.seata.saga.statelang.validator.impl;
 
-import org.apache.seata.saga.statelang.domain.State;
-import org.apache.seata.saga.statelang.domain.StateMachine;
-import org.apache.seata.saga.statelang.parser.utils.StateMachineUtils;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import org.apache.seata.saga.statelang.domain.State;
+import org.apache.seata.saga.statelang.domain.StateMachine;
+import org.apache.seata.saga.statelang.parser.utils.StateMachineUtils;
 
 /**
  * Rule to check if the state machine can terminate in finite time, i.e. if there is an infinite loop
@@ -72,8 +71,10 @@ public class FiniteTerminationRule extends AbstractRule {
                 }
             }
             if (noOutgoingFlow) {
-                hint = String.format("There is a infinite loop [%s] without outgoing flow to end",
-                        String.join(", ", cycleStateNames));
+                hint =
+                        String.format(
+                                "There is a infinite loop [%s] without outgoing flow to end",
+                                String.join(", ", cycleStateNames));
                 return false;
             }
         }
@@ -86,8 +87,7 @@ public class FiniteTerminationRule extends AbstractRule {
             DisjointSet disjointSet,
             Set<String> visited,
             Map<String, Set<String>> nextStateNameMap,
-            Stack<String> currentPathWithoutCycles
-    ) {
+            Stack<String> currentPathWithoutCycles) {
         State state = stateMachine.getState(stateName);
 
         if (visited.contains(stateName)) {
@@ -96,7 +96,9 @@ public class FiniteTerminationRule extends AbstractRule {
                 // Union all states in a cycle
                 int curr = currentPathWithoutCycles.size() - 1;
                 do {
-                    disjointSet.union(currentPathWithoutCycles.get(curr), currentPathWithoutCycles.get(--curr));
+                    disjointSet.union(
+                            currentPathWithoutCycles.get(curr),
+                            currentPathWithoutCycles.get(--curr));
                 } while (!currentPathWithoutCycles.get(curr).equals(stateName));
             }
         } else {
@@ -105,13 +107,18 @@ public class FiniteTerminationRule extends AbstractRule {
 
             visited.add(stateName);
             currentPathWithoutCycles.push(stateName);
-            for (String nextStateName: nextStateNames) {
-                iterate(stateMachine, nextStateName, disjointSet, visited, nextStateNameMap, currentPathWithoutCycles);
+            for (String nextStateName : nextStateNames) {
+                iterate(
+                        stateMachine,
+                        nextStateName,
+                        disjointSet,
+                        visited,
+                        nextStateNameMap,
+                        currentPathWithoutCycles);
             }
             currentPathWithoutCycles.pop();
             visited.remove(stateName);
         }
-
     }
 
     private static class DisjointSet {

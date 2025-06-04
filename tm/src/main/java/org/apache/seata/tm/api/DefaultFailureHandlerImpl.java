@@ -16,16 +16,14 @@
  */
 package org.apache.seata.tm.api;
 
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.seata.common.thread.NamedThreadFactory;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.logger.StackTraceLogger;
 import org.apache.seata.core.model.GlobalStatus;
-
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +46,12 @@ public class DefaultFailureHandlerImpl implements TMFailureHandler {
 
     private static final int TICKS_PER_WHEEL = 8;
 
-    private static final HashedWheelTimer TIMER = new HashedWheelTimer(
-        new NamedThreadFactory("failedTransactionRetry", 1),
-        TICK_DURATION, TimeUnit.SECONDS, TICKS_PER_WHEEL);
+    private static final HashedWheelTimer TIMER =
+            new HashedWheelTimer(
+                    new NamedThreadFactory("failedTransactionRetry", 1),
+                    TICK_DURATION,
+                    TimeUnit.SECONDS,
+                    TICKS_PER_WHEEL);
 
     @Override
     public void onBeginFailure(GlobalTransaction tx, Throwable cause) {
@@ -60,20 +61,32 @@ public class DefaultFailureHandlerImpl implements TMFailureHandler {
     @Override
     public void onCommitFailure(GlobalTransaction tx, Throwable cause) {
         LOGGER.warn("Failed to commit transaction[" + tx.getXid() + "]", cause);
-        TIMER.newTimeout(new CheckTimerTask(tx, GlobalStatus.Committed), SCHEDULE_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        TIMER.newTimeout(
+                new CheckTimerTask(tx, GlobalStatus.Committed),
+                SCHEDULE_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     @Override
     public void onRollbackFailure(GlobalTransaction tx, Throwable originalException) {
         LOGGER.warn("Failed to rollback transaction[" + tx.getXid() + "]", originalException);
-        TIMER.newTimeout(new CheckTimerTask(tx, GlobalStatus.Rollbacked), SCHEDULE_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        TIMER.newTimeout(
+                new CheckTimerTask(tx, GlobalStatus.Rollbacked),
+                SCHEDULE_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     @Override
     public void onRollbacking(GlobalTransaction tx, Throwable originalException) {
-        StackTraceLogger.warn(LOGGER, originalException, "Retrying to rollback transaction[{}]", new String[] {tx.getXid()});
-        TIMER.newTimeout(new CheckTimerTask(tx, GlobalStatus.RollbackRetrying), SCHEDULE_INTERVAL_SECONDS,
-            TimeUnit.SECONDS);
+        StackTraceLogger.warn(
+                LOGGER,
+                originalException,
+                "Retrying to rollback transaction[{}]",
+                new String[] {tx.getXid()});
+        TIMER.newTimeout(
+                new CheckTimerTask(tx, GlobalStatus.RollbackRetrying),
+                SCHEDULE_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     protected class CheckTimerTask implements TimerTask {
@@ -95,7 +108,10 @@ public class DefaultFailureHandlerImpl implements TMFailureHandler {
         public void run(Timeout timeout) throws Exception {
             if (!isStopped) {
                 if (++count > RETRY_MAX_TIMES) {
-                    LOGGER.error("transaction [{}] retry fetch status times exceed the limit [{} times]", tx.getXid(), RETRY_MAX_TIMES);
+                    LOGGER.error(
+                            "transaction [{}] retry fetch status times exceed the limit [{} times]",
+                            tx.getXid(),
+                            RETRY_MAX_TIMES);
                     return;
                 }
                 isStopped = shouldStop(tx, required);
@@ -116,5 +132,4 @@ public class DefaultFailureHandlerImpl implements TMFailureHandler {
         }
         return false;
     }
-
 }

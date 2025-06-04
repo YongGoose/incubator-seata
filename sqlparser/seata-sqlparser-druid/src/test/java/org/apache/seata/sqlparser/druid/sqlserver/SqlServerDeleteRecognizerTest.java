@@ -16,14 +16,13 @@
  */
 package org.apache.seata.sqlparser.druid.sqlserver;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.druid.AbstractRecognizerTest;
@@ -50,7 +49,8 @@ public class SqlServerDeleteRecognizerTest extends AbstractRecognizerTest {
         String sql = "DELETE FROM t1 WHERE id = 'id1'";
 
         SQLStatement statement = getSQLStatement(sql);
-        SqlServerDeleteRecognizer sqlServerDeleteRecognizer = new SqlServerDeleteRecognizer(sql, statement);
+        SqlServerDeleteRecognizer sqlServerDeleteRecognizer =
+                new SqlServerDeleteRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, sqlServerDeleteRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerDeleteRecognizer.getTableName());
@@ -65,24 +65,28 @@ public class SqlServerDeleteRecognizerTest extends AbstractRecognizerTest {
         String sql = "DELETE FROM t1 WHERE id = ?";
 
         SQLStatement statement = getSQLStatement(sql);
-        SqlServerDeleteRecognizer sqlServerDeleteRecognizer = new SqlServerDeleteRecognizer(sql, statement);
+        SqlServerDeleteRecognizer sqlServerDeleteRecognizer =
+                new SqlServerDeleteRecognizer(sql, statement);
 
-        ParametersHolder parametersHolder = () -> {
-            ArrayList<Object> idParam = new ArrayList<>();
-            idParam.add("id1");
-            Map<Integer, ArrayList<Object>> result = new HashMap<>();
-            result.put(1, idParam);
-            return result;
-        };
+        ParametersHolder parametersHolder =
+                () -> {
+                    ArrayList<Object> idParam = new ArrayList<>();
+                    idParam.add("id1");
+                    Map<Integer, ArrayList<Object>> result = new HashMap<>();
+                    result.put(1, idParam);
+                    return result;
+                };
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
 
         Assertions.assertEquals(sql, sqlServerDeleteRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerDeleteRecognizer.getTableName());
         Assertions.assertEquals("id = ?", sqlServerDeleteRecognizer.getWhereCondition());
 
-        String whereCondition = sqlServerDeleteRecognizer.getWhereCondition(parametersHolder, paramAppenderList);
+        String whereCondition =
+                sqlServerDeleteRecognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals("id = ?", whereCondition);
-        Assertions.assertEquals(Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Collections.singletonList("id1")), paramAppenderList);
     }
 
     /**
@@ -93,27 +97,31 @@ public class SqlServerDeleteRecognizerTest extends AbstractRecognizerTest {
         String sql = "DELETE FROM t1 WHERE id in (?, ?)";
 
         SQLStatement statement = getSQLStatement(sql);
-        SqlServerDeleteRecognizer sqlServerDeleteRecognizer = new SqlServerDeleteRecognizer(sql, statement);
+        SqlServerDeleteRecognizer sqlServerDeleteRecognizer =
+                new SqlServerDeleteRecognizer(sql, statement);
 
-        ParametersHolder parametersHolder = () -> {
-            ArrayList<Object> id1Param = new ArrayList<>();
-            id1Param.add("id1");
-            ArrayList<Object> id2Param = new ArrayList<>();
-            id2Param.add("id2");
-            Map<Integer, ArrayList<Object>> result = new HashMap<>();
-            result.put(1, id1Param);
-            result.put(2, id2Param);
-            return result;
-        };
+        ParametersHolder parametersHolder =
+                () -> {
+                    ArrayList<Object> id1Param = new ArrayList<>();
+                    id1Param.add("id1");
+                    ArrayList<Object> id2Param = new ArrayList<>();
+                    id2Param.add("id2");
+                    Map<Integer, ArrayList<Object>> result = new HashMap<>();
+                    result.put(1, id1Param);
+                    result.put(2, id2Param);
+                    return result;
+                };
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
 
         Assertions.assertEquals(sql, sqlServerDeleteRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerDeleteRecognizer.getTableName());
         Assertions.assertEquals("id IN (?, ?)", sqlServerDeleteRecognizer.getWhereCondition());
 
-        String whereCondition = sqlServerDeleteRecognizer.getWhereCondition(parametersHolder, paramAppenderList);
+        String whereCondition =
+                sqlServerDeleteRecognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals("id IN (?, ?)", whereCondition);
-        Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
     }
 
     /**
@@ -124,27 +132,32 @@ public class SqlServerDeleteRecognizerTest extends AbstractRecognizerTest {
         String sql = "DELETE FROM t1 WHERE id BETWEEN ? AND ?";
 
         SQLStatement statement = getSQLStatement(sql);
-        SqlServerDeleteRecognizer sqlServerDeleteRecognizer = new SqlServerDeleteRecognizer(sql, statement);
+        SqlServerDeleteRecognizer sqlServerDeleteRecognizer =
+                new SqlServerDeleteRecognizer(sql, statement);
 
-        ParametersHolder parametersHolder = () -> {
-            ArrayList<Object> id1Param = new ArrayList<>();
-            id1Param.add("id1");
-            ArrayList<Object> id2Param = new ArrayList<>();
-            id2Param.add("id2");
-            Map<Integer, ArrayList<Object>> result = new HashMap<>();
-            result.put(1, id1Param);
-            result.put(2, id2Param);
-            return result;
-        };
+        ParametersHolder parametersHolder =
+                () -> {
+                    ArrayList<Object> id1Param = new ArrayList<>();
+                    id1Param.add("id1");
+                    ArrayList<Object> id2Param = new ArrayList<>();
+                    id2Param.add("id2");
+                    Map<Integer, ArrayList<Object>> result = new HashMap<>();
+                    result.put(1, id1Param);
+                    result.put(2, id2Param);
+                    return result;
+                };
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
 
         Assertions.assertEquals(sql, sqlServerDeleteRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerDeleteRecognizer.getTableName());
-        Assertions.assertEquals("id BETWEEN ? AND ?", sqlServerDeleteRecognizer.getWhereCondition());
+        Assertions.assertEquals(
+                "id BETWEEN ? AND ?", sqlServerDeleteRecognizer.getWhereCondition());
 
-        String whereCondition = sqlServerDeleteRecognizer.getWhereCondition(parametersHolder, paramAppenderList);
+        String whereCondition =
+                sqlServerDeleteRecognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals("id BETWEEN ? AND ?", whereCondition);
-        Assertions.assertEquals(Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Arrays.asList("id1", "id2")), paramAppenderList);
     }
 
     /**
@@ -155,14 +168,14 @@ public class SqlServerDeleteRecognizerTest extends AbstractRecognizerTest {
         String sql = "DELETE FROM t1 WHERE EXISTS (SELECT * FROM t1)";
 
         SQLStatement statement = getSQLStatement(sql);
-        SqlServerDeleteRecognizer sqlServerDeleteRecognizer = new SqlServerDeleteRecognizer(sql, statement);
+        SqlServerDeleteRecognizer sqlServerDeleteRecognizer =
+                new SqlServerDeleteRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, sqlServerDeleteRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerDeleteRecognizer.getTableName());
-        Assertions.assertEquals("EXISTS (\n" +
-                "\tSELECT *\n" +
-                "\tFROM t1\n" +
-                ")", sqlServerDeleteRecognizer.getWhereCondition());
+        Assertions.assertEquals(
+                "EXISTS (\n" + "\tSELECT *\n" + "\tFROM t1\n" + ")",
+                sqlServerDeleteRecognizer.getWhereCondition());
     }
 
     /**
@@ -173,11 +186,13 @@ public class SqlServerDeleteRecognizerTest extends AbstractRecognizerTest {
         String sql = "DELETE FROM t1 WHERE id in (SELECT id FROM t1)";
 
         SQLStatement statement = getSQLStatement(sql);
-        SqlServerDeleteRecognizer sqlServerDeleteRecognizer = new SqlServerDeleteRecognizer(sql, statement);
+        SqlServerDeleteRecognizer sqlServerDeleteRecognizer =
+                new SqlServerDeleteRecognizer(sql, statement);
 
         Assertions.assertEquals(sql, sqlServerDeleteRecognizer.getOriginalSQL());
         Assertions.assertEquals("t1", sqlServerDeleteRecognizer.getTableName());
-        Assertions.assertThrows(IllegalArgumentException.class, sqlServerDeleteRecognizer::getWhereCondition);
+        Assertions.assertThrows(
+                IllegalArgumentException.class, sqlServerDeleteRecognizer::getWhereCondition);
     }
 
     @Test

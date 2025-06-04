@@ -43,8 +43,7 @@ public class StateInstruction implements Instruction {
      */
     private State temporaryState;
 
-    public StateInstruction() {
-    }
+    public StateInstruction() {}
 
     public StateInstruction(String stateMachineName, String tenantId) {
         this.stateMachineName = stateMachineName;
@@ -63,16 +62,21 @@ public class StateInstruction implements Instruction {
         String tenantId = getTenantId();
 
         if (StringUtils.isEmpty(stateMachineName)) {
-            throw new EngineExecutionException("StateMachineName is required", FrameworkErrorCode.ParameterRequired);
+            throw new EngineExecutionException(
+                    "StateMachineName is required", FrameworkErrorCode.ParameterRequired);
         }
 
-        StateMachineConfig stateMachineConfig = (StateMachineConfig)context.getVariable(
-            DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
-        StateMachine stateMachine = stateMachineConfig.getStateMachineRepository().getStateMachine(stateMachineName,
-            tenantId);
+        StateMachineConfig stateMachineConfig =
+                (StateMachineConfig)
+                        context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
+        StateMachine stateMachine =
+                stateMachineConfig
+                        .getStateMachineRepository()
+                        .getStateMachine(stateMachineName, tenantId);
         if (stateMachine == null) {
-            throw new EngineExecutionException("StateMachine[" + stateMachineName + "] is not exist",
-                FrameworkErrorCode.ObjectNotExists);
+            throw new EngineExecutionException(
+                    "StateMachine[" + stateMachineName + "] is not exist",
+                    FrameworkErrorCode.ObjectNotExists);
         }
 
         if (StringUtils.isEmpty(stateName)) {
@@ -83,8 +87,8 @@ public class StateInstruction implements Instruction {
 
         State state = stateMachine.getStates().get(stateName);
         if (state == null) {
-            throw new EngineExecutionException("State[" + stateName + "] is not exist",
-                FrameworkErrorCode.ObjectNotExists);
+            throw new EngineExecutionException(
+                    "State[" + stateName + "] is not exist", FrameworkErrorCode.ObjectNotExists);
         }
 
         return state;

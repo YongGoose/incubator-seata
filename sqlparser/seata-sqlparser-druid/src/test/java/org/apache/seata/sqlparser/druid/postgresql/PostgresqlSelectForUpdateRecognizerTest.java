@@ -16,17 +16,15 @@
  */
 package org.apache.seata.sqlparser.druid.postgresql;
 
+import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLStatement;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 
 public class PostgresqlSelectForUpdateRecognizerTest {
 
@@ -37,8 +35,10 @@ public class PostgresqlSelectForUpdateRecognizerTest {
         String sql = "select * from t where id = ? for update";
 
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
-        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer = new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
-        Assertions.assertEquals(postgresqlSelectForUpdateRecognizer.getSQLType(), SQLType.SELECT_FOR_UPDATE);
+        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer =
+                new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
+        Assertions.assertEquals(
+                postgresqlSelectForUpdateRecognizer.getSQLType(), SQLType.SELECT_FOR_UPDATE);
     }
 
     @Test
@@ -46,13 +46,17 @@ public class PostgresqlSelectForUpdateRecognizerTest {
         String sql = "select * from t for update";
 
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
-        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer = new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
-        String whereCondition = postgresqlSelectForUpdateRecognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer, ArrayList<Object>> getParameters() {
-                return null;
-            }
-        }, new ArrayList<>());
+        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer =
+                new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
+        String whereCondition =
+                postgresqlSelectForUpdateRecognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                return null;
+                            }
+                        },
+                        new ArrayList<>());
         Assertions.assertEquals("", whereCondition);
     }
 
@@ -61,7 +65,8 @@ public class PostgresqlSelectForUpdateRecognizerTest {
         String sql = "select * from t for update";
 
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
-        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer = new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
+        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer =
+                new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
         String whereCondition = postgresqlSelectForUpdateRecognizer.getWhereCondition();
 
         Assertions.assertEquals("", whereCondition);
@@ -71,7 +76,8 @@ public class PostgresqlSelectForUpdateRecognizerTest {
     public void testGetTableAlias() {
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
-        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer = new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
+        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer =
+                new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertNull(postgresqlSelectForUpdateRecognizer.getTableAlias());
     }
 
@@ -79,7 +85,8 @@ public class PostgresqlSelectForUpdateRecognizerTest {
     public void testGetTableName() {
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
-        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer = new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
+        PostgresqlSelectForUpdateRecognizer postgresqlSelectForUpdateRecognizer =
+                new PostgresqlSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertEquals(postgresqlSelectForUpdateRecognizer.getTableName(), "t");
     }
 }

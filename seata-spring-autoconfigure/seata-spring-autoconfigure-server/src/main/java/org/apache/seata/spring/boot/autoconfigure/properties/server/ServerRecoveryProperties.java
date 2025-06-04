@@ -16,15 +16,14 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_ASYNC_COMMITTING_RETRY_PERIOD;
 import static org.apache.seata.common.DefaultValues.DEFAULT_COMMITING_RETRY_PERIOD;
 import static org.apache.seata.common.DefaultValues.DEFAULT_ROLLBACKING_RETRY_PERIOD;
 import static org.apache.seata.common.DefaultValues.DEFAULT_TIMEOUT_RETRY_PERIOD;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SERVER_RECOVERY_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = SERVER_RECOVERY_PREFIX)

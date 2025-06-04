@@ -16,9 +16,8 @@
  */
 package io.seata.rm.tcc.remoting.parser;
 
-import java.util.Set;
-
 import io.seata.rm.tcc.api.LocalTCC;
+import java.util.Set;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.util.ReflectionUtil;
 import org.apache.seata.integration.tx.api.remoting.Protocols;
@@ -29,7 +28,8 @@ import org.springframework.aop.framework.AopProxyUtils;
  * The type Local tcc remoting parser.
  */
 @Deprecated
-public class LocalTCCRemotingParser extends org.apache.seata.rm.tcc.remoting.parser.LocalTCCRemotingParser {
+public class LocalTCCRemotingParser
+        extends org.apache.seata.rm.tcc.remoting.parser.LocalTCCRemotingParser {
 
     @Override
     public RemotingDesc getServiceDesc(Object bean, String beanName) throws FrameworkException {
@@ -75,7 +75,6 @@ public class LocalTCCRemotingParser extends org.apache.seata.rm.tcc.remoting.par
         Class<?> classType = bean.getClass();
         return isLocalTCC(classType);
     }
-
 
     private boolean isLocalTCC(Class<?> classType) {
         Set<Class<?>> interfaceClasses = ReflectionUtil.getInterfaces(classType);

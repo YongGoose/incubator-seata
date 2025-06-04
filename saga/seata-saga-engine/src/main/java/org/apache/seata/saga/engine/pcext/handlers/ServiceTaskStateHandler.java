@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.StringUtils;
@@ -63,34 +62,52 @@ public class ServiceTaskStateHandler implements StateHandler, InterceptableState
 
         String serviceName = state.getServiceName();
         String methodName = state.getServiceMethod();
-        StateInstance stateInstance = (StateInstance) context.getVariable(DomainConstants.VAR_NAME_STATE_INST);
+        StateInstance stateInstance =
+                (StateInstance) context.getVariable(DomainConstants.VAR_NAME_STATE_INST);
 
         Object result;
         try {
 
-            List<Object> input = (List<Object>) context.getVariable(DomainConstants.VAR_NAME_INPUT_PARAMS);
+            List<Object> input =
+                    (List<Object>) context.getVariable(DomainConstants.VAR_NAME_INPUT_PARAMS);
 
-            //Set the current task execution status to RU (Running)
+            // Set the current task execution status to RU (Running)
             stateInstance.setStatus(ExecutionStatus.RU);
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(">>>>>>>>>>>>>>>>>>>>>> Start to execute State[{}], ServiceName[{}], Method[{}], Input:{}",
-                        state.getName(), serviceName, methodName, input);
+                LOGGER.debug(
+                        ">>>>>>>>>>>>>>>>>>>>>> Start to execute State[{}], ServiceName[{}],"
+                                + " Method[{}], Input:{}",
+                        state.getName(),
+                        serviceName,
+                        methodName,
+                        input);
             }
 
             if (state instanceof CompensateSubStateMachineState) {
-                //If it is the compensation of the substate machine,
+                // If it is the compensation of the substate machine,
                 // directly call the state machine's compensate method
-                result = compensateSubStateMachine(context, state, input, stateInstance,
-                        (StateMachineEngine) context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_ENGINE));
+                result =
+                        compensateSubStateMachine(
+                                context,
+                                state,
+                                input,
+                                stateInstance,
+                                (StateMachineEngine)
+                                        context.getVariable(
+                                                DomainConstants.VAR_NAME_STATEMACHINE_ENGINE));
             } else {
-                StateMachineConfig stateMachineConfig = (StateMachineConfig) context.getVariable(
-                        DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
+                StateMachineConfig stateMachineConfig =
+                        (StateMachineConfig)
+                                context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
 
-                ServiceInvoker serviceInvoker = stateMachineConfig.getServiceInvokerManager().getServiceInvoker(
-                        state.getServiceType());
+                ServiceInvoker serviceInvoker =
+                        stateMachineConfig
+                                .getServiceInvokerManager()
+                                .getServiceInvoker(state.getServiceType());
                 if (serviceInvoker == null) {
-                    throw new EngineExecutionException("No such ServiceInvoker[" + state.getServiceType() + "]",
+                    throw new EngineExecutionException(
+                            "No such ServiceInvoker[" + state.getServiceType() + "]",
                             FrameworkErrorCode.ObjectNotExists);
                 }
 
@@ -98,42 +115,60 @@ public class ServiceTaskStateHandler implements StateHandler, InterceptableState
             }
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("<<<<<<<<<<<<<<<<<<<<<< State[{}], ServiceName[{}], Method[{}] Execute finish. result: {}",
-                        state.getName(), serviceName, methodName, result);
+                LOGGER.debug(
+                        "<<<<<<<<<<<<<<<<<<<<<< State[{}], ServiceName[{}], Method[{}] Execute"
+                                + " finish. result: {}",
+                        state.getName(),
+                        serviceName,
+                        methodName,
+                        result);
             }
 
             if (result != null) {
                 stateInstance.setOutputParams(result);
-                ((HierarchicalProcessContext) context).setVariableLocally(DomainConstants.VAR_NAME_OUTPUT_PARAMS,
-                        result);
+                ((HierarchicalProcessContext) context)
+                        .setVariableLocally(DomainConstants.VAR_NAME_OUTPUT_PARAMS, result);
             }
 
         } catch (Throwable e) {
 
-            LOGGER.error("<<<<<<<<<<<<<<<<<<<<<< State[{}], ServiceName[{}], Method[{}] Execute failed.",
-                    state.getName(), serviceName, methodName, e);
+            LOGGER.error(
+                    "<<<<<<<<<<<<<<<<<<<<<< State[{}], ServiceName[{}], Method[{}] Execute failed.",
+                    state.getName(),
+                    serviceName,
+                    methodName,
+                    e);
 
-            ((HierarchicalProcessContext) context).setVariableLocally(DomainConstants.VAR_NAME_CURRENT_EXCEPTION, e);
+            ((HierarchicalProcessContext) context)
+                    .setVariableLocally(DomainConstants.VAR_NAME_CURRENT_EXCEPTION, e);
 
             EngineUtils.handleException(context, state, e);
         }
-
     }
 
-    private Object compensateSubStateMachine(ProcessContext context, ServiceTaskState state, Object input,
-                                             StateInstance stateInstance, StateMachineEngine engine) {
+    private Object compensateSubStateMachine(
+            ProcessContext context,
+            ServiceTaskState state,
+            Object input,
+            StateInstance stateInstance,
+            StateMachineEngine engine) {
 
-        String subStateMachineParentId = (String) context.getVariable(
-                state.getName() + DomainConstants.VAR_NAME_SUB_MACHINE_PARENT_ID);
+        String subStateMachineParentId =
+                (String)
+                        context.getVariable(
+                                state.getName() + DomainConstants.VAR_NAME_SUB_MACHINE_PARENT_ID);
         if (StringUtils.isEmpty(subStateMachineParentId)) {
-            throw new EngineExecutionException("sub statemachine parentId is required",
-                    FrameworkErrorCode.ObjectNotExists);
+            throw new EngineExecutionException(
+                    "sub statemachine parentId is required", FrameworkErrorCode.ObjectNotExists);
         }
 
-        StateMachineConfig stateMachineConfig = (StateMachineConfig) context.getVariable(
-                DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
-        List<StateMachineInstance> subInst = stateMachineConfig.getStateLogStore().queryStateMachineInstanceByParentId(
-                subStateMachineParentId);
+        StateMachineConfig stateMachineConfig =
+                (StateMachineConfig)
+                        context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
+        List<StateMachineInstance> subInst =
+                stateMachineConfig
+                        .getStateLogStore()
+                        .queryStateMachineInstanceByParentId(subStateMachineParentId);
         if (CollectionUtils.isEmpty(subInst)) {
             throw new EngineExecutionException(
                     "cannot find sub statemachine instance by parentId:" + subStateMachineParentId,
@@ -143,7 +178,9 @@ public class ServiceTaskStateHandler implements StateHandler, InterceptableState
         String subStateMachineInstId = subInst.get(0).getId();
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(">>>>>>>>>>>>>>>>>>>>>> Start to compensate sub statemachine [id:{}]", subStateMachineInstId);
+            LOGGER.debug(
+                    ">>>>>>>>>>>>>>>>>>>>>> Start to compensate sub statemachine [id:{}]",
+                    subStateMachineInstId);
         }
 
         Map<String, Object> startParams = new HashMap<>(0);
@@ -161,9 +198,11 @@ public class ServiceTaskStateHandler implements StateHandler, InterceptableState
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(
-                    "<<<<<<<<<<<<<<<<<<<<<< Compensate sub statemachine [id:{}] finished with status[{}], "
-                            + "compensateState[{}]",
-                    subStateMachineInstId, compensateInst.getStatus(), compensateInst.getCompensationStatus());
+                    "<<<<<<<<<<<<<<<<<<<<<< Compensate sub statemachine [id:{}] finished with"
+                            + " status[{}], compensateState[{}]",
+                    subStateMachineInstId,
+                    compensateInst.getStatus(),
+                    compensateInst.getCompensationStatus());
         }
         return compensateInst.getEndParams();
     }

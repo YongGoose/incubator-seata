@@ -16,17 +16,15 @@
  */
 package org.apache.seata.core.logger;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_LOG_EXCEPTION_RATE;
+
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 import org.slf4j.Logger;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_LOG_EXCEPTION_RATE;
-
 
 public final class StackTraceLogger {
 
@@ -65,7 +63,8 @@ public final class StackTraceLogger {
     }
 
     private static int getRate() {
-        return CONFIG.getInt(ConfigurationKeys.TRANSACTION_LOG_EXCEPTION_RATE, DEFAULT_LOG_EXCEPTION_RATE);
+        return CONFIG.getInt(
+                ConfigurationKeys.TRANSACTION_LOG_EXCEPTION_RATE, DEFAULT_LOG_EXCEPTION_RATE);
     }
 
     private static boolean needToPrintStackTrace() {
@@ -75,7 +74,7 @@ public final class StackTraceLogger {
 
     private static Object[] buildNewArgs(Object[] args, Throwable cause) {
         if (CollectionUtils.isEmpty(args)) {
-            return new Object[]{cause};
+            return new Object[] {cause};
         } else {
             Object[] newArgs = Arrays.copyOf(args, args.length + 1, Object[].class);
             newArgs[args.length] = cause;

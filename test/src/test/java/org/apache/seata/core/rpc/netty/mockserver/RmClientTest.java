@@ -17,6 +17,9 @@
 package org.apache.seata.core.rpc.netty.mockserver;
 
 import io.netty.channel.Channel;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.util.ReflectionUtil;
 import org.apache.seata.common.util.StringUtils;
@@ -36,10 +39,6 @@ import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
-
 /**
  * rm client test
  **/
@@ -53,27 +52,28 @@ public class RmClientTest {
 
         DefaultResourceManager rm = getRm(resourceId);
 
-        //branchRegister:TYPE_BRANCH_REGISTER = 11 , TYPE_BRANCH_REGISTER_RESULT = 12
+        // branchRegister:TYPE_BRANCH_REGISTER = 11 , TYPE_BRANCH_REGISTER_RESULT = 12
         Long branchId = rm.branchRegister(BranchType.AT, resourceId, "1", xid, "1", "1");
         Assertions.assertTrue(branchId > 0);
-
 
         // branchReport:TYPE_BRANCH_STATUS_REPORT = 13 , TYPE_BRANCH_STATUS_REPORT_RESULT = 14
         // TYPE_SEATA_MERGE = 59 , TYPE_SEATA_MERGE_RESULT = 60
         rm.branchReport(BranchType.AT, xid, branchId, BranchStatus.PhaseTwo_Committed, "");
         LOGGER.info("branchReport ok");
 
-        //lockQuery:TYPE_GLOBAL_LOCK_QUERY = 21 , TYPE_GLOBAL_LOCK_QUERY_RESULT = 22
+        // lockQuery:TYPE_GLOBAL_LOCK_QUERY = 21 , TYPE_GLOBAL_LOCK_QUERY_RESULT = 22
         RootContext.bind(xid);
         boolean b = rm.lockQuery(BranchType.AT, resourceId, xid, "1");
         LOGGER.info("lockQuery ok, result=" + b);
         Assertions.assertTrue(b);
 
         RmNettyRemotingClient remotingClient = RmNettyRemotingClient.getInstance();
-        ConcurrentMap<String, Channel> channels = ChannelManagerTestHelper.getChannelConcurrentMap(remotingClient);
+        ConcurrentMap<String, Channel> channels =
+                ChannelManagerTestHelper.getChannelConcurrentMap(remotingClient);
         channels.forEach(
-                (key, value) -> RmNettyRemotingClient.getInstance().sendAsyncRequest(value, HeartbeatMessage.PING));
-
+                (key, value) ->
+                        RmNettyRemotingClient.getInstance()
+                                .sendAsyncRequest(value, HeartbeatMessage.PING));
     }
 
     public static DefaultResourceManager getRm(String resourceId) {
@@ -81,7 +81,7 @@ public class RmClientTest {
         DefaultResourceManager rm = DefaultResourceManager.get();
         rm.getResourceManager(BranchType.TCC).getManagedResources().clear();
 
-        //register:TYPE_REG_RM = 103 , TYPE_REG_RM_RESULT = 104
+        // register:TYPE_REG_RM = 103 , TYPE_REG_RM_RESULT = 104
         Action1 target = new Action1Impl();
         registryTccResource(target);
         LOGGER.info("registerResource ok");
@@ -94,7 +94,10 @@ public class RmClientTest {
      */
     @Deprecated
     private static void registryTccResource(Action1 target) {
-        Map<Method, Class<?>> matchMethodClazzMap = ReflectionUtil.findMatchMethodClazzMap(target.getClass(), method -> method.isAnnotationPresent(TwoPhaseBusinessAction.class));
+        Map<Method, Class<?>> matchMethodClazzMap =
+                ReflectionUtil.findMatchMethodClazzMap(
+                        target.getClass(),
+                        method -> method.isAnnotationPresent(TwoPhaseBusinessAction.class));
         if (matchMethodClazzMap.keySet().isEmpty()) {
             return;
         }
@@ -104,7 +107,8 @@ public class RmClientTest {
                 Method method = methodClassEntry.getKey();
                 Class<?> methodClass = methodClassEntry.getValue();
 
-                TwoPhaseBusinessAction twoPhaseBusinessAction = method.getAnnotation(TwoPhaseBusinessAction.class);
+                TwoPhaseBusinessAction twoPhaseBusinessAction =
+                        method.getAnnotation(TwoPhaseBusinessAction.class);
                 TCCResource tccResource = new TCCResource();
                 if (StringUtils.isBlank(twoPhaseBusinessAction.name())) {
                     throw new FrameworkException("TCC bean name cannot be null or empty");
@@ -113,25 +117,31 @@ public class RmClientTest {
                 tccResource.setTargetBean(target);
                 tccResource.setPrepareMethod(method);
                 tccResource.setCommitMethodName(twoPhaseBusinessAction.commitMethod());
-                tccResource.setCommitMethod(methodClass.getMethod(twoPhaseBusinessAction.commitMethod(),
-                        twoPhaseBusinessAction.commitArgsClasses()));
+                tccResource.setCommitMethod(
+                        methodClass.getMethod(
+                                twoPhaseBusinessAction.commitMethod(),
+                                twoPhaseBusinessAction.commitArgsClasses()));
                 tccResource.setRollbackMethodName(twoPhaseBusinessAction.rollbackMethod());
-                tccResource.setRollbackMethod(methodClass.getMethod(twoPhaseBusinessAction.rollbackMethod(),
-                        twoPhaseBusinessAction.rollbackArgsClasses()));
+                tccResource.setRollbackMethod(
+                        methodClass.getMethod(
+                                twoPhaseBusinessAction.rollbackMethod(),
+                                twoPhaseBusinessAction.rollbackArgsClasses()));
                 // set argsClasses
                 tccResource.setCommitArgsClasses(twoPhaseBusinessAction.commitArgsClasses());
                 tccResource.setRollbackArgsClasses(twoPhaseBusinessAction.rollbackArgsClasses());
                 // set phase two method's keys
-                tccResource.setPhaseTwoCommitKeys(ActionContextUtil.getTwoPhaseArgs(tccResource.getCommitMethod(),
-                        twoPhaseBusinessAction.commitArgsClasses()));
-                tccResource.setPhaseTwoRollbackKeys(ActionContextUtil.getTwoPhaseArgs(tccResource.getRollbackMethod(),
-                        twoPhaseBusinessAction.rollbackArgsClasses()));
+                tccResource.setPhaseTwoCommitKeys(
+                        ActionContextUtil.getTwoPhaseArgs(
+                                tccResource.getCommitMethod(),
+                                twoPhaseBusinessAction.commitArgsClasses()));
+                tccResource.setPhaseTwoRollbackKeys(
+                        ActionContextUtil.getTwoPhaseArgs(
+                                tccResource.getRollbackMethod(),
+                                twoPhaseBusinessAction.rollbackArgsClasses()));
                 DefaultResourceManager.get().registerResource(tccResource);
             }
         } catch (Throwable t) {
             throw new FrameworkException(t, "register tcc resource error");
         }
     }
-
-
 }

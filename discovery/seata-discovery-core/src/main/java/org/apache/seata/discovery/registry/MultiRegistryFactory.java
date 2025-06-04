@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
@@ -50,8 +49,11 @@ public class MultiRegistryFactory {
     private static List<RegistryService> buildRegistryServices() {
         List<RegistryService> registryServices = new ArrayList<>();
 
-        String registryTypeNamesStr = ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(
-                ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
+        String registryTypeNamesStr =
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(
+                        ConfigurationKeys.FILE_ROOT_REGISTRY
+                                + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                                + ConfigurationKeys.FILE_ROOT_TYPE);
 
         // If blank, use default configuration
         if (StringUtils.isBlank(registryTypeNamesStr)) {
@@ -59,7 +61,8 @@ public class MultiRegistryFactory {
         }
 
         Set<String> registryTypeNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        registryTypeNames.addAll(Arrays.asList(registryTypeNamesStr.split(Constants.REGISTRY_TYPE_SPLIT_CHAR)));
+        registryTypeNames.addAll(
+                Arrays.asList(registryTypeNamesStr.split(Constants.REGISTRY_TYPE_SPLIT_CHAR)));
 
         if (registryTypeNames.size() > 1) {
             LOGGER.info("use multi registry center type: {}", registryTypeNames);
@@ -68,8 +71,11 @@ public class MultiRegistryFactory {
         for (String registryTypeName : registryTypeNames) {
             RegistryType registryType = RegistryType.getType(registryTypeName);
 
-            RegistryService registryService = EnhancedServiceLoader
-                    .load(RegistryProvider.class, Objects.requireNonNull(registryType).name()).provide();
+            RegistryService registryService =
+                    EnhancedServiceLoader.load(
+                                    RegistryProvider.class,
+                                    Objects.requireNonNull(registryType).name())
+                            .provide();
             registryServices.add(registryService);
         }
         return registryServices;

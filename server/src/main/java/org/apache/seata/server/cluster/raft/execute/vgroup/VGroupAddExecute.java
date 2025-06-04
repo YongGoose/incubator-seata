@@ -27,9 +27,9 @@ public class VGroupAddExecute extends AbstractRaftMsgExecute {
 
     @Override
     public Boolean execute(RaftBaseMsg syncMsg) throws Throwable {
-        RaftVGroupSyncMsg vGroupSyncMsg = (RaftVGroupSyncMsg)syncMsg;
-        ((RaftVGroupMappingStoreManager)raftVGroupMappingStoreManager).localAddVGroup(vGroupSyncMsg.getMappingDO());
+        RaftVGroupSyncMsg vGroupSyncMsg = (RaftVGroupSyncMsg) syncMsg;
+        ((RaftVGroupMappingStoreManager) raftVGroupMappingStoreManager)
+                .localAddVGroup(vGroupSyncMsg.getMappingDO());
         return true;
     }
-
 }

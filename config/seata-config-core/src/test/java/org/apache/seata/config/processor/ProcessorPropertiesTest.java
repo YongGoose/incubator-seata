@@ -16,20 +16,17 @@
  */
 package org.apache.seata.config.processor;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.util.Properties;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class ProcessorPropertiesTest {
 
     @Test
     void processor() throws IOException {
-        String properties = "registry.type=file\n" +
-                "registry.file.name=file-test-pro.conf";
-        
+        String properties = "registry.type=file\n" + "registry.file.name=file-test-pro.conf";
+
         Properties processor = new ProcessorProperties().processor(properties);
         Assertions.assertEquals("file", processor.get("registry.type"));
         // not exist

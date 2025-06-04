@@ -16,11 +16,10 @@
  */
 package org.apache.seata.core.protocol;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link BatchResultMessage}.
@@ -32,7 +31,8 @@ class BatchResultMessageTest {
     void getTypeCode() {
         BatchResultMessage batchResultMessage = new BatchResultMessage();
 
-        Assertions.assertEquals(MessageType.TYPE_BATCH_RESULT_MSG, batchResultMessage.getTypeCode());
+        Assertions.assertEquals(
+                MessageType.TYPE_BATCH_RESULT_MSG, batchResultMessage.getTypeCode());
     }
 
     @Test
@@ -46,7 +46,8 @@ class BatchResultMessageTest {
     void setResultMessages() {
         BatchResultMessage batchResultMessage = new BatchResultMessage();
 
-        List<AbstractResultMessage> resultMessages = Arrays.asList(new RegisterTMResponse(), new RegisterRMResponse(false));
+        List<AbstractResultMessage> resultMessages =
+                Arrays.asList(new RegisterTMResponse(), new RegisterRMResponse(false));
         batchResultMessage.setResultMessages(resultMessages);
 
         Assertions.assertIterableEquals(resultMessages, batchResultMessage.getResultMessages());

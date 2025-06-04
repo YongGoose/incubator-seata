@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
@@ -68,10 +67,15 @@ public final class ConfigurationFactory {
         Configuration configuration = ORIGIN_FILE_INSTANCE_REGISTRY;
         Configuration extConfiguration = null;
         try {
-            extConfiguration = EnhancedServiceLoader.load(ExtConfigurationProvider.class).provide(configuration);
+            extConfiguration =
+                    EnhancedServiceLoader.load(ExtConfigurationProvider.class)
+                            .provide(configuration);
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("load Configuration from :{}",
-                    extConfiguration == null ? configuration.getClass().getSimpleName() : extConfiguration.getClass().getSimpleName());
+                LOGGER.info(
+                        "load Configuration from :{}",
+                        extConfiguration == null
+                                ? configuration.getClass().getSimpleName()
+                                : extConfiguration.getClass().getSimpleName());
             }
         } catch (EnhancedServiceNotFoundException e) {
             if (LOGGER.isDebugEnabled()) {
@@ -127,8 +131,12 @@ public final class ConfigurationFactory {
 
     private static void maybeNeedOriginFileInstance() {
         if (ConfigType.File.name().equalsIgnoreCase(getConfigType())) {
-            String pathDataId = String.join(ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR,
-                    ConfigurationKeys.FILE_ROOT_CONFIG, FILE_TYPE, NAME_KEY);
+            String pathDataId =
+                    String.join(
+                            ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR,
+                            ConfigurationKeys.FILE_ROOT_CONFIG,
+                            FILE_TYPE,
+                            NAME_KEY);
             String name = CURRENT_FILE_INSTANCE.getConfig(pathDataId);
             // create FileConfiguration for read file.conf
             ORIGIN_FILE_INSTANCE = new FileConfiguration(name);
@@ -141,8 +149,11 @@ public final class ConfigurationFactory {
      * @return
      */
     private static String getConfigType() {
-        String configTypeName = CURRENT_FILE_INSTANCE.getConfig(ConfigurationKeys.FILE_ROOT_CONFIG
-            + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
+        String configTypeName =
+                CURRENT_FILE_INSTANCE.getConfig(
+                        ConfigurationKeys.FILE_ROOT_CONFIG
+                                + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                                + ConfigurationKeys.FILE_ROOT_TYPE);
         if (StringUtils.isBlank(configTypeName)) {
             throw new NotSupportYetException("config type can not be null");
         }
@@ -183,13 +194,14 @@ public final class ConfigurationFactory {
         Configuration configuration = ORIGIN_FILE_INSTANCE;
         if (null != configuration) {
             try {
-                Configuration extConfiguration = EnhancedServiceLoader.load(ExtConfigurationProvider.class, false).provide(
-                    configuration);
+                Configuration extConfiguration =
+                        EnhancedServiceLoader.load(ExtConfigurationProvider.class, false)
+                                .provide(configuration);
                 if (null != extConfiguration) {
                     return extConfiguration;
                 }
             } catch (EnhancedServiceNotFoundException ignore) {
-                //ignore
+                // ignore
 
             } catch (Exception exx) {
                 LOGGER.error("failed to load spring configuration :{}", exx.getMessage(), exx);
@@ -200,24 +212,34 @@ public final class ConfigurationFactory {
 
     private static Configuration getNonSpringConfiguration(String configTypeName) {
         try {
-            io.seata.config.Configuration oldConfiguration = EnhancedServiceLoader.load(
-                io.seata.config.ConfigurationProvider.class, Objects.requireNonNull(configTypeName)).provide();
+            io.seata.config.Configuration oldConfiguration =
+                    EnhancedServiceLoader.load(
+                                    io.seata.config.ConfigurationProvider.class,
+                                    Objects.requireNonNull(configTypeName))
+                            .provide();
             if (null != oldConfiguration) {
-                Configuration configurationSPIInstanceProxy = (Configuration)Proxy.newProxyInstance(
-                    ConfigurationFactory.class.getClassLoader(), new Class[] {Configuration.class},
-                    new OldConfigurationInvocationHandler(oldConfiguration));
+                Configuration configurationSPIInstanceProxy =
+                        (Configuration)
+                                Proxy.newProxyInstance(
+                                        ConfigurationFactory.class.getClassLoader(),
+                                        new Class[] {Configuration.class},
+                                        new OldConfigurationInvocationHandler(oldConfiguration));
                 return configurationSPIInstanceProxy;
             }
         } catch (EnhancedServiceNotFoundException ignore) {
-            //ignore
+            // ignore
         } catch (Exception exx) {
             LOGGER.error("failed to load non-spring configuration :{}", exx.getMessage(), exx);
         }
         try {
-            Configuration configuration = EnhancedServiceLoader.load(ConfigurationProvider.class,
-                Objects.requireNonNull(configTypeName), false).provide();
+            Configuration configuration =
+                    EnhancedServiceLoader.load(
+                                    ConfigurationProvider.class,
+                                    Objects.requireNonNull(configTypeName),
+                                    false)
+                            .provide();
             return configuration;
-        }  catch (Exception exx) {
+        } catch (Exception exx) {
             LOGGER.error("failed to load non-spring configuration :{}", exx.getMessage(), exx);
         }
         return null;
@@ -235,10 +257,23 @@ public final class ConfigurationFactory {
     static class OldConfigurationInvocationHandler implements InvocationHandler {
         private final io.seata.config.Configuration configuration;
 
-        private static final String[] SIMPLE_PARAMS_METHOD_NAMES = new String[] {"getShort", "getInt", "getLong", "getDuration", "getBoolean", "getConfig", "putConfig", "getLatestConfig", "putConfigIfAbsent", "removeConfig", "getConfigFromSys"};
+        private static final String[] SIMPLE_PARAMS_METHOD_NAMES =
+                new String[] {
+                    "getShort",
+                    "getInt",
+                    "getLong",
+                    "getDuration",
+                    "getBoolean",
+                    "getConfig",
+                    "putConfig",
+                    "getLatestConfig",
+                    "putConfigIfAbsent",
+                    "removeConfig",
+                    "getConfigFromSys"
+                };
 
         private static final List<String> SIMPLE_METHOD_NAMES =
-            Arrays.stream(SIMPLE_PARAMS_METHOD_NAMES).collect(Collectors.toList());
+                Arrays.stream(SIMPLE_PARAMS_METHOD_NAMES).collect(Collectors.toList());
 
         public OldConfigurationInvocationHandler(io.seata.config.Configuration configuration) {
             this.configuration = configuration;
@@ -251,41 +286,58 @@ public final class ConfigurationFactory {
                 for (int i = 0; i < args.length; i++) {
                     classes[i] = args[i].getClass();
                 }
-                Method oldMethod = this.configuration.getClass().getMethod(method.getName(), classes);
+                Method oldMethod =
+                        this.configuration.getClass().getMethod(method.getName(), classes);
                 return oldMethod.invoke(configuration, args);
-            } else if ("addConfigListener".equals(method.getName()) || "removeConfigListener".equals(
-                method.getName())) {
+            } else if ("addConfigListener".equals(method.getName())
+                    || "removeConfigListener".equals(method.getName())) {
                 if (args.length == 2) {
                     if (args[1] instanceof ConfigurationChangeListener) {
-                        ConfigurationChangeListener listener = (ConfigurationChangeListener)args[1];
-                        OldConfigurationChangeListenerWrapper wrapper = new OldConfigurationChangeListenerWrapper(
-                            listener);
-                        Method oldMethod = this.configuration.getClass().getMethod(method.getName(),
-                            new Class[] {String.class, io.seata.config.ConfigurationChangeListener.class});
+                        ConfigurationChangeListener listener =
+                                (ConfigurationChangeListener) args[1];
+                        OldConfigurationChangeListenerWrapper wrapper =
+                                new OldConfigurationChangeListenerWrapper(listener);
+                        Method oldMethod =
+                                this.configuration
+                                        .getClass()
+                                        .getMethod(
+                                                method.getName(),
+                                                new Class[] {
+                                                    String.class,
+                                                    io.seata.config.ConfigurationChangeListener
+                                                            .class
+                                                });
                         return oldMethod.invoke(configuration, args[0], wrapper);
                     }
                 }
             } else if ("getConfigListeners".equals(method.getName())) {
-                Method oldMethod = this.configuration.getClass().getMethod(method.getName(),
-                    new Class[] {String.class});
-                Set<io.seata.config.ConfigurationChangeListener> listeners
-                    = (Set<io.seata.config.ConfigurationChangeListener>)oldMethod.invoke(configuration, args);
+                Method oldMethod =
+                        this.configuration
+                                .getClass()
+                                .getMethod(method.getName(), new Class[] {String.class});
+                Set<io.seata.config.ConfigurationChangeListener> listeners =
+                        (Set<io.seata.config.ConfigurationChangeListener>)
+                                oldMethod.invoke(configuration, args);
                 if (CollectionUtils.isEmpty(listeners)) {
                     return null;
                 }
                 Set<ConfigurationChangeListener> newListeners = new HashSet<>();
                 for (io.seata.config.ConfigurationChangeListener listener : listeners) {
                     if (listener instanceof OldConfigurationChangeListenerWrapper) {
-                        newListeners.add(((OldConfigurationChangeListenerWrapper)listener).getTargetListener());
+                        newListeners.add(
+                                ((OldConfigurationChangeListenerWrapper) listener)
+                                        .getTargetListener());
                     }
                 }
                 return newListeners;
             }
-            throw new NotSupportYetException(String.format("not support method:%s", method.getName()));
+            throw new NotSupportYetException(
+                    String.format("not support method:%s", method.getName()));
         }
     }
 
-    static class OldConfigurationChangeListenerWrapper implements io.seata.config.ConfigurationChangeListener {
+    static class OldConfigurationChangeListenerWrapper
+            implements io.seata.config.ConfigurationChangeListener {
         private final ConfigurationChangeListener listener;
 
         public OldConfigurationChangeListenerWrapper(ConfigurationChangeListener listener) {
@@ -294,10 +346,13 @@ public final class ConfigurationFactory {
 
         private ConfigurationChangeEvent convert(io.seata.config.ConfigurationChangeEvent event) {
             ConfigurationChangeEvent newEvent = new ConfigurationChangeEvent();
-            newEvent.setDataId(event.getDataId()).setOldValue(event.getOldValue()).setNewValue(event.getNewValue())
-                .setNamespace(event.getNamespace());
+            newEvent.setDataId(event.getDataId())
+                    .setOldValue(event.getOldValue())
+                    .setNewValue(event.getNewValue())
+                    .setNamespace(event.getNamespace());
             if (event.getChangeType() != null) {
-                newEvent.setChangeType(ConfigurationChangeType.values()[event.getChangeType().ordinal()]);
+                newEvent.setChangeType(
+                        ConfigurationChangeType.values()[event.getChangeType().ordinal()]);
             }
             return newEvent;
         }

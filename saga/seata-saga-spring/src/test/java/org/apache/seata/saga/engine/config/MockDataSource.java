@@ -16,12 +16,12 @@
  */
 package org.apache.seata.saga.engine.config;
 
-import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 
 /**
  * MockDataSource
@@ -59,14 +59,10 @@ public class MockDataSource implements DataSource {
     }
 
     @Override
-    public void setLogWriter(PrintWriter out) throws SQLException {
-
-    }
+    public void setLogWriter(PrintWriter out) throws SQLException {}
 
     @Override
-    public void setLoginTimeout(int seconds) throws SQLException {
-
-    }
+    public void setLoginTimeout(int seconds) throws SQLException {}
 
     @Override
     public int getLoginTimeout() throws SQLException {

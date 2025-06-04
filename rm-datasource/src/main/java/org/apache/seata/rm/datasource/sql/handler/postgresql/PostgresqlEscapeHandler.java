@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.sql.handler.postgresql;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.sqlparser.EscapeHandler;
@@ -34,8 +33,10 @@ import org.apache.seata.sqlparser.util.JdbcConstants;
 @LoadLevel(name = JdbcConstants.POSTGRESQL)
 public class PostgresqlEscapeHandler implements EscapeHandler {
 
-    private Set<String> keywordSet = Arrays.stream(PostgresqlEscapeHandler.PostgresqlKeyword.values())
-            .map(PostgresqlEscapeHandler.PostgresqlKeyword::name).collect(Collectors.toSet());
+    private Set<String> keywordSet =
+            Arrays.stream(PostgresqlEscapeHandler.PostgresqlKeyword.values())
+                    .map(PostgresqlEscapeHandler.PostgresqlKeyword::name)
+                    .collect(Collectors.toSet());
 
     /**
      * postgresql keyword
@@ -349,6 +350,7 @@ public class PostgresqlEscapeHandler implements EscapeHandler {
          * WITH is postgresql keyword
          */
         WITH("WITH");
+
         /**
          * The Name.
          */
@@ -368,7 +370,6 @@ public class PostgresqlEscapeHandler implements EscapeHandler {
             fieldOrTableName = fieldOrTableName.toUpperCase();
         }
         return keywordSet.contains(fieldOrTableName);
-
     }
 
     @Override

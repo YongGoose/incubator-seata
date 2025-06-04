@@ -16,6 +16,9 @@
  */
 package org.apache.seata.server.storage.redis.lock;
 
+import static org.apache.seata.common.Constants.ROW_LOCK_KEY_SPLIT_CHAR;
+import static org.apache.seata.core.exception.TransactionExceptionCode.LockKeyConflictFailFast;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-
 import org.apache.seata.common.exception.StoreException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.LambdaUtils;
@@ -39,9 +38,9 @@ import org.apache.seata.core.model.LockStatus;
 import org.apache.seata.core.store.LockDO;
 import org.apache.seata.server.storage.redis.JedisPooledFactory;
 import org.apache.seata.server.storage.redis.LuaParser;
-
-import static org.apache.seata.common.Constants.ROW_LOCK_KEY_SPLIT_CHAR;
-import static org.apache.seata.core.exception.TransactionExceptionCode.LockKeyConflictFailFast;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 
 /**
  */
@@ -101,10 +100,11 @@ public class RedisLuaLocker extends RedisLocker {
         try (Jedis jedis = JedisPooledFactory.getJedisInstance()) {
             String needLockXid = rowLocks.get(0).getXid();
             Long branchId = rowLocks.get(0).getBranchId();
-            List<LockDO> needLockDOs = rowLocks.stream()
-                .map(this::convertToLockDO)
-                .filter(LambdaUtils.distinctByKey(LockDO::getRowKey))
-                .collect(Collectors.toList());
+            List<LockDO> needLockDOs =
+                    rowLocks.stream()
+                            .map(this::convertToLockDO)
+                            .filter(LambdaUtils.distinctByKey(LockDO::getRowKey))
+                            .collect(Collectors.toList());
             List<String> keys = new ArrayList<>();
             List<String> args = new ArrayList<>();
             int size = needLockDOs.size();
@@ -123,7 +123,9 @@ public class RedisLuaLocker extends RedisLocker {
             }
             String xidLockKey = buildXidLockKey(needLockXid);
             StringJoiner lockKeysString = new StringJoiner(ROW_LOCK_KEY_SPLIT_CHAR);
-            needLockDOs.stream().map(lockDO -> buildLockKey(lockDO.getRowKey())).forEach(lockKeysString::add);
+            needLockDOs.stream()
+                    .map(lockDO -> buildLockKey(lockDO.getRowKey()))
+                    .forEach(lockKeysString::add);
 
             keys.add(xidLockKey);
             keys.add(branchId.toString());
@@ -131,17 +133,23 @@ public class RedisLuaLocker extends RedisLocker {
             // reset args index 2
             args.set(1, String.valueOf(args.size()));
 
-            String result = (String)LuaParser.jedisEvalSha(jedis, luaSHA, ACQUIRE_LOCK_LUA_FILE_NAME, keys, args);
+            String result =
+                    (String)
+                            LuaParser.jedisEvalSha(
+                                    jedis, luaSHA, ACQUIRE_LOCK_LUA_FILE_NAME, keys, args);
 
-            LuaParser.LuaResult luaResult = LuaParser.getObjectFromJson(result, LuaParser.LuaResult.class);
+            LuaParser.LuaResult luaResult =
+                    LuaParser.getObjectFromJson(result, LuaParser.LuaResult.class);
 
             // luaResult.getData() : xIdOwnLock
             if (luaResult.getSuccess() && luaResult.getData().equals(needLockXid)) {
                 return true;
             } else {
                 if (LuaParser.LuaErrorStatus.ANOTHER_ROLLBACKING.equals(luaResult.getStatus())) {
-                    // if a global lock is found in the Rollbacking state,the fail-fast code is returned directly.
-                    throw new StoreException(new BranchTransactionException(LockKeyConflictFailFast));
+                    // if a global lock is found in the Rollbacking state,the fail-fast code is
+                    // returned directly.
+                    throw new StoreException(
+                            new BranchTransactionException(LockKeyConflictFailFast));
                 } else if (LuaParser.LuaErrorStatus.ANOTHER_HOLDING.equals(luaResult.getStatus())) {
                     // means the rowKey is holding by another global transaction
                     logGlobalLockConflictInfo(needLockXid, keys.get(0), luaResult.getData());
@@ -208,7 +216,10 @@ public class RedisLuaLocker extends RedisLocker {
             keys.addAll(lockKeys);
             List<String> args = new ArrayList<>();
             args.add(xid);
-            String res = (String)LuaParser.jedisEvalSha(jedis, luaSHA, LOCKABLE_LUA_FILE_NAME, keys, args);
+            String res =
+                    (String)
+                            LuaParser.jedisEvalSha(
+                                    jedis, luaSHA, LOCKABLE_LUA_FILE_NAME, keys, args);
             return "true".equals(res);
         }
     }
