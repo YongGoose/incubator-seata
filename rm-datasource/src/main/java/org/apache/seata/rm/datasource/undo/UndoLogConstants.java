@@ -16,18 +16,20 @@
  */
 package org.apache.seata.rm.datasource.undo;
 
-import org.apache.seata.config.ConfigurationFactory;
-import org.apache.seata.core.constants.ConfigurationKeys;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_LOG_SERIALIZATION;
 
+import org.apache.seata.config.ConfigurationFactory;
+import org.apache.seata.core.constants.ConfigurationKeys;
 
 public interface UndoLogConstants {
 
     String SERIALIZER_KEY = "serializer";
 
-    String DEFAULT_SERIALIZER = ConfigurationFactory.getInstance()
-        .getConfig(ConfigurationKeys.TRANSACTION_UNDO_LOG_SERIALIZATION, DEFAULT_TRANSACTION_UNDO_LOG_SERIALIZATION);
+    String DEFAULT_SERIALIZER =
+            ConfigurationFactory.getInstance()
+                    .getConfig(
+                            ConfigurationKeys.TRANSACTION_UNDO_LOG_SERIALIZATION,
+                            DEFAULT_TRANSACTION_UNDO_LOG_SERIALIZATION);
 
     String COMPRESSOR_TYPE_KEY = "compressorType";
 

@@ -16,13 +16,11 @@
  */
 package org.apache.seata.sqlparser.antlr.mysql.listener;
 
+import java.util.List;
 import org.apache.seata.sqlparser.antlr.mysql.MySqlContext;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParser;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParserBaseListener;
 import org.apache.seata.sqlparser.antlr.mysql.visit.StatementSqlVisitor;
-
-import java.util.List;
-
 
 public class SelectSpecificationSqlListener extends MySqlParserBaseListener {
 
@@ -63,7 +61,8 @@ public class SelectSpecificationSqlListener extends MySqlParserBaseListener {
     }
 
     @Override
-    public void enterFullColumnNameExpressionAtom(MySqlParser.FullColumnNameExpressionAtomContext ctx) {
+    public void enterFullColumnNameExpressionAtom(
+            MySqlParser.FullColumnNameExpressionAtomContext ctx) {
 
         sqlQueryContext.addQueryWhereColumnNames(ctx.getText());
         super.enterFullColumnNameExpressionAtom(ctx);

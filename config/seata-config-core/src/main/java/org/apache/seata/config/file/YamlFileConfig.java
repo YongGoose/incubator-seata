@@ -16,13 +16,6 @@
  */
 package org.apache.seata.config.file;
 
-import org.apache.seata.common.loader.LoadLevel;
-import org.apache.seata.common.loader.Scope;
-import org.apache.seata.config.FileConfigFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,7 +23,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.seata.common.loader.LoadLevel;
+import org.apache.seata.common.loader.Scope;
+import org.apache.seata.config.FileConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
 @LoadLevel(name = FileConfigFactory.YAML_TYPE, order = 1, scope = Scope.PROTOTYPE)
 public class YamlFileConfig implements FileConfig {
@@ -47,13 +45,14 @@ public class YamlFileConfig implements FileConfig {
         }
     }
 
-    private void flattenConfig(String prefix, Map<String, Object> config, Map<String, Object> flatMap) {
+    private void flattenConfig(
+            String prefix, Map<String, Object> config, Map<String, Object> flatMap) {
         for (Map.Entry<String, Object> entry : config.entrySet()) {
             String key = prefix.isEmpty() ? entry.getKey() : prefix + "." + entry.getKey();
             Object value = entry.getValue();
             if (value != null) {
                 if (value instanceof Map) {
-                    flattenConfig(key, (Map<String, Object>)value, flatMap);
+                    flattenConfig(key, (Map<String, Object>) value, flatMap);
                 } else {
                     flatMap.put(key, String.valueOf(value));
                 }

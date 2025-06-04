@@ -17,7 +17,6 @@
 package org.apache.seata.rm.datasource.exec;
 
 import java.sql.Statement;
-
 import org.apache.seata.rm.datasource.StatementProxy;
 
 /**
@@ -39,7 +38,8 @@ public class PlainExecutor<T, S extends Statement> implements Executor<T> {
      * @param statementProxy    the statement proxy
      * @param statementCallback the statement callback
      */
-    public PlainExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback) {
+    public PlainExecutor(
+            StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback) {
         this.statementProxy = statementProxy;
         this.statementCallback = statementCallback;
     }

@@ -16,20 +16,24 @@
  */
 package org.apache.seata.common.util;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.Test;
 
 class SizeUtilTest {
     @Test
     void size2Long() {
-        assertThatThrownBy(() -> SizeUtil.size2Long(null)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> SizeUtil.size2Long("")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> SizeUtil.size2Long(null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> SizeUtil.size2Long(""))
+                .isInstanceOf(IllegalArgumentException.class);
         // wrong format
-        assertThatThrownBy(() -> SizeUtil.size2Long("2kk")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> SizeUtil.size2Long("2kk"))
+                .isInstanceOf(IllegalArgumentException.class);
         // wrong unit
-        assertThatThrownBy(() -> SizeUtil.size2Long("2x")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> SizeUtil.size2Long("2x"))
+                .isInstanceOf(IllegalArgumentException.class);
 
         assertThat(SizeUtil.size2Long("2k")).isEqualTo(2L * 1024);
         assertThat(SizeUtil.size2Long("2m")).isEqualTo(2L * 1024 * 1024);

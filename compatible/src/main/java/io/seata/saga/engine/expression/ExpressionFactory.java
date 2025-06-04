@@ -21,5 +21,5 @@ package io.seata.saga.engine.expression;
  *
  */
 @Deprecated
-public interface ExpressionFactory extends org.apache.seata.saga.engine.expression.ExpressionFactory {
-}
+public interface ExpressionFactory
+        extends org.apache.seata.saga.engine.expression.ExpressionFactory {}

@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 public class IndexMetaTest {
@@ -97,7 +96,10 @@ public class IndexMetaTest {
         IndexMeta indexMeta = new IndexMeta();
         IndexType indextype = IndexType.NORMAL;
         indexMeta.setIndextype(indextype);
-        assertEquals(indextype, indexMeta.getIndextype(), "Indextype should be set and retrieved correctly");
+        assertEquals(
+                indextype,
+                indexMeta.getIndextype(),
+                "Indextype should be set and retrieved correctly");
     }
 
     @Test
@@ -116,7 +118,9 @@ public class IndexMetaTest {
     public void testEqualsDifferentType() {
         IndexMeta indexMeta = new IndexMeta();
         String differentType = "I am not an IndexMeta";
-        assertFalse(indexMeta.equals(differentType), "An object should not be equal to an object of a different type");
+        assertFalse(
+                indexMeta.equals(differentType),
+                "An object should not be equal to an object of a different type");
     }
 
     @Test
@@ -143,7 +147,9 @@ public class IndexMetaTest {
         indexMeta2.setAscOrDesc("A");
         indexMeta2.setOrdinalPosition(1);
 
-        assertTrue(indexMeta1.equals(indexMeta2), "Two objects with identical field values should be equal");
+        assertTrue(
+                indexMeta1.equals(indexMeta2),
+                "Two objects with identical field values should be equal");
     }
 
     @Test
@@ -168,7 +174,9 @@ public class IndexMetaTest {
         indexMeta2.setAscOrDesc("D");
         indexMeta2.setOrdinalPosition(2);
 
-        assertFalse(indexMeta1.equals(indexMeta2), "Two objects with different field values should not be equal");
+        assertFalse(
+                indexMeta1.equals(indexMeta2),
+                "Two objects with different field values should not be equal");
     }
 
     @Test
@@ -218,7 +226,10 @@ public class IndexMetaTest {
         columnMeta2.setCaseSensitive(true);
 
         // Check if hash codes are consistent
-        assertEquals(columnMeta1.hashCode(), columnMeta2.hashCode(), "Hash codes should be the same for equal objects");
+        assertEquals(
+                columnMeta1.hashCode(),
+                columnMeta2.hashCode(),
+                "Hash codes should be the same for equal objects");
     }
 
     @Test
@@ -268,8 +279,9 @@ public class IndexMetaTest {
         columnMeta2.setCaseSensitive(false);
 
         // Check if hash codes are different for different objects
-        assertNotEquals(columnMeta1.hashCode(), columnMeta2.hashCode(),
+        assertNotEquals(
+                columnMeta1.hashCode(),
+                columnMeta2.hashCode(),
                 "Hash codes should be different for non-equal objects");
     }
-
 }

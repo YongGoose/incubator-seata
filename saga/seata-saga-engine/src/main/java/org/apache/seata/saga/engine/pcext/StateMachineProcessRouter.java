@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.saga.engine.StateMachineConfig;
@@ -54,10 +53,15 @@ public class StateMachineProcessRouter implements ProcessRouter {
             state = stateInstruction.getTemporaryState();
             stateInstruction.setTemporaryState(null);
         } else {
-            StateMachineConfig stateMachineConfig = (StateMachineConfig)context.getVariable(
-                DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
-            StateMachine stateMachine = stateMachineConfig.getStateMachineRepository().getStateMachine(
-                stateInstruction.getStateMachineName(), stateInstruction.getTenantId());
+            StateMachineConfig stateMachineConfig =
+                    (StateMachineConfig)
+                            context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG);
+            StateMachine stateMachine =
+                    stateMachineConfig
+                            .getStateMachineRepository()
+                            .getStateMachine(
+                                    stateInstruction.getStateMachineName(),
+                                    stateInstruction.getTenantId());
             state = stateMachine.getStates().get(stateInstruction.getStateName());
         }
 
@@ -69,7 +73,7 @@ public class StateMachineProcessRouter implements ProcessRouter {
 
         List<StateRouterInterceptor> interceptors = null;
         if (router instanceof InterceptableStateRouter) {
-            interceptors = ((InterceptableStateRouter)router).getInterceptors();
+            interceptors = ((InterceptableStateRouter) router).getInterceptors();
         }
 
         List<StateRouterInterceptor> executedInterceptors = null;
@@ -96,7 +100,7 @@ public class StateMachineProcessRouter implements ProcessRouter {
                 }
             }
 
-            //if 'Succeed' or 'Fail' State did not configured, we must end the state machine
+            // if 'Succeed' or 'Fail' State did not configured, we must end the state machine
             if (instruction == null && !stateInstruction.isEnd()) {
                 EngineUtils.endStateMachine(context);
             }

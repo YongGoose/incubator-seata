@@ -16,14 +16,13 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.GlobalBeginResponseProto;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.GlobalBeginResponse;
+import org.apache.seata.serializer.protobuf.generated.GlobalBeginResponseProto;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class GlobalBeginResponseConvertorTest {
 
@@ -36,7 +35,8 @@ public class GlobalBeginResponseConvertorTest {
         globalBeginResponse.setMsg("msg");
         globalBeginResponse.setExtraData("extraData");
         globalBeginResponse.setXid("xid");
-        globalBeginResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchRollbackFailed_Retriable);
+        globalBeginResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchRollbackFailed_Retriable);
 
         GlobalBeginResponseConvertor convertor = new GlobalBeginResponseConvertor();
         GlobalBeginResponseProto proto = convertor.convert2Proto(globalBeginResponse);
@@ -44,6 +44,7 @@ public class GlobalBeginResponseConvertorTest {
         assertThat((real.getTypeCode())).isEqualTo(globalBeginResponse.getTypeCode());
         assertThat((real.getMsg())).isEqualTo(globalBeginResponse.getMsg());
         assertThat((real.getResultCode())).isEqualTo(globalBeginResponse.getResultCode());
-        assertThat((real.getTransactionExceptionCode())).isEqualTo(globalBeginResponse.getTransactionExceptionCode());
+        assertThat((real.getTransactionExceptionCode()))
+                .isEqualTo(globalBeginResponse.getTransactionExceptionCode());
     }
 }

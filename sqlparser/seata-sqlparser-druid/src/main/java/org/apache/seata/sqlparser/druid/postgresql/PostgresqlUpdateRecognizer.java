@@ -16,8 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.postgresql;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -30,14 +28,16 @@ import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
-import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.SQLUpdateRecognizer;
+import org.apache.seata.sqlparser.util.ColumnUtils;
 
-
-public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer implements SQLUpdateRecognizer {
+public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer
+        implements SQLUpdateRecognizer {
 
     private PGUpdateStatement ast;
 
@@ -69,10 +69,17 @@ public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer impleme
                 // This is alias case, like UPDATE xxx_tbl a SET a.name = ? WHERE a.id = ?
                 SQLExpr owner = ((SQLPropertyExpr) expr).getOwner();
                 if (owner instanceof SQLIdentifierExpr) {
-                    list.add(((SQLIdentifierExpr) owner).getName() + "." + ((SQLPropertyExpr) expr).getName());
-                    //This is table Field Full path, like update xxx_database.xxx_tbl set xxx_database.xxx_tbl.xxx_field...
+                    list.add(
+                            ((SQLIdentifierExpr) owner).getName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
+                    // This is table Field Full path, like update xxx_database.xxx_tbl set
+                    // xxx_database.xxx_tbl.xxx_field...
                 } else if (((SQLPropertyExpr) expr).getOwnerName().split("\\.").length > 1) {
-                    list.add(((SQLPropertyExpr)expr).getOwnerName()  + "." + ((SQLPropertyExpr)expr).getName());
+                    list.add(
+                            ((SQLPropertyExpr) expr).getOwnerName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
                 }
             } else {
                 wrapSQLParsingException(expr);
@@ -105,8 +112,9 @@ public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer impleme
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-        final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }
@@ -125,19 +133,21 @@ public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer impleme
     @Override
     public String getTableName() {
         StringBuilder sb = new StringBuilder();
-        PGOutputVisitor visitor = new PGOutputVisitor(sb) {
+        PGOutputVisitor visitor =
+                new PGOutputVisitor(sb) {
 
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
 
-            @Override
-            public boolean visit(SQLJoinTableSource x) {
-                throw new NotSupportYetException("not support the syntax of update with join table");
-            }
-        };
+                    @Override
+                    public boolean visit(SQLJoinTableSource x) {
+                        throw new NotSupportYetException(
+                                "not support the syntax of update with join table");
+                    }
+                };
         SQLTableSource tableSource = ast.getTableSource();
         if (tableSource instanceof SQLExprTableSource) {
             visitor.visit((SQLExprTableSource) tableSource);
@@ -151,25 +161,27 @@ public class PostgresqlUpdateRecognizer extends BasePostgresqlRecognizer impleme
 
     @Override
     public String getLimitCondition() {
-        //postgre does not have limit condition in update statement
+        // postgre does not have limit condition in update statement
         return null;
     }
 
     @Override
-    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
-        //postgre does not have limit condition in update statement
+    public String getLimitCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+        // postgre does not have limit condition in update statement
         return null;
     }
 
     @Override
     public String getOrderByCondition() {
-        //postgre does not have order by condition in update statement
+        // postgre does not have order by condition in update statement
         return null;
     }
 
     @Override
-    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
-        //postgre does not have order by condition in update statement
+    public String getOrderByCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+        // postgre does not have order by condition in update statement
         return null;
     }
 

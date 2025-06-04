@@ -24,7 +24,8 @@ import org.apache.seata.saga.statelang.parser.StateParser;
  * 'trigger compensation process' state parser
  *
  */
-public class CompensationTriggerStateParser extends BaseStatePaser implements StateParser<CompensationTriggerState> {
+public class CompensationTriggerStateParser extends BaseStatePaser
+        implements StateParser<CompensationTriggerState> {
 
     @Override
     public CompensationTriggerState parse(Object node) {

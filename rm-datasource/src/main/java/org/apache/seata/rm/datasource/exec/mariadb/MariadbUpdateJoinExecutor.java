@@ -17,14 +17,13 @@
 package org.apache.seata.rm.datasource.exec.mariadb;
 
 import java.sql.Statement;
-
-import org.apache.seata.rm.datasource.exec.mysql.MySQLUpdateJoinExecutor;
 import org.apache.seata.rm.datasource.StatementProxy;
 import org.apache.seata.rm.datasource.exec.StatementCallback;
+import org.apache.seata.rm.datasource.exec.mysql.MySQLUpdateJoinExecutor;
 import org.apache.seata.sqlparser.SQLRecognizer;
 
-
-public class MariadbUpdateJoinExecutor<T, S extends Statement> extends MySQLUpdateJoinExecutor<T, S> {
+public class MariadbUpdateJoinExecutor<T, S extends Statement>
+        extends MySQLUpdateJoinExecutor<T, S> {
 
     /**
      * Instantiates a new Update executor.
@@ -33,10 +32,11 @@ public class MariadbUpdateJoinExecutor<T, S extends Statement> extends MySQLUpda
      * @param statementCallback the statement callback
      * @param sqlRecognizer     the sql recognizer
      */
-    public MariadbUpdateJoinExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback,
-        SQLRecognizer sqlRecognizer) {
+    public MariadbUpdateJoinExecutor(
+            StatementProxy<S> statementProxy,
+            StatementCallback<T, S> statementCallback,
+            SQLRecognizer sqlRecognizer) {
         super(statementProxy, statementCallback, sqlRecognizer);
         this.isLowerSupportGroupByPksVersion = false;
     }
-
 }

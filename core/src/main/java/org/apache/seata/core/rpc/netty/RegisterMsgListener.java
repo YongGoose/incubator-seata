@@ -34,7 +34,8 @@ public interface RegisterMsgListener {
      * @param response       the response
      * @param requestMessage the request message
      */
-    void onRegisterMsgSuccess(String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
+    void onRegisterMsgSuccess(
+            String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
 
     /**
      * On register msg fail.
@@ -44,5 +45,6 @@ public interface RegisterMsgListener {
      * @param response       the response
      * @param requestMessage the request message
      */
-    void onRegisterMsgFail(String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
+    void onRegisterMsgFail(
+            String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
 }

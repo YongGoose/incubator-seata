@@ -16,15 +16,14 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.BranchCommitResponseProto;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
+import org.apache.seata.serializer.protobuf.generated.BranchCommitResponseProto;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class BranchCommitResponseConvertorTest {
 
@@ -32,7 +31,8 @@ public class BranchCommitResponseConvertorTest {
     public void convert2Proto() {
 
         BranchCommitResponse branchCommitResponse = new BranchCommitResponse();
-        branchCommitResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchTransactionNotExist);
+        branchCommitResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchTransactionNotExist);
         branchCommitResponse.setResultCode(ResultCode.Success);
         branchCommitResponse.setMsg("xx");
         branchCommitResponse.setXid("xid");
@@ -46,7 +46,8 @@ public class BranchCommitResponseConvertorTest {
         assertThat(real.getTypeCode()).isEqualTo(branchCommitResponse.getTypeCode());
         assertThat(real.getMsg()).isEqualTo(branchCommitResponse.getMsg());
         assertThat(real.getXid()).isEqualTo(branchCommitResponse.getXid());
-        assertThat(real.getTransactionExceptionCode()).isEqualTo(branchCommitResponse.getTransactionExceptionCode());
+        assertThat(real.getTransactionExceptionCode())
+                .isEqualTo(branchCommitResponse.getTransactionExceptionCode());
         assertThat(real.getBranchStatus()).isEqualTo(branchCommitResponse.getBranchStatus());
         assertThat(real.getResultCode()).isEqualTo(branchCommitResponse.getResultCode());
     }

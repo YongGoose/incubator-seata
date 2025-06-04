@@ -16,6 +16,7 @@
  */
 package org.apache.seata.sqlparser.druid.polardbx;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.junit.jupiter.api.Assertions;
@@ -79,10 +78,14 @@ public class PolarDBXDeleteRecognizerTest extends AbstractPolarDBXRecognizerTest
         SQLStatement ast = getSQLStatement(sql);
         PolarDBXDeleteRecognizer recognizer = new PolarDBXDeleteRecognizer(sql, ast);
 
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1, new ArrayList<>(Collections.singletonList(1))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(2))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
 
@@ -101,10 +104,14 @@ public class PolarDBXDeleteRecognizerTest extends AbstractPolarDBXRecognizerTest
         SQLStatement ast = getSQLStatement(sql);
         PolarDBXDeleteRecognizer recognizer = new PolarDBXDeleteRecognizer(sql, ast);
 
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1, new ArrayList<>(Collections.singletonList(1))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(2))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
 
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
@@ -124,10 +131,9 @@ public class PolarDBXDeleteRecognizerTest extends AbstractPolarDBXRecognizerTest
 
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
         Assertions.assertEquals("t1", recognizer.getTableName());
-        Assertions.assertEquals("EXISTS (\n" +
-                "\tSELECT *\n" +
-                "\tFROM t2\n" +
-                ")", recognizer.getWhereCondition());
+        Assertions.assertEquals(
+                "EXISTS (\n" + "\tSELECT *\n" + "\tFROM t2\n" + ")",
+                recognizer.getWhereCondition());
     }
 
     @Test

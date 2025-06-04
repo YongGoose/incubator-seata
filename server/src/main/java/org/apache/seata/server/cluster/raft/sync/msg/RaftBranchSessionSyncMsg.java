@@ -58,5 +58,4 @@ public class RaftBranchSessionSyncMsg extends RaftBaseMsg {
     public String toString() {
         return StringUtils.toString(this);
     }
-
 }

@@ -21,8 +21,8 @@ import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.saga.statelang.domain.DomainConstants;
 import org.apache.seata.saga.statelang.domain.RecoverStrategy;
 import org.apache.seata.saga.statelang.domain.State;
-import org.apache.seata.saga.statelang.domain.StateType;
 import org.apache.seata.saga.statelang.domain.StateMachine;
+import org.apache.seata.saga.statelang.domain.StateType;
 import org.apache.seata.saga.statelang.domain.impl.AbstractTaskState;
 import org.apache.seata.saga.statelang.domain.impl.BaseState;
 import org.apache.seata.saga.statelang.domain.impl.StateMachineImpl;
@@ -65,7 +65,9 @@ public class StateMachineParserImpl implements StateMachineParser {
         if (DesignerJsonTransformer.isDesignerJson(node)) {
             node = DesignerJsonTransformer.toStandardJson(node);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("===== Transformed standard state language:\n{}", jsonParser.toJsonString(node, true));
+                LOGGER.debug(
+                        "===== Transformed standard state language:\n{}",
+                        jsonParser.toJsonString(node, true));
             }
         }
 
@@ -92,27 +94,31 @@ public class StateMachineParserImpl implements StateMachineParser {
         // customize if update last or append new compensateStateInstLog
         Object isCompensatePersistModeUpdate = node.get("IsCompensatePersistModeUpdate");
         if (isCompensatePersistModeUpdate instanceof Boolean) {
-            stateMachine.setCompensatePersistModeUpdate(Boolean.TRUE.equals(isCompensatePersistModeUpdate));
+            stateMachine.setCompensatePersistModeUpdate(
+                    Boolean.TRUE.equals(isCompensatePersistModeUpdate));
         }
 
         Map<String, Object> statesNode = (Map<String, Object>) node.get("States");
-        statesNode.forEach((stateName, value) -> {
-            Map<String, Object> stateNode = (Map<String, Object>) value;
-            StateType stateType = StateType.getStateType((String) stateNode.get("Type"));
-            StateParser<?> stateParser = StateParserFactory.getStateParser(stateType);
-            if (stateParser == null) {
-                throw new IllegalArgumentException("State Type [" + stateType + "] is not support");
-            }
-            State state = stateParser.parse(stateNode);
-            if (state instanceof BaseState) {
-                ((BaseState) state).setName(stateName);
-            }
+        statesNode.forEach(
+                (stateName, value) -> {
+                    Map<String, Object> stateNode = (Map<String, Object>) value;
+                    StateType stateType = StateType.getStateType((String) stateNode.get("Type"));
+                    StateParser<?> stateParser = StateParserFactory.getStateParser(stateType);
+                    if (stateParser == null) {
+                        throw new IllegalArgumentException(
+                                "State Type [" + stateType + "] is not support");
+                    }
+                    State state = stateParser.parse(stateNode);
+                    if (state instanceof BaseState) {
+                        ((BaseState) state).setName(stateName);
+                    }
 
-            if (stateMachine.getState(stateName) != null) {
-                throw new IllegalArgumentException("State[name:" + stateName + "] is already exists");
-            }
-            stateMachine.putState(stateName, state);
-        });
+                    if (stateMachine.getState(stateName) != null) {
+                        throw new IllegalArgumentException(
+                                "State[name:" + stateName + "] is already exists");
+                    }
+                    stateMachine.putState(stateName, state);
+                });
 
         Map<String, State> stateMap = stateMachine.getStates();
         for (State state : stateMap.values()) {

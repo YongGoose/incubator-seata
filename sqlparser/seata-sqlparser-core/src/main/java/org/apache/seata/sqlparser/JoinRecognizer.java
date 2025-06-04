@@ -30,5 +30,6 @@ public interface JoinRecognizer {
      * @param paramAppenderList the param appender list
      * @return the join condition
      */
-    String getJoinCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList);
+    String getJoinCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList);
 }

@@ -33,15 +33,19 @@ import org.slf4j.LoggerFactory;
  */
 public class HsfTransactionProviderFilter implements ServerFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HsfTransactionProviderFilter.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(HsfTransactionProviderFilter.class);
 
     @Override
-    public ListenableFuture<RPCResult> invoke(InvocationHandler nextHandler, Invocation invocation) throws Throwable {
+    public ListenableFuture<RPCResult> invoke(InvocationHandler nextHandler, Invocation invocation)
+            throws Throwable {
 
         Object rpcXid = RPCContext.getServerContext().getAttachment(RootContext.KEY_XID);
-        Object rpcBranchType = RPCContext.getServerContext().getAttachment(RootContext.KEY_BRANCH_TYPE);
+        Object rpcBranchType =
+                RPCContext.getServerContext().getAttachment(RootContext.KEY_BRANCH_TYPE);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("xid in RpcContext[{}], branchType in RpcContext[{}]", rpcXid, rpcBranchType);
+            LOGGER.debug(
+                    "xid in RpcContext[{}], branchType in RpcContext[{}]", rpcXid, rpcBranchType);
         }
         boolean bind = false;
         if (rpcXid != null) {
@@ -64,17 +68,25 @@ public class HsfTransactionProviderFilter implements ServerFilter {
                     RootContext.unbindBranchType();
                 }
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("unbind xid [{}] branchType [{}] from RootContext", unbindXid, previousBranchType);
+                    LOGGER.debug(
+                            "unbind xid [{}] branchType [{}] from RootContext",
+                            unbindXid,
+                            previousBranchType);
                 }
                 if (!rpcXid.toString().equalsIgnoreCase(unbindXid)) {
-                    LOGGER.warn("xid in change during RPC from {} to {},branchType from {} to {}", rpcXid, unbindXid,
-                        rpcBranchType != null ? rpcBranchType : "AT", previousBranchType);
+                    LOGGER.warn(
+                            "xid in change during RPC from {} to {},branchType from {} to {}",
+                            rpcXid,
+                            unbindXid,
+                            rpcBranchType != null ? rpcBranchType : "AT",
+                            previousBranchType);
                     if (unbindXid != null) {
                         RootContext.bind(unbindXid);
                         LOGGER.warn("bind xid [{}] back to RootContext", unbindXid);
                         if (BranchType.TCC == previousBranchType) {
                             RootContext.bindBranchType(BranchType.TCC);
-                            LOGGER.warn("bind branchType [{}] back to RootContext", previousBranchType);
+                            LOGGER.warn(
+                                    "bind branchType [{}] back to RootContext", previousBranchType);
                         }
                     }
                 }
@@ -85,7 +97,5 @@ public class HsfTransactionProviderFilter implements ServerFilter {
     }
 
     @Override
-    public void onResponse(Invocation invocation, RPCResult rpcResult) {
-
-    }
+    public void onResponse(Invocation invocation, RPCResult rpcResult) {}
 }

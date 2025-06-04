@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import java.util.Map;
 import org.apache.seata.core.exception.DecodeException;
 import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.rpc.netty.v0.ProtocolDecoderV0;
@@ -29,8 +30,6 @@ import org.apache.seata.core.rpc.netty.v1.ProtocolDecoderV1;
 import org.apache.seata.core.rpc.netty.v1.ProtocolEncoderV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * <pre>
@@ -76,7 +75,7 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
 
     public MultiProtocolDecoder(int maxFrameLength, ChannelHandler[] channelHandlers) {
         /*
-        int maxFrameLength,      
+        int maxFrameLength,
         int lengthFieldOffset,  magic code is 2B, and version is 1B, and then FullLength. so value is 3
         int lengthFieldLength,  FullLength is int(4B). so values is 4
         int lengthAdjustment,   FullLength include all data and read 7 bytes before, so the left length is (FullLength-7). so values is -7
@@ -84,11 +83,15 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
         */
         super(maxFrameLength, 3, 4, -7, 0);
         this.protocolDecoderMap =
-                ImmutableMap.<Byte, ProtocolDecoder>builder().put(ProtocolConstants.VERSION_0, new ProtocolDecoderV0())
-                        .put(ProtocolConstants.VERSION_1, new ProtocolDecoderV1()).build();
+                ImmutableMap.<Byte, ProtocolDecoder>builder()
+                        .put(ProtocolConstants.VERSION_0, new ProtocolDecoderV0())
+                        .put(ProtocolConstants.VERSION_1, new ProtocolDecoderV1())
+                        .build();
         this.protocolEncoderMap =
-                ImmutableMap.<Byte, ProtocolEncoder>builder().put(ProtocolConstants.VERSION_0, new ProtocolEncoderV0())
-                        .put(ProtocolConstants.VERSION_1, new ProtocolEncoderV1()).build();
+                ImmutableMap.<Byte, ProtocolEncoder>builder()
+                        .put(ProtocolConstants.VERSION_0, new ProtocolEncoderV0())
+                        .put(ProtocolConstants.VERSION_1, new ProtocolEncoderV1())
+                        .build();
         this.channelHandlers = channelHandlers;
     }
 
@@ -110,12 +113,18 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
                 frame = (ByteBuf) decoded;
                 ProtocolDecoder decoder = protocolDecoderMap.get(version);
                 if (decoder == null) {
-                    LOGGER.error("Decoder not found, version={}, use current version({})", version,ProtocolConstants.VERSION);
+                    LOGGER.error(
+                            "Decoder not found, version={}, use current version({})",
+                            version,
+                            ProtocolConstants.VERSION);
                     decoder = protocolDecoderMap.get(ProtocolConstants.VERSION);
                 }
                 ProtocolEncoder encoder = protocolEncoderMap.get(version);
                 if (encoder == null) {
-                    LOGGER.error("Encoder not found, version: {}, use current version({})", version,ProtocolConstants.VERSION);
+                    LOGGER.error(
+                            "Encoder not found, version: {}, use current version({})",
+                            version,
+                            ProtocolConstants.VERSION);
                     encoder = protocolEncoderMap.get(ProtocolConstants.VERSION);
                 }
                 try {
@@ -159,7 +168,6 @@ public class MultiProtocolDecoder extends LengthFieldBasedFrameDecoder {
         }
         return -1;
     }
-
 
     protected boolean isV0(ByteBuf in) {
         boolean isV0 = false;

@@ -16,11 +16,14 @@
  */
 package org.apache.seata.core.rpc.netty;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.config.ConfigurationCache;
@@ -33,12 +36,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Rm RPC client test.
@@ -75,7 +72,8 @@ class RmNettyClientTest {
 
     @Test
     public void testCheckFailFast() throws Exception {
-        RmNettyRemotingClient newClient = RmNettyRemotingClient.getInstance("fail_fast", "default_tx_group");
+        RmNettyRemotingClient newClient =
+                RmNettyRemotingClient.getInstance("fail_fast", "default_tx_group");
 
         ResourceManager resourceManager = Mockito.mock(ResourceManager.class);
         Resource mockResource = Mockito.mock(Resource.class);
@@ -88,7 +86,7 @@ class RmNettyClientTest {
         Assertions.assertThrows(FrameworkException.class, newClient::init);
         System.setProperty(ConfigurationKeys.ENABLE_RM_CLIENT_CHANNEL_CHECK_FAIL_FAST, "false");
     }
-    
+
     private AtomicBoolean getInitializeStatus(final RmNettyRemotingClient rmNettyRemotingClient) {
         try {
             Field field = rmNettyRemotingClient.getClass().getDeclaredField("initialized");
@@ -103,8 +101,10 @@ class RmNettyClientTest {
     public void testSendAsyncRequestWithNullChannelLogsWarning() {
         RmNettyRemotingClient remotingClient = RmNettyRemotingClient.getInstance();
         Object message = HeartbeatMessage.PING;
-        assertThrows(FrameworkException.class, () -> {
-            remotingClient.sendAsyncRequest(null, message);
-        });
+        assertThrows(
+                FrameworkException.class,
+                () -> {
+                    remotingClient.sendAsyncRequest(null, message);
+                });
     }
 }

@@ -43,14 +43,13 @@ import org.springframework.test.web.servlet.MvcResult;
 @AutoConfigureMockMvc
 public class AuthControllerWithRandomPasswordTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Autowired private ObjectMapper objectMapper;
 
     @Test
-    public void loginSuccess_shouldReturnTokenAndAddToHeader(CapturedOutput output) throws Exception {
+    public void loginSuccess_shouldReturnTokenAndAddToHeader(CapturedOutput output)
+            throws Exception {
         String logs = output.getOut();
 
         Pattern pattern = Pattern.compile("Use the auto-generated password: \\[(.+?)\\]");
@@ -63,14 +62,16 @@ public class AuthControllerWithRandomPasswordTest {
 
         String userJson = objectMapper.writeValueAsString(user);
 
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(header().exists(WebSecurityConfig.AUTHORIZATION_HEADER))
-                .andReturn();
+        MvcResult result =
+                mockMvc.perform(
+                                post("/api/v1/auth/login")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(userJson))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.success").value(true))
+                        .andExpect(jsonPath("$.data").isNotEmpty())
+                        .andExpect(header().exists(WebSecurityConfig.AUTHORIZATION_HEADER))
+                        .andReturn();
 
         String authHeader = result.getResponse().getHeader(WebSecurityConfig.AUTHORIZATION_HEADER);
         assertNotNull(authHeader);
@@ -82,9 +83,10 @@ public class AuthControllerWithRandomPasswordTest {
         User user = new User("wrong_user", "wrong_password");
         String userJson = objectMapper.writeValueAsString(user);
 
-        mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
+        mockMvc.perform(
+                        post("/api/v1/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.code").value(Code.LOGIN_FAILED.getCode()));

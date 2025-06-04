@@ -16,17 +16,16 @@
  */
 package io.seata.saga.statelang.domain.impl;
 
+import io.seata.saga.statelang.domain.ExecutionStatus;
+import io.seata.saga.statelang.domain.StateInstance;
+import io.seata.saga.statelang.domain.StateMachine;
+import io.seata.saga.statelang.domain.StateMachineInstance;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import io.seata.saga.statelang.domain.ExecutionStatus;
-import io.seata.saga.statelang.domain.StateInstance;
-import io.seata.saga.statelang.domain.StateMachine;
-import io.seata.saga.statelang.domain.StateMachineInstance;
 
 /**
  * state machine execution instance
@@ -36,7 +35,8 @@ public class StateMachineInstanceImpl implements StateMachineInstance {
 
     private final org.apache.seata.saga.statelang.domain.StateMachineInstance actual;
 
-    private StateMachineInstanceImpl(org.apache.seata.saga.statelang.domain.StateMachineInstance actual) {
+    private StateMachineInstanceImpl(
+            org.apache.seata.saga.statelang.domain.StateMachineInstance actual) {
         this.actual = actual;
     }
 
@@ -210,30 +210,37 @@ public class StateMachineInstanceImpl implements StateMachineInstance {
 
     @Override
     public void setStateMachine(StateMachine stateMachine) {
-        org.apache.seata.saga.statelang.domain.StateMachine unwrap = ((StateMachineImpl) stateMachine).unwrap();
+        org.apache.seata.saga.statelang.domain.StateMachine unwrap =
+                ((StateMachineImpl) stateMachine).unwrap();
         actual.setStateMachine(unwrap);
     }
 
     @Override
     public List<StateInstance> getStateList() {
-        List<StateInstance> stateList = actual.getStateList().stream()
-                .map(StateInstanceImpl::wrap).collect(Collectors.toList());
+        List<StateInstance> stateList =
+                actual.getStateList().stream()
+                        .map(StateInstanceImpl::wrap)
+                        .collect(Collectors.toList());
         stateList.forEach(state -> state.setStateMachineInstance(this));
         return stateList;
     }
 
     @Override
     public void setStateList(List<StateInstance> stateList) {
-        List<org.apache.seata.saga.statelang.domain.StateInstance> actualStateList = stateList.stream()
-                .map(state -> ((StateInstanceImpl) state).unwrap()).collect(Collectors.toList());
+        List<org.apache.seata.saga.statelang.domain.StateInstance> actualStateList =
+                stateList.stream()
+                        .map(state -> ((StateInstanceImpl) state).unwrap())
+                        .collect(Collectors.toList());
 
         actual.setStateList(actualStateList);
     }
 
     @Override
     public Map<String, StateInstance> getStateMap() {
-        List<StateInstance> stateList = actual.getStateList().stream()
-                .map(StateInstanceImpl::wrap).collect(Collectors.toList());
+        List<StateInstance> stateList =
+                actual.getStateList().stream()
+                        .map(StateInstanceImpl::wrap)
+                        .collect(Collectors.toList());
         stateList.forEach(state -> state.setStateMachineInstance(this));
         return stateList.stream()
                 .collect(Collectors.toMap(StateInstance::getId, Function.identity()));
@@ -241,9 +248,14 @@ public class StateMachineInstanceImpl implements StateMachineInstance {
 
     @Override
     public void setStateMap(Map<String, StateInstance> stateMap) {
-        Map<String, org.apache.seata.saga.statelang.domain.StateInstance> actualStateMap = stateMap.entrySet().stream()
-                .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), ((StateInstanceImpl) e.getValue()).unwrap()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, org.apache.seata.saga.statelang.domain.StateInstance> actualStateMap =
+                stateMap.entrySet().stream()
+                        .map(
+                                e ->
+                                        new AbstractMap.SimpleEntry<>(
+                                                e.getKey(),
+                                                ((StateInstanceImpl) e.getValue()).unwrap()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         actual.setStateMap(actualStateMap);
     }
 
@@ -277,7 +289,8 @@ public class StateMachineInstanceImpl implements StateMachineInstance {
         actual.setSerializedException(serializedException);
     }
 
-    public static StateMachineInstanceImpl wrap(org.apache.seata.saga.statelang.domain.StateMachineInstance target) {
+    public static StateMachineInstanceImpl wrap(
+            org.apache.seata.saga.statelang.domain.StateMachineInstance target) {
         return new StateMachineInstanceImpl(target);
     }
 

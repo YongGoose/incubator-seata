@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.rm.datasource.SqlGenerateUtils;
@@ -30,7 +29,6 @@ import org.apache.seata.rm.datasource.sql.struct.Row;
 import org.apache.seata.rm.datasource.sql.struct.TableRecords;
 import org.apache.seata.rm.datasource.undo.SQLUndoLog;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
 
 public class SqlServerUndoInsertExecutor extends BaseSqlServerUndoExecutor {
     /**
@@ -53,11 +51,12 @@ public class SqlServerUndoInsertExecutor extends BaseSqlServerUndoExecutor {
     }
 
     private String generateDeleteSql(List<Row> rows, TableRecords afterImage) {
-        List<String> pkNameList = getOrderedPkList(afterImage, rows.get(0), JdbcConstants.SQLSERVER)
-                .stream()
-                .map(Field::getName)
-                .collect(Collectors.toList());
-        String whereSql = SqlGenerateUtils.buildWhereConditionByPKs(pkNameList, JdbcConstants.SQLSERVER);
+        List<String> pkNameList =
+                getOrderedPkList(afterImage, rows.get(0), JdbcConstants.SQLSERVER).stream()
+                        .map(Field::getName)
+                        .collect(Collectors.toList());
+        String whereSql =
+                SqlGenerateUtils.buildWhereConditionByPKs(pkNameList, JdbcConstants.SQLSERVER);
         return "DELETE FROM " + sqlUndoLog.getTableName() + " WHERE " + whereSql;
     }
 
@@ -67,8 +66,10 @@ public class SqlServerUndoInsertExecutor extends BaseSqlServerUndoExecutor {
     }
 
     @Override
-    protected void undoPrepare(PreparedStatement undoPST, ArrayList<Field> undoValues, List<Field> pkValueList) throws SQLException {
-        //The purpose to override is because only the primary key value is needed to locate data
+    protected void undoPrepare(
+            PreparedStatement undoPST, ArrayList<Field> undoValues, List<Field> pkValueList)
+            throws SQLException {
+        // The purpose to override is because only the primary key value is needed to locate data
         int undoIndex = 0;
         for (Field pkField : pkValueList) {
             undoIndex++;

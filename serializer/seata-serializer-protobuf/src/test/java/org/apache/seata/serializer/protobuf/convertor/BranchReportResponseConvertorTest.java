@@ -16,14 +16,13 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.BranchReportResponseProto;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchReportResponse;
+import org.apache.seata.serializer.protobuf.generated.BranchReportResponseProto;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class BranchReportResponseConvertorTest {
 
@@ -33,14 +32,15 @@ public class BranchReportResponseConvertorTest {
         BranchReportResponse branchReportResponse = new BranchReportResponse();
         branchReportResponse.setMsg("msg");
         branchReportResponse.setResultCode(ResultCode.Failed);
-        branchReportResponse.setTransactionExceptionCode(TransactionExceptionCode.GlobalTransactionNotExist);
+        branchReportResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.GlobalTransactionNotExist);
         BranchReportResponseConvertor convertor = new BranchReportResponseConvertor();
         BranchReportResponseProto proto = convertor.convert2Proto(branchReportResponse);
         BranchReportResponse real = convertor.convert2Model(proto);
         assertThat((real.getTypeCode())).isEqualTo(branchReportResponse.getTypeCode());
         assertThat((real.getMsg())).isEqualTo(branchReportResponse.getMsg());
         assertThat((real.getResultCode())).isEqualTo(branchReportResponse.getResultCode());
-        assertThat((real.getTransactionExceptionCode())).isEqualTo(branchReportResponse.getTransactionExceptionCode());
-
+        assertThat((real.getTransactionExceptionCode()))
+                .isEqualTo(branchReportResponse.getTransactionExceptionCode());
     }
 }

@@ -17,10 +17,9 @@
 package org.apache.seata.core.context;
 
 import io.netty.util.concurrent.FastThreadLocal;
-import org.apache.seata.common.loader.LoadLevel;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.seata.common.loader.LoadLevel;
 
 /**
  * The type Fast Thread local context core.
@@ -29,12 +28,13 @@ import java.util.Map;
 @LoadLevel(name = "FastThreadLocalContextCore", order = Integer.MIN_VALUE + 1)
 public class FastThreadLocalContextCore implements ContextCore {
 
-    private FastThreadLocal<Map<String, Object>> fastThreadLocal = new FastThreadLocal<Map<String, Object>>() {
-        @Override
-        protected Map<String, Object> initialValue() {
-            return new HashMap<>();
-        }
-    };
+    private FastThreadLocal<Map<String, Object>> fastThreadLocal =
+            new FastThreadLocal<Map<String, Object>>() {
+                @Override
+                protected Map<String, Object> initialValue() {
+                    return new HashMap<>();
+                }
+            };
 
     @Override
     public Object put(String key, Object value) {

@@ -33,7 +33,6 @@ public interface LockStore {
      */
     boolean acquireLock(LockDO lockDO);
 
-
     /**
      * Acquire lock boolean.
      *
@@ -88,5 +87,4 @@ public interface LockStore {
      *
      */
     void updateLockStatus(String xid, LockStatus lockStatus);
-
 }

@@ -16,22 +16,25 @@
  */
 package org.apache.seata.core.exception;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 public class GlobalTransactionExceptionTest {
 
     @Test
     public void testConstructorWithCode() {
-        GlobalTransactionException exception = new GlobalTransactionException(TransactionExceptionCode.GlobalTransactionNotExist);
+        GlobalTransactionException exception =
+                new GlobalTransactionException(TransactionExceptionCode.GlobalTransactionNotExist);
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
     }
 
     @Test
     public void testConstructorWithCodeAndCause() {
         Throwable cause = new RuntimeException("test");
-        GlobalTransactionException exception = new GlobalTransactionException(TransactionExceptionCode.GlobalTransactionNotExist, cause);
+        GlobalTransactionException exception =
+                new GlobalTransactionException(
+                        TransactionExceptionCode.GlobalTransactionNotExist, cause);
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
         assertEquals(cause, exception.getCause());
     }
@@ -44,7 +47,9 @@ public class GlobalTransactionExceptionTest {
 
     @Test
     public void testConstructorWithCodeAndMessage() {
-        GlobalTransactionException exception = new GlobalTransactionException(TransactionExceptionCode.GlobalTransactionNotExist, "test message");
+        GlobalTransactionException exception =
+                new GlobalTransactionException(
+                        TransactionExceptionCode.GlobalTransactionNotExist, "test message");
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
         assertEquals("test message", exception.getMessage());
     }
@@ -59,7 +64,8 @@ public class GlobalTransactionExceptionTest {
     @Test
     public void testConstructorWithMessageAndCause() {
         Throwable cause = new RuntimeException("test");
-        GlobalTransactionException exception = new GlobalTransactionException("test message", cause);
+        GlobalTransactionException exception =
+                new GlobalTransactionException("test message", cause);
         assertEquals("test message", exception.getMessage());
         assertEquals(cause, exception.getCause());
     }
@@ -67,7 +73,9 @@ public class GlobalTransactionExceptionTest {
     @Test
     public void testConstructorWithCodeMessageAndCause() {
         Throwable cause = new RuntimeException("test");
-        GlobalTransactionException exception = new GlobalTransactionException(TransactionExceptionCode.GlobalTransactionNotExist, "test message", cause);
+        GlobalTransactionException exception =
+                new GlobalTransactionException(
+                        TransactionExceptionCode.GlobalTransactionNotExist, "test message", cause);
         assertEquals(TransactionExceptionCode.GlobalTransactionNotExist, exception.getCode());
         assertEquals("test message", exception.getMessage());
         assertEquals(cause, exception.getCause());

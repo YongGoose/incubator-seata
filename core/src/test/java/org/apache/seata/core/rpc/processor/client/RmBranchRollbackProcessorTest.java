@@ -52,7 +52,8 @@ import org.slf4j.LoggerFactory;
  * The type Rm branch rollback processor test.
  */
 public class RmBranchRollbackProcessorTest {
-    private static final String CLASS_NAME = "org.apache.seata.core.rpc.processor.client.RmBranchRollbackProcessor";
+    private static final String CLASS_NAME =
+            "org.apache.seata.core.rpc.processor.client.RmBranchRollbackProcessor";
 
     private final List<Logger> watchedLoggers = new ArrayList<>();
     private final ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
@@ -114,7 +115,8 @@ public class RmBranchRollbackProcessorTest {
 
         // Assert
         verify(mockHandler).onRequest(mockRequest, null);
-        verify(mockRemotingClient).sendAsyncResponse("127.0.0.1:8091", mockRpcMessage, mockResponse);
+        verify(mockRemotingClient)
+                .sendAsyncResponse("127.0.0.1:8091", mockRpcMessage, mockResponse);
     }
 
     /**
@@ -142,7 +144,9 @@ public class RmBranchRollbackProcessorTest {
         processor.process(mockCtx, mockRpcMessage);
 
         // Assert
-        assertTrue(getLogs(Level.INFO).stream().anyMatch(log -> log.startsWith("rm handle branch rollback process:")));
+        assertTrue(
+                getLogs(Level.INFO).stream()
+                        .anyMatch(log -> log.startsWith("rm handle branch rollback process:")));
     }
 
     /**
@@ -167,19 +171,25 @@ public class RmBranchRollbackProcessorTest {
         when(mockHandler.onRequest(mockRequest, null)).thenReturn(mockResponse);
 
         Throwable simulatedError = new RuntimeException("Network error");
-        doThrow(simulatedError).when(mockRemotingClient).sendAsyncResponse(anyString(), any(), any());
+        doThrow(simulatedError)
+                .when(mockRemotingClient)
+                .sendAsyncResponse(anyString(), any(), any());
 
         // Act
         processor.process(mockCtx, mockRpcMessage);
 
         // Assert
-        assertTrue(getLogs(Level.ERROR).stream().anyMatch(log -> log.equals("send response error: Network error")));
+        assertTrue(
+                getLogs(Level.ERROR).stream()
+                        .anyMatch(log -> log.equals("send response error: Network error")));
     }
 
     private List<String> getLogs(Level level) {
         return logWatcher.list.stream()
-                .filter(event -> event.getLoggerName().endsWith(CLASS_NAME)
-                        && event.getLevel().equals(level))
+                .filter(
+                        event ->
+                                event.getLoggerName().endsWith(CLASS_NAME)
+                                        && event.getLevel().equals(level))
                 .map(ILoggingEvent::getFormattedMessage)
                 .collect(Collectors.toList());
     }

@@ -16,7 +16,6 @@
  */
 package org.apache.seata.core.protocol;
 
-
 /**
  * The type Abstract identify request.
  *
@@ -60,7 +59,8 @@ public abstract class AbstractIdentifyRequest extends AbstractMessage {
      * @param transactionServiceGroup the transaction service group
      * @param extraData               the extra data
      */
-    public AbstractIdentifyRequest(String applicationId, String transactionServiceGroup, String extraData) {
+    public AbstractIdentifyRequest(
+            String applicationId, String transactionServiceGroup, String extraData) {
         this.applicationId = applicationId;
         this.transactionServiceGroup = transactionServiceGroup;
         this.extraData = extraData;

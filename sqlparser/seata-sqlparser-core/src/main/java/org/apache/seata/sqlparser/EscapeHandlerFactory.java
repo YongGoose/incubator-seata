@@ -16,11 +16,10 @@
  */
 package org.apache.seata.sqlparser;
 
-import org.apache.seata.common.loader.EnhancedServiceLoader;
-import org.apache.seata.common.util.CollectionUtils;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.seata.common.loader.EnhancedServiceLoader;
+import org.apache.seata.common.util.CollectionUtils;
 
 /**
  * The type Keyword checker factory.
@@ -37,7 +36,9 @@ public class EscapeHandlerFactory {
      * @return keyword checker
      */
     public static EscapeHandler getEscapeHandler(String dbType) {
-        return CollectionUtils.computeIfAbsent(ESCAPE_HANDLER_MAP, dbType,
-            key -> EnhancedServiceLoader.load(EscapeHandler.class, dbType));
+        return CollectionUtils.computeIfAbsent(
+                ESCAPE_HANDLER_MAP,
+                dbType,
+                key -> EnhancedServiceLoader.load(EscapeHandler.class, dbType));
     }
 }

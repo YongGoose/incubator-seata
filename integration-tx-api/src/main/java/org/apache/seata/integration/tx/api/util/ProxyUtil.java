@@ -16,18 +16,16 @@
  */
 package org.apache.seata.integration.tx.api.util;
 
+import static net.bytebuddy.matcher.ElementMatchers.isDeclaredBy;
+
+import java.util.HashMap;
+import java.util.Map;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import org.apache.seata.common.lock.ResourceLock;
 import org.apache.seata.integration.tx.api.interceptor.handler.DefaultInvocationHandler;
 import org.apache.seata.integration.tx.api.interceptor.handler.ProxyInvocationHandler;
 import org.apache.seata.integration.tx.api.interceptor.parser.DefaultInterfaceParser;
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.implementation.InvocationHandlerAdapter;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static net.bytebuddy.matcher.ElementMatchers.isDeclaredBy;
-
 
 public class ProxyUtil {
 
@@ -59,18 +57,25 @@ public class ProxyUtil {
                 if (PROXYED_SET.containsKey(target)) {
                     return (T) PROXYED_SET.get(target);
                 }
-                ProxyInvocationHandler proxyInvocationHandler = DefaultInterfaceParser.get().parserInterfaceToProxy(target, beanName);
+                ProxyInvocationHandler proxyInvocationHandler =
+                        DefaultInterfaceParser.get().parserInterfaceToProxy(target, beanName);
                 if (proxyInvocationHandler == null) {
                     return target;
                 }
-                T proxy = (T) new ByteBuddy().subclass(target.getClass())
-                        .method(isDeclaredBy(target.getClass()))
-                        .intercept(InvocationHandlerAdapter.of(new DefaultInvocationHandler(proxyInvocationHandler, target)))
-                        .make()
-                        .load(target.getClass().getClassLoader())
-                        .getLoaded()
-                        .getDeclaredConstructor()
-                        .newInstance();
+                T proxy =
+                        (T)
+                                new ByteBuddy()
+                                        .subclass(target.getClass())
+                                        .method(isDeclaredBy(target.getClass()))
+                                        .intercept(
+                                                InvocationHandlerAdapter.of(
+                                                        new DefaultInvocationHandler(
+                                                                proxyInvocationHandler, target)))
+                                        .make()
+                                        .load(target.getClass().getClassLoader())
+                                        .getLoaded()
+                                        .getDeclaredConstructor()
+                                        .newInstance();
                 PROXYED_SET.put(target, proxy);
                 return proxy;
             }
@@ -78,5 +83,4 @@ public class ProxyUtil {
             throw new RuntimeException("error occurs when create seata proxy", t);
         }
     }
-
 }

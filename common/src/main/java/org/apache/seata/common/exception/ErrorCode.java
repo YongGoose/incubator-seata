@@ -35,7 +35,6 @@ public enum ErrorCode {
      * The error code of the transaction exception.
      */
 
-
     /**
      * The error code of the sql exception
      */
@@ -74,7 +73,8 @@ public enum ErrorCode {
      * @return the message
      */
     public String getMessage(String... params) {
-        return ResourceBundleUtil.getInstance().getMessage(this.name(), this.getCode(), this.getType(), params);
+        return ResourceBundleUtil.getInstance()
+                .getMessage(this.name(), this.getCode(), this.getType(), params);
     }
 
     /**
@@ -114,5 +114,4 @@ public enum ErrorCode {
          */
         Other;
     }
-
 }

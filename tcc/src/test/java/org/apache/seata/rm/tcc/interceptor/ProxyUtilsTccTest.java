@@ -16,6 +16,10 @@
  */
 package org.apache.seata.rm.tcc.interceptor;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.seata.common.XID;
 import org.apache.seata.common.util.UUIDGenerator;
 import org.apache.seata.core.context.RootContext;
@@ -34,12 +38,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
-
 public class ProxyUtilsTccTest {
 
     private ResourceManager backResourceManager;
@@ -49,72 +47,90 @@ public class ProxyUtilsTccTest {
     @BeforeEach
     public void beforeEach() {
         RootContext.bind(XID.generateXID(UUIDGenerator.generateUUID()));
-        ResourceManager resourceManager = new ResourceManager() {
+        ResourceManager resourceManager =
+                new ResourceManager() {
 
-            @Override
-            public Long branchRegister(BranchType branchType, String resourceId, String clientId, String xid, String applicationData, String lockKeys) throws TransactionException {
-                branchReference.set(resourceId);
-                return System.currentTimeMillis();
-            }
+                    @Override
+                    public Long branchRegister(
+                            BranchType branchType,
+                            String resourceId,
+                            String clientId,
+                            String xid,
+                            String applicationData,
+                            String lockKeys)
+                            throws TransactionException {
+                        branchReference.set(resourceId);
+                        return System.currentTimeMillis();
+                    }
 
-            @Override
-            public void branchReport(BranchType branchType, String xid, long branchId, BranchStatus status, String applicationData) throws TransactionException {
+                    @Override
+                    public void branchReport(
+                            BranchType branchType,
+                            String xid,
+                            long branchId,
+                            BranchStatus status,
+                            String applicationData)
+                            throws TransactionException {}
 
-            }
+                    @Override
+                    public boolean lockQuery(
+                            BranchType branchType, String resourceId, String xid, String lockKeys)
+                            throws TransactionException {
+                        return false;
+                    }
 
-            @Override
-            public boolean lockQuery(BranchType branchType, String resourceId, String xid, String lockKeys) throws TransactionException {
-                return false;
-            }
+                    @Override
+                    public BranchStatus branchCommit(
+                            BranchType branchType,
+                            String xid,
+                            long branchId,
+                            String resourceId,
+                            String applicationData)
+                            throws TransactionException {
+                        return null;
+                    }
 
-            @Override
-            public BranchStatus branchCommit(BranchType branchType, String xid, long branchId, String resourceId, String applicationData) throws TransactionException {
-                return null;
-            }
+                    @Override
+                    public BranchStatus branchRollback(
+                            BranchType branchType,
+                            String xid,
+                            long branchId,
+                            String resourceId,
+                            String applicationData)
+                            throws TransactionException {
+                        return null;
+                    }
 
-            @Override
-            public BranchStatus branchRollback(BranchType branchType, String xid, long branchId, String resourceId, String applicationData) throws TransactionException {
-                return null;
-            }
+                    @Override
+                    public void registerResource(Resource resource) {}
 
-            @Override
-            public void registerResource(Resource resource) {
+                    @Override
+                    public void unregisterResource(Resource resource) {}
 
-            }
+                    @Override
+                    public Map<String, Resource> getManagedResources() {
+                        return null;
+                    }
 
-            @Override
-            public void unregisterResource(Resource resource) {
+                    @Override
+                    public BranchType getBranchType() {
+                        return null;
+                    }
 
-            }
-
-            @Override
-            public Map<String, Resource> getManagedResources() {
-                return null;
-            }
-
-            @Override
-            public BranchType getBranchType() {
-                return null;
-            }
-
-            @Override
-            public GlobalStatus getGlobalStatus(BranchType branchType, String xid) {
-                return null;
-            }
-
-
-        };
+                    @Override
+                    public GlobalStatus getGlobalStatus(BranchType branchType, String xid) {
+                        return null;
+                    }
+                };
         backResourceManager = DefaultResourceManager.get().getResourceManager(BranchType.TCC);
         DefaultResourceManager.mockResourceManager(BranchType.TCC, resourceManager);
     }
-
 
     @AfterEach
     public void afterEach() {
         DefaultResourceManager.mockResourceManager(BranchType.TCC, backResourceManager);
         RootContext.unbind();
     }
-
 
     @Test
     public void testTcc() {
@@ -135,7 +151,9 @@ public class ProxyUtilsTccTest {
         List<String> listB = Collections.singletonList("b");
 
         NormalTccActionImpl tccActionProxy = ProxyUtil.createProxy(new NormalTccActionImpl());
-        Assertions.assertThrows(IllegalArgumentException.class, () -> tccActionProxy.prepareWithException(null, 0, listB, tccParam));
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> tccActionProxy.prepareWithException(null, 0, listB, tccParam));
     }
 
     @Test
@@ -143,6 +161,4 @@ public class ProxyUtilsTccTest {
         NormalTccActionImpl tccActionProxy = ProxyUtil.createProxy(new NormalTccActionImpl());
         Assertions.assertTrue(tccActionProxy.otherMethod());
     }
-
-
 }

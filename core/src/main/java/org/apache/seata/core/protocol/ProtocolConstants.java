@@ -56,34 +56,38 @@ public interface ProtocolConstants {
      * HEAD_LENGTH of protocol v1
      */
     int V1_HEAD_LENGTH = 16;
-    
+
     /**
      * Message type: Request
      */
     byte MSGTYPE_RESQUEST_SYNC = 0;
+
     /**
      * Message type: Response
      */
     byte MSGTYPE_RESPONSE = 1;
+
     /**
      * Message type: Request which no need response
      */
     byte MSGTYPE_RESQUEST_ONEWAY = 2;
+
     /**
      * Message type: Heartbeat Request
      */
     byte MSGTYPE_HEARTBEAT_REQUEST = 3;
+
     /**
      * Message type: Heartbeat Response
      */
     byte MSGTYPE_HEARTBEAT_RESPONSE = 4;
 
-    //byte MSGTYPE_NEGOTIATOR_REQUEST = 5;
-    //byte MSGTYPE_NEGOTIATOR_RESPONSE = 6;
+    // byte MSGTYPE_NEGOTIATOR_REQUEST = 5;
+    // byte MSGTYPE_NEGOTIATOR_RESPONSE = 6;
 
     /**
      * Configured codec by user, default is SEATA
-     * 
+     *
      * @see SerializerType#SEATA
      */
     byte CONFIGURED_CODEC = SerializerServiceLoader.getDefaultSerializerType().getCode();
@@ -93,6 +97,11 @@ public interface ProtocolConstants {
      *
      * @see CompressorType#NONE
      */
-    byte CONFIGURED_COMPRESSOR = CompressorType.getByName(ConfigurationFactory.getInstance()
-            .getConfig(ConfigurationKeys.COMPRESSOR_FOR_RPC, CompressorType.NONE.name())).getCode();
+    byte CONFIGURED_COMPRESSOR =
+            CompressorType.getByName(
+                            ConfigurationFactory.getInstance()
+                                    .getConfig(
+                                            ConfigurationKeys.COMPRESSOR_FOR_RPC,
+                                            CompressorType.NONE.name()))
+                    .getCode();
 }

@@ -18,7 +18,6 @@ package org.apache.seata.saga.proctrl.process.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.saga.proctrl.ProcessContext;
 import org.apache.seata.saga.proctrl.ProcessType;
@@ -41,7 +40,8 @@ public class CustomizeBusinessProcessorTest {
         Map<String, ProcessHandler> processHandlerMap = new HashMap<>(1);
         processHandlerMap.put(ProcessType.STATE_LANG.getCode(), null);
         customizeBusinessProcessor.setProcessHandlers(processHandlerMap);
-        Assertions.assertThrows(FrameworkException.class, () -> customizeBusinessProcessor.process(processContext));
+        Assertions.assertThrows(
+                FrameworkException.class, () -> customizeBusinessProcessor.process(processContext));
     }
 
     @Test

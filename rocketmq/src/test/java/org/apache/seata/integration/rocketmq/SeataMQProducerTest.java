@@ -16,6 +16,24 @@
  */
 package org.apache.seata.integration.rocketmq;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
@@ -38,35 +56,15 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 /**
  * seata mq producer test
  **/
 public class SeataMQProducerTest {
 
-    @Mock
-    private TransactionMQProducer transactionMQProducer;
+    @Mock private TransactionMQProducer transactionMQProducer;
 
     private TCCRocketMQ tccRocketMQ;
-    @InjectMocks
-    private SeataMQProducer producer;
+    @InjectMocks private SeataMQProducer producer;
     private SeataMQProducer producerTwo;
     private SeataMQProducer seataMQProducer;
     private TransactionListener transactionListener;
@@ -90,14 +88,18 @@ public class SeataMQProducerTest {
     @Test
     void testExecuteLocalTransaction() {
         Message msg = new Message();
-        assertEquals(LocalTransactionState.UNKNOW, transactionListener.executeLocalTransaction(msg, null));
+        assertEquals(
+                LocalTransactionState.UNKNOW,
+                transactionListener.executeLocalTransaction(msg, null));
     }
 
     @Test
     void testCheckLocalTransactionWithNoXid() {
         MessageExt msg = new MessageExt();
         msg.setTransactionId("testTransactionId");
-        assertEquals(LocalTransactionState.ROLLBACK_MESSAGE, transactionListener.checkLocalTransaction(msg));
+        assertEquals(
+                LocalTransactionState.ROLLBACK_MESSAGE,
+                transactionListener.checkLocalTransaction(msg));
     }
 
     @Test
@@ -105,13 +107,17 @@ public class SeataMQProducerTest {
         MessageExt msg = new MessageExt();
         msg.putUserProperty(SeataMQProducer.PROPERTY_SEATA_XID, "testXid");
 
-        try (MockedStatic<DefaultResourceManager> mockedStatic = mockStatic(DefaultResourceManager.class)) {
+        try (MockedStatic<DefaultResourceManager> mockedStatic =
+                mockStatic(DefaultResourceManager.class)) {
             DefaultResourceManager mockResourceManager = mock(DefaultResourceManager.class);
             mockedStatic.when(DefaultResourceManager::get).thenReturn(mockResourceManager);
-            when(mockResourceManager.getGlobalStatus(SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid")).thenReturn(
-                GlobalStatus.Committed);
+            when(mockResourceManager.getGlobalStatus(
+                            SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid"))
+                    .thenReturn(GlobalStatus.Committed);
 
-            assertEquals(LocalTransactionState.COMMIT_MESSAGE, transactionListener.checkLocalTransaction(msg));
+            assertEquals(
+                    LocalTransactionState.COMMIT_MESSAGE,
+                    transactionListener.checkLocalTransaction(msg));
         }
     }
 
@@ -120,13 +126,17 @@ public class SeataMQProducerTest {
         MessageExt msg = new MessageExt();
         msg.putUserProperty(SeataMQProducer.PROPERTY_SEATA_XID, "testXid");
 
-        try (MockedStatic<DefaultResourceManager> mockedStatic = mockStatic(DefaultResourceManager.class)) {
+        try (MockedStatic<DefaultResourceManager> mockedStatic =
+                mockStatic(DefaultResourceManager.class)) {
             DefaultResourceManager mockResourceManager = mock(DefaultResourceManager.class);
             mockedStatic.when(DefaultResourceManager::get).thenReturn(mockResourceManager);
-            when(mockResourceManager.getGlobalStatus(SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid")).thenReturn(
-                GlobalStatus.Rollbacked);
+            when(mockResourceManager.getGlobalStatus(
+                            SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid"))
+                    .thenReturn(GlobalStatus.Rollbacked);
 
-            assertEquals(LocalTransactionState.ROLLBACK_MESSAGE, transactionListener.checkLocalTransaction(msg));
+            assertEquals(
+                    LocalTransactionState.ROLLBACK_MESSAGE,
+                    transactionListener.checkLocalTransaction(msg));
         }
     }
 
@@ -135,13 +145,17 @@ public class SeataMQProducerTest {
         MessageExt msg = new MessageExt();
         msg.putUserProperty(SeataMQProducer.PROPERTY_SEATA_XID, "testXid");
 
-        try (MockedStatic<DefaultResourceManager> mockedStatic = mockStatic(DefaultResourceManager.class)) {
+        try (MockedStatic<DefaultResourceManager> mockedStatic =
+                mockStatic(DefaultResourceManager.class)) {
             DefaultResourceManager mockResourceManager = mock(DefaultResourceManager.class);
             mockedStatic.when(DefaultResourceManager::get).thenReturn(mockResourceManager);
-            when(mockResourceManager.getGlobalStatus(SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid")).thenReturn(
-                GlobalStatus.Finished);
+            when(mockResourceManager.getGlobalStatus(
+                            SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid"))
+                    .thenReturn(GlobalStatus.Finished);
 
-            assertEquals(LocalTransactionState.ROLLBACK_MESSAGE, transactionListener.checkLocalTransaction(msg));
+            assertEquals(
+                    LocalTransactionState.ROLLBACK_MESSAGE,
+                    transactionListener.checkLocalTransaction(msg));
         }
     }
 
@@ -150,19 +164,22 @@ public class SeataMQProducerTest {
         MessageExt msg = new MessageExt();
         msg.putUserProperty(SeataMQProducer.PROPERTY_SEATA_XID, "testXid");
 
-        try (MockedStatic<DefaultResourceManager> mockedStatic = mockStatic(DefaultResourceManager.class)) {
+        try (MockedStatic<DefaultResourceManager> mockedStatic =
+                mockStatic(DefaultResourceManager.class)) {
             DefaultResourceManager mockResourceManager = mock(DefaultResourceManager.class);
             mockedStatic.when(DefaultResourceManager::get).thenReturn(mockResourceManager);
-            when(mockResourceManager.getGlobalStatus(SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid")).thenReturn(
-                GlobalStatus.Begin);
+            when(mockResourceManager.getGlobalStatus(
+                            SeataMQProducerFactory.ROCKET_BRANCH_TYPE, "testXid"))
+                    .thenReturn(GlobalStatus.Begin);
 
-            assertEquals(LocalTransactionState.UNKNOW, transactionListener.checkLocalTransaction(msg));
+            assertEquals(
+                    LocalTransactionState.UNKNOW, transactionListener.checkLocalTransaction(msg));
         }
     }
 
     @Test
     void testSendWithoutGlobalTransaction()
-        throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+            throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
         Message msg = new Message("testTopic", "testBody".getBytes());
         long timeout = 3000L;
         SendResult expectedResult = mock(SendResult.class);
@@ -178,7 +195,7 @@ public class SeataMQProducerTest {
 
     @Test
     void testSendWithGlobalTransaction()
-        throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+            throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
         Message msg = new Message("testTopic", "testBody".getBytes());
         long timeout = 3000L;
         SendResult expectedResult = mock(SendResult.class);
@@ -211,7 +228,8 @@ public class SeataMQProducerTest {
     }
 
     @Test
-    void testSend() throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+    void testSend()
+            throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
 
         Message msg = new Message("testTopic", "testBody".getBytes());
         SendResult expectedResult = mock(SendResult.class);
@@ -227,13 +245,16 @@ public class SeataMQProducerTest {
     }
 
     @Test
-    void testSendWithException() throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+    void testSendWithException()
+            throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
 
         Message msg = new Message("testTopic", "testBody".getBytes());
         int expectedTimeout = 3000;
 
         doReturn(expectedTimeout).when(producer).getSendMsgTimeout();
-        doThrow(new MQClientException("Test exception", null)).when(producer).send(any(Message.class), anyInt());
+        doThrow(new MQClientException("Test exception", null))
+                .when(producer)
+                .send(any(Message.class), anyInt());
 
         assertThrows(MQClientException.class, () -> producer.send(msg));
         verify(producer).send(msg, expectedTimeout);
@@ -252,7 +273,9 @@ public class SeataMQProducerTest {
 
         doReturn(mockSendResult).when(producer).send(any(Message.class), anyLong());
 
-        assertThrows(MQClientException.class, () -> producer.doSendMessageInTransaction(msg, timeout, xid, branchId));
+        assertThrows(
+                MQClientException.class,
+                () -> producer.doSendMessageInTransaction(msg, timeout, xid, branchId));
     }
 
     @Test
@@ -263,11 +286,16 @@ public class SeataMQProducerTest {
         String xid = "testXid";
         long branchId = 123L;
 
-        doThrow(new RuntimeException("Test exception")).when(producer).send(any(Message.class), anyLong());
-        doCallRealMethod().when(producer)
-            .doSendMessageInTransaction(any(Message.class), anyLong(), anyString(), anyLong());
+        doThrow(new RuntimeException("Test exception"))
+                .when(producer)
+                .send(any(Message.class), anyLong());
+        doCallRealMethod()
+                .when(producer)
+                .doSendMessageInTransaction(any(Message.class), anyLong(), anyString(), anyLong());
 
-        assertThrows(MQClientException.class, () -> producer.doSendMessageInTransaction(msg, timeout, xid, branchId));
+        assertThrows(
+                MQClientException.class,
+                () -> producer.doSendMessageInTransaction(msg, timeout, xid, branchId));
     }
 
     @Test
@@ -290,9 +318,12 @@ public class SeataMQProducerTest {
         assertEquals(SendStatus.SEND_OK, result.getSendStatus());
         assertEquals("testTransactionId", msg.getUserProperty("__transactionId__"));
         assertEquals("true", msg.getProperty(MessageConst.PROPERTY_TRANSACTION_PREPARED));
-        assertEquals(seataMQProducer.getProducerGroup(), msg.getProperty(MessageConst.PROPERTY_PRODUCER_GROUP));
+        assertEquals(
+                seataMQProducer.getProducerGroup(),
+                msg.getProperty(MessageConst.PROPERTY_PRODUCER_GROUP));
         assertEquals(xid, msg.getProperty(SeataMQProducer.PROPERTY_SEATA_XID));
-        assertEquals(String.valueOf(branchId), msg.getProperty(SeataMQProducer.PROPERTY_SEATA_BRANCHID));
+        assertEquals(
+                String.valueOf(branchId), msg.getProperty(SeataMQProducer.PROPERTY_SEATA_BRANCHID));
 
         verify(seataMQProducer).superSend(msg, timeout);
     }
@@ -305,10 +336,13 @@ public class SeataMQProducerTest {
         String xid = "testXid";
         long branchId = 123L;
 
-        doThrow(new RuntimeException("Send failed")).when(seataMQProducer).superSend(any(Message.class), anyLong());
+        doThrow(new RuntimeException("Send failed"))
+                .when(seataMQProducer)
+                .superSend(any(Message.class), anyLong());
 
-        assertThrows(MQClientException.class,
-            () -> seataMQProducer.doSendMessageInTransaction(msg, timeout, xid, branchId));
+        assertThrows(
+                MQClientException.class,
+                () -> seataMQProducer.doSendMessageInTransaction(msg, timeout, xid, branchId));
 
         verify(seataMQProducer).superSend(msg, timeout);
     }
@@ -326,8 +360,9 @@ public class SeataMQProducerTest {
 
         doReturn(mockSendResult).when(seataMQProducer).superSend(any(Message.class), anyLong());
 
-        assertThrows(RuntimeException.class,
-            () -> seataMQProducer.doSendMessageInTransaction(msg, timeout, xid, branchId));
+        assertThrows(
+                RuntimeException.class,
+                () -> seataMQProducer.doSendMessageInTransaction(msg, timeout, xid, branchId));
 
         verify(seataMQProducer).superSend(msg, timeout);
     }
@@ -344,7 +379,8 @@ public class SeataMQProducerTest {
         mockSendResult.setSendStatus(SendStatus.SEND_OK);
         mockSendResult.setTransactionId("testTransactionId");
 
-        MessageAccessor.putProperty(msg, MessageConst.PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX, "clientTransactionId");
+        MessageAccessor.putProperty(
+                msg, MessageConst.PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX, "clientTransactionId");
 
         doReturn(mockSendResult).when(seataMQProducer).superSend(any(Message.class), anyLong());
 
@@ -363,5 +399,4 @@ public class SeataMQProducerTest {
         TransactionListener transactionListener = producer.getTransactionListener();
         assertNotNull(transactionListener, "TransactionListener should not be null");
     }
-
 }

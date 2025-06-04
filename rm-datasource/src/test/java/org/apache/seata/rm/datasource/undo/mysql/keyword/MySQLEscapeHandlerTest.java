@@ -17,20 +17,18 @@
 package org.apache.seata.rm.datasource.undo.mysql.keyword;
 
 import java.sql.Types;
-
-import org.apache.seata.sqlparser.EscapeHandler;
-import org.apache.seata.sqlparser.EscapeHandlerFactory;
-import org.apache.seata.rm.datasource.undo.SQLUndoLog;
-import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoDeleteExecutor;
-import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoInsertExecutor;
-import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoUpdateExecutor;
-
-import org.apache.seata.rm.datasource.undo.UndoExecutorTest;
-import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.rm.datasource.sql.struct.Field;
 import org.apache.seata.rm.datasource.sql.struct.KeyType;
 import org.apache.seata.rm.datasource.sql.struct.Row;
 import org.apache.seata.rm.datasource.sql.struct.TableRecords;
+import org.apache.seata.rm.datasource.undo.SQLUndoLog;
+import org.apache.seata.rm.datasource.undo.UndoExecutorTest;
+import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoDeleteExecutor;
+import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoInsertExecutor;
+import org.apache.seata.rm.datasource.undo.mysql.MySQLUndoUpdateExecutor;
+import org.apache.seata.sqlparser.EscapeHandler;
+import org.apache.seata.sqlparser.EscapeHandlerFactory;
+import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -59,7 +57,8 @@ public class MySQLEscapeHandlerTest {
         sqlUndoLog.setTableName("`lock`");
         sqlUndoLog.setSqlType(SQLType.UPDATE);
 
-        TableRecords beforeImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords beforeImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row beforeRow = new Row();
 
@@ -84,7 +83,8 @@ public class MySQLEscapeHandlerTest {
 
         beforeImage.add(beforeRow);
 
-        TableRecords afterImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords afterImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row afterRow = new Row();
 
@@ -112,11 +112,12 @@ public class MySQLEscapeHandlerTest {
         sqlUndoLog.setBeforeImage(beforeImage);
         sqlUndoLog.setAfterImage(afterImage);
 
-        MySQLUndoUpdateExecutorExtension mySQLUndoUpdateExecutor = new MySQLUndoUpdateExecutorExtension(sqlUndoLog);
+        MySQLUndoUpdateExecutorExtension mySQLUndoUpdateExecutor =
+                new MySQLUndoUpdateExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("UPDATE `lock` SET `desc` = ?, since = ? WHERE `key` = ?",
-            mySQLUndoUpdateExecutor.getSql().trim());
-
+        Assertions.assertEquals(
+                "UPDATE `lock` SET `desc` = ?, since = ? WHERE `key` = ?",
+                mySQLUndoUpdateExecutor.getSql().trim());
     }
 
     private static class MySQLUndoUpdateExecutorExtension extends MySQLUndoUpdateExecutor {
@@ -148,9 +149,11 @@ public class MySQLEscapeHandlerTest {
         sqlUndoLog.setTableName("`lock`");
         sqlUndoLog.setSqlType(SQLType.INSERT);
 
-        TableRecords beforeImage = TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords beforeImage =
+                TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
 
-        TableRecords afterImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords afterImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row afterRow1 = new Row();
 
@@ -200,10 +203,11 @@ public class MySQLEscapeHandlerTest {
         sqlUndoLog.setBeforeImage(beforeImage);
         sqlUndoLog.setAfterImage(afterImage);
 
-        MySQLUndoInsertExecutorExtension mySQLUndoInsertExecutor = new MySQLUndoInsertExecutorExtension(sqlUndoLog);
+        MySQLUndoInsertExecutorExtension mySQLUndoInsertExecutor =
+                new MySQLUndoInsertExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("DELETE FROM `lock` WHERE `key` = ?", mySQLUndoInsertExecutor.getSql().trim());
-
+        Assertions.assertEquals(
+                "DELETE FROM `lock` WHERE `key` = ?", mySQLUndoInsertExecutor.getSql().trim());
     }
 
     private static class MySQLUndoInsertExecutorExtension extends MySQLUndoInsertExecutor {
@@ -235,9 +239,11 @@ public class MySQLEscapeHandlerTest {
         sqlUndoLog.setTableName("`lock`");
         sqlUndoLog.setSqlType(SQLType.DELETE);
 
-        TableRecords afterImage = TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords afterImage =
+                TableRecords.empty(new UndoExecutorTest.MockTableMeta("product", "key"));
 
-        TableRecords beforeImage = new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
+        TableRecords beforeImage =
+                new TableRecords(new UndoExecutorTest.MockTableMeta("product", "key"));
 
         Row afterRow1 = new Row();
 
@@ -287,11 +293,12 @@ public class MySQLEscapeHandlerTest {
         sqlUndoLog.setAfterImage(afterImage);
         sqlUndoLog.setBeforeImage(beforeImage);
 
-        MySQLUndoDeleteExecutorExtension mySQLUndoDeleteExecutor = new MySQLUndoDeleteExecutorExtension(sqlUndoLog);
+        MySQLUndoDeleteExecutorExtension mySQLUndoDeleteExecutor =
+                new MySQLUndoDeleteExecutorExtension(sqlUndoLog);
 
-        Assertions.assertEquals("INSERT INTO `lock` (`desc`, since, `key`) VALUES (?, ?, ?)",
-            mySQLUndoDeleteExecutor.getSql());
-
+        Assertions.assertEquals(
+                "INSERT INTO `lock` (`desc`, since, `key`) VALUES (?, ?, ?)",
+                mySQLUndoDeleteExecutor.getSql());
     }
 
     private static class MySQLUndoDeleteExecutorExtension extends MySQLUndoDeleteExecutor {
@@ -313,5 +320,4 @@ public class MySQLEscapeHandlerTest {
             return super.buildUndoSQL();
         }
     }
-
 }

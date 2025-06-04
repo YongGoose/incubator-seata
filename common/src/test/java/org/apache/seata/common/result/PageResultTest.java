@@ -16,6 +16,9 @@
  */
 package org.apache.seata.common.result;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,12 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 public class PageResultTest {
-    @InjectMocks
-    private PageResult pageResult;
+    @InjectMocks private PageResult pageResult;
 
     @BeforeEach
     void setUp() {

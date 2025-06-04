@@ -43,7 +43,7 @@ public interface SessionManager extends Disposable {
      * @param xid the xid
      * @return the global session
      */
-    GlobalSession findGlobalSession(String xid) ;
+    GlobalSession findGlobalSession(String xid);
 
     /**
      * Find global session global session.
@@ -61,7 +61,8 @@ public interface SessionManager extends Disposable {
      * @param status  the status
      * @throws TransactionException the transaction exception
      */
-    void updateGlobalSessionStatus(GlobalSession session, GlobalStatus status) throws TransactionException;
+    void updateGlobalSessionStatus(GlobalSession session, GlobalStatus status)
+            throws TransactionException;
 
     /**
      * Remove global session.
@@ -78,7 +79,8 @@ public interface SessionManager extends Disposable {
      * @param session       the session
      * @throws TransactionException the transaction exception
      */
-    void addBranchSession(GlobalSession globalSession, BranchSession session) throws TransactionException;
+    void addBranchSession(GlobalSession globalSession, BranchSession session)
+            throws TransactionException;
 
     /**
      * Update branch session status.
@@ -87,7 +89,8 @@ public interface SessionManager extends Disposable {
      * @param status  the status
      * @throws TransactionException the transaction exception
      */
-    void updateBranchSessionStatus(BranchSession session, BranchStatus status) throws TransactionException;
+    void updateBranchSessionStatus(BranchSession session, BranchStatus status)
+            throws TransactionException;
 
     /**
      * Remove branch session.
@@ -96,7 +99,8 @@ public interface SessionManager extends Disposable {
      * @param session       the session
      * @throws TransactionException the transaction exception
      */
-    void removeBranchSession(GlobalSession globalSession, BranchSession session) throws TransactionException;
+    void removeBranchSession(GlobalSession globalSession, BranchSession session)
+            throws TransactionException;
 
     /**
      * All sessions collection.
@@ -142,7 +146,8 @@ public interface SessionManager extends Disposable {
      * @throws TransactionException the transaction exception
      */
     @Deprecated
-    void onStatusChange(GlobalSession globalSession, GlobalStatus status) throws TransactionException;
+    void onStatusChange(GlobalSession globalSession, GlobalStatus status)
+            throws TransactionException;
 
     /**
      * On branch status change.
@@ -153,7 +158,8 @@ public interface SessionManager extends Disposable {
      * @throws TransactionException the transaction exception
      */
     @Deprecated
-    void onBranchStatusChange(GlobalSession globalSession, BranchSession branchSession, BranchStatus status)
+    void onBranchStatusChange(
+            GlobalSession globalSession, BranchSession branchSession, BranchStatus status)
             throws TransactionException;
 
     /**
@@ -164,7 +170,8 @@ public interface SessionManager extends Disposable {
      * @throws TransactionException the transaction exception
      */
     @Deprecated
-    void onAddBranch(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    void onAddBranch(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 
     /**
      * On remove branch.
@@ -174,7 +181,8 @@ public interface SessionManager extends Disposable {
      * @throws TransactionException the transaction exception
      */
     @Deprecated
-    void onRemoveBranch(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    void onRemoveBranch(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 
     /**
      * On close.

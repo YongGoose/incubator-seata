@@ -86,7 +86,8 @@ public class BranchTransactionException extends TransactionException {
      * @param message the message
      * @param cause   the cause
      */
-    public BranchTransactionException(TransactionExceptionCode code, String message, Throwable cause) {
+    public BranchTransactionException(
+            TransactionExceptionCode code, String message, Throwable cause) {
         super(code, message, cause);
     }
 }

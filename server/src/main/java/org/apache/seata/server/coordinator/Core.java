@@ -35,7 +35,8 @@ public interface Core extends TransactionCoordinatorInbound, TransactionCoordina
      * @return is global commit.
      * @throws TransactionException the transaction exception
      */
-    boolean doGlobalCommit(GlobalSession globalSession, boolean retrying) throws TransactionException;
+    boolean doGlobalCommit(GlobalSession globalSession, boolean retrying)
+            throws TransactionException;
 
     /**
      * Do global rollback.
@@ -45,7 +46,8 @@ public interface Core extends TransactionCoordinatorInbound, TransactionCoordina
      * @return is global rollback.
      * @throws TransactionException the transaction exception
      */
-    boolean doGlobalRollback(GlobalSession globalSession, boolean retrying) throws TransactionException;
+    boolean doGlobalRollback(GlobalSession globalSession, boolean retrying)
+            throws TransactionException;
 
     /**
      * Do global report.
@@ -55,7 +57,8 @@ public interface Core extends TransactionCoordinatorInbound, TransactionCoordina
      * @param param         the global status
      * @throws TransactionException the transaction exception
      */
-    void doGlobalReport(GlobalSession globalSession, String xid, GlobalStatus param) throws TransactionException;
+    void doGlobalReport(GlobalSession globalSession, String xid, GlobalStatus param)
+            throws TransactionException;
 
     /**
      * Do branch delete.
@@ -64,5 +67,6 @@ public interface Core extends TransactionCoordinatorInbound, TransactionCoordina
      * @param branchSession the branch session
      * @throws TransactionException the transaction exception
      */
-    Boolean doBranchDelete(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    Boolean doBranchDelete(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 }

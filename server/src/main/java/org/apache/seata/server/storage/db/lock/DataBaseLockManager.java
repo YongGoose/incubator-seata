@@ -44,8 +44,11 @@ public class DataBaseLockManager extends AbstractLockManager implements Initiali
     @Override
     public void init() {
         // init dataSource
-        String datasourceType = ConfigurationFactory.getInstance().getConfig(ConfigurationKeys.STORE_DB_DATASOURCE_TYPE);
-        DataSource lockStoreDataSource = EnhancedServiceLoader.load(DataSourceProvider.class, datasourceType).provide();
+        String datasourceType =
+                ConfigurationFactory.getInstance()
+                        .getConfig(ConfigurationKeys.STORE_DB_DATASOURCE_TYPE);
+        DataSource lockStoreDataSource =
+                EnhancedServiceLoader.load(DataSourceProvider.class, datasourceType).provide();
         locker = new DataBaseLocker(lockStoreDataSource);
     }
 
@@ -54,7 +57,11 @@ public class DataBaseLockManager extends AbstractLockManager implements Initiali
         try {
             return getLocker().releaseLock(branchSession.getXid(), branchSession.getBranchId());
         } catch (Exception t) {
-            LOGGER.error("unLock error, xid {}, branchId:{}", branchSession.getXid(), branchSession.getBranchId(), t);
+            LOGGER.error(
+                    "unLock error, xid {}, branchId:{}",
+                    branchSession.getXid(),
+                    branchSession.getBranchId(),
+                    t);
             return false;
         }
     }
@@ -65,7 +72,8 @@ public class DataBaseLockManager extends AbstractLockManager implements Initiali
     }
 
     @Override
-    public boolean releaseGlobalSessionLock(GlobalSession globalSession) throws TransactionException {
+    public boolean releaseGlobalSessionLock(GlobalSession globalSession)
+            throws TransactionException {
         try {
             return getLocker().releaseLock(globalSession.getXid());
         } catch (Exception t) {
@@ -73,5 +81,4 @@ public class DataBaseLockManager extends AbstractLockManager implements Initiali
             return false;
         }
     }
-
 }

@@ -16,6 +16,12 @@
  */
 package org.apache.seata.rm.datasource;
 
+import com.alibaba.druid.mock.MockArray;
+import com.alibaba.druid.mock.MockNClob;
+import com.alibaba.druid.mock.MockRef;
+import com.alibaba.druid.mock.MockSQLXML;
+import com.alibaba.druid.pool.DruidDataSource;
+import com.google.common.collect.Lists;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.math.BigDecimal;
@@ -24,27 +30,14 @@ import java.net.URL;
 import java.sql.Date;
 import java.sql.JDBCType;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.sql.ResultSet;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-
-import com.alibaba.druid.mock.MockArray;
-import com.alibaba.druid.mock.MockNClob;
-import com.alibaba.druid.mock.MockRef;
-import com.alibaba.druid.mock.MockSQLXML;
-import com.alibaba.druid.pool.DruidDataSource;
-
-import com.google.common.collect.Lists;
-import org.apache.seata.rm.datasource.AbstractConnectionProxy;
-import org.apache.seata.rm.datasource.AbstractPreparedStatementProxy;
-import org.apache.seata.rm.datasource.ConnectionProxy;
-import org.apache.seata.rm.datasource.DataSourceProxy;
-import org.apache.seata.rm.datasource.PreparedStatementProxy;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.rm.datasource.mock.MockBlob;
 import org.apache.seata.rm.datasource.mock.MockClob;
@@ -61,50 +54,100 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-
 public class PreparedStatementProxyTest {
 
     private static List<String> returnValueColumnLabels = Lists.newArrayList("id", "name");
 
-    private static Object[][] returnValue = new Object[][] {
-        new Object[] {1, "Tom"},
-        new Object[] {2, "Jack"},
-    };
+    private static Object[][] returnValue =
+            new Object[][] {
+                new Object[] {1, "Tom"},
+                new Object[] {2, "Jack"},
+            };
 
-    private static Object[][] columnMetas = new Object[][] {
-        new Object[] {"", "", "table_prepared_statement_proxy", "id", Types.INTEGER, "INTEGER", 64, 0, 10, 1, "", "", 0, 0, 64, 1, "NO", "YES"},
-        new Object[] {"", "", "table_prepared_statement_proxy", "name", Types.VARCHAR, "VARCHAR", 64, 0, 10, 0, "", "", 0, 0, 64, 2, "YES", "NO"},
-    };
+    private static Object[][] columnMetas =
+            new Object[][] {
+                new Object[] {
+                    "",
+                    "",
+                    "table_prepared_statement_proxy",
+                    "id",
+                    Types.INTEGER,
+                    "INTEGER",
+                    64,
+                    0,
+                    10,
+                    1,
+                    "",
+                    "",
+                    0,
+                    0,
+                    64,
+                    1,
+                    "NO",
+                    "YES"
+                },
+                new Object[] {
+                    "",
+                    "",
+                    "table_prepared_statement_proxy",
+                    "name",
+                    Types.VARCHAR,
+                    "VARCHAR",
+                    64,
+                    0,
+                    10,
+                    0,
+                    "",
+                    "",
+                    0,
+                    0,
+                    64,
+                    2,
+                    "YES",
+                    "NO"
+                },
+            };
 
-    private static Object[][] indexMetas = new Object[][] {
-        new Object[] {"PRIMARY", "id", false, "", 3, 1, "A", 34},
-    };
+    private static Object[][] indexMetas =
+            new Object[][] {
+                new Object[] {"PRIMARY", "id", false, "", 3, 1, "A", 34},
+            };
 
     private static PreparedStatementProxy preparedStatementProxy;
 
-    private static TestUnusedConstructorPreparedStatementProxy unusedConstructorPreparedStatementProxy;
+    private static TestUnusedConstructorPreparedStatementProxy
+            unusedConstructorPreparedStatementProxy;
 
     @BeforeAll
     public static void init() throws SQLException {
-        MockDriver mockDriver = new MockDriver(returnValueColumnLabels, returnValue, columnMetas, indexMetas);
+        MockDriver mockDriver =
+                new MockDriver(returnValueColumnLabels, returnValue, columnMetas, indexMetas);
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUrl("jdbc:mock:xxx");
         dataSource.setDriver(mockDriver);
         DataSourceProxy dataSourceProxy = DataSourceProxyTest.getDataSourceProxy(dataSource);
 
-        ConnectionProxy connectionProxy = new ConnectionProxy(dataSourceProxy, dataSource.getConnection().getConnection());
+        ConnectionProxy connectionProxy =
+                new ConnectionProxy(dataSourceProxy, dataSource.getConnection().getConnection());
 
         String sql = "update prepared_statement_proxy set name = ?";
 
-        PreparedStatement preparedStatement = mockDriver.createSeataMockPreparedStatement(
-            (MockConnection)connectionProxy.getTargetConnection(), sql);
+        PreparedStatement preparedStatement =
+                mockDriver.createSeataMockPreparedStatement(
+                        (MockConnection) connectionProxy.getTargetConnection(), sql);
 
-        preparedStatementProxy = new PreparedStatementProxy(connectionProxy, preparedStatement, sql);
-        unusedConstructorPreparedStatementProxy = new TestUnusedConstructorPreparedStatementProxy(connectionProxy, preparedStatement);
-        EnhancedServiceLoader.load(SQLOperateRecognizerHolder.class, JdbcConstants.MYSQL,
-            SQLOperateRecognizerHolderFactory.class.getClassLoader());
-        DruidDelegatingSQLRecognizerFactory recognizerFactory = (DruidDelegatingSQLRecognizerFactory) EnhancedServiceLoader
-            .load(SQLRecognizerFactory.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
+        preparedStatementProxy =
+                new PreparedStatementProxy(connectionProxy, preparedStatement, sql);
+        unusedConstructorPreparedStatementProxy =
+                new TestUnusedConstructorPreparedStatementProxy(connectionProxy, preparedStatement);
+        EnhancedServiceLoader.load(
+                SQLOperateRecognizerHolder.class,
+                JdbcConstants.MYSQL,
+                SQLOperateRecognizerHolderFactory.class.getClassLoader());
+        DruidDelegatingSQLRecognizerFactory recognizerFactory =
+                (DruidDelegatingSQLRecognizerFactory)
+                        EnhancedServiceLoader.load(
+                                SQLRecognizerFactory.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
     }
 
     @Test
@@ -131,7 +174,7 @@ public class PreparedStatementProxyTest {
     @Test
     public void testGetSetParamsByIndex() {
         preparedStatementProxy.setParamByIndex(1, "xxx");
-        Assertions.assertEquals("xxx",  preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals("xxx", preparedStatementProxy.getParamsByIndex(1).get(0));
     }
 
     @Test
@@ -149,12 +192,12 @@ public class PreparedStatementProxyTest {
         Assertions.assertEquals(true, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
-        preparedStatementProxy.setByte(1, (byte)0);
-        Assertions.assertEquals((byte)0, preparedStatementProxy.getParamsByIndex(1).get(0));
+        preparedStatementProxy.setByte(1, (byte) 0);
+        Assertions.assertEquals((byte) 0, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
-        preparedStatementProxy.setShort(1, (short)0);
-        Assertions.assertEquals((short)0, preparedStatementProxy.getParamsByIndex(1).get(0));
+        preparedStatementProxy.setShort(1, (short) 0);
+        Assertions.assertEquals((short) 0, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setInt(1, 0);
@@ -174,7 +217,8 @@ public class PreparedStatementProxyTest {
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setBigDecimal(1, new BigDecimal(0));
-        Assertions.assertEquals(new BigDecimal(0), preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                new BigDecimal(0), preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setString(1, "x");
@@ -186,7 +230,9 @@ public class PreparedStatementProxyTest {
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setBytes(1, "x".getBytes());
-        Assertions.assertTrue(Objects.deepEquals("x".getBytes(), preparedStatementProxy.getParamsByIndex(1).get(0)));
+        Assertions.assertTrue(
+                Objects.deepEquals(
+                        "x".getBytes(), preparedStatementProxy.getParamsByIndex(1).get(0)));
         preparedStatementProxy.clearParameters();
 
         Date date = new Date(System.currentTimeMillis());
@@ -218,31 +264,38 @@ public class PreparedStatementProxyTest {
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("x".getBytes(), 0, 1);
         preparedStatementProxy.setAsciiStream(1, byteArrayInputStream);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setAsciiStream(1, byteArrayInputStream, 1L);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setAsciiStream(1, byteArrayInputStream);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setUnicodeStream(1, byteArrayInputStream, 1);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setBinaryStream(1, byteArrayInputStream);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setBinaryStream(1, byteArrayInputStream, 1L);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setBinaryStream(1, byteArrayInputStream, 1);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setObject(1, 1, JDBCType.INTEGER.getVendorTypeNumber());
@@ -291,11 +344,13 @@ public class PreparedStatementProxyTest {
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setBlob(1, byteArrayInputStream);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         preparedStatementProxy.setBlob(1, byteArrayInputStream, 1L);
-        Assertions.assertEquals(byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
+        Assertions.assertEquals(
+                byteArrayInputStream, preparedStatementProxy.getParamsByIndex(1).get(0));
         preparedStatementProxy.clearParameters();
 
         MockClob clob = new MockClob();
@@ -348,9 +403,12 @@ public class PreparedStatementProxyTest {
     /**
      * This class use for test the unused constructor in AbstractPreparedStatementProxy
      */
-    private static class TestUnusedConstructorPreparedStatementProxy extends AbstractPreparedStatementProxy {
+    private static class TestUnusedConstructorPreparedStatementProxy
+            extends AbstractPreparedStatementProxy {
 
-        public TestUnusedConstructorPreparedStatementProxy(AbstractConnectionProxy connectionProxy, PreparedStatement targetStatement) throws SQLException {
+        public TestUnusedConstructorPreparedStatementProxy(
+                AbstractConnectionProxy connectionProxy, PreparedStatement targetStatement)
+                throws SQLException {
             super(connectionProxy, targetStatement);
         }
 

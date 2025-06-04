@@ -18,7 +18,6 @@ package org.apache.seata.core.lock;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.core.store.LockDO;
 import org.slf4j.Logger;
@@ -63,7 +62,8 @@ public abstract class AbstractLocker implements Locker {
         lockDO.setBranchId(rowLock.getBranchId());
         lockDO.setPk(rowLock.getPk());
         lockDO.setResourceId(rowLock.getResourceId());
-        lockDO.setRowKey(getRowKey(rowLock.getResourceId(), rowLock.getTableName(), rowLock.getPk()));
+        lockDO.setRowKey(
+                getRowKey(rowLock.getResourceId(), rowLock.getTableName(), rowLock.getPk()));
         lockDO.setXid(rowLock.getXid());
         lockDO.setTransactionId(rowLock.getTransactionId());
         lockDO.setTableName(rowLock.getTableName());
@@ -79,14 +79,17 @@ public abstract class AbstractLocker implements Locker {
      * @return the string
      */
     protected String getRowKey(String resourceId, String tableName, String pk) {
-        return new StringBuilder().append(resourceId).append(LOCK_SPLIT).append(tableName).append(LOCK_SPLIT).append(pk)
-            .toString();
+        return new StringBuilder()
+                .append(resourceId)
+                .append(LOCK_SPLIT)
+                .append(tableName)
+                .append(LOCK_SPLIT)
+                .append(pk)
+                .toString();
     }
 
     @Override
-    public void cleanAllLocks() {
-
-    }
+    public void cleanAllLocks() {}
 
     @Override
     public boolean releaseLock(List<RowLock> rowLock) {
@@ -102,5 +105,4 @@ public abstract class AbstractLocker implements Locker {
     public boolean releaseLock(String xid) {
         return false;
     }
-
 }

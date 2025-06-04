@@ -16,22 +16,20 @@
  */
 package org.apache.seata.rm.datasource.exec;
 
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
 import com.alibaba.druid.mock.MockStatement;
 import com.alibaba.druid.mock.MockStatementBase;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.google.common.collect.Lists;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
 import org.apache.seata.rm.datasource.ConnectionProxy;
 import org.apache.seata.rm.datasource.DataSourceProxy;
 import org.apache.seata.rm.datasource.DataSourceProxyTest;
 import org.apache.seata.rm.datasource.StatementProxy;
-import org.apache.seata.rm.datasource.exec.PlainExecutor;
 import org.apache.seata.rm.datasource.mock.MockDriver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 
 public class PlainExecutorTest {
 
@@ -40,27 +38,71 @@ public class PlainExecutorTest {
     @BeforeEach
     public void init() throws SQLException {
         List<String> returnValueColumnLabels = Lists.newArrayList("id", "name");
-        Object[][] returnValue = new Object[][] {
-            new Object[] {1, "Tom"},
-            new Object[] {2, "Jack"},
-        };
-        Object[][] columnMetas = new Object[][] {
-            new Object[] {"", "", "table_plain_executor_test", "id", Types.INTEGER, "INTEGER", 64, 0, 10, 1, "", "", 0, 0, 64, 1, "NO", "YES"},
-            new Object[] {"", "", "table_plain_executor_test", "name", Types.VARCHAR, "VARCHAR", 64, 0, 10, 0, "", "", 0, 0, 64, 2, "YES", "NO"},
-        };
-        Object[][] indexMetas = new Object[][] {
-            new Object[] {"PRIMARY", "id", false, "", 3, 1, "A", 34},
-        };
+        Object[][] returnValue =
+                new Object[][] {
+                    new Object[] {1, "Tom"},
+                    new Object[] {2, "Jack"},
+                };
+        Object[][] columnMetas =
+                new Object[][] {
+                    new Object[] {
+                        "",
+                        "",
+                        "table_plain_executor_test",
+                        "id",
+                        Types.INTEGER,
+                        "INTEGER",
+                        64,
+                        0,
+                        10,
+                        1,
+                        "",
+                        "",
+                        0,
+                        0,
+                        64,
+                        1,
+                        "NO",
+                        "YES"
+                    },
+                    new Object[] {
+                        "",
+                        "",
+                        "table_plain_executor_test",
+                        "name",
+                        Types.VARCHAR,
+                        "VARCHAR",
+                        64,
+                        0,
+                        10,
+                        0,
+                        "",
+                        "",
+                        0,
+                        0,
+                        64,
+                        2,
+                        "YES",
+                        "NO"
+                    },
+                };
+        Object[][] indexMetas =
+                new Object[][] {
+                    new Object[] {"PRIMARY", "id", false, "", 3, 1, "A", 34},
+                };
 
-        MockDriver mockDriver = new MockDriver(returnValueColumnLabels, returnValue, columnMetas, indexMetas);
+        MockDriver mockDriver =
+                new MockDriver(returnValueColumnLabels, returnValue, columnMetas, indexMetas);
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUrl("jdbc:mock:xxx");
         dataSource.setDriver(mockDriver);
 
         DataSourceProxy dataSourceProxy = DataSourceProxyTest.getDataSourceProxy(dataSource);
 
-        ConnectionProxy connectionProxy = new ConnectionProxy(dataSourceProxy, dataSource.getConnection().getConnection());
-        MockStatementBase mockStatement = new MockStatement(dataSource.getConnection().getConnection());
+        ConnectionProxy connectionProxy =
+                new ConnectionProxy(dataSourceProxy, dataSource.getConnection().getConnection());
+        MockStatementBase mockStatement =
+                new MockStatement(dataSource.getConnection().getConnection());
         StatementProxy statementProxy = new StatementProxy(connectionProxy, mockStatement);
 
         plainExecutor = new PlainExecutor(statementProxy, (statement, args) -> null);
@@ -70,5 +112,4 @@ public class PlainExecutorTest {
     public void testExecute() throws Throwable {
         plainExecutor.execute((Object) null);
     }
-
 }

@@ -16,11 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.mysql;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLLimit;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
@@ -35,19 +30,24 @@ import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.seata.common.exception.NotSupportYetException;
+import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.sqlparser.JoinRecognizer;
-import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.SQLUpdateRecognizer;
-import org.apache.seata.common.exception.NotSupportYetException;
-import org.apache.seata.common.exception.ShouldNeverHappenException;
+import org.apache.seata.sqlparser.util.ColumnUtils;
 
 /**
  * The type My sql update recognizer.
  *
  */
-public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpdateRecognizer, JoinRecognizer {
+public class MySQLUpdateRecognizer extends BaseMySQLRecognizer
+        implements SQLUpdateRecognizer, JoinRecognizer {
 
     private final MySqlUpdateStatement ast;
 
@@ -61,7 +61,7 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
      */
     public MySQLUpdateRecognizer(String originalSQL, SQLStatement ast) {
         super(originalSQL);
-        this.ast = (MySqlUpdateStatement)ast;
+        this.ast = (MySqlUpdateStatement) ast;
     }
 
     @Override
@@ -83,15 +83,22 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
         for (SQLUpdateSetItem updateSetItem : updateSetItems) {
             SQLExpr expr = updateSetItem.getColumn();
             if (expr instanceof SQLIdentifierExpr) {
-                list.add(((SQLIdentifierExpr)expr).getName());
+                list.add(((SQLIdentifierExpr) expr).getName());
             } else if (expr instanceof SQLPropertyExpr) {
                 // This is alias case, like UPDATE xxx_tbl a SET a.name = ? WHERE a.id = ?
-                SQLExpr owner = ((SQLPropertyExpr)expr).getOwner();
+                SQLExpr owner = ((SQLPropertyExpr) expr).getOwner();
                 if (owner instanceof SQLIdentifierExpr) {
-                    list.add(((SQLIdentifierExpr)owner).getName() + "." + ((SQLPropertyExpr)expr).getName());
-                    //This is table Field Full path, like update xxx_database.xxx_tbl set xxx_database.xxx_tbl.xxx_field...
-                } else if (((SQLPropertyExpr)expr).getOwnerName().split("\\.").length > 1) {
-                    list.add(((SQLPropertyExpr)expr).getOwnerName() + "." + ((SQLPropertyExpr)expr).getName());
+                    list.add(
+                            ((SQLIdentifierExpr) owner).getName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
+                    // This is table Field Full path, like update xxx_database.xxx_tbl set
+                    // xxx_database.xxx_tbl.xxx_field...
+                } else if (((SQLPropertyExpr) expr).getOwnerName().split("\\.").length > 1) {
+                    list.add(
+                            ((SQLPropertyExpr) expr).getOwnerName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
                 }
             } else {
                 wrapSQLParsingException(expr);
@@ -107,7 +114,7 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
         for (SQLUpdateSetItem updateSetItem : updateSetItems) {
             SQLExpr expr = updateSetItem.getValue();
             if (expr instanceof SQLValuableExpr) {
-                list.add(((SQLValuableExpr)expr).getValue());
+                list.add(((SQLValuableExpr) expr).getValue());
             } else if (expr instanceof SQLVariantRefExpr) {
                 list.add(new VMarker());
             } else {
@@ -124,8 +131,9 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-                                    final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }
@@ -147,16 +155,19 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
         if (tableSource instanceof SQLExprTableSource) {
             return visitTableName((SQLExprTableSource) tableSource);
         } else if (tableSource instanceof SQLJoinTableSource) {
-            //update join sql,like update t1 inner join t2 on t1.id = t2.id set name = ?, age = ?
+            // update join sql,like update t1 inner join t2 on t1.id = t2.id set name = ?, age = ?
             final int minTableNum = 2;
             StringBuilder joinTables = new StringBuilder();
             joinTables.append(tableSource.toString());
             tableName2AliasMap.put(tableSource.toString(), tableSource.getAlias());
             this.getTableNames(tableSource, joinTables);
             if (joinTables.toString().split(MULTI_TABLE_NAME_SEPERATOR).length < minTableNum + 1) {
-                throw new ShouldNeverHappenException("should get at least two table name for update join table source:" + tableSource.toString());
+                throw new ShouldNeverHappenException(
+                        "should get at least two table name for update join table source:"
+                                + tableSource.toString());
             }
-            //will return union table view name and single table names which linked by "#", like t1 inner join t2 on t1.id = t2.id#t1#t2
+            // will return union table view name and single table names which linked by "#", like t1
+            // inner join t2 on t1.id = t2.id#t1#t2
             return joinTables.toString();
         } else {
             throw new NotSupportYetException("not support the syntax of update with unknow");
@@ -175,7 +186,8 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
     }
 
     @Override
-    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getLimitCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         SQLLimit limit = ast.getLimit();
         return super.getLimitCondition(limit, parametersHolder, paramAppenderList);
     }
@@ -187,13 +199,15 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
     }
 
     @Override
-    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getOrderByCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         SQLOrderBy sqlOrderBy = ast.getOrderBy();
         return super.getOrderByCondition(sqlOrderBy, parametersHolder, paramAppenderList);
     }
 
     @Override
-    public String getJoinCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getJoinCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         if (!(ast.getTableSource() instanceof SQLJoinTableSource)) {
             return "";
         }
@@ -208,7 +222,7 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
 
     private void getTableNames(SQLTableSource tableSource, StringBuilder tableNames) {
         if (tableSource instanceof SQLJoinTableSource) {
-            //a:get left
+            // a:get left
             SQLTableSource left = ((SQLJoinTableSource) tableSource).getLeft();
             if (left instanceof SQLJoinTableSource) {
                 this.getTableNames(left, tableNames);
@@ -218,7 +232,7 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
                 tableNames.append(tableName);
                 tableName2AliasMap.put(tableName, left.getAlias());
             }
-            //b:get right
+            // b:get right
             SQLTableSource right = ((SQLJoinTableSource) tableSource).getRight();
             if (right instanceof SQLJoinTableSource) {
                 this.getTableNames(right, tableNames);
@@ -238,14 +252,15 @@ public class MySQLUpdateRecognizer extends BaseMySQLRecognizer implements SQLUpd
 
     private String visitTableName(SQLExprTableSource tableSource) {
         StringBuilder tableName = new StringBuilder();
-        MySqlOutputVisitor visitor = new MySqlOutputVisitor(tableName) {
+        MySqlOutputVisitor visitor =
+                new MySqlOutputVisitor(tableName) {
 
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
-        };
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
+                };
         visitor.visit(tableSource);
         return tableName.toString();
     }

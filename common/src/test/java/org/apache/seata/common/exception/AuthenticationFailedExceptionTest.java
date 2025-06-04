@@ -19,22 +19,29 @@ package org.apache.seata.common.exception;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class AuthenticationFailedExceptionTest {
 
     @Test
     public void testAuthenticationFailedException() {
-        Assertions.assertThrowsExactly(AuthenticationFailedException.class, () -> {
-            throw new AuthenticationFailedException();
-        });
-        Assertions.assertThrowsExactly(AuthenticationFailedException.class, () -> {
-            throw new AuthenticationFailedException("error");
-        });
-        Assertions.assertThrowsExactly(AuthenticationFailedException.class, () -> {
-            throw new AuthenticationFailedException(new Throwable("error"));
-        });
-        Assertions.assertThrowsExactly(AuthenticationFailedException.class, () -> {
-            throw new AuthenticationFailedException("error", new Throwable("error"));
-        });
+        Assertions.assertThrowsExactly(
+                AuthenticationFailedException.class,
+                () -> {
+                    throw new AuthenticationFailedException();
+                });
+        Assertions.assertThrowsExactly(
+                AuthenticationFailedException.class,
+                () -> {
+                    throw new AuthenticationFailedException("error");
+                });
+        Assertions.assertThrowsExactly(
+                AuthenticationFailedException.class,
+                () -> {
+                    throw new AuthenticationFailedException(new Throwable("error"));
+                });
+        Assertions.assertThrowsExactly(
+                AuthenticationFailedException.class,
+                () -> {
+                    throw new AuthenticationFailedException("error", new Throwable("error"));
+                });
     }
 }

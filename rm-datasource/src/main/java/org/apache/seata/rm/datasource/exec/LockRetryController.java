@@ -61,8 +61,10 @@ public class LockRetryController {
      */
     public void sleep(Exception e) throws LockWaitTimeoutException {
         // prioritize the rollback of other transactions
-        if (--lockRetryTimes < 0 || (e instanceof LockConflictException
-            && ((LockConflictException)e).getCode() == TransactionExceptionCode.LockKeyConflictFailFast)) {
+        if (--lockRetryTimes < 0
+                || (e instanceof LockConflictException
+                        && ((LockConflictException) e).getCode()
+                                == TransactionExceptionCode.LockKeyConflictFailFast)) {
             throw new LockWaitTimeoutException("Global lock wait timeout", e);
         }
 
@@ -109,8 +111,12 @@ public class LockRetryController {
 
         public GlobalConfig() {
             Configuration configuration = ConfigurationFactory.getInstance();
-            globalLockRetryInterval = configuration.getInt(ConfigurationKeys.CLIENT_LOCK_RETRY_INTERVAL, defaultRetryInterval);
-            globalLockRetryTimes = configuration.getInt(ConfigurationKeys.CLIENT_LOCK_RETRY_TIMES, defaultRetryTimes);
+            globalLockRetryInterval =
+                    configuration.getInt(
+                            ConfigurationKeys.CLIENT_LOCK_RETRY_INTERVAL, defaultRetryInterval);
+            globalLockRetryTimes =
+                    configuration.getInt(
+                            ConfigurationKeys.CLIENT_LOCK_RETRY_TIMES, defaultRetryTimes);
         }
 
         @Override

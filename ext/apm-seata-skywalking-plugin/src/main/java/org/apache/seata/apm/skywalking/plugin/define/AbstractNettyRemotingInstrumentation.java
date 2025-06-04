@@ -16,6 +16,11 @@
  */
 package org.apache.seata.apm.skywalking.plugin.define;
 
+import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
+import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
+import static org.apache.skywalking.apm.agent.core.plugin.match.NameMatch.byName;
+
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.ConstructorInterceptPoint;
@@ -23,17 +28,13 @@ import org.apache.skywalking.apm.agent.core.plugin.interceptor.InstanceMethodsIn
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.ClassInstanceMethodsEnhancePluginDefine;
 import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
 
-import static net.bytebuddy.matcher.ElementMatchers.named;
-import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
-import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
-import static org.apache.skywalking.apm.agent.core.plugin.match.NameMatch.byName;
-
-
 public class AbstractNettyRemotingInstrumentation extends ClassInstanceMethodsEnhancePluginDefine {
 
-    private static final String ENHANCE_CLASS = "org.apache.seata.core.rpc.netty.AbstractNettyRemoting";
+    private static final String ENHANCE_CLASS =
+            "org.apache.seata.core.rpc.netty.AbstractNettyRemoting";
 
-    private static final String INTERCEPTOR_CLASS = "org.apache.seata.apm.skywalking.plugin.NettyRemotingClientSendSyncInterceptor";
+    private static final String INTERCEPTOR_CLASS =
+            "org.apache.seata.apm.skywalking.plugin.NettyRemotingClientSendSyncInterceptor";
 
     @Override
     public ConstructorInterceptPoint[] getConstructorsInterceptPoints() {
@@ -42,13 +43,16 @@ public class AbstractNettyRemotingInstrumentation extends ClassInstanceMethodsEn
 
     @Override
     public InstanceMethodsInterceptPoint[] getInstanceMethodsInterceptPoints() {
-        return new InstanceMethodsInterceptPoint[]{
+        return new InstanceMethodsInterceptPoint[] {
             new InstanceMethodsInterceptPoint() {
                 @Override
                 public ElementMatcher<MethodDescription> getMethodsMatcher() {
-                    return named("sendSync").and(takesArguments(3))
+                    return named("sendSync")
+                            .and(takesArguments(3))
                             .and(takesArgument(0, named("io.netty.channel.Channel")))
-                            .and(takesArgument(1, named("org.apache.seata.core.protocol.RpcMessage")))
+                            .and(
+                                    takesArgument(
+                                            1, named("org.apache.seata.core.protocol.RpcMessage")))
                             .and(takesArgument(2, long.class));
                 }
 
@@ -65,9 +69,12 @@ public class AbstractNettyRemotingInstrumentation extends ClassInstanceMethodsEn
             new InstanceMethodsInterceptPoint() {
                 @Override
                 public ElementMatcher<MethodDescription> getMethodsMatcher() {
-                    return named("sendAsync").and(takesArguments(2))
+                    return named("sendAsync")
+                            .and(takesArguments(2))
                             .and(takesArgument(0, named("io.netty.channel.Channel")))
-                            .and(takesArgument(1, named("org.apache.seata.core.protocol.RpcMessage")));
+                            .and(
+                                    takesArgument(
+                                            1, named("org.apache.seata.core.protocol.RpcMessage")));
                 }
 
                 @Override
@@ -87,5 +94,4 @@ public class AbstractNettyRemotingInstrumentation extends ClassInstanceMethodsEn
     protected ClassMatch enhanceClass() {
         return byName(ENHANCE_CLASS);
     }
-
 }

@@ -45,7 +45,8 @@ public class RedisKeyConstants {
     /**
      * The constant redis key of global transaction name transactionServiceGroup
      */
-    public static final String REDIS_KEY_GLOBAL_TRANSACTION_SERVICE_GROUP = "transactionServiceGroup";
+    public static final String REDIS_KEY_GLOBAL_TRANSACTION_SERVICE_GROUP =
+            "transactionServiceGroup";
 
     /**
      * The constant redis key of global transaction name transactionName
@@ -76,10 +77,6 @@ public class RedisKeyConstants {
      * The constant redis key of global transaction name gmtModified
      */
     public static final String REDIS_KEY_GLOBAL_GMT_MODIFIED = "gmtModified";
-
-
-
-
 
     /**
      * The constant redis key of branch transaction name branchId
@@ -160,5 +157,4 @@ public class RedisKeyConstants {
      * The constant DEFAULT_LOG_QUERY_LIMIT.
      */
     public static final int DEFAULT_LOG_QUERY_LIMIT = 100;
-
 }

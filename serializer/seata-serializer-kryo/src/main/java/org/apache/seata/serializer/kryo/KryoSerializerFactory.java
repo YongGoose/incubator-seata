@@ -20,26 +20,26 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.util.Pool;
 import org.apache.seata.core.serializer.SerializerSecurityRegistry;
 
-
 public class KryoSerializerFactory {
 
     private static final KryoSerializerFactory FACTORY = new KryoSerializerFactory();
 
-    private Pool<Kryo> pool = new Pool<Kryo>(true, true) {
+    private Pool<Kryo> pool =
+            new Pool<Kryo>(true, true) {
 
-        @Override
-        protected Kryo create() {
-            Kryo kryo = new Kryo();
-            kryo.setReferences(true);
+                @Override
+                protected Kryo create() {
+                    Kryo kryo = new Kryo();
+                    kryo.setReferences(true);
 
-            //Serialization whitelist
-            kryo.setRegistrationRequired(true);
+                    // Serialization whitelist
+                    kryo.setRegistrationRequired(true);
 
-            // register allow class
-            SerializerSecurityRegistry.getAllowClassType().forEach(kryo::register);
-            return kryo;
-        }
-    };
+                    // register allow class
+                    SerializerSecurityRegistry.getAllowClassType().forEach(kryo::register);
+                    return kryo;
+                }
+            };
 
     private KryoSerializerFactory() {}
 
@@ -57,5 +57,4 @@ public class KryoSerializerFactory {
         }
         pool.free(kryoSerializer.getKryo());
     }
-
 }

@@ -72,7 +72,12 @@ public interface StateMachine {
      *
      * @return the state machine key: the state machine name,value: the state machine
      */
-    Map<String/** state machine name **/, State> getStates();
+    Map<
+                    String
+                    /** state machine name **/
+                    ,
+                    State>
+            getStates();
 
     /**
      * get state
@@ -228,7 +233,8 @@ public interface StateMachine {
          * @param target the target
          * @return the status
          */
-        public static Status wrap(org.apache.seata.saga.statelang.domain.StateMachine.Status target) {
+        public static Status wrap(
+                org.apache.seata.saga.statelang.domain.StateMachine.Status target) {
             if (target == null) {
                 return null;
             }

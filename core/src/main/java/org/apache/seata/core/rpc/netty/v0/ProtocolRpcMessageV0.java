@@ -16,13 +16,12 @@
  */
 package org.apache.seata.core.rpc.netty.v0;
 
+import java.util.concurrent.atomic.AtomicLong;
 import org.apache.seata.core.compressor.CompressorType;
 import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.rpc.netty.ProtocolRpcMessage;
 import org.apache.seata.core.serializer.SerializerType;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * the protocol v0 rpc message
@@ -160,7 +159,10 @@ public class ProtocolRpcMessageV0 implements ProtocolRpcMessage {
         rpcMessage.setMessageType(this.messageType);
         rpcMessage.setCompressor(CompressorType.NONE.getCode());
 
-        byte codecType = this.isSeataCodec ? SerializerType.SEATA.getCode() : SerializerType.HESSIAN.getCode();
+        byte codecType =
+                this.isSeataCodec
+                        ? SerializerType.SEATA.getCode()
+                        : SerializerType.HESSIAN.getCode();
         rpcMessage.setCodec(codecType);
 
         if (this.isHeartbeat) {

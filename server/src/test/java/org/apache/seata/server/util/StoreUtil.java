@@ -16,6 +16,9 @@
  */
 package org.apache.seata.server.util;
 
+import static java.io.File.separator;
+import static org.apache.seata.common.DefaultValues.DEFAULT_SESSION_STORE_FILE_DIR;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,16 +27,17 @@ import org.apache.seata.common.XID;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 
-import static org.apache.seata.common.DefaultValues.DEFAULT_SESSION_STORE_FILE_DIR;
-import static java.io.File.separator;
-
 /**
  */
 public class StoreUtil {
 
     private static String sessionStorePath =
-        ConfigurationFactory.getInstance().getConfig(ConfigurationKeys.STORE_FILE_DIR, DEFAULT_SESSION_STORE_FILE_DIR)
-            + separator + XID.getPort();
+            ConfigurationFactory.getInstance()
+                            .getConfig(
+                                    ConfigurationKeys.STORE_FILE_DIR,
+                                    DEFAULT_SESSION_STORE_FILE_DIR)
+                    + separator
+                    + XID.getPort();
 
     public static void deleteDataFile() {
         try {
@@ -50,5 +54,4 @@ public class StoreUtil {
             e.printStackTrace();
         }
     }
-
 }

@@ -16,12 +16,11 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
-import javax.sql.DataSource;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
+import javax.sql.DataSource;
 import org.apache.seata.saga.engine.StateMachineConfig;
 import org.apache.seata.saga.engine.StateMachineEngine;
 import org.apache.seata.saga.engine.config.DbStateMachineConfig;
@@ -46,13 +45,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean;
  *
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty({StarterConstants.SEATA_PREFIX + ".enabled", StarterConstants.SAGA_PREFIX + ".enabled"})
+@ConditionalOnProperty({
+    StarterConstants.SEATA_PREFIX + ".enabled",
+    StarterConstants.SAGA_PREFIX + ".enabled"
+})
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, SeataAutoConfiguration.class})
 public class SeataSagaAutoConfiguration {
 
     public static final String SAGA_DATA_SOURCE_BEAN_NAME = "seataSagaDataSource";
-    public static final String SAGA_ASYNC_THREAD_POOL_EXECUTOR_BEAN_NAME = "seataSagaAsyncThreadPoolExecutor";
-    public static final String SAGA_REJECTED_EXECUTION_HANDLER_BEAN_NAME = "seataSagaRejectedExecutionHandler";
+    public static final String SAGA_ASYNC_THREAD_POOL_EXECUTOR_BEAN_NAME =
+            "seataSagaAsyncThreadPoolExecutor";
+    public static final String SAGA_REJECTED_EXECUTION_HANDLER_BEAN_NAME =
+            "seataSagaRejectedExecutionHandler";
 
     /**
      * Create state machine config bean.
@@ -63,8 +67,10 @@ public class SeataSagaAutoConfiguration {
     @ConfigurationProperties(StarterConstants.SAGA_STATE_MACHINE_PREFIX)
     public StateMachineConfig dbStateMachineConfig(
             DataSource dataSource,
-            @Qualifier(SAGA_DATA_SOURCE_BEAN_NAME) @Autowired(required = false) DataSource sagaDataSource,
-            @Qualifier(SAGA_ASYNC_THREAD_POOL_EXECUTOR_BEAN_NAME) @Autowired(required = false) ThreadPoolExecutor threadPoolExecutor,
+            @Qualifier(SAGA_DATA_SOURCE_BEAN_NAME) @Autowired(required = false)
+                    DataSource sagaDataSource,
+            @Qualifier(SAGA_ASYNC_THREAD_POOL_EXECUTOR_BEAN_NAME) @Autowired(required = false)
+                    ThreadPoolExecutor threadPoolExecutor,
             @Value("${spring.application.name:}") String applicationId,
             @Value("${seata.tx-service-group:}") String txServiceGroup) {
         DbStateMachineConfig config = new DbStateMachineConfig();
@@ -96,7 +102,9 @@ public class SeataSagaAutoConfiguration {
      * The saga async thread pool executor configuration.
      */
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(name = StarterConstants.SAGA_STATE_MACHINE_PREFIX + ".enable-async", havingValue = "true")
+    @ConditionalOnProperty(
+            name = StarterConstants.SAGA_STATE_MACHINE_PREFIX + ".enable-async",
+            havingValue = "true")
     static class SagaAsyncThreadPoolExecutorConfiguration {
 
         /**
@@ -115,7 +123,8 @@ public class SeataSagaAutoConfiguration {
         @ConditionalOnMissingBean
         public ThreadPoolExecutor sagaAsyncThreadPoolExecutor(
                 SagaAsyncThreadPoolProperties properties,
-                @Qualifier(SAGA_REJECTED_EXECUTION_HANDLER_BEAN_NAME) RejectedExecutionHandler rejectedExecutionHandler) {
+                @Qualifier(SAGA_REJECTED_EXECUTION_HANDLER_BEAN_NAME)
+                        RejectedExecutionHandler rejectedExecutionHandler) {
             ThreadPoolExecutorFactoryBean threadFactory = new ThreadPoolExecutorFactoryBean();
             threadFactory.setBeanName("sagaStateMachineThreadPoolExecutorFactory");
             threadFactory.setThreadNamePrefix("sagaAsyncExecute-");
@@ -130,8 +139,7 @@ public class SeataSagaAutoConfiguration {
                     TimeUnit.SECONDS,
                     new LinkedBlockingQueue<>(),
                     threadFactory,
-                    rejectedExecutionHandler
-            );
+                    rejectedExecutionHandler);
         }
     }
 }

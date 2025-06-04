@@ -16,13 +16,10 @@
  */
 package org.apache.seata.tm.api.transaction;
 
+import java.io.Serializable;
 import org.apache.seata.common.util.StringUtils;
 
-import java.io.Serializable;
-
-
 public class RollbackRule implements Serializable {
-
 
     private final String exceptionName;
 
@@ -39,7 +36,9 @@ public class RollbackRule implements Serializable {
         }
         if (!Throwable.class.isAssignableFrom(clazz)) {
             throw new IllegalArgumentException(
-                    "Cannot construct rollback rule from [" + clazz.getName() + "]: it's not a Throwable");
+                    "Cannot construct rollback rule from ["
+                            + clazz.getName()
+                            + "]: it's not a Throwable");
         }
         this.exceptionName = clazz.getName();
     }
@@ -48,11 +47,9 @@ public class RollbackRule implements Serializable {
         return this.exceptionName;
     }
 
-
     public int getDepth(Throwable ex) {
         return getDepth(ex.getClass(), 0);
     }
-
 
     private int getDepth(Class<?> exceptionClass, int depth) {
         if (exceptionClass.getName().contains(this.exceptionName)) {
@@ -65,7 +62,6 @@ public class RollbackRule implements Serializable {
         }
         return getDepth(exceptionClass.getSuperclass(), depth + 1);
     }
-
 
     @Override
     public boolean equals(Object other) {

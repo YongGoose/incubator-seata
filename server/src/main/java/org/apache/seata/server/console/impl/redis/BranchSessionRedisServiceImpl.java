@@ -18,12 +18,12 @@ package org.apache.seata.server.console.impl.redis;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.seata.common.result.PageResult;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.StringUtils;
-import org.apache.seata.common.result.PageResult;
-import org.apache.seata.server.console.impl.AbstractBranchService;
-import org.apache.seata.server.console.entity.vo.BranchSessionVO;
 import org.apache.seata.core.store.BranchTransactionDO;
+import org.apache.seata.server.console.entity.vo.BranchSessionVO;
+import org.apache.seata.server.console.impl.AbstractBranchService;
 import org.apache.seata.server.console.service.BranchSessionService;
 import org.apache.seata.server.storage.redis.store.RedisTransactionStoreManager;
 import org.apache.seata.server.storage.redis.store.RedisTransactionStoreManagerFactory;
@@ -38,7 +38,8 @@ import org.springframework.stereotype.Component;
 @Component
 @org.springframework.context.annotation.Configuration
 @ConditionalOnExpression("#{'redis'.equals('${sessionMode}')}")
-public class BranchSessionRedisServiceImpl extends AbstractBranchService implements BranchSessionService {
+public class BranchSessionRedisServiceImpl extends AbstractBranchService
+        implements BranchSessionService {
 
     @Override
     public PageResult<BranchSessionVO> queryByXid(String xid) {
@@ -60,6 +61,7 @@ public class BranchSessionRedisServiceImpl extends AbstractBranchService impleme
             }
         }
 
-        return PageResult.success(branchSessionVos, branchSessionVos.size(), 0, branchSessionVos.size());
+        return PageResult.success(
+                branchSessionVos, branchSessionVos.size(), 0, branchSessionVos.size());
     }
 }

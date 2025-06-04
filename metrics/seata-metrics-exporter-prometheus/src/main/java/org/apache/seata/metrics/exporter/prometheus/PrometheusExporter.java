@@ -16,25 +16,24 @@
  */
 package org.apache.seata.metrics.exporter.prometheus;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
+import static org.apache.seata.common.DefaultValues.DEFAULT_PROMETHEUS_PORT;
+import static org.apache.seata.core.constants.ConfigurationKeys.METRICS_EXPORTER_PROMETHEUS_PORT;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 import org.apache.seata.metrics.Measurement;
 import org.apache.seata.metrics.exporter.Exporter;
 import org.apache.seata.metrics.registry.Registry;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_PROMETHEUS_PORT;
-import static org.apache.seata.core.constants.ConfigurationKeys.METRICS_EXPORTER_PROMETHEUS_PORT;
 
 /**
  * Exporter for Prometheus
@@ -48,11 +47,14 @@ public class PrometheusExporter extends Collector implements Collector.Describab
     private Registry registry;
 
     public PrometheusExporter() throws IOException {
-        int port = ConfigurationFactory.getInstance().getInt(
-            ConfigurationKeys.METRICS_PREFIX + METRICS_EXPORTER_PROMETHEUS_PORT, DEFAULT_PROMETHEUS_PORT);
+        int port =
+                ConfigurationFactory.getInstance()
+                        .getInt(
+                                ConfigurationKeys.METRICS_PREFIX + METRICS_EXPORTER_PROMETHEUS_PORT,
+                                DEFAULT_PROMETHEUS_PORT);
         CollectorRegistry collectorRegistry = new CollectorRegistry(true);
         this.register(collectorRegistry);
-        this.server = new HTTPServer(new InetSocketAddress(port),collectorRegistry, true);
+        this.server = new HTTPServer(new InetSocketAddress(port), collectorRegistry, true);
     }
 
     @Override
@@ -66,7 +68,8 @@ public class PrometheusExporter extends Collector implements Collector.Describab
         if (registry != null) {
             Iterable<Measurement> measurements = registry.measure();
             List<Sample> samples = new ArrayList<>();
-            measurements.forEach(measurement -> samples.add(convertMeasurementToSample(measurement)));
+            measurements.forEach(
+                    measurement -> samples.add(convertMeasurementToSample(measurement)));
 
             if (!samples.isEmpty()) {
                 Type unknownType = getUnknownType();
@@ -84,8 +87,12 @@ public class PrometheusExporter extends Collector implements Collector.Describab
             labelNames.add(tag.getKey());
             labelValues.add(tag.getValue());
         }
-        return new Sample(prometheusName, labelNames, labelValues, measurement.getValue(),
-            (long)measurement.getTimestamp());
+        return new Sample(
+                prometheusName,
+                labelNames,
+                labelValues,
+                measurement.getValue(),
+                (long) measurement.getTimestamp());
     }
 
     /**
@@ -112,5 +119,4 @@ public class PrometheusExporter extends Collector implements Collector.Describab
     public void close() {
         server.stop();
     }
-
 }

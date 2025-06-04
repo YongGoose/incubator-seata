@@ -17,7 +17,6 @@
 package org.apache.seata.saga.engine.repo.impl;
 
 import java.util.List;
-
 import org.apache.seata.saga.engine.repo.StateLogRepository;
 import org.apache.seata.saga.engine.store.StateLogStore;
 import org.apache.seata.saga.statelang.domain.StateInstance;
@@ -40,7 +39,8 @@ public class StateLogRepositoryImpl implements StateLogRepository {
     }
 
     @Override
-    public StateMachineInstance getStateMachineInstanceByBusinessKey(String businessKey, String tenantId) {
+    public StateMachineInstance getStateMachineInstanceByBusinessKey(
+            String businessKey, String tenantId) {
         if (stateLogStore == null) {
             return null;
         }
@@ -64,7 +64,8 @@ public class StateLogRepositoryImpl implements StateLogRepository {
     }
 
     @Override
-    public List<StateInstance> queryStateInstanceListByMachineInstanceId(String stateMachineInstanceId) {
+    public List<StateInstance> queryStateInstanceListByMachineInstanceId(
+            String stateMachineInstanceId) {
         if (stateLogStore == null) {
             return null;
         }

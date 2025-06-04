@@ -40,13 +40,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-
 /**
  */
 @SpringBootTest
 class GlobalSessionExecuteTest {
     @BeforeAll
-    public static void setUp(ApplicationContext context){
+    public static void setUp(ApplicationContext context) {
         System.setProperty("server.raft.serverAddr", NetUtil.getLocalIp() + ":9091");
         SessionHolder.init(SessionMode.RAFT);
         LockerManagerFactory.destroy();
@@ -54,7 +53,7 @@ class GlobalSessionExecuteTest {
     }
 
     @AfterAll
-    public static void destroy(){
+    public static void destroy() {
         // Clear configuration
         ConfigurationCache.clear();
         System.clearProperty("server.raft.serverAddr");
@@ -131,12 +130,14 @@ class GlobalSessionExecuteTest {
         return session;
     }
 
-    private static void assertGlobalSessionValid(GlobalSession expected, GlobalSession globalSession) {
+    private static void assertGlobalSessionValid(
+            GlobalSession expected, GlobalSession globalSession) {
         Assertions.assertNotNull(globalSession);
         Assertions.assertEquals(expected.getTransactionId(), globalSession.getTransactionId());
         Assertions.assertEquals(expected.getTimeout(), globalSession.getTimeout());
         Assertions.assertEquals(expected.getApplicationId(), globalSession.getApplicationId());
-        Assertions.assertEquals(expected.getTransactionServiceGroup(), globalSession.getTransactionServiceGroup());
+        Assertions.assertEquals(
+                expected.getTransactionServiceGroup(), globalSession.getTransactionServiceGroup());
         Assertions.assertEquals(expected.getTransactionName(), globalSession.getTransactionName());
         Assertions.assertTrue(expected.isActive());
     }
@@ -148,5 +149,4 @@ class GlobalSessionExecuteTest {
         sessionMsg.setGlobalSession(dto);
         return sessionMsg;
     }
-
 }

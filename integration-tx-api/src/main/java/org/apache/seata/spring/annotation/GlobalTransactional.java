@@ -16,15 +16,14 @@
  */
 package org.apache.seata.spring.annotation;
 
-import org.apache.seata.common.DefaultValues;
-import org.apache.seata.common.LockStrategyMode;
-import org.apache.seata.tm.api.transaction.Propagation;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.apache.seata.common.DefaultValues;
+import org.apache.seata.common.LockStrategyMode;
+import org.apache.seata.tm.api.transaction.Propagation;
 
 /**
  * The interface Global transactional.
@@ -43,7 +42,7 @@ import java.lang.annotation.Target;
  * .TccActionInterceptor#invoke(MethodInvocation)// RM: the interceptor of TCC mode
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
 public @interface GlobalTransactional {
 
@@ -132,5 +131,4 @@ public @interface GlobalTransactional {
      * @return lock strategy mode
      */
     LockStrategyMode lockStrategyMode() default LockStrategyMode.PESSIMISTIC;
-
 }

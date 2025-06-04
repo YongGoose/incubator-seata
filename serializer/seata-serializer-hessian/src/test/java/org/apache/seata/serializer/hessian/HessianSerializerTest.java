@@ -16,12 +16,12 @@
  */
 package org.apache.seata.serializer.hessian;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
 import javax.naming.InitialContext;
-
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.model.BranchType;
@@ -31,9 +31,6 @@ import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
 import org.apache.seata.core.protocol.transaction.BranchRollbackRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class HessianSerializerTest {
 
@@ -63,14 +60,14 @@ public class HessianSerializerTest {
         assertThat(t.getResourceId()).isEqualTo(branchCommitRequest.getResourceId());
         assertThat(t.getBranchId()).isEqualTo(branchCommitRequest.getBranchId());
         assertThat(t.getApplicationData()).isEqualTo(branchCommitRequest.getApplicationData());
-
     }
 
     @Test
     public void testBranchCommitResponse() {
 
         BranchCommitResponse branchCommitResponse = new BranchCommitResponse();
-        branchCommitResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchTransactionNotExist);
+        branchCommitResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchTransactionNotExist);
         branchCommitResponse.setBranchId(20190809);
         branchCommitResponse.setBranchStatus(BranchStatus.PhaseOne_Done);
         branchCommitResponse.setMsg("20190809");
@@ -80,60 +77,91 @@ public class HessianSerializerTest {
         byte[] bytes = hessianCodec.serialize(branchCommitResponse);
         BranchCommitResponse t = hessianCodec.deserialize(bytes);
 
-        assertThat(t.getTransactionExceptionCode()).isEqualTo(branchCommitResponse.getTransactionExceptionCode());
+        assertThat(t.getTransactionExceptionCode())
+                .isEqualTo(branchCommitResponse.getTransactionExceptionCode());
         assertThat(t.getBranchId()).isEqualTo(branchCommitResponse.getBranchId());
         assertThat(t.getBranchStatus()).isEqualTo(branchCommitResponse.getBranchStatus());
         assertThat(t.getMsg()).isEqualTo(branchCommitResponse.getMsg());
         assertThat(t.getResultCode()).isEqualTo(branchCommitResponse.getResultCode());
-
     }
 
     @Test
     public void testWhitelist() throws ClassNotFoundException {
-        //basic type Integer
-        Class clazz = HessianSerializerFactory.getInstance().getClassFactory().load(Integer.class.getCanonicalName());
+        // basic type Integer
+        Class clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(Integer.class.getCanonicalName());
         assertThat(!clazz.equals(HashMap.class));
 
-        //collection type List
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(List.class.getCanonicalName());
+        // collection type List
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(List.class.getCanonicalName());
         assertThat(!clazz.equals(HashMap.class));
 
-        //String type
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(String.class.getCanonicalName());
+        // String type
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(String.class.getCanonicalName());
         assertThat(!clazz.equals(HashMap.class));
 
-        //Number type
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(Number.class.getCanonicalName());
+        // Number type
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(Number.class.getCanonicalName());
         assertThat(!clazz.equals(HashMap.class));
 
-        //HashMap type
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(HashSet.class.getCanonicalName());
+        // HashMap type
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(HashSet.class.getCanonicalName());
         assertThat(!clazz.equals(HashMap.class));
 
-        //org.apache.seata.core.protocol.transaction.BranchRollbackRequest
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(BranchRollbackRequest.class.getCanonicalName());
+        // org.apache.seata.core.protocol.transaction.BranchRollbackRequest
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(BranchRollbackRequest.class.getCanonicalName());
         assertThat(!clazz.equals(HashMap.class));
 
-        //HashMap type
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(HashMap.class.getCanonicalName());
+        // HashMap type
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(HashMap.class.getCanonicalName());
         assertThat(clazz.equals(HashMap.class));
 
-        //blackList Process
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(Process.class.getCanonicalName());
+        // blackList Process
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(Process.class.getCanonicalName());
         assertThat(clazz.equals(HashMap.class));
 
-        //blackList System
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(System.class.getCanonicalName());
+        // blackList System
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(System.class.getCanonicalName());
         assertThat(clazz.equals(HashMap.class));
 
-        //blackList  Runtime
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(Runtime.class.getCanonicalName());
+        // blackList  Runtime
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(Runtime.class.getCanonicalName());
         assertThat(clazz.equals(HashMap.class));
 
-        //blackList InitialContext
-        clazz = HessianSerializerFactory.getInstance().getClassFactory().load(InitialContext.class.getCanonicalName());
+        // blackList InitialContext
+        clazz =
+                HessianSerializerFactory.getInstance()
+                        .getClassFactory()
+                        .load(InitialContext.class.getCanonicalName());
         assertThat(clazz.equals(HashMap.class));
-
     }
-
 }

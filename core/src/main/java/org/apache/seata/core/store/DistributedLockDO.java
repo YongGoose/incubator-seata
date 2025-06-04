@@ -25,10 +25,12 @@ public class DistributedLockDO {
      * the key of distributed lock
      */
     private String lockKey;
+
     /**
      * the value of distributed lock
      */
     private String lockValue;
+
     /**
      * the expire time of distributed lock,time unit is milliseconds
      */
@@ -58,8 +60,7 @@ public class DistributedLockDO {
         this.expireTime = expireTime;
     }
 
-    public DistributedLockDO() {
-    }
+    public DistributedLockDO() {}
 
     public DistributedLockDO(String lockKey, String lockValue, Long expireTime) {
         this.lockKey = lockKey;

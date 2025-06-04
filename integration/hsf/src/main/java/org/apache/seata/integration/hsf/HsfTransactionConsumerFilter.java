@@ -32,10 +32,12 @@ import org.slf4j.LoggerFactory;
  */
 public class HsfTransactionConsumerFilter implements ClientFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HsfTransactionConsumerFilter.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(HsfTransactionConsumerFilter.class);
 
     @Override
-    public ListenableFuture<RPCResult> invoke(InvocationHandler nextHandler, Invocation invocation) throws Throwable {
+    public ListenableFuture<RPCResult> invoke(InvocationHandler nextHandler, Invocation invocation)
+            throws Throwable {
         String xid = RootContext.getXID();
         BranchType branchType = RootContext.getBranchType();
 
@@ -44,7 +46,8 @@ public class HsfTransactionConsumerFilter implements ClientFilter {
         }
         if (xid != null) {
             RPCContext.getClientContext().putAttachment(RootContext.KEY_XID, xid);
-            RPCContext.getClientContext().putAttachment(RootContext.KEY_BRANCH_TYPE, branchType.name());
+            RPCContext.getClientContext()
+                    .putAttachment(RootContext.KEY_BRANCH_TYPE, branchType.name());
         }
         try {
             return nextHandler.invoke(invocation);
@@ -55,7 +58,5 @@ public class HsfTransactionConsumerFilter implements ClientFilter {
     }
 
     @Override
-    public void onResponse(Invocation invocation, RPCResult rpcResult) {
-
-    }
+    public void onResponse(Invocation invocation, RPCResult rpcResult) {}
 }

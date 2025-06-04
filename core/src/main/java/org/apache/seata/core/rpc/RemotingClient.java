@@ -16,16 +16,16 @@
  */
 package org.apache.seata.core.rpc;
 
+import io.netty.channel.Channel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
-import io.netty.channel.Channel;
 import org.apache.seata.core.protocol.AbstractMessage;
+import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.rpc.netty.ChannelEventListener;
 import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
 import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.seata.core.rpc.processor.RemotingProcessor;
-import org.apache.seata.core.protocol.MessageType;
 
 /**
  * The interface remoting client.
@@ -82,7 +82,8 @@ public interface RemotingClient {
      * @param response       the response
      * @param requestMessage the request message
      */
-    void onRegisterMsgSuccess(String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
+    void onRegisterMsgSuccess(
+            String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
 
     /**
      * On register msg fail.
@@ -92,7 +93,8 @@ public interface RemotingClient {
      * @param response       the response
      * @param requestMessage the request message
      */
-    void onRegisterMsgFail(String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
+    void onRegisterMsgFail(
+            String serverAddress, Channel channel, Object response, AbstractMessage requestMessage);
 
     /**
      * register processor
@@ -101,7 +103,10 @@ public interface RemotingClient {
      * @param processor   {@link RemotingProcessor}
      * @param executor    thread pool
      */
-    void registerProcessor(final int messageType, final RemotingProcessor processor, final ExecutorService executor);
+    void registerProcessor(
+            final int messageType,
+            final RemotingProcessor processor,
+            final ExecutorService executor);
 
     /**
      * register channel event listener

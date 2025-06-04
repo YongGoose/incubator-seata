@@ -16,26 +16,25 @@
  */
 package org.apache.seata.rm.datasource;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.common.executor.Initialize;
 import org.apache.seata.core.model.Resource;
 import org.apache.seata.rm.AbstractResourceManager;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract RM with DataSource Cache.
  *
  */
-public abstract class AbstractDataSourceCacheResourceManager extends AbstractResourceManager implements Initialize {
+public abstract class AbstractDataSourceCacheResourceManager extends AbstractResourceManager
+        implements Initialize {
 
     protected Map<String, Resource> dataSourceCache = new ConcurrentHashMap<>();
 
     /**
      * Instantiates a new Data source manager.
      */
-    public AbstractDataSourceCacheResourceManager() {
-    }
+    public AbstractDataSourceCacheResourceManager() {}
 
     @Override
     public abstract void init();
@@ -50,5 +49,4 @@ public abstract class AbstractDataSourceCacheResourceManager extends AbstractRes
         dataSourceCache.put(resource.getResourceId(), resource);
         super.registerResource(resource);
     }
-
 }

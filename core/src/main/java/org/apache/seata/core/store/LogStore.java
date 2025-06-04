@@ -16,7 +16,6 @@
  */
 package org.apache.seata.core.store;
 
-
 import java.util.List;
 
 /**
@@ -73,7 +72,8 @@ public interface LogStore {
      * @param expectedStatus the expected Status
      * @return the boolean
      */
-    boolean updateGlobalTransactionDO(GlobalTransactionDO globalTransactionDO, Integer expectedStatus);
+    boolean updateGlobalTransactionDO(
+            GlobalTransactionDO globalTransactionDO, Integer expectedStatus);
 
     /**
      * Delete global transaction do boolean.
@@ -131,5 +131,4 @@ public interface LogStore {
      * @return the current max session id
      */
     long getCurrentMaxSessionId(long high, long low);
-
 }

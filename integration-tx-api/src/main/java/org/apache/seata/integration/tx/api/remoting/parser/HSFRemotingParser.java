@@ -55,19 +55,22 @@ public class HSFRemotingParser extends AbstractedRemotingParser {
     @Override
     public boolean isReference(Object bean, String beanName) {
         String beanClassName = bean.getClass().getName();
-        return isHsf && "com.taobao.hsf.app.spring.util.HSFSpringConsumerBean".equals(beanClassName);
+        return isHsf
+                && "com.taobao.hsf.app.spring.util.HSFSpringConsumerBean".equals(beanClassName);
     }
 
     @Override
     public boolean isService(Object bean, String beanName) {
         String beanClassName = bean.getClass().getName();
-        return isHsf && "com.taobao.hsf.app.spring.util.HSFSpringProviderBean".equals(beanClassName);
+        return isHsf
+                && "com.taobao.hsf.app.spring.util.HSFSpringProviderBean".equals(beanClassName);
     }
 
     @Override
     public boolean isService(Class<?> beanClass) throws FrameworkException {
         String beanClassName = beanClass.getName();
-        return isHsf && "com.taobao.hsf.app.spring.util.HSFSpringProviderBean".equals(beanClassName);
+        return isHsf
+                && "com.taobao.hsf.app.spring.util.HSFSpringProviderBean".equals(beanClassName);
     }
 
     @Override
@@ -80,8 +83,10 @@ public class HSFRemotingParser extends AbstractedRemotingParser {
                 Object consumerBean = ReflectionUtil.getFieldValue(bean, "consumerBean");
                 Object metadata = ReflectionUtil.invokeMethod(consumerBean, "getMetadata");
 
-                Class<?> interfaceClass = (Class<?>) ReflectionUtil.invokeMethod(metadata, "getIfClazz");
-                String interfaceClassName = (String) ReflectionUtil.invokeMethod(metadata, "getInterfaceName");
+                Class<?> interfaceClass =
+                        (Class<?>) ReflectionUtil.invokeMethod(metadata, "getIfClazz");
+                String interfaceClassName =
+                        (String) ReflectionUtil.invokeMethod(metadata, "getInterfaceName");
                 String uniqueId = (String) ReflectionUtil.invokeMethod(metadata, "getVersion");
                 String group = (String) ReflectionUtil.invokeMethod(metadata, "getGroup");
 
@@ -98,7 +103,8 @@ public class HSFRemotingParser extends AbstractedRemotingParser {
                 Object consumerBean = ReflectionUtil.getFieldValue(bean, "providerBean");
                 Object metadata = ReflectionUtil.invokeMethod(consumerBean, "getMetadata");
 
-                String interfaceClassName = (String) ReflectionUtil.invokeMethod(metadata, "getInterfaceName");
+                String interfaceClassName =
+                        (String) ReflectionUtil.invokeMethod(metadata, "getInterfaceName");
                 Class<?> interfaceClass = Class.forName(interfaceClassName);
                 String uniqueId = (String) ReflectionUtil.invokeMethod(metadata, "getVersion");
                 String group = (String) ReflectionUtil.invokeMethod(metadata, "getGroup");
@@ -120,7 +126,6 @@ public class HSFRemotingParser extends AbstractedRemotingParser {
         }
         return null;
     }
-
 
     @Override
     public short getProtocol() {

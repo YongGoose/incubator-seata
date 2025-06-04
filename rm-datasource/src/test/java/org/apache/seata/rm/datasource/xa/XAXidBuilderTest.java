@@ -16,8 +16,6 @@
  */
 package org.apache.seata.rm.datasource.xa;
 
-import org.apache.seata.rm.datasource.xa.XAXid;
-import org.apache.seata.rm.datasource.xa.XAXidBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -33,12 +31,12 @@ public class XAXidBuilderTest {
         String mockXid = "127.0.0.1:8091:" + mockBranchId;
         XAXid xaXid = XAXidBuilder.build(mockXid, mockBranchId);
 
-        XAXid retrievedXAXid = XAXidBuilder.build(xaXid.getGlobalTransactionId(), xaXid.getBranchQualifier());
+        XAXid retrievedXAXid =
+                XAXidBuilder.build(xaXid.getGlobalTransactionId(), xaXid.getBranchQualifier());
         String retrievedXid = retrievedXAXid.getGlobalXid();
         long retrievedBranchId = retrievedXAXid.getBranchId();
 
         Assertions.assertEquals(mockXid, retrievedXid);
         Assertions.assertEquals(mockBranchId, retrievedBranchId);
-
     }
 }

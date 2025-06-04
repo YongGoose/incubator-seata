@@ -18,12 +18,12 @@ package org.apache.seata.common.metadata;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.seata.common.exception.ParseEndpointException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.List;
-import java.util.ArrayList;
+import org.apache.seata.common.exception.ParseEndpointException;
 
 public class Node {
 
@@ -120,7 +120,8 @@ public class Node {
             return false;
         }
         Node node = (Node) o;
-        return Objects.equals(control, node.control) && Objects.equals(transaction, node.transaction);
+        return Objects.equals(control, node.control)
+                && Objects.equals(transaction, node.transaction);
     }
 
     // convert to String
@@ -173,7 +174,7 @@ public class Node {
 
         @Override
         public int hashCode() {
-            return Objects.hash(host,port,protocol);
+            return Objects.hash(host, port, protocol);
         }
 
         @Override
@@ -185,9 +186,9 @@ public class Node {
                 return false;
             }
             Endpoint endpoint = (Endpoint) o;
-            return Objects.equals(endpoint.host,this.host)
-                    && Objects.equals(endpoint.port,this.port)
-                    && Objects.equals(endpoint.protocol,this.protocol);
+            return Objects.equals(endpoint.host, this.host)
+                    && Objects.equals(endpoint.port, this.port)
+                    && Objects.equals(endpoint.protocol, this.protocol);
         }
 
         @Override
@@ -196,7 +197,8 @@ public class Node {
         }
     }
 
-    private Node.ExternalEndpoint createExternalEndpoint(String host, int controllerPort, int transactionPort) {
+    private Node.ExternalEndpoint createExternalEndpoint(
+            String host, int controllerPort, int transactionPort) {
         return new Node.ExternalEndpoint(host, controllerPort, transactionPort);
     }
 
@@ -211,7 +213,8 @@ public class Node {
                     String host = item[0];
                     int controllerPort = Integer.parseInt(item[1]);
                     int transactionPort = Integer.parseInt(item[2]);
-                    externalEndpoints.add(createExternalEndpoint(host, controllerPort, transactionPort));
+                    externalEndpoints.add(
+                            createExternalEndpoint(host, controllerPort, transactionPort));
                 } catch (NumberFormatException e) {
                     throw new ParseEndpointException("Invalid port number in: " + s);
                 }
@@ -222,7 +225,8 @@ public class Node {
         return externalEndpoints;
     }
 
-    public Map<String, Object> updateMetadataWithExternalEndpoints(Map<String, Object> metadata, List<Node.ExternalEndpoint> externalEndpoints) {
+    public Map<String, Object> updateMetadataWithExternalEndpoints(
+            Map<String, Object> metadata, List<Node.ExternalEndpoint> externalEndpoints) {
         Object obj = metadata.get("external");
         if (obj == null) {
             if (!externalEndpoints.isEmpty()) {

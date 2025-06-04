@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.slf4j.Logger;
@@ -45,8 +44,7 @@ public class StringUtils {
     private static final Pattern CAMEL_PATTERN = Pattern.compile("[A-Z]");
     private static final Pattern LINE_PATTERN = Pattern.compile("-(\\w)");
 
-    private StringUtils() {
-    }
+    private StringUtils() {}
 
     /**
      * empty string
@@ -182,7 +180,7 @@ public class StringUtils {
             return "null";
         }
 
-        //region Convert simple types to String directly
+        // region Convert simple types to String directly
 
         if (obj instanceof CharSequence) {
             return "\"" + obj + "\"";
@@ -191,10 +189,13 @@ public class StringUtils {
             return "'" + obj + "'";
         }
         if (obj instanceof Date) {
-            Date date = (Date)obj;
+            Date date = (Date) obj;
             long time = date.getTime();
             String dateFormat;
-            if (date.getHours() == 0 && date.getMinutes() == 0 && date.getSeconds() == 0 && time % 1000 == 0) {
+            if (date.getHours() == 0
+                    && date.getMinutes() == 0
+                    && date.getSeconds() == 0
+                    && time % 1000 == 0) {
                 dateFormat = "yyyy-MM-dd";
             } else if (time % (60 * 1000) == 0) {
                 dateFormat = "yyyy-MM-dd HH:mm";
@@ -206,86 +207,90 @@ public class StringUtils {
             return new SimpleDateFormat(dateFormat).format(obj);
         }
         if (obj instanceof Enum) {
-            return obj.getClass().getSimpleName() + "." + ((Enum)obj).name();
+            return obj.getClass().getSimpleName() + "." + ((Enum) obj).name();
         }
         if (obj instanceof Class) {
-            return ReflectionUtil.classToString((Class<?>)obj);
+            return ReflectionUtil.classToString((Class<?>) obj);
         }
         if (obj instanceof Field) {
-            return ReflectionUtil.fieldToString((Field)obj);
+            return ReflectionUtil.fieldToString((Field) obj);
         }
         if (obj instanceof Method) {
-            return ReflectionUtil.methodToString((Method)obj);
+            return ReflectionUtil.methodToString((Method) obj);
         }
         if (obj instanceof Annotation) {
-            return ReflectionUtil.annotationToString((Annotation)obj);
+            return ReflectionUtil.annotationToString((Annotation) obj);
         }
 
-        //endregion
+        // endregion
 
-        //region Convert the Collection and Map
+        // region Convert the Collection and Map
 
         if (obj instanceof Collection) {
-            return CollectionUtils.toString((Collection<?>)obj);
+            return CollectionUtils.toString((Collection<?>) obj);
         }
         if (obj.getClass().isArray()) {
             return ArrayUtils.toString(obj);
         }
         if (obj instanceof Map) {
-            return CollectionUtils.toString((Map<?, ?>)obj);
+            return CollectionUtils.toString((Map<?, ?>) obj);
         }
 
-        //endregion
+        // endregion
 
-        //the jdk classes
+        // the jdk classes
         if (obj.getClass().getClassLoader() == null) {
             return obj.toString();
         }
 
-        return CycleDependencyHandler.wrap(obj, o -> {
-            StringBuilder sb = new StringBuilder(32);
+        return CycleDependencyHandler.wrap(
+                obj,
+                o -> {
+                    StringBuilder sb = new StringBuilder(32);
 
-            // handle the anonymous class
-            String classSimpleName;
-            if (obj.getClass().isAnonymousClass()) {
-                if (!obj.getClass().getSuperclass().equals(Object.class)) {
-                    classSimpleName = obj.getClass().getSuperclass().getSimpleName();
-                } else {
-                    classSimpleName = obj.getClass().getInterfaces()[0].getSimpleName();
-                }
-                // Connect a '$', different from ordinary class
-                classSimpleName += "$";
-            } else {
-                classSimpleName = obj.getClass().getSimpleName();
-            }
-
-            sb.append(classSimpleName).append("(");
-            final int initialLength = sb.length();
-
-            // Gets all fields, excluding static or synthetic fields
-            Field[] fields = ReflectionUtil.getAllFields(obj.getClass());
-            for (Field field : fields) {
-                field.setAccessible(true);
-
-                if (sb.length() > initialLength) {
-                    sb.append(", ");
-                }
-                sb.append(field.getName());
-                sb.append("=");
-                try {
-                    Object f = field.get(obj);
-                    if (f == obj) {
-                        sb.append("(this ").append(f.getClass().getSimpleName()).append(")");
+                    // handle the anonymous class
+                    String classSimpleName;
+                    if (obj.getClass().isAnonymousClass()) {
+                        if (!obj.getClass().getSuperclass().equals(Object.class)) {
+                            classSimpleName = obj.getClass().getSuperclass().getSimpleName();
+                        } else {
+                            classSimpleName = obj.getClass().getInterfaces()[0].getSimpleName();
+                        }
+                        // Connect a '$', different from ordinary class
+                        classSimpleName += "$";
                     } else {
-                        sb.append(toString(f));
+                        classSimpleName = obj.getClass().getSimpleName();
                     }
-                } catch (Exception ignore) {
-                }
-            }
 
-            sb.append(")");
-            return sb.toString();
-        });
+                    sb.append(classSimpleName).append("(");
+                    final int initialLength = sb.length();
+
+                    // Gets all fields, excluding static or synthetic fields
+                    Field[] fields = ReflectionUtil.getAllFields(obj.getClass());
+                    for (Field field : fields) {
+                        field.setAccessible(true);
+
+                        if (sb.length() > initialLength) {
+                            sb.append(", ");
+                        }
+                        sb.append(field.getName());
+                        sb.append("=");
+                        try {
+                            Object f = field.get(obj);
+                            if (f == obj) {
+                                sb.append("(this ")
+                                        .append(f.getClass().getSimpleName())
+                                        .append(")");
+                            } else {
+                                sb.append(toString(f));
+                            }
+                        } catch (Exception ignore) {
+                        }
+                    }
+
+                    sb.append(")");
+                    return sb.toString();
+                });
     }
 
     /**
@@ -331,7 +336,7 @@ public class StringUtils {
 
     /**
      * hump to Line or line to hump, only spring environment use
-     * 
+     *
      * @param str str
      * @return string string
      */
@@ -361,7 +366,8 @@ public class StringUtils {
      * @param errorSize throw exception if size > errorSize
      * @return boolean
      */
-    public static boolean checkDataSize(String data, String dataName, int errorSize, boolean throwIfErr) {
+    public static boolean checkDataSize(
+            String data, String dataName, int errorSize, boolean throwIfErr) {
         if (isBlank(data)) {
             return true;
         }
@@ -431,7 +437,6 @@ public class StringUtils {
         return str != null && str.length() > 0;
     }
 
-
     public static boolean hasText(CharSequence str) {
         if (str == null || str.length() == 0) {
             return false;
@@ -445,5 +450,4 @@ public class StringUtils {
         }
         return false;
     }
-
 }

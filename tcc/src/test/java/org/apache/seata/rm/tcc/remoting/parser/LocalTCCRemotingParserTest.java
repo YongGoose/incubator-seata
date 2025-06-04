@@ -22,7 +22,6 @@ import org.apache.seata.rm.tcc.TccActionImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 /**
  * The type Local tcc remoting parser test.
  *
@@ -38,7 +37,7 @@ public class LocalTCCRemotingParserTest {
      * Test service parser.
      */
     @Test
-    public void testServiceParser(){
+    public void testServiceParser() {
         TccActionImpl tccAction = new TccActionImpl();
 
         boolean result = localTCCRemotingParser.isService(tccAction, "a");
@@ -49,7 +48,7 @@ public class LocalTCCRemotingParserTest {
      * Test reference parser.
      */
     @Test
-    public void testReferenceParser(){
+    public void testReferenceParser() {
         TccActionImpl tccAction = new TccActionImpl();
 
         boolean result = localTCCRemotingParser.isReference(tccAction, "b");
@@ -60,15 +59,15 @@ public class LocalTCCRemotingParserTest {
      * Test service desc.
      */
     @Test
-    public void testServiceDesc(){
+    public void testServiceDesc() {
         TccActionImpl tccAction = new TccActionImpl();
 
         RemotingDesc remotingDesc = localTCCRemotingParser.getServiceDesc(tccAction, "c");
         Assertions.assertNotNull(remotingDesc);
 
-        Assertions.assertEquals("org.apache.seata.rm.tcc.TccAction", remotingDesc.getServiceClassName());
+        Assertions.assertEquals(
+                "org.apache.seata.rm.tcc.TccAction", remotingDesc.getServiceClassName());
         Assertions.assertEquals(remotingDesc.getServiceClass(), TccAction.class);
         Assertions.assertEquals(remotingDesc.getTargetBean(), tccAction);
     }
-
 }

@@ -36,7 +36,8 @@ public class Message {
      * Print 1.
      */
     public void print1() {
-        throw FrameworkException.nestedException("nestedException", new Throwable(Message.class.getSimpleName()));
+        throw FrameworkException.nestedException(
+                "nestedException", new Throwable(Message.class.getSimpleName()));
     }
 
     /**
@@ -45,7 +46,8 @@ public class Message {
      * @throws SQLException the sql exception
      */
     public void print2() throws SQLException {
-        throw FrameworkException.nestedSQLException("nestedException", new Throwable(Message.class.getSimpleName()));
+        throw FrameworkException.nestedSQLException(
+                "nestedException", new Throwable(Message.class.getSimpleName()));
     }
 
     /**
@@ -82,8 +84,10 @@ public class Message {
      * Print 7.
      */
     public void print7() {
-        throw new FrameworkException(new Throwable("throw"), "frameworkException",
-            FrameworkErrorCode.ChannelIsNotWritable);
+        throw new FrameworkException(
+                new Throwable("throw"),
+                "frameworkException",
+                FrameworkErrorCode.ChannelIsNotWritable);
     }
 
     /**
@@ -99,5 +103,4 @@ public class Message {
     public void print9() {
         throw new FrameworkException(new Throwable(), "frameworkExceptionMsg");
     }
-
 }

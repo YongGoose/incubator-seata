@@ -25,6 +25,7 @@ public interface ConfigurationKeys {
      * The constant SEATA_FILE_ROOT_CONFIG
      */
     String SEATA_FILE_ROOT_CONFIG = "seata";
+
     /**
      * The constant FILE_ROOT_REGISTRY.
      */
@@ -34,6 +35,7 @@ public interface ConfigurationKeys {
      * The constant FILE_ROOT_CONFIG.
      */
     String FILE_ROOT_CONFIG = "config";
+
     /**
      * The constant FILE_CONFIG_SPLIT_CHAR.
      */
@@ -58,6 +60,7 @@ public interface ConfigurationKeys {
      * The constant FILE_ROOT_TYPE.
      */
     String FILE_ROOT_TYPE = "type";
+
     /**
      * The constant DATA_TYPE.
      */
@@ -142,10 +145,12 @@ public interface ConfigurationKeys {
      * The constant SERVICE_GROUP_MAPPING_PREFIX.
      */
     String SERVICE_GROUP_MAPPING_PREFIX = SERVICE_PREFIX + "vgroupMapping.";
+
     /**
      * The constant GROUPLIST_POSTFIX.
      */
     String GROUPLIST_POSTFIX = ".grouplist";
+
     /**
      * The constant SERVER_NODE_SPLIT_CHAR.
      */
@@ -175,6 +180,7 @@ public interface ConfigurationKeys {
      * The constant CLIENT_ASYNC_COMMIT_BUFFER_LIMIT.
      */
     String CLIENT_ASYNC_COMMIT_BUFFER_LIMIT = CLIENT_RM_PREFIX + "asyncCommitBufferLimit";
+
     /**
      * The constant CLIENT_RM_LOCK_PREFIX.
      */
@@ -184,14 +190,17 @@ public interface ConfigurationKeys {
      * The constant CLIENT_LOCK_RETRY_TIMES.
      */
     String CLIENT_LOCK_RETRY_TIMES = CLIENT_RM_LOCK_PREFIX + "retryTimes";
+
     /**
      * The constant CLIENT_LOCK_RETRY_INTERVAL.
      */
     String CLIENT_LOCK_RETRY_INTERVAL = CLIENT_RM_LOCK_PREFIX + "retryInterval";
+
     /**
      * The constant CLIENT_LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT.
      */
-    String CLIENT_LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT = CLIENT_RM_LOCK_PREFIX + "retryPolicyBranchRollbackOnConflict";
+    String CLIENT_LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT =
+            CLIENT_RM_LOCK_PREFIX + "retryPolicyBranchRollbackOnConflict";
 
     /**
      * The constant SERVICE_SESSION_RELOAD_READ_SIZE
@@ -221,7 +230,8 @@ public interface ConfigurationKeys {
     /**
      * The constant CLIENT_SAGA_COMPENSATE_PERSIST_MODE_UPDATE.
      */
-    String CLIENT_SAGA_COMPENSATE_PERSIST_MODE_UPDATE = CLIENT_RM_PREFIX + "sagaCompensatePersistModeUpdate";
+    String CLIENT_SAGA_COMPENSATE_PERSIST_MODE_UPDATE =
+            CLIENT_RM_PREFIX + "sagaCompensatePersistModeUpdate";
 
     /**
      * The constant CLIENT_REPORT_RETRY_COUNT.
@@ -247,6 +257,7 @@ public interface ConfigurationKeys {
      * The constant CLIENT_TM_PREFIX.
      */
     String CLIENT_TM_PREFIX = CLIENT_PREFIX + "tm.";
+
     /**
      * The constant CLIENT_TM_COMMIT_RETRY_TIMES.
      */
@@ -260,7 +271,8 @@ public interface ConfigurationKeys {
     /**
      * The constant DEFAULT_GLOBAL_TRANSACTION_TIMEOUT.
      */
-    String DEFAULT_GLOBAL_TRANSACTION_TIMEOUT = CLIENT_TM_PREFIX + "defaultGlobalTransactionTimeout";
+    String DEFAULT_GLOBAL_TRANSACTION_TIMEOUT =
+            CLIENT_TM_PREFIX + "defaultGlobalTransactionTimeout";
 
     /**
      * The constant SERIALIZE_FOR_RPC.
@@ -367,12 +379,14 @@ public interface ConfigurationKeys {
     /**
      * The constant STORE_DB_DRUID_TIME_BETWEEN_EVICTION_RUNS_MILLIS.
      */
-    String STORE_DB_DRUID_TIME_BETWEEN_EVICTION_RUNS_MILLIS = STORE_DB_DRUID_PREFIX + "timeBetweenEvictionRunsMillis";
+    String STORE_DB_DRUID_TIME_BETWEEN_EVICTION_RUNS_MILLIS =
+            STORE_DB_DRUID_PREFIX + "timeBetweenEvictionRunsMillis";
 
     /**
      * The constant STORE_DB_DRUID_MIN_EVICTABLE_TIME_MILLIS.
      */
-    String STORE_DB_DRUID_MIN_EVICTABLE_TIME_MILLIS = STORE_DB_DRUID_PREFIX + "minEvictableIdleTimeMillis";
+    String STORE_DB_DRUID_MIN_EVICTABLE_TIME_MILLIS =
+            STORE_DB_DRUID_PREFIX + "minEvictableIdleTimeMillis";
 
     /**
      * The constant STORE_DB_DRUID_TEST_WHILE_IDLE.
@@ -412,12 +426,14 @@ public interface ConfigurationKeys {
     /**
      * The constant STORE_DB_DBCP_TIME_BETWEEN_EVICTION_RUNS_MILLIS.
      */
-    String STORE_DB_DBCP_TIME_BETWEEN_EVICTION_RUNS_MILLIS = STORE_DB_DBCP_PREFIX + "timeBetweenEvictionRunsMillis";
+    String STORE_DB_DBCP_TIME_BETWEEN_EVICTION_RUNS_MILLIS =
+            STORE_DB_DBCP_PREFIX + "timeBetweenEvictionRunsMillis";
 
     /**
      * The constant STORE_DB_DBCP_MIN_EVICTABLE_TIME_MILLIS.
      */
-    String STORE_DB_DBCP_MIN_EVICTABLE_TIME_MILLIS = STORE_DB_DBCP_PREFIX + "minEvictableIdleTimeMillis";
+    String STORE_DB_DBCP_MIN_EVICTABLE_TIME_MILLIS =
+            STORE_DB_DBCP_PREFIX + "minEvictableIdleTimeMillis";
 
     /**
      * The constant STORE_DB_DBCP_TEST_WHILE_IDLE.
@@ -433,7 +449,6 @@ public interface ConfigurationKeys {
      * The constant LOCK_DB_TABLE.
      */
     String LOCK_DB_TABLE = STORE_DB_PREFIX + "lockTable";
-
 
     /**
      * The constant SERVER_RPC_PORT.
@@ -544,6 +559,7 @@ public interface ConfigurationKeys {
      * The constant METRICS_EXPORTER_LIST.
      */
     String METRICS_EXPORTER_LIST = "exporterList";
+
     /**
      * The constant METRICS_EXPORTER_PROMETHEUS_PORT
      */
@@ -568,6 +584,7 @@ public interface ConfigurationKeys {
      * The constant TRANSACTION_UNDO_LOG_TABLE
      */
     String TRANSACTION_UNDO_LOG_TABLE = CLIENT_UNDO_PREFIX + "logTable";
+
     /**
      * The constant LOG_PREFIX
      */
@@ -593,12 +610,14 @@ public interface ConfigurationKeys {
      * This configuration is deprecated, please use {@link #ROLLBACK_FAILED_UNLOCK_ENABLE} instead.
      */
     @Deprecated
-    String ROLLBACK_RETRY_TIMEOUT_UNLOCK_ENABLE = SERVER_PREFIX + "rollbackRetryTimeoutUnlockEnable";
+    String ROLLBACK_RETRY_TIMEOUT_UNLOCK_ENABLE =
+            SERVER_PREFIX + "rollbackRetryTimeoutUnlockEnable";
 
     /**
      * The constant ROLLBACK_FAILED_UNLOCK_ENABLE.
      */
     String ROLLBACK_FAILED_UNLOCK_ENABLE = SERVER_PREFIX + "rollbackFailedUnlockEnable";
+
     /**
      * the constant RETRY_DEAD_THRESHOLD
      */
@@ -735,27 +754,32 @@ public interface ConfigurationKeys {
     /**
      * The constant ENABLE_TM_CLIENT_BATCH_SEND_REQUEST
      */
-    String ENABLE_TM_CLIENT_BATCH_SEND_REQUEST = TRANSPORT_PREFIX + "enableTmClientBatchSendRequest";
+    String ENABLE_TM_CLIENT_BATCH_SEND_REQUEST =
+            TRANSPORT_PREFIX + "enableTmClientBatchSendRequest";
 
     /**
      * The constant ENABLE_RM_CLIENT_CHANNEL_CHECK_FAIL_FAST
      */
-    String ENABLE_TM_CLIENT_CHANNEL_CHECK_FAIL_FAST = TRANSPORT_PREFIX + "enableTmClientChannelCheckFailFast";
+    String ENABLE_TM_CLIENT_CHANNEL_CHECK_FAIL_FAST =
+            TRANSPORT_PREFIX + "enableTmClientChannelCheckFailFast";
 
     /**
      * The constant ENABLE_RM_CLIENT_CHANNEL_CHECK_FAIL_FAST
      */
-    String ENABLE_RM_CLIENT_CHANNEL_CHECK_FAIL_FAST = TRANSPORT_PREFIX + "enableRmClientChannelCheckFailFast";
+    String ENABLE_RM_CLIENT_CHANNEL_CHECK_FAIL_FAST =
+            TRANSPORT_PREFIX + "enableRmClientChannelCheckFailFast";
 
     /**
      * The constant ENABLE_RM_CLIENT_BATCH_SEND_REQUEST
      */
-    String ENABLE_RM_CLIENT_BATCH_SEND_REQUEST = TRANSPORT_PREFIX + "enableRmClientBatchSendRequest";
+    String ENABLE_RM_CLIENT_BATCH_SEND_REQUEST =
+            TRANSPORT_PREFIX + "enableRmClientBatchSendRequest";
 
     /**
      * The constant ENABLE_TC_SERVER_BATCH_SEND_RESPONSE
      */
-    String ENABLE_TC_SERVER_BATCH_SEND_RESPONSE = TRANSPORT_PREFIX + "enableTcServerBatchSendResponse";
+    String ENABLE_TC_SERVER_BATCH_SEND_RESPONSE =
+            TRANSPORT_PREFIX + "enableTcServerBatchSendResponse";
 
     /**
      * The constant DISABLE_GLOBAL_TRANSACTION.
@@ -871,6 +895,7 @@ public interface ConfigurationKeys {
      * The constant CLIENT_DEGRADE_CHECK.
      */
     String CLIENT_DEGRADE_CHECK = CLIENT_TM_PREFIX + "degradeCheck";
+
     /**
      * The constant CLIENT_DEGRADE_CHECK_ALLOW_TIMES.
      */
@@ -905,6 +930,7 @@ public interface ConfigurationKeys {
      * The constant EXTRA_DATA_SPLIT_CHAR.
      */
     String EXTRA_DATA_SPLIT_CHAR = "\n";
+
     /**
      * The constant EXTRA_DATA_KV_CHAR.
      */
@@ -978,7 +1004,8 @@ public interface ConfigurationKeys {
     /**
      * The constant SESSION_BRANCH_ASYNC_QUEUE_SIZE
      */
-    String SESSION_BRANCH_ASYNC_QUEUE_SIZE = SERVER_PREFIX + SESSION_PREFIX + "branchAsyncQueueSize";
+    String SESSION_BRANCH_ASYNC_QUEUE_SIZE =
+            SERVER_PREFIX + SESSION_PREFIX + "branchAsyncQueueSize";
 
     /**
      * The constant ENABLE_BRANCH_ASYNC_REMOVE
@@ -1060,7 +1087,6 @@ public interface ConfigurationKeys {
      */
     String SERVER_RAFT_SSL_CLIENT_KEYSTORE_PASSWORD = SERVER_RAFT_SSL_CLIENT + "keystore.password";
 
-
     /**
      * The constant SERVER_RAFT_SSL_CLIENT_KEYSTORE_TYPE.
      */
@@ -1139,8 +1165,8 @@ public interface ConfigurationKeys {
     /**
      * The constant XA_CONNECTION_TWO_PHASE_HOLD_TIMEOUT
      */
-    String XA_CONNECTION_TWO_PHASE_HOLD_TIMEOUT = CLIENT_RM_PREFIX + "connectionTwoPhaseHoldTimeoutXA";
-
+    String XA_CONNECTION_TWO_PHASE_HOLD_TIMEOUT =
+            CLIENT_RM_PREFIX + "connectionTwoPhaseHoldTimeoutXA";
 
     /**
      * The constant ENABLE_PARALLEL_REQUEST_HANDLE_KEY
@@ -1180,12 +1206,14 @@ public interface ConfigurationKeys {
     /**
      *
      */
-    String NAMINGSERVER_REGISTRY_PREFIX = FILE_ROOT_REGISTRY + FILE_CONFIG_SPLIT_CHAR + NAMING_SERVER + FILE_CONFIG_SPLIT_CHAR;
+    String NAMINGSERVER_REGISTRY_PREFIX =
+            FILE_ROOT_REGISTRY + FILE_CONFIG_SPLIT_CHAR + NAMING_SERVER + FILE_CONFIG_SPLIT_CHAR;
 
     /**
      *
      */
-    String SEATA_NAMINGSERVER_REGISTRY_PREFIX = SEATA_FILE_ROOT_CONFIG + FILE_CONFIG_SPLIT_CHAR + NAMINGSERVER_REGISTRY_PREFIX;
+    String SEATA_NAMINGSERVER_REGISTRY_PREFIX =
+            SEATA_FILE_ROOT_CONFIG + FILE_CONFIG_SPLIT_CHAR + NAMINGSERVER_REGISTRY_PREFIX;
 
     /**
      * The constant REGISTRY_NAMINGSERVER_CLUSTER
@@ -1205,12 +1233,18 @@ public interface ConfigurationKeys {
     /**
      * The constant CLUSTER_NAME_KEY
      */
-    String CLUSTER_NAME_KEY = SEATA_FILE_ROOT_CONFIG + FILE_CONFIG_SPLIT_CHAR + REGISTRY_NAMINGSERVER_CLUSTER;
+    String CLUSTER_NAME_KEY =
+            SEATA_FILE_ROOT_CONFIG + FILE_CONFIG_SPLIT_CHAR + REGISTRY_NAMINGSERVER_CLUSTER;
 
     /**
      * The constant META_PREFIX
      */
-    String META_PREFIX = SEATA_FILE_ROOT_CONFIG + FILE_CONFIG_SPLIT_CHAR + FILE_ROOT_REGISTRY + FILE_CONFIG_SPLIT_CHAR + "metadata.";
+    String META_PREFIX =
+            SEATA_FILE_ROOT_CONFIG
+                    + FILE_CONFIG_SPLIT_CHAR
+                    + FILE_ROOT_REGISTRY
+                    + FILE_CONFIG_SPLIT_CHAR
+                    + "metadata.";
 
     /**
      * The constant SERVER_REGISTRY_METADATA_PREFIX
@@ -1221,7 +1255,6 @@ public interface ConfigurationKeys {
      * The constant SERVER_REGISTRY_METADATA_EXTERNAL
      */
     String SERVER_REGISTRY_METADATA_EXTERNAL = SERVER_REGISTRY_METADATA_PREFIX + ".external";
-
 
     /**
      * The constant RATE_LIMIT_PREFIX.
@@ -1247,5 +1280,4 @@ public interface ConfigurationKeys {
      * The constant RATE_LIMIT_BUCKET_TOKEN_INITIAL_NUM.
      */
     String RATE_LIMIT_BUCKET_TOKEN_INITIAL_NUM = RATE_LIMIT_PREFIX + ".bucketTokenInitialNum";
-
 }

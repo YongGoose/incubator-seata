@@ -16,11 +16,11 @@
  */
 package org.apache.seata.saga.statelang.parser.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.saga.engine.utils.ResourceUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * ResourceUtil tests
@@ -33,7 +33,8 @@ public class ResourceUtilTests {
         Resource[] resources = ResourceUtil.getResources("classpath*:statelang/*.json");
         assertThat(resources.length).isEqualTo(1);
 
-        Resource[] resources2 = ResourceUtil.getResources(new String[]{"classpath*:statelang/*.json"});
+        Resource[] resources2 =
+                ResourceUtil.getResources(new String[] {"classpath*:statelang/*.json"});
         assertThat(resources2.length).isEqualTo(1);
     }
 }

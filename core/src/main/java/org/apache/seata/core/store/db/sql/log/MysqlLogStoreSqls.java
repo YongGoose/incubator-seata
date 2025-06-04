@@ -28,64 +28,119 @@ public class MysqlLogStoreSqls extends AbstractLogStoreSqls {
     /**
      * The constant INSERT_GLOBAL_TRANSACTION_MYSQL.
      */
-    public static final String INSERT_GLOBAL_TRANSACTION_MYSQL = "insert into " + GLOBAL_TABLE_PLACEHOLD
-            + "(" + ALL_GLOBAL_COLUMNS + ")"
-            + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())";
+    public static final String INSERT_GLOBAL_TRANSACTION_MYSQL =
+            "insert into "
+                    + GLOBAL_TABLE_PLACEHOLD
+                    + "("
+                    + ALL_GLOBAL_COLUMNS
+                    + ")"
+                    + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())";
 
     /**
      * The constant UPDATE_GLOBAL_TRANSACTION_STATUS_MYSQL.
      */
-    public static final String UPDATE_GLOBAL_TRANSACTION_STATUS_MYSQL = "update " + GLOBAL_TABLE_PLACEHOLD
-            + "   set " + ServerTableColumnsName.GLOBAL_TABLE_STATUS + " = ?,"
-            + "       " + ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED + " = now()"
-            + " where " + ServerTableColumnsName.GLOBAL_TABLE_XID + " = ?";
+    public static final String UPDATE_GLOBAL_TRANSACTION_STATUS_MYSQL =
+            "update "
+                    + GLOBAL_TABLE_PLACEHOLD
+                    + "   set "
+                    + ServerTableColumnsName.GLOBAL_TABLE_STATUS
+                    + " = ?,"
+                    + "       "
+                    + ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED
+                    + " = now()"
+                    + " where "
+                    + ServerTableColumnsName.GLOBAL_TABLE_XID
+                    + " = ?";
 
     /**
      * The constant UPDATE_GLOBAL_TRANSACTION_STATUS_BY_STATUS_MYSQL.
      */
     public static final String UPDATE_GLOBAL_TRANSACTION_STATUS_BY_STATUS_MYSQL =
-        UPDATE_GLOBAL_TRANSACTION_STATUS_MYSQL + " and " + ServerTableColumnsName.GLOBAL_TABLE_STATUS + " = ?";
+            UPDATE_GLOBAL_TRANSACTION_STATUS_MYSQL
+                    + " and "
+                    + ServerTableColumnsName.GLOBAL_TABLE_STATUS
+                    + " = ?";
 
     /**
      * The constant QUERY_GLOBAL_TRANSACTION_BY_STATUS.
      */
-    public static final String QUERY_GLOBAL_TRANSACTION_BY_STATUS_MYSQL = "select " + ALL_GLOBAL_COLUMNS
-            + "  from " + GLOBAL_TABLE_PLACEHOLD
-            + " where " + ServerTableColumnsName.GLOBAL_TABLE_STATUS + " in (" + PRAMETER_PLACEHOLD + ")"
-            + " order by " + ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED
-            + " limit ?";
+    public static final String QUERY_GLOBAL_TRANSACTION_BY_STATUS_MYSQL =
+            "select "
+                    + ALL_GLOBAL_COLUMNS
+                    + "  from "
+                    + GLOBAL_TABLE_PLACEHOLD
+                    + " where "
+                    + ServerTableColumnsName.GLOBAL_TABLE_STATUS
+                    + " in ("
+                    + PRAMETER_PLACEHOLD
+                    + ")"
+                    + " order by "
+                    + ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED
+                    + " limit ?";
 
     /**
      * The constant QUERY_GLOBAL_TRANSACTION_FOR_RECOVERY_MYSQL.
      */
-    public static final String QUERY_GLOBAL_TRANSACTION_FOR_RECOVERY_MYSQL = "select " + ALL_GLOBAL_COLUMNS
-            + "  from " + GLOBAL_TABLE_PLACEHOLD
-            + " where " + ServerTableColumnsName.GLOBAL_TABLE_STATUS + " in (0, 2, 3, 4, 5, 6, 7, 8, 10 ,12, 14)"
-            + " order by " + ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED
-            + " limit ?";
+    public static final String QUERY_GLOBAL_TRANSACTION_FOR_RECOVERY_MYSQL =
+            "select "
+                    + ALL_GLOBAL_COLUMNS
+                    + "  from "
+                    + GLOBAL_TABLE_PLACEHOLD
+                    + " where "
+                    + ServerTableColumnsName.GLOBAL_TABLE_STATUS
+                    + " in (0, 2, 3, 4, 5, 6, 7, 8, 10 ,12, 14)"
+                    + " order by "
+                    + ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED
+                    + " limit ?";
 
     /**
      * The constant INSERT_BRANCH_TRANSACTION_MYSQL.
      */
-    public static final String INSERT_BRANCH_TRANSACTION_MYSQL = "insert into " + BRANCH_TABLE_PLACEHOLD
-            + "(" + ALL_BRANCH_COLUMNS + ")"
-            + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(6), now(6))";
+    public static final String INSERT_BRANCH_TRANSACTION_MYSQL =
+            "insert into "
+                    + BRANCH_TABLE_PLACEHOLD
+                    + "("
+                    + ALL_BRANCH_COLUMNS
+                    + ")"
+                    + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(6), now(6))";
 
     /**
      * The constant UPDATE_BRANCH_TRANSACTION_STATUS_MYSQL.
      */
-    public static final String UPDATE_BRANCH_TRANSACTION_STATUS_MYSQL = "update " + BRANCH_TABLE_PLACEHOLD
-            + "   set " + ServerTableColumnsName.BRANCH_TABLE_STATUS + " = ?,"
-            + "       " + ServerTableColumnsName.BRANCH_TABLE_GMT_MODIFIED + " = now(6)"
-            + " where " + ServerTableColumnsName.BRANCH_TABLE_XID + " = ?"
-            + "   and " + ServerTableColumnsName.BRANCH_TABLE_BRANCH_ID + " = ?";
+    public static final String UPDATE_BRANCH_TRANSACTION_STATUS_MYSQL =
+            "update "
+                    + BRANCH_TABLE_PLACEHOLD
+                    + "   set "
+                    + ServerTableColumnsName.BRANCH_TABLE_STATUS
+                    + " = ?,"
+                    + "       "
+                    + ServerTableColumnsName.BRANCH_TABLE_GMT_MODIFIED
+                    + " = now(6)"
+                    + " where "
+                    + ServerTableColumnsName.BRANCH_TABLE_XID
+                    + " = ?"
+                    + "   and "
+                    + ServerTableColumnsName.BRANCH_TABLE_BRANCH_ID
+                    + " = ?";
 
-    public static final String UPDATE_BRANCH_STATUS_APPLICATION_DATA_MYSQL =  "update " + BRANCH_TABLE_PLACEHOLD
-            + "   set " + ServerTableColumnsName.BRANCH_TABLE_STATUS + " = ?,"
-            + "       " + ServerTableColumnsName.BRANCH_TABLE_APPLICATION_DATA + " = ?,"
-            + "       " + ServerTableColumnsName.BRANCH_TABLE_GMT_MODIFIED + " = now(6)"
-            + " where " + ServerTableColumnsName.BRANCH_TABLE_XID + " = ?"
-            + "   and " + ServerTableColumnsName.BRANCH_TABLE_BRANCH_ID + " = ?";
+    public static final String UPDATE_BRANCH_STATUS_APPLICATION_DATA_MYSQL =
+            "update "
+                    + BRANCH_TABLE_PLACEHOLD
+                    + "   set "
+                    + ServerTableColumnsName.BRANCH_TABLE_STATUS
+                    + " = ?,"
+                    + "       "
+                    + ServerTableColumnsName.BRANCH_TABLE_APPLICATION_DATA
+                    + " = ?,"
+                    + "       "
+                    + ServerTableColumnsName.BRANCH_TABLE_GMT_MODIFIED
+                    + " = now(6)"
+                    + " where "
+                    + ServerTableColumnsName.BRANCH_TABLE_XID
+                    + " = ?"
+                    + "   and "
+                    + ServerTableColumnsName.BRANCH_TABLE_BRANCH_ID
+                    + " = ?";
 
     @Override
     public String getInsertGlobalTransactionSQL(String globalTable) {
@@ -99,18 +154,22 @@ public class MysqlLogStoreSqls extends AbstractLogStoreSqls {
 
     @Override
     public String getUpdateGlobalTransactionStatusByStatusSQL(String globalTable) {
-        return UPDATE_GLOBAL_TRANSACTION_STATUS_BY_STATUS_MYSQL.replace(GLOBAL_TABLE_PLACEHOLD, globalTable);
+        return UPDATE_GLOBAL_TRANSACTION_STATUS_BY_STATUS_MYSQL.replace(
+                GLOBAL_TABLE_PLACEHOLD, globalTable);
     }
 
     @Override
-    public String getQueryGlobalTransactionSQLByStatus(String globalTable, String paramsPlaceHolder) {
-        return QUERY_GLOBAL_TRANSACTION_BY_STATUS_MYSQL.replace(GLOBAL_TABLE_PLACEHOLD, globalTable)
-            .replace(PRAMETER_PLACEHOLD, paramsPlaceHolder);
+    public String getQueryGlobalTransactionSQLByStatus(
+            String globalTable, String paramsPlaceHolder) {
+        return QUERY_GLOBAL_TRANSACTION_BY_STATUS_MYSQL
+                .replace(GLOBAL_TABLE_PLACEHOLD, globalTable)
+                .replace(PRAMETER_PLACEHOLD, paramsPlaceHolder);
     }
 
     @Override
     public String getQueryGlobalTransactionForRecoverySQL(String globalTable) {
-        return QUERY_GLOBAL_TRANSACTION_FOR_RECOVERY_MYSQL.replace(GLOBAL_TABLE_PLACEHOLD, globalTable);
+        return QUERY_GLOBAL_TRANSACTION_FOR_RECOVERY_MYSQL.replace(
+                GLOBAL_TABLE_PLACEHOLD, globalTable);
     }
 
     @Override
@@ -125,6 +184,7 @@ public class MysqlLogStoreSqls extends AbstractLogStoreSqls {
 
     @Override
     public String getUpdateBranchTransactionStatusAppDataSQL(String branchTable) {
-        return UPDATE_BRANCH_STATUS_APPLICATION_DATA_MYSQL.replace(BRANCH_TABLE_PLACEHOLD, branchTable);
+        return UPDATE_BRANCH_STATUS_APPLICATION_DATA_MYSQL.replace(
+                BRANCH_TABLE_PLACEHOLD, branchTable);
     }
 }

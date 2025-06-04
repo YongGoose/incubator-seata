@@ -16,9 +16,10 @@
  */
 package org.apache.seata.server.session;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
+
 import java.io.IOException;
 import java.util.stream.Stream;
-
 import org.apache.seata.common.store.SessionMode;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchStatus;
@@ -33,9 +34,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
-
 /**
  * The type Global session test.
  *
@@ -44,13 +42,13 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 @SpringBootTest
 public class GlobalSessionTest {
 
-
     @BeforeAll
-    public static void init(ApplicationContext context){
+    public static void init(ApplicationContext context) {
         SessionHolder.init(SessionMode.FILE);
     }
+
     @AfterAll
-    public static void destroy(){
+    public static void destroy() {
         SessionHolder.destroy();
     }
 
@@ -123,7 +121,8 @@ public class GlobalSessionTest {
      */
     @ParameterizedTest
     @MethodSource("branchSessionProvider")
-    public void changeBranchStatusTest(GlobalSession globalSession, BranchSession branchSession) throws Exception {
+    public void changeBranchStatusTest(GlobalSession globalSession, BranchSession branchSession)
+            throws Exception {
         globalSession.changeBranchStatus(branchSession, BranchStatus.PhaseTwo_Committed);
     }
 
@@ -160,7 +159,8 @@ public class GlobalSessionTest {
      */
     @ParameterizedTest
     @MethodSource("branchSessionProvider")
-    public void addBranchTest(GlobalSession globalSession, BranchSession branchSession) throws Exception {
+    public void addBranchTest(GlobalSession globalSession, BranchSession branchSession)
+            throws Exception {
         globalSession.addBranch(branchSession);
     }
 
@@ -173,7 +173,8 @@ public class GlobalSessionTest {
      */
     @ParameterizedTest
     @MethodSource("branchSessionProvider")
-    public void removeBranchTest(GlobalSession globalSession, BranchSession branchSession) throws Exception {
+    public void removeBranchTest(GlobalSession globalSession, BranchSession branchSession)
+            throws Exception {
         globalSession.addBranch(branchSession);
         globalSession.removeAndUnlockBranch(branchSession);
     }
@@ -193,7 +194,8 @@ public class GlobalSessionTest {
         Assertions.assertEquals(expected.getTransactionId(), globalSession.getTransactionId());
         Assertions.assertEquals(expected.getTimeout(), globalSession.getTimeout());
         Assertions.assertEquals(expected.getApplicationId(), globalSession.getApplicationId());
-        Assertions.assertEquals(expected.getTransactionServiceGroup(), globalSession.getTransactionServiceGroup());
+        Assertions.assertEquals(
+                expected.getTransactionServiceGroup(), globalSession.getTransactionServiceGroup());
         Assertions.assertEquals(expected.getTransactionName(), globalSession.getTransactionName());
         Assertions.assertTrue(expected.isActive());
     }
@@ -206,10 +208,7 @@ public class GlobalSessionTest {
     static Stream<Arguments> globalSessionProvider() throws IOException {
         GlobalSession globalSession = new GlobalSession("demo-app", DEFAULT_TX_GROUP, "test", 6000);
         globalSession.setActive(true);
-        return Stream.of(
-                Arguments.of(
-                        globalSession)
-        );
+        return Stream.of(Arguments.of(globalSession));
     }
 
     /**
@@ -229,10 +228,7 @@ public class GlobalSessionTest {
         branchSession.setBranchType(BranchType.AT);
         branchSession.setApplicationData("{\"data\":\"test\"}");
         globalSession.add(branchSession);
-        return Stream.of(
-                Arguments.of(
-                        globalSession, branchSession)
-        );
+        return Stream.of(Arguments.of(globalSession, branchSession));
     }
 
     /**
@@ -240,7 +236,6 @@ public class GlobalSessionTest {
      *
      * @return the object [ ] [ ]
      */
-
     static Stream<Arguments> branchSessionTCCProvider() {
         GlobalSession globalSession = new GlobalSession("demo-app", DEFAULT_TX_GROUP, "test", 6000);
         BranchSession branchSession = new BranchSession();
@@ -253,8 +248,6 @@ public class GlobalSessionTest {
         branchSession.setBranchType(BranchType.TCC);
         branchSession.setApplicationData("{\"data\":\"test\"}");
         globalSession.add(branchSession);
-        return Stream.of(
-                Arguments.of(globalSession)
-        );
+        return Stream.of(Arguments.of(globalSession));
     }
 }

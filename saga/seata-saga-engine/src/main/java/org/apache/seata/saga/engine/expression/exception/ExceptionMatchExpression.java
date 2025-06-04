@@ -55,9 +55,7 @@ public class ExceptionMatchExpression implements Expression {
     }
 
     @Override
-    public void setValue(Object value, Object elContext) {
-
-    }
+    public void setValue(Object value, Object elContext) {}
 
     @Override
     public String getExpressionString() {
@@ -70,7 +68,9 @@ public class ExceptionMatchExpression implements Expression {
         try {
             this.exceptionClass = (Class<Exception>) Class.forName(expressionString);
         } catch (ClassNotFoundException e) {
-            throw new EngineExecutionException(e, expressionString + " is not a Exception Class",
+            throw new EngineExecutionException(
+                    e,
+                    expressionString + " is not a Exception Class",
                     FrameworkErrorCode.NotExceptionClass);
         }
     }

@@ -29,7 +29,10 @@ public interface TccAnnoAtInterAction {
      * @param actionContext the action context
      * @return the boolean
      */
-    @TwoPhaseBusinessAction(name = "TccAnnoAtInterAction", commitMethod = "commit", rollbackMethod = "rollback")
+    @TwoPhaseBusinessAction(
+            name = "TccAnnoAtInterAction",
+            commitMethod = "commit",
+            rollbackMethod = "rollback")
     boolean prepare(BusinessActionContext actionContext);
 
     /**
@@ -47,5 +50,4 @@ public interface TccAnnoAtInterAction {
      * @return the boolean
      */
     boolean rollback(BusinessActionContext actionContext);
-
 }

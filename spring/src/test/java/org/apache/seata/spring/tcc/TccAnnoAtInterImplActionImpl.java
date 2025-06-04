@@ -20,12 +20,14 @@ import org.apache.seata.rm.tcc.api.BusinessActionContext;
 import org.apache.seata.rm.tcc.api.LocalTCC;
 import org.apache.seata.rm.tcc.api.TwoPhaseBusinessAction;
 
-
 @LocalTCC
 public class TccAnnoAtInterImplActionImpl implements TccAnnoAtInterImplAction {
 
     @Override
-    @TwoPhaseBusinessAction(name = "TccAnnoAtInterImplAction", commitMethod = "commit", rollbackMethod = "rollback")
+    @TwoPhaseBusinessAction(
+            name = "TccAnnoAtInterImplAction",
+            commitMethod = "commit",
+            rollbackMethod = "rollback")
     public boolean prepare(BusinessActionContext actionContext) {
         return false;
     }

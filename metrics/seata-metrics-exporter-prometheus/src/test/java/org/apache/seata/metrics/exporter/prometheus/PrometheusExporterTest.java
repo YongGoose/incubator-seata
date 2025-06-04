@@ -27,8 +27,9 @@ public class PrometheusExporterTest {
 
     @Test
     public void getGetUnknownType() {
-        Assertions.assertDoesNotThrow(() -> {
-            PrometheusExporter.getUnknownType();
-        });
+        Assertions.assertDoesNotThrow(
+                () -> {
+                    PrometheusExporter.getUnknownType();
+                });
     }
 }

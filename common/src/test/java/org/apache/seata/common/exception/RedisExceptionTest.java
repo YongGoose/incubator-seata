@@ -19,29 +19,40 @@ package org.apache.seata.common.exception;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class RedisExceptionTest {
 
     @Test
     public void testRedisException() {
-        Assertions.assertThrowsExactly(RedisException.class, () -> {
-            throw new RedisException(FrameworkErrorCode.UnknownAppError);
-        });
-        Assertions.assertThrowsExactly(RedisException.class, () -> {
-            throw new RedisException("error");
-        });
-        Assertions.assertThrowsExactly(RedisException.class, () -> {
-            throw new RedisException("error", FrameworkErrorCode.UnknownAppError);
-        });
-        Assertions.assertThrowsExactly(RedisException.class, () -> {
-            throw new RedisException(new Throwable("error"), "error", FrameworkErrorCode.UnknownAppError);
-        });
-        Assertions.assertThrowsExactly(RedisException.class, () -> {
-            throw new RedisException(new Throwable("error"));
-        });
-        Assertions.assertThrowsExactly(RedisException.class, () -> {
-            throw new RedisException(new Throwable("error"), "error");
-        });
-
+        Assertions.assertThrowsExactly(
+                RedisException.class,
+                () -> {
+                    throw new RedisException(FrameworkErrorCode.UnknownAppError);
+                });
+        Assertions.assertThrowsExactly(
+                RedisException.class,
+                () -> {
+                    throw new RedisException("error");
+                });
+        Assertions.assertThrowsExactly(
+                RedisException.class,
+                () -> {
+                    throw new RedisException("error", FrameworkErrorCode.UnknownAppError);
+                });
+        Assertions.assertThrowsExactly(
+                RedisException.class,
+                () -> {
+                    throw new RedisException(
+                            new Throwable("error"), "error", FrameworkErrorCode.UnknownAppError);
+                });
+        Assertions.assertThrowsExactly(
+                RedisException.class,
+                () -> {
+                    throw new RedisException(new Throwable("error"));
+                });
+        Assertions.assertThrowsExactly(
+                RedisException.class,
+                () -> {
+                    throw new RedisException(new Throwable("error"), "error");
+                });
     }
 }

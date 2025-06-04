@@ -16,26 +16,23 @@
  */
 package org.apache.seata.rm.datasource.exec;
 
-import org.apache.seata.rm.datasource.exec.BaseTransactionalExecutor;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.sql.Statement;
+import java.util.*;
 import org.apache.seata.core.model.GlobalLockConfig;
 import org.apache.seata.rm.GlobalLockExecutor;
 import org.apache.seata.rm.GlobalLockTemplate;
 import org.apache.seata.rm.datasource.ConnectionProxy;
 import org.apache.seata.rm.datasource.StatementProxy;
 import org.apache.seata.rm.datasource.sql.struct.Field;
-import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.rm.datasource.sql.struct.TableRecords;
 import org.apache.seata.sqlparser.SQLRecognizer;
+import org.apache.seata.sqlparser.struct.TableMeta;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Statement;
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 
 public class BaseTransactionalExecutorTest {
 
@@ -43,67 +40,73 @@ public class BaseTransactionalExecutorTest {
     @Test
     public void testExecuteWithGlobalLockSet() throws Throwable {
 
-        //initial objects
+        // initial objects
         ConnectionProxy connectionProxy = new ConnectionProxy(null, null);
         StatementProxy statementProxy = new StatementProxy<>(connectionProxy, null);
 
-        BaseTransactionalExecutor<Object, Statement> baseTransactionalExecutor
-                = new BaseTransactionalExecutor<Object, Statement>(statementProxy, null, (SQLRecognizer) null) {
-            @Override
-            protected Object doExecute(Object... args) {
-                return null;
-            }
-        };
+        BaseTransactionalExecutor<Object, Statement> baseTransactionalExecutor =
+                new BaseTransactionalExecutor<Object, Statement>(
+                        statementProxy, null, (SQLRecognizer) null) {
+                    @Override
+                    protected Object doExecute(Object... args) {
+                        return null;
+                    }
+                };
         GlobalLockTemplate template = new GlobalLockTemplate();
 
         // not in global lock context
         try {
             baseTransactionalExecutor.execute(new Object());
-            Assertions.assertFalse(connectionProxy.isGlobalLockRequire(), "connection context set!");
+            Assertions.assertFalse(
+                    connectionProxy.isGlobalLockRequire(), "connection context set!");
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
 
         // in global lock context
-        template.execute(new GlobalLockExecutor() {
-            @Override
-            public Object execute() throws Throwable {
-                baseTransactionalExecutor.execute(new Object());
-                Assertions.assertTrue(connectionProxy.isGlobalLockRequire(), "connection context not set!");
-                return null;
-            }
+        template.execute(
+                new GlobalLockExecutor() {
+                    @Override
+                    public Object execute() throws Throwable {
+                        baseTransactionalExecutor.execute(new Object());
+                        Assertions.assertTrue(
+                                connectionProxy.isGlobalLockRequire(),
+                                "connection context not set!");
+                        return null;
+                    }
 
-            @Override
-            public GlobalLockConfig getGlobalLockConfig() {
-                return null;
-            }
-        });
+                    @Override
+                    public GlobalLockConfig getGlobalLockConfig() {
+                        return null;
+                    }
+                });
     }
 
     @Test
     public void testBuildLockKey() {
-        //build expect data
+        // build expect data
         String tableName = "test_name";
         String fieldOne = "1";
         String fieldTwo = "2";
         String split1 = ":";
         String split2 = ",";
-        String pkColumnName="id";
-        //test_name:1,2
+        String pkColumnName = "id";
+        // test_name:1,2
         String buildLockKeyExpect = tableName + split1 + fieldOne + split2 + fieldTwo;
         // mock field
         Field field1 = mock(Field.class);
         when(field1.getValue()).thenReturn(fieldOne);
         Field field2 = mock(Field.class);
         when(field2.getValue()).thenReturn(fieldTwo);
-        List<Map<String,Field>> pkRows =new ArrayList<>();
+        List<Map<String, Field>> pkRows = new ArrayList<>();
         pkRows.add(Collections.singletonMap(pkColumnName, field1));
         pkRows.add(Collections.singletonMap(pkColumnName, field2));
 
         // mock tableMeta
         TableMeta tableMeta = mock(TableMeta.class);
         when(tableMeta.getTableName()).thenReturn(tableName);
-        when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Arrays.asList(new String[]{pkColumnName}));
+        when(tableMeta.getPrimaryKeyOnlyName())
+                .thenReturn(Arrays.asList(new String[] {pkColumnName}));
         // mock tableRecords
         TableRecords tableRecords = mock(TableRecords.class);
         when(tableRecords.getTableMeta()).thenReturn(tableMeta);
@@ -118,7 +121,7 @@ public class BaseTransactionalExecutorTest {
 
     @Test
     public void testBuildLockKeyWithMultiPk() {
-        //build expect data
+        // build expect data
         String tableName = "test_name";
         String pkOneValue1 = "1";
         String pkOneValue2 = "2";
@@ -127,10 +130,19 @@ public class BaseTransactionalExecutorTest {
         String split1 = ":";
         String split2 = ",";
         String split3 = "_";
-        String pkOneColumnName="id";
-        String pkTwoColumnName="userId";
-        //test_name:1_one,2_two
-        String buildLockKeyExpect = tableName + split1 + pkOneValue1+ split3 + pkTwoValue1  + split2 + pkOneValue2 + split3 + pkTwoValue2;
+        String pkOneColumnName = "id";
+        String pkTwoColumnName = "userId";
+        // test_name:1_one,2_two
+        String buildLockKeyExpect =
+                tableName
+                        + split1
+                        + pkOneValue1
+                        + split3
+                        + pkTwoValue1
+                        + split2
+                        + pkOneValue2
+                        + split3
+                        + pkTwoValue2;
         // mock field
         Field pkOneField1 = mock(Field.class);
         when(pkOneField1.getValue()).thenReturn(pkOneValue1);
@@ -140,22 +152,29 @@ public class BaseTransactionalExecutorTest {
         when(pkTwoField1.getValue()).thenReturn(pkTwoValue1);
         Field pkTwoField2 = mock(Field.class);
         when(pkTwoField2.getValue()).thenReturn(pkTwoValue2);
-        List<Map<String,Field>> pkRows =new ArrayList<>();
-        Map<String, Field> row1 = new HashMap<String, Field>() {{
-            put(pkOneColumnName, pkOneField1);
-            put(pkTwoColumnName, pkTwoField1);
-        }};
+        List<Map<String, Field>> pkRows = new ArrayList<>();
+        Map<String, Field> row1 =
+                new HashMap<String, Field>() {
+                    {
+                        put(pkOneColumnName, pkOneField1);
+                        put(pkTwoColumnName, pkTwoField1);
+                    }
+                };
         pkRows.add(row1);
-        Map<String, Field> row2 = new HashMap<String, Field>() {{
-            put(pkOneColumnName, pkOneField2);
-            put(pkTwoColumnName, pkTwoField2);
-        }};
+        Map<String, Field> row2 =
+                new HashMap<String, Field>() {
+                    {
+                        put(pkOneColumnName, pkOneField2);
+                        put(pkTwoColumnName, pkTwoField2);
+                    }
+                };
         pkRows.add(row2);
 
         // mock tableMeta
         TableMeta tableMeta = mock(TableMeta.class);
         when(tableMeta.getTableName()).thenReturn(tableName);
-        when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Arrays.asList(new String[]{pkOneColumnName,pkTwoColumnName}));
+        when(tableMeta.getPrimaryKeyOnlyName())
+                .thenReturn(Arrays.asList(new String[] {pkOneColumnName, pkTwoColumnName}));
         // mock tableRecords
         TableRecords tableRecords = mock(TableRecords.class);
         when(tableRecords.getTableMeta()).thenReturn(tableMeta);
@@ -167,5 +186,4 @@ public class BaseTransactionalExecutorTest {
         when(executor.getTableMeta()).thenReturn(tableMeta);
         assertThat(executor.buildLockKey(tableRecords)).isEqualTo(buildLockKeyExpect);
     }
-
 }

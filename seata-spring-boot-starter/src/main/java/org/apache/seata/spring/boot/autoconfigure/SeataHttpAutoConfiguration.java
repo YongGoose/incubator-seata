@@ -16,6 +16,8 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.HTTP_PREFIX;
+
 import org.apache.seata.integration.http.JakartaSeataWebMvcConfigurer;
 import org.apache.seata.integration.http.SeataWebMvcConfigurer;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -27,8 +29,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.HTTP_PREFIX;
-
 /**
  * Auto bean add for spring webmvc if in springboot env.
  *
@@ -36,7 +36,11 @@ import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.HTTP_P
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnMissingBean(SeataWebMvcConfigurer.class)
-@ConditionalOnProperty(prefix = HTTP_PREFIX, name = "interceptor-enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+        prefix = HTTP_PREFIX,
+        name = "interceptor-enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 public class SeataHttpAutoConfiguration {
 

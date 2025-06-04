@@ -16,6 +16,13 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.http;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.seata.core.rpc.netty.http.ControllerManager;
 import org.apache.seata.core.rpc.netty.http.HttpInvocation;
 import org.apache.seata.core.rpc.netty.http.ParamMetaData;
@@ -32,14 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Handles classes annotated with @RestController to establish a request path -> controller mapping relationship
  *
@@ -49,7 +48,8 @@ import java.util.Map;
 public class RestControllerBeanPostProcessor implements BeanPostProcessor {
 
     private static final List<Class<? extends Annotation>> MAPPING_CLASS = new ArrayList<>();
-    private static final Map<Class<? extends Annotation>, ParamMetaData.ParamConvertType> MAPPING_PARAM_TYPE = new HashMap<>();
+    private static final Map<Class<? extends Annotation>, ParamMetaData.ParamConvertType>
+            MAPPING_PARAM_TYPE = new HashMap<>();
 
     static {
         MAPPING_CLASS.add(GetMapping.class);
@@ -60,11 +60,13 @@ public class RestControllerBeanPostProcessor implements BeanPostProcessor {
 
         MAPPING_PARAM_TYPE.put(RequestParam.class, ParamMetaData.ParamConvertType.REQUEST_PARAM);
         MAPPING_PARAM_TYPE.put(RequestBody.class, ParamMetaData.ParamConvertType.REQUEST_BODY);
-        MAPPING_PARAM_TYPE.put(ModelAttribute.class, ParamMetaData.ParamConvertType.MODEL_ATTRIBUTE);
+        MAPPING_PARAM_TYPE.put(
+                ModelAttribute.class, ParamMetaData.ParamConvertType.MODEL_ATTRIBUTE);
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName)
+            throws BeansException {
         if (!bean.getClass().isAnnotationPresent(RestController.class)) {
             return bean;
         }
@@ -102,7 +104,8 @@ public class RestControllerBeanPostProcessor implements BeanPostProcessor {
         }
     }
 
-    private static void addPathMapping(Object httpController, List<String> prePaths, Method method, List<String> postPaths) {
+    private static void addPathMapping(
+            Object httpController, List<String> prePaths, Method method, List<String> postPaths) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         ParamMetaData[] paramMetaDatas = new ParamMetaData[parameterTypes.length];
@@ -117,7 +120,8 @@ public class RestControllerBeanPostProcessor implements BeanPostProcessor {
             }
 
             ParamMetaData paramMetaData = new ParamMetaData();
-            ParamMetaData.ParamConvertType paramConvertType = MAPPING_PARAM_TYPE.get(parameterAnnotationType);
+            ParamMetaData.ParamConvertType paramConvertType =
+                    MAPPING_PARAM_TYPE.get(parameterAnnotationType);
             paramMetaData.setParamConvertType(paramConvertType);
             paramMetaDatas[i] = paramMetaData;
         }
@@ -142,6 +146,4 @@ public class RestControllerBeanPostProcessor implements BeanPostProcessor {
             }
         }
     }
-
-
 }

@@ -38,25 +38,25 @@ import org.springframework.test.web.servlet.MvcResult;
 @AutoConfigureMockMvc
 public class AuthControllerWithCustomPropertiesTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Autowired private ObjectMapper objectMapper;
 
     @Test
     public void loginSuccess_shouldReturnTokenAndAddToHeader() throws Exception {
         User user = new User("seata", "foo");
         String userJson = objectMapper.writeValueAsString(user);
 
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(header().exists(WebSecurityConfig.AUTHORIZATION_HEADER))
-                .andReturn();
+        MvcResult result =
+                mockMvc.perform(
+                                post("/api/v1/auth/login")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(userJson))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.success").value(true))
+                        .andExpect(jsonPath("$.data").isNotEmpty())
+                        .andExpect(header().exists(WebSecurityConfig.AUTHORIZATION_HEADER))
+                        .andReturn();
 
         String authHeader = result.getResponse().getHeader(WebSecurityConfig.AUTHORIZATION_HEADER);
         assertNotNull(authHeader);
@@ -68,9 +68,10 @@ public class AuthControllerWithCustomPropertiesTest {
         User user = new User("wrong_user", "wrong_password");
         String userJson = objectMapper.writeValueAsString(user);
 
-        mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
+        mockMvc.perform(
+                        post("/api/v1/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.code").value(Code.LOGIN_FAILED.getCode()));

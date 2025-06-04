@@ -16,11 +16,6 @@
  */
 package org.apache.seata.discovery.loadbalance;
 
-import org.apache.seata.common.rpc.RpcStatus;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -31,6 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
+import org.apache.seata.common.rpc.RpcStatus;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Created by guoyao on 2019/2/14.
@@ -48,7 +47,8 @@ public class LoadBalanceTest {
     @MethodSource("addressProvider")
     public void testRandomLoadBalance_select(List<InetSocketAddress> addresses) {
         int runs = 10000;
-        Map<InetSocketAddress, AtomicLong> counter = getSelectedCounter(runs, addresses, new RandomLoadBalance());
+        Map<InetSocketAddress, AtomicLong> counter =
+                getSelectedCounter(runs, addresses, new RandomLoadBalance());
         for (InetSocketAddress address : counter.keySet()) {
             Long count = counter.get(address).get();
             Assertions.assertTrue(count > 0, "selecte one time at last");
@@ -64,10 +64,12 @@ public class LoadBalanceTest {
     @MethodSource("addressProvider")
     public void testRoundRobinLoadBalance_select(List<InetSocketAddress> addresses) {
         int runs = 10000;
-        Map<InetSocketAddress, AtomicLong> counter = getSelectedCounter(runs, addresses, new RoundRobinLoadBalance());
+        Map<InetSocketAddress, AtomicLong> counter =
+                getSelectedCounter(runs, addresses, new RoundRobinLoadBalance());
         for (InetSocketAddress address : counter.keySet()) {
             Long count = counter.get(address).get();
-            Assertions.assertTrue(Math.abs(count - runs / (0f + addresses.size())) < 1f, "abs diff shoud < 1");
+            Assertions.assertTrue(
+                    Math.abs(count - runs / (0f + addresses.size())) < 1f, "abs diff shoud < 1");
         }
     }
 
@@ -81,10 +83,13 @@ public class LoadBalanceTest {
     public void testXIDLoadBalance_select(List<InetSocketAddress> addresses) throws Exception {
         XIDLoadBalance loadBalance = new XIDLoadBalance();
         // ipv4
-        InetSocketAddress inetSocketAddress = loadBalance.select(addresses, "127.0.0.1:8092:123456");
+        InetSocketAddress inetSocketAddress =
+                loadBalance.select(addresses, "127.0.0.1:8092:123456");
         Assertions.assertNotNull(inetSocketAddress);
         // ipv6
-        inetSocketAddress = loadBalance.select(addresses, "2000:0000:0000:0000:0001:2345:6789:abcd:8092:123456");
+        inetSocketAddress =
+                loadBalance.select(
+                        addresses, "2000:0000:0000:0000:0001:2345:6789:abcd:8092:123456");
         Assertions.assertNotNull(inetSocketAddress);
         // test not found tc channel
         inetSocketAddress = loadBalance.select(addresses, "127.0.0.1:8199:123456");
@@ -102,7 +107,8 @@ public class LoadBalanceTest {
         int runs = 10000;
         int selected = 0;
         ConsistentHashLoadBalance loadBalance = new ConsistentHashLoadBalance();
-        Map<InetSocketAddress, AtomicLong> counter = getSelectedCounter(runs, addresses, loadBalance);
+        Map<InetSocketAddress, AtomicLong> counter =
+                getSelectedCounter(runs, addresses, loadBalance);
         for (InetSocketAddress address : counter.keySet()) {
             if (counter.get(address).get() > 0) {
                 selected++;
@@ -118,7 +124,8 @@ public class LoadBalanceTest {
      */
     @ParameterizedTest
     @MethodSource("addressProvider")
-    public void testCachedConsistentHashLoadBalance_select(List<InetSocketAddress> addresses) throws Exception {
+    public void testCachedConsistentHashLoadBalance_select(List<InetSocketAddress> addresses)
+            throws Exception {
         ConsistentHashLoadBalance loadBalance = new ConsistentHashLoadBalance();
 
         List<InetSocketAddress> addresses1 = new ArrayList<>(addresses);
@@ -143,7 +150,8 @@ public class LoadBalanceTest {
      */
     @ParameterizedTest
     @MethodSource("addressProvider")
-    public void testLeastActiveLoadBalance_select(List<InetSocketAddress> addresses) throws Exception {
+    public void testLeastActiveLoadBalance_select(List<InetSocketAddress> addresses)
+            throws Exception {
         int runs = 10000;
         int size = addresses.size();
         for (int i = 0; i < size - 1; i++) {
@@ -157,7 +165,8 @@ public class LoadBalanceTest {
         }
         RpcStatus.beginCount(socketAddress.toString());
         RpcStatus.beginCount(socketAddress.toString());
-        Map<InetSocketAddress, AtomicLong> counter = getSelectedCounter(runs, addresses, loadBalance);
+        Map<InetSocketAddress, AtomicLong> counter =
+                getSelectedCounter(runs, addresses, loadBalance);
         for (InetSocketAddress address : counter.keySet()) {
             Long count = counter.get(address).get();
             if (address == socketAddress) {
@@ -176,8 +185,8 @@ public class LoadBalanceTest {
      * @param loadBalance the load balance
      * @return the selected counter
      */
-    public Map<InetSocketAddress, AtomicLong> getSelectedCounter(int runs, List<InetSocketAddress> addresses,
-                                                                 LoadBalance loadBalance) {
+    public Map<InetSocketAddress, AtomicLong> getSelectedCounter(
+            int runs, List<InetSocketAddress> addresses, LoadBalance loadBalance) {
         Assertions.assertNotNull(loadBalance);
         Map<InetSocketAddress, AtomicLong> counter = new ConcurrentHashMap<>();
         for (InetSocketAddress address : addresses) {
@@ -189,7 +198,7 @@ public class LoadBalanceTest {
                 counter.get(selectAddress).incrementAndGet();
             }
         } catch (Exception e) {
-            //do nothing
+            // do nothing
         }
         return counter;
     }
@@ -200,8 +209,10 @@ public class LoadBalanceTest {
      * @param loadBalance the loadBalance
      * @return the ConsistentHashSelector
      */
-    public Object getConsistentHashSelectorByReflect(ConsistentHashLoadBalance loadBalance) throws Exception {
-        Field selectorWrapperField = ConsistentHashLoadBalance.class.getDeclaredField("selectorWrapper");
+    public Object getConsistentHashSelectorByReflect(ConsistentHashLoadBalance loadBalance)
+            throws Exception {
+        Field selectorWrapperField =
+                ConsistentHashLoadBalance.class.getDeclaredField("selectorWrapper");
         selectorWrapperField.setAccessible(true);
         Object selectWrapper = selectorWrapperField.get(loadBalance);
         Assertions.assertNotNull(selectWrapper);
@@ -217,12 +228,12 @@ public class LoadBalanceTest {
      */
     static Stream<List<InetSocketAddress>> addressProvider() {
         return Stream.of(
-                Arrays.asList(new InetSocketAddress("127.0.0.1", 8091),
+                Arrays.asList(
+                        new InetSocketAddress("127.0.0.1", 8091),
                         new InetSocketAddress("127.0.0.1", 8092),
                         new InetSocketAddress("127.0.0.1", 8093),
                         new InetSocketAddress("127.0.0.1", 8094),
                         new InetSocketAddress("127.0.0.1", 8095),
-                        new InetSocketAddress("2000:0000:0000:0000:0001:2345:6789:abcd", 8092))
-        );
+                        new InetSocketAddress("2000:0000:0000:0000:0001:2345:6789:abcd", 8092)));
     }
 }

@@ -16,12 +16,12 @@
  */
 package org.apache.seata.core.context;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.seata.core.model.GlobalLockConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GlobalLockConfigHolderTest {
 
@@ -34,15 +34,25 @@ public class GlobalLockConfigHolderTest {
     void setAndReturnPrevious() {
         GlobalLockConfig config1 = new GlobalLockConfig();
         assertNull(GlobalLockConfigHolder.setAndReturnPrevious(config1), "should return null");
-        assertSame(config1, GlobalLockConfigHolder.getCurrentGlobalLockConfig(), "holder fail to store config");
+        assertSame(
+                config1,
+                GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
+                "holder fail to store config");
 
         GlobalLockConfig config2 = new GlobalLockConfig();
-        assertSame(config1, GlobalLockConfigHolder.setAndReturnPrevious(config2), "fail to get previous config");
-        assertSame(config2, GlobalLockConfigHolder.getCurrentGlobalLockConfig(), "holder fail to store latest config");
+        assertSame(
+                config1,
+                GlobalLockConfigHolder.setAndReturnPrevious(config2),
+                "fail to get previous config");
+        assertSame(
+                config2,
+                GlobalLockConfigHolder.getCurrentGlobalLockConfig(),
+                "holder fail to store latest config");
     }
 
     @AfterEach
     void tearDown() {
-        assertDoesNotThrow(GlobalLockConfigHolder::remove, "clear method should not throw anything");
+        assertDoesNotThrow(
+                GlobalLockConfigHolder::remove, "clear method should not throw anything");
     }
 }

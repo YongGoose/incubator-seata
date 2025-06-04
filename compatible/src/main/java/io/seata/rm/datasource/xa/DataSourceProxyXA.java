@@ -21,9 +21,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-
 import javax.sql.DataSource;
-
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.rm.datasource.SeataDataSourceProxy;
 
@@ -37,11 +35,14 @@ public class DataSourceProxyXA implements SeataDataSourceProxy {
     private final org.apache.seata.rm.datasource.xa.DataSourceProxyXA dataSourceProxyXA;
 
     public DataSourceProxyXA(DataSource dataSource) {
-        this.dataSourceProxyXA = new org.apache.seata.rm.datasource.xa.DataSourceProxyXA(dataSource);
+        this.dataSourceProxyXA =
+                new org.apache.seata.rm.datasource.xa.DataSourceProxyXA(dataSource);
     }
 
     public DataSourceProxyXA(DataSource dataSource, String resourceGroupId) {
-        this.dataSourceProxyXA = new org.apache.seata.rm.datasource.xa.DataSourceProxyXA(dataSource, resourceGroupId);
+        this.dataSourceProxyXA =
+                new org.apache.seata.rm.datasource.xa.DataSourceProxyXA(
+                        dataSource, resourceGroupId);
     }
 
     @Override

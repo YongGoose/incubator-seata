@@ -16,11 +16,11 @@
  */
 package org.apache.seata.server.storage.redis.store;
 
+import static org.apache.seata.common.Constants.STORE_REDIS_TYPE_PIPELINE;
+
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
-
-import static org.apache.seata.common.Constants.STORE_REDIS_TYPE_PIPELINE;
 
 /**
  */
@@ -37,9 +37,13 @@ public class RedisTransactionStoreManagerFactory {
         if (instance == null) {
             synchronized (RedisTransactionStoreManagerFactory.class) {
                 if (instance == null) {
-                    String storeRedisType = CONFIG.getConfig(ConfigurationKeys.STORE_REDIS_TYPE, STORE_REDIS_TYPE_PIPELINE);
-                    instance = STORE_REDIS_TYPE_PIPELINE.equals(storeRedisType) ?
-                        new RedisTransactionStoreManager() : new RedisLuaTransactionStoreManager();
+                    String storeRedisType =
+                            CONFIG.getConfig(
+                                    ConfigurationKeys.STORE_REDIS_TYPE, STORE_REDIS_TYPE_PIPELINE);
+                    instance =
+                            STORE_REDIS_TYPE_PIPELINE.equals(storeRedisType)
+                                    ? new RedisTransactionStoreManager()
+                                    : new RedisLuaTransactionStoreManager();
                 }
             }
         }

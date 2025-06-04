@@ -16,9 +16,8 @@
  */
 package org.apache.seata.core.rpc;
 
-import org.apache.seata.core.protocol.RpcMessage;
-
 import java.util.concurrent.TimeoutException;
+import org.apache.seata.core.protocol.RpcMessage;
 
 /**
  * The interface Client message sender.
@@ -45,7 +44,8 @@ public interface ClientMessageSender {
      * @return the object
      * @throws TimeoutException the timeout exception
      */
-    Object sendMsgWithResponse(String serverAddress, Object msg, long timeout) throws TimeoutException;
+    Object sendMsgWithResponse(String serverAddress, Object msg, long timeout)
+            throws TimeoutException;
 
     /**
      * Send msg with response object.

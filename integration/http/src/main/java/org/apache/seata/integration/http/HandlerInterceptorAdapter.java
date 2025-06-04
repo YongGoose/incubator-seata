@@ -16,12 +16,11 @@
  */
 package org.apache.seata.integration.http;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * The Handler Interceptor Adapter
@@ -29,13 +28,23 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface HandlerInterceptorAdapter extends HandlerInterceptor {
 
-    default boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    default boolean preHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         return true;
     }
 
-    default void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) throws Exception {
-    }
+    default void postHandle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Object handler,
+            @Nullable ModelAndView modelAndView)
+            throws Exception {}
 
-    default void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
-    }
+    default void afterCompletion(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Object handler,
+            @Nullable Exception ex)
+            throws Exception {}
 }

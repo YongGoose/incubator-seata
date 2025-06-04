@@ -16,12 +16,11 @@
  */
 package org.apache.seata.config;
 
-import org.apache.seata.common.loader.EnhancedServiceLoader;
-import org.apache.seata.config.file.FileConfig;
-
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import org.apache.seata.common.loader.EnhancedServiceLoader;
+import org.apache.seata.config.file.FileConfig;
 
 public class FileConfigFactory {
 
@@ -29,14 +28,14 @@ public class FileConfigFactory {
 
     public static final String YAML_TYPE = "YAML";
 
-    private static final LinkedHashMap<String, String> SUFFIX_MAP = new LinkedHashMap<String, String>(4) {
-        {
-            put("conf", DEFAULT_TYPE);
-            put("properties", DEFAULT_TYPE);
-            put("yml", YAML_TYPE);
-        }
-    };
-
+    private static final LinkedHashMap<String, String> SUFFIX_MAP =
+            new LinkedHashMap<String, String>(4) {
+                {
+                    put("conf", DEFAULT_TYPE);
+                    put("properties", DEFAULT_TYPE);
+                    put("yml", YAML_TYPE);
+                }
+            };
 
     public static FileConfig load() {
         return loadService(DEFAULT_TYPE, null, null);
@@ -45,7 +44,10 @@ public class FileConfigFactory {
     public static FileConfig load(File targetFile, String name) {
         String fileName = targetFile.getName();
         String configType = getConfigType(fileName);
-        return loadService(configType, new Class[]{File.class, String.class}, new Object[]{targetFile, name});
+        return loadService(
+                configType,
+                new Class[] {File.class, String.class},
+                new Object[] {targetFile, name});
     }
 
     private static String getConfigType(String fileName) {
@@ -67,9 +69,7 @@ public class FileConfigFactory {
         return SUFFIX_MAP.keySet();
     }
 
-    public synchronized static void register(String suffix, String beanActiveName) {
+    public static synchronized void register(String suffix, String beanActiveName) {
         SUFFIX_MAP.put(suffix, beanActiveName);
     }
-
-
 }

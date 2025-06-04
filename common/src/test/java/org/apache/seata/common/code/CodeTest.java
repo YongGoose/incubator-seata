@@ -16,16 +16,15 @@
  */
 package org.apache.seata.common.code;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.stream.Stream;
 import org.apache.seata.common.result.Code;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CodeTest {
 
@@ -34,7 +33,7 @@ public class CodeTest {
                 Arguments.of(Code.SUCCESS, "ok"), // Test case for SUCCESS
                 Arguments.of(Code.ERROR, "Server error"), // Test case for ERROR
                 Arguments.of(Code.LOGIN_FAILED, "Login failed") // Test case for LOGIN_FAILED
-        );
+                );
     }
 
     @ParameterizedTest
@@ -50,9 +49,7 @@ public class CodeTest {
     }
 
     static Stream<Arguments> codeSetterProvider() {
-        return Stream.of(
-                Arguments.of(Code.SUCCESS, "201", "Created")
-        );
+        return Stream.of(Arguments.of(Code.SUCCESS, "201", "Created"));
     }
 
     @ParameterizedTest

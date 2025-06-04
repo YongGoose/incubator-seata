@@ -16,6 +16,12 @@
  */
 package org.apache.seata.saga.rm.interceptor;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.util.ReflectionUtil;
 import org.apache.seata.core.context.RootContext;
@@ -28,13 +34,6 @@ import org.apache.seata.integration.tx.api.interceptor.TwoPhaseBusinessActionPar
 import org.apache.seata.integration.tx.api.interceptor.handler.AbstractProxyInvocationHandler;
 import org.apache.seata.saga.rm.api.CompensationBusinessAction;
 import org.slf4j.MDC;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * saga-annotation invocationHandler
@@ -54,44 +53,47 @@ public class SagaAnnotationActionInterceptorHandler extends AbstractProxyInvocat
         this.methodsToProxy = methodsToProxy;
     }
 
-
     @Override
     protected Object doInvoke(InvocationWrapper invocation) throws Throwable {
         if (!RootContext.inGlobalTransaction() || RootContext.inSagaBranch()) {
-            //not in transaction, or this interceptor is disabled
+            // not in transaction, or this interceptor is disabled
             return invocation.proceed();
         }
         Method method = invocation.getMethod();
         Annotation businessAction = parseAnnotation(method);
 
-        //try method
+        // try method
         if (businessAction != null) {
-            //save the xid
+            // save the xid
             String xid = RootContext.getXID();
-            //save the previous branchType
+            // save the previous branchType
             BranchType previousBranchType = RootContext.getBranchType();
-            //if not TCC, bind TCC branchType
+            // if not TCC, bind TCC branchType
             if (getBranchType() != previousBranchType) {
                 RootContext.bindBranchType(getBranchType());
             }
             try {
-                TwoPhaseBusinessActionParam businessActionParam = createTwoPhaseBusinessActionParam(businessAction);
-                return actionInterceptorHandler.proceed(method, invocation.getArguments(), xid, businessActionParam,
+                TwoPhaseBusinessActionParam businessActionParam =
+                        createTwoPhaseBusinessActionParam(businessAction);
+                return actionInterceptorHandler.proceed(
+                        method,
+                        invocation.getArguments(),
+                        xid,
+                        businessActionParam,
                         invocation::proceed);
             } finally {
-                //if not TCC, unbind branchType
+                // if not TCC, unbind branchType
                 if (getBranchType() != previousBranchType) {
                     RootContext.unbindBranchType();
                 }
-                //MDC remove branchId
+                // MDC remove branchId
                 MDC.remove(RootContext.MDC_KEY_BRANCH_ID);
             }
         }
 
-        //not TCC try method
+        // not TCC try method
         return invocation.proceed();
     }
-
 
     @Override
     public Set<String> getMethodsToProxy() {
@@ -123,7 +125,8 @@ public class SagaAnnotationActionInterceptorHandler extends AbstractProxyInvocat
         businessActionParam.setBranchType(BranchType.SAGA_ANNOTATION);
 
         Map<String, Object> businessActionContextMap = new HashMap<>(4);
-        businessActionContextMap.put(Constants.ROLLBACK_METHOD, businessAction.compensationMethod());
+        businessActionContextMap.put(
+                Constants.ROLLBACK_METHOD, businessAction.compensationMethod());
         businessActionContextMap.put(Constants.ACTION_NAME, businessAction.name());
         businessActionContextMap.put(Constants.USE_COMMON_FENCE, businessAction.useFence());
         businessActionParam.setBusinessActionContext(businessActionContextMap);
@@ -132,21 +135,26 @@ public class SagaAnnotationActionInterceptorHandler extends AbstractProxyInvocat
     }
 
     private Annotation parseAnnotation(Method methodKey) {
-        return parseAnnotationCache.computeIfAbsent(methodKey, method -> {
-            Annotation twoPhaseBusinessAction = method.getAnnotation(getAnnotationClass());
-            if (twoPhaseBusinessAction == null) {
-                Set<Class<?>> interfaceClasses = ReflectionUtil.getInterfaces(targetBean.getClass());
-                for (Class<?> interClass : interfaceClasses) {
-                    try {
-                        Method m = interClass.getMethod(method.getName(), method.getParameterTypes());
-                        twoPhaseBusinessAction = m.getAnnotation(getAnnotationClass());
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException(e);
+        return parseAnnotationCache.computeIfAbsent(
+                methodKey,
+                method -> {
+                    Annotation twoPhaseBusinessAction = method.getAnnotation(getAnnotationClass());
+                    if (twoPhaseBusinessAction == null) {
+                        Set<Class<?>> interfaceClasses =
+                                ReflectionUtil.getInterfaces(targetBean.getClass());
+                        for (Class<?> interClass : interfaceClasses) {
+                            try {
+                                Method m =
+                                        interClass.getMethod(
+                                                method.getName(), method.getParameterTypes());
+                                twoPhaseBusinessAction = m.getAnnotation(getAnnotationClass());
+                            } catch (NoSuchMethodException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
-                }
-            }
-            return twoPhaseBusinessAction;
-        });
+                    return twoPhaseBusinessAction;
+                });
     }
 
     private BranchType getBranchType() {
@@ -156,5 +164,4 @@ public class SagaAnnotationActionInterceptorHandler extends AbstractProxyInvocat
     private Class<? extends Annotation> getAnnotationClass() {
         return CompensationBusinessAction.class;
     }
-
 }

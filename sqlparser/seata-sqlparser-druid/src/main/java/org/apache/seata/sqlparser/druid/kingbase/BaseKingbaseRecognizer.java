@@ -16,10 +16,10 @@
  */
 package org.apache.seata.sqlparser.druid.kingbase;
 
-import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.expr.SQLInSubQueryExpr;
+import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
@@ -30,16 +30,15 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSo
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitorAdapter;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.druid.BaseRecognizer;
 import org.apache.seata.sqlparser.struct.Null;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  *
@@ -55,15 +54,17 @@ public abstract class BaseKingbaseRecognizer extends BaseRecognizer {
         super(originalSql);
     }
 
-    public OracleOutputVisitor createOutputVisitor(final ParametersHolder parametersHolder,
-                                                   final ArrayList<List<Object>> paramAppenderList,
-                                                   final StringBuilder sb) {
+    public OracleOutputVisitor createOutputVisitor(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList,
+            final StringBuilder sb) {
 
         return new OracleOutputVisitor(sb) {
             @Override
             public boolean visit(SQLVariantRefExpr x) {
                 if ("?".equals(x.getName())) {
-                    ArrayList<Object> oneParamValues = parametersHolder.getParameters().get(x.getIndex() + 1);
+                    ArrayList<Object> oneParamValues =
+                            parametersHolder.getParameters().get(x.getIndex() + 1);
                     if (paramAppenderList.isEmpty()) {
                         oneParamValues.forEach(t -> paramAppenderList.add(new ArrayList<>()));
                     }
@@ -77,7 +78,10 @@ public abstract class BaseKingbaseRecognizer extends BaseRecognizer {
         };
     }
 
-    public String getWhereCondition(SQLExpr where, final ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            SQLExpr where,
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         if (Objects.isNull(where)) {
             return StringUtils.EMPTY;
         }
@@ -108,8 +112,10 @@ public abstract class BaseKingbaseRecognizer extends BaseRecognizer {
         return sb.toString();
     }
 
-    protected String getOrderByCondition(SQLOrderBy sqlOrderBy, final ParametersHolder parametersHolder,
-                                         final ArrayList<List<Object>> paramAppenderList) {
+    protected String getOrderByCondition(
+            SQLOrderBy sqlOrderBy,
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         if (Objects.isNull(sqlOrderBy)) {
             return StringUtils.EMPTY;
         }
@@ -121,59 +127,87 @@ public abstract class BaseKingbaseRecognizer extends BaseRecognizer {
 
     @Override
     public boolean isSqlSyntaxSupports() {
-        OracleASTVisitor visitor = new OracleASTVisitorAdapter() {
-            @Override
-            public boolean visit(OracleSelectJoin x) {
-                //just like: UPDATE table a INNER JOIN table b ON a.id = b.pid ...
-                throw new NotSupportYetException("not support the sql syntax with join table:" + x
-                        + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-            }
-
-            @Override
-            public boolean visit(SQLUpdateStatement x) {
-                if (x.getTableSource() instanceof OracleSelectSubqueryTableSource) {
-                    //just like: "update (select a.id,a.name from a inner join b on a.id = b.id) t set t.name = 'xxx'"
-                    throw new NotSupportYetException("not support the sql syntax with join table:" + x
-                        + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-                }
-                List<SQLUpdateSetItem> updateSetItems = x.getItems();
-                for (SQLUpdateSetItem updateSetItem : updateSetItems) {
-                    if (updateSetItem.getValue() instanceof SQLQueryExpr) {
-                        //just like: "update a set a.id = (select id from b where a.pid = b.pid)"
-                        throw new NotSupportYetException("not support the sql syntax with join table:" + x
-                            + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+        OracleASTVisitor visitor =
+                new OracleASTVisitorAdapter() {
+                    @Override
+                    public boolean visit(OracleSelectJoin x) {
+                        // just like: UPDATE table a INNER JOIN table b ON a.id = b.pid ...
+                        throw new NotSupportYetException(
+                                "not support the sql syntax with join table:"
+                                        + x
+                                        + "\n"
+                                        + "please see the doc about SQL restrictions"
+                                        + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
                     }
-                }
-                return true;
-            }
 
-            @Override
-            public boolean visit(SQLInSubQueryExpr x) {
-                //just like: ...where id in (select id from t)
-                throw new NotSupportYetException("not support the sql syntax with InSubQuery:" + x
-                        + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-            }
+                    @Override
+                    public boolean visit(SQLUpdateStatement x) {
+                        if (x.getTableSource() instanceof OracleSelectSubqueryTableSource) {
+                            // just like: "update (select a.id,a.name from a inner join b on a.id =
+                            // b.id) t set t.name = 'xxx'"
+                            throw new NotSupportYetException(
+                                    "not support the sql syntax with join table:"
+                                            + x
+                                            + "\n"
+                                            + "please see the doc about SQL restrictions"
+                                            + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                        }
+                        List<SQLUpdateSetItem> updateSetItems = x.getItems();
+                        for (SQLUpdateSetItem updateSetItem : updateSetItems) {
+                            if (updateSetItem.getValue() instanceof SQLQueryExpr) {
+                                // just like: "update a set a.id = (select id from b where a.pid =
+                                // b.pid)"
+                                throw new NotSupportYetException(
+                                        "not support the sql syntax with join table:"
+                                                + x
+                                                + "\n"
+                                                + "please see the doc about SQL restrictions"
+                                                + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                            }
+                        }
+                        return true;
+                    }
 
-            @Override
-            public boolean visit(SQLSubqueryTableSource x) {
-                //just like: select * from (select * from t) for update
-                throw new NotSupportYetException("not support the sql syntax with SubQuery:" + x
-                        + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-            }
+                    @Override
+                    public boolean visit(SQLInSubQueryExpr x) {
+                        // just like: ...where id in (select id from t)
+                        throw new NotSupportYetException(
+                                "not support the sql syntax with InSubQuery:"
+                                        + x
+                                        + "\n"
+                                        + "please see the doc about SQL restrictions"
+                                        + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                    }
 
-            @Override
-            public boolean visit(SQLInsertStatement x) {
-                if (null != x.getQuery()) {
-                    //just like: insert into t select * from t1
-                    throw new NotSupportYetException("not support the sql syntax insert with query:" + x
-                            + "\nplease see the doc about SQL restrictions https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
-                }
-                return true;
-            }
-        };
+                    @Override
+                    public boolean visit(SQLSubqueryTableSource x) {
+                        // just like: select * from (select * from t) for update
+                        throw new NotSupportYetException(
+                                "not support the sql syntax with SubQuery:"
+                                        + x
+                                        + "\n"
+                                        + "please see the doc about SQL restrictions"
+                                        + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                    }
+
+                    @Override
+                    public boolean visit(SQLInsertStatement x) {
+                        if (null != x.getQuery()) {
+                            // just like: insert into t select * from t1
+                            throw new NotSupportYetException(
+                                    "not support the sql syntax insert with query:"
+                                            + x
+                                            + "\n"
+                                            + "please see the doc about SQL restrictions"
+                                            + " https://seata.apache.org/zh-cn/docs/user/sqlreference/dml");
+                        }
+                        return true;
+                    }
+                };
         getAst().accept(visitor);
         return true;
     }
+
     public String getDbType() {
         return JdbcConstants.KINGBASE;
     }

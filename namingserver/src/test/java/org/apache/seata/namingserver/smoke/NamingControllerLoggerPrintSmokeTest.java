@@ -34,7 +34,8 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 class NamingControllerLoggerPrintSmokeTest {
 
     @Test
-    void processShouldPrintLogAndGeneratePasswordWhenDefaultPasswordIsNotDefined(CapturedOutput output) {
+    void processShouldPrintLogAndGeneratePasswordWhenDefaultPasswordIsNotDefined(
+            CapturedOutput output) {
         String logs = output.getOut();
         assertTrue(logs.contains("No password was configured."));
     }

@@ -16,17 +16,20 @@
  */
 package org.apache.seata.discovery.registry;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.NotSupportYetException;
@@ -35,18 +38,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * The type Multi registry factory test.
  */
 public class MultiRegistryFactoryTest {
 
     private static final String REGISTRY_TYPE_KEY =
-            ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE;
+            ConfigurationKeys.FILE_ROOT_REGISTRY
+                    + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                    + ConfigurationKeys.FILE_ROOT_TYPE;
 
     private final List<Logger> watchedLoggers = new ArrayList<>();
     private final ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
@@ -95,7 +95,8 @@ public class MultiRegistryFactoryTest {
 
     @Test
     public void testGetInstancesWithDifferentRegistryTypes() throws Throwable {
-        String differentRegistryType = "File,file" + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.Nacos.name();
+        String differentRegistryType =
+                "File,file" + Constants.REGISTRY_TYPE_SPLIT_CHAR + RegistryType.Nacos.name();
         System.setProperty(REGISTRY_TYPE_KEY, differentRegistryType);
         List<RegistryService> instances = invokeBuildRegistryServices();
 
@@ -145,8 +146,10 @@ public class MultiRegistryFactoryTest {
 
     private List<String> getLogs(Level level) {
         return logWatcher.list.stream()
-                .filter(event -> event.getLoggerName().endsWith(MultiRegistryFactory.class.getName())
-                        && event.getLevel().equals(level))
+                .filter(
+                        event ->
+                                event.getLoggerName().endsWith(MultiRegistryFactory.class.getName())
+                                        && event.getLevel().equals(level))
                 .map(ILoggingEvent::getFormattedMessage)
                 .collect(Collectors.toList());
     }

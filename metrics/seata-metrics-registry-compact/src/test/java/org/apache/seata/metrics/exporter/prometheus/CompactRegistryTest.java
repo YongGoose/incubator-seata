@@ -16,6 +16,12 @@
  */
 package org.apache.seata.metrics.exporter.prometheus;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.function.Supplier;
 import org.apache.seata.metrics.*;
 import org.apache.seata.metrics.registry.compact.CompactRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,18 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
 public class CompactRegistryTest {
-    @Mock
-    private Id id;
-    @Mock
-    private Supplier<Number> supplier;
+    @Mock private Id id;
+    @Mock private Supplier<Number> supplier;
 
     private CompactRegistry compactRegistry;
 
@@ -70,7 +67,7 @@ public class CompactRegistryTest {
         sortedMap.put("testTag", "testValue");
         when(id.getTags()).thenReturn(sortedMap.entrySet());
         when(id.getMeterKey()).thenReturn("testKey");
-        Counter counter = (Counter)compactRegistry.getCounter(id);
+        Counter counter = (Counter) compactRegistry.getCounter(id);
 
         Id id2 = new Id(id.getName()).withTag(id.getTags());
         assertEquals(id2.getName(), counter.getId().getName());
@@ -107,5 +104,4 @@ public class CompactRegistryTest {
         assertEquals(id2.getTags(), timer.getId().getTags());
         compactRegistry.clearUp();
     }
-
 }

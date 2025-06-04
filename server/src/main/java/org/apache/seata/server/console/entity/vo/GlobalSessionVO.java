@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Set;
-
 import org.apache.seata.core.constants.ServerTableColumnsName;
 
 /**
@@ -52,21 +51,19 @@ public class GlobalSessionVO {
 
     private Set<BranchSessionVO> branchSessionVOs;
 
+    public GlobalSessionVO() {}
 
-    public GlobalSessionVO() {
-
-    }
-
-    public GlobalSessionVO(String xid,
-                           Long transactionId,
-                           Integer status,
-                           String applicationId,
-                           String transactionServiceGroup,
-                           String transactionName,
-                           Long timeout,
-                           Long beginTime,
-                           String applicationData,
-                           Set<BranchSessionVO> branchSessionVOs) {
+    public GlobalSessionVO(
+            String xid,
+            Long transactionId,
+            Integer status,
+            String applicationId,
+            String transactionServiceGroup,
+            String transactionName,
+            Long timeout,
+            Long beginTime,
+            String applicationData,
+            Set<BranchSessionVO> branchSessionVOs) {
         this.xid = xid;
         this.transactionId = String.valueOf(transactionId);
         this.status = status;
@@ -178,19 +175,26 @@ public class GlobalSessionVO {
     public static GlobalSessionVO convert(ResultSet rs) throws SQLException {
         GlobalSessionVO globalSessionVO = new GlobalSessionVO();
         globalSessionVO.setXid(rs.getString(ServerTableColumnsName.GLOBAL_TABLE_XID));
-        globalSessionVO.setTransactionId(rs.getLong(ServerTableColumnsName.GLOBAL_TABLE_TRANSACTION_ID));
+        globalSessionVO.setTransactionId(
+                rs.getLong(ServerTableColumnsName.GLOBAL_TABLE_TRANSACTION_ID));
         globalSessionVO.setStatus(rs.getInt(ServerTableColumnsName.GLOBAL_TABLE_STATUS));
-        globalSessionVO.setApplicationId(rs.getString(ServerTableColumnsName.GLOBAL_TABLE_APPLICATION_ID));
-        globalSessionVO.setTransactionServiceGroup(rs.getString(ServerTableColumnsName.GLOBAL_TABLE_TRANSACTION_SERVICE_GROUP));
-        globalSessionVO.setTransactionName(rs.getString(ServerTableColumnsName.GLOBAL_TABLE_TRANSACTION_NAME));
+        globalSessionVO.setApplicationId(
+                rs.getString(ServerTableColumnsName.GLOBAL_TABLE_APPLICATION_ID));
+        globalSessionVO.setTransactionServiceGroup(
+                rs.getString(ServerTableColumnsName.GLOBAL_TABLE_TRANSACTION_SERVICE_GROUP));
+        globalSessionVO.setTransactionName(
+                rs.getString(ServerTableColumnsName.GLOBAL_TABLE_TRANSACTION_NAME));
         globalSessionVO.setTimeout(rs.getLong(ServerTableColumnsName.GLOBAL_TABLE_TIMEOUT));
         globalSessionVO.setBeginTime(rs.getLong(ServerTableColumnsName.GLOBAL_TABLE_BEGIN_TIME));
-        globalSessionVO.setApplicationData(rs.getString(ServerTableColumnsName.GLOBAL_TABLE_APPLICATION_DATA));
-        Timestamp gmtCreateTimestamp = rs.getTimestamp(ServerTableColumnsName.GLOBAL_TABLE_GMT_CREATE);
+        globalSessionVO.setApplicationData(
+                rs.getString(ServerTableColumnsName.GLOBAL_TABLE_APPLICATION_DATA));
+        Timestamp gmtCreateTimestamp =
+                rs.getTimestamp(ServerTableColumnsName.GLOBAL_TABLE_GMT_CREATE);
         if (gmtCreateTimestamp != null) {
             globalSessionVO.setGmtCreate(gmtCreateTimestamp.getTime());
         }
-        Timestamp gmtModifiedTimestamp = rs.getTimestamp(ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED);
+        Timestamp gmtModifiedTimestamp =
+                rs.getTimestamp(ServerTableColumnsName.GLOBAL_TABLE_GMT_MODIFIED);
         if (gmtModifiedTimestamp != null) {
             globalSessionVO.setGmtModified(gmtModifiedTimestamp.getTime());
         }
@@ -199,19 +203,36 @@ public class GlobalSessionVO {
 
     @Override
     public String toString() {
-        return "GlobalSessionVO{" +
-                "xid='" + xid + '\'' +
-                ", transactionId=" + transactionId +
-                ", status=" + status +
-                ", applicationId='" + applicationId + '\'' +
-                ", transactionServiceGroup='" + transactionServiceGroup + '\'' +
-                ", transactionName='" + transactionName + '\'' +
-                ", timeout=" + timeout +
-                ", beginTime=" + beginTime +
-                ", applicationData='" + applicationData + '\'' +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                ", branchSessionVOs=" + branchSessionVOs +
-                '}';
+        return "GlobalSessionVO{"
+                + "xid='"
+                + xid
+                + '\''
+                + ", transactionId="
+                + transactionId
+                + ", status="
+                + status
+                + ", applicationId='"
+                + applicationId
+                + '\''
+                + ", transactionServiceGroup='"
+                + transactionServiceGroup
+                + '\''
+                + ", transactionName='"
+                + transactionName
+                + '\''
+                + ", timeout="
+                + timeout
+                + ", beginTime="
+                + beginTime
+                + ", applicationData='"
+                + applicationData
+                + '\''
+                + ", gmtCreate="
+                + gmtCreate
+                + ", gmtModified="
+                + gmtModified
+                + ", branchSessionVOs="
+                + branchSessionVOs
+                + '}';
     }
 }

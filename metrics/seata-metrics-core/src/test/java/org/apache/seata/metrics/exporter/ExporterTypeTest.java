@@ -27,7 +27,8 @@ class ExporterTypeTest {
 
     @Test
     void values() {
-        Assertions.assertArrayEquals(new ExporterType[]{ExporterType.PROMETHEUS}, ExporterType.values());
+        Assertions.assertArrayEquals(
+                new ExporterType[] {ExporterType.PROMETHEUS}, ExporterType.values());
     }
 
     @Test
@@ -37,7 +38,8 @@ class ExporterTypeTest {
 
     @Test
     void getType_invalidTypeName_throwException() {
-        Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> ExporterType.getType("foo"));
+        Assertions.assertThrowsExactly(
+                IllegalArgumentException.class, () -> ExporterType.getType("foo"));
     }
 
     @Test

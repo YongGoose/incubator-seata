@@ -43,5 +43,4 @@ public class LockConflictException extends SQLException {
     public void setCode(TransactionExceptionCode code) {
         this.code = code;
     }
-
 }

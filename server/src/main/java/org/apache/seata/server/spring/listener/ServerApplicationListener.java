@@ -42,7 +42,8 @@ public class ServerApplicationListener implements GenericApplicationListener {
     @Override
     public boolean supportsEventType(ResolvableType eventType) {
         return eventType.getRawClass() != null
-                && (ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType.getRawClass())
+                && (ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(
+                                eventType.getRawClass())
                         || ApplicationReadyEvent.class.isAssignableFrom(eventType.getRawClass()));
     }
 
@@ -56,7 +57,8 @@ public class ServerApplicationListener implements GenericApplicationListener {
         if (!(event instanceof ApplicationEnvironmentPreparedEvent)) {
             return;
         }
-        ApplicationEnvironmentPreparedEvent environmentPreparedEvent = (ApplicationEnvironmentPreparedEvent) event;
+        ApplicationEnvironmentPreparedEvent environmentPreparedEvent =
+                (ApplicationEnvironmentPreparedEvent) event;
         ConfigurableEnvironment environment = environmentPreparedEvent.getEnvironment();
         ObjectHolder.INSTANCE.setObject(OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT, environment);
         SeataCoreEnvironmentPostProcessor.init();
@@ -106,14 +108,18 @@ public class ServerApplicationListener implements GenericApplicationListener {
         setTargetPort(environment, servicePort, true);
     }
 
-    private void setTargetPort(ConfigurableEnvironment environment, String port, boolean needAddPropertySource) {
-        // get rpc port first, use to logback-spring.xml, @see the class named `SystemPropertyLoggerContextListener`
+    private void setTargetPort(
+            ConfigurableEnvironment environment, String port, boolean needAddPropertySource) {
+        // get rpc port first, use to logback-spring.xml, @see the class named
+        // `SystemPropertyLoggerContextListener`
         System.setProperty(SERVER_SERVICE_PORT_CAMEL, port);
         if (needAddPropertySource) {
             // add property source to the first position
             Properties pro = new Properties();
             pro.setProperty(SERVER_SERVICE_PORT_CONFIG, port);
-            environment.getPropertySources().addFirst(new PropertiesPropertySource("serverProperties", pro));
+            environment
+                    .getPropertySources()
+                    .addFirst(new PropertiesPropertySource("serverProperties", pro));
         }
     }
 

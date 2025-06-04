@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm.datasource.sql.struct.cache;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.StringUtils;
@@ -24,10 +27,6 @@ import org.apache.seata.sqlparser.struct.IndexMeta;
 import org.apache.seata.sqlparser.struct.IndexType;
 import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * The type Table meta cache.
@@ -54,22 +53,34 @@ public class DmTableMetaCache extends OracleTableMetaCache {
     }
 
     @Override
-    protected TableMeta resultSetMetaToSchema(DatabaseMetaData dbmd, String tableName) throws SQLException {
+    protected TableMeta resultSetMetaToSchema(DatabaseMetaData dbmd, String tableName)
+            throws SQLException {
         TableMeta result = new TableMeta();
 
         TableNameMeta tableNameMeta = toTableNameMeta(tableName, dbmd.getConnection().getSchema());
         result.setTableName(tableNameMeta.getTableName());
         result.setOriginalTableName(tableName);
-        try (ResultSet rsColumns = dbmd.getColumns("", tableNameMeta.getSchema(), tableNameMeta.getTableName(), "%");
-             ResultSet rsIndex = dbmd.getIndexInfo(null, tableNameMeta.getSchema(), tableNameMeta.getTableName(), false, true);
-             ResultSet rsPrimary = dbmd.getPrimaryKeys(null, tableNameMeta.getSchema(), tableNameMeta.getTableName())) {
+        try (ResultSet rsColumns =
+                        dbmd.getColumns(
+                                "", tableNameMeta.getSchema(), tableNameMeta.getTableName(), "%");
+                ResultSet rsIndex =
+                        dbmd.getIndexInfo(
+                                null,
+                                tableNameMeta.getSchema(),
+                                tableNameMeta.getTableName(),
+                                false,
+                                true);
+                ResultSet rsPrimary =
+                        dbmd.getPrimaryKeys(
+                                null, tableNameMeta.getSchema(), tableNameMeta.getTableName())) {
             processColumns(result, rsColumns);
 
             processIndexes(result, rsIndex);
 
             processPrimaries(result, rsPrimary);
             if (result.getAllIndexes().isEmpty()) {
-                throw new ShouldNeverHappenException(String.format("Could not found any index in the table: %s", tableName));
+                throw new ShouldNeverHappenException(
+                        String.format("Could not found any index in the table: %s", tableName));
             }
         }
 
@@ -85,7 +96,8 @@ public class DmTableMetaCache extends OracleTableMetaCache {
         }
 
         tableName = schemaTable.length > 1 ? schemaTable[1] : tableName;
-        tableName = tableName.contains("\"") ? tableName.replace("\"", "") : tableName.toUpperCase();
+        tableName =
+                tableName.contains("\"") ? tableName.replace("\"", "") : tableName.toUpperCase();
 
         return new TableNameMeta(schema, tableName);
     }
@@ -156,7 +168,8 @@ public class DmTableMetaCache extends OracleTableMetaCache {
         return result;
     }
 
-    protected IndexMeta toIndexMeta(ResultSet rs, String indexName, ColumnMeta columnMeta) throws SQLException {
+    protected IndexMeta toIndexMeta(ResultSet rs, String indexName, ColumnMeta columnMeta)
+            throws SQLException {
         IndexMeta result = new IndexMeta();
         result.setIndexName(indexName);
         result.setNonUnique(rs.getBoolean("NON_UNIQUE"));

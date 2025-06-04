@@ -16,6 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.apache.seata.spring.boot.autoconfigure.properties.server.MetricsProperties;
 import org.apache.seata.spring.boot.autoconfigure.properties.server.ServerProperties;
 import org.apache.seata.spring.boot.autoconfigure.properties.server.ServerRecoveryProperties;
@@ -32,21 +36,16 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 
 public class ServerPropertiesTest {
     private static AnnotationConfigApplicationContext context;
 
     @BeforeAll
     public static void initContext() {
-        context = new AnnotationConfigApplicationContext("org.apache.seata.spring.boot.autoconfigure.properties");
+        context =
+                new AnnotationConfigApplicationContext(
+                        "org.apache.seata.spring.boot.autoconfigure.properties");
     }
 
     @Test
@@ -56,9 +55,13 @@ public class ServerPropertiesTest {
 
     @Test
     public void testServerRecoveryProperties() {
-        assertEquals(context.getBean(ServerRecoveryProperties.class).getAsyncCommittingRetryPeriod(), 1000);
-        assertEquals(context.getBean(ServerRecoveryProperties.class).getCommittingRetryPeriod(), 1000);
-        assertEquals(context.getBean(ServerRecoveryProperties.class).getRollbackingRetryPeriod(), 1000);
+        assertEquals(
+                context.getBean(ServerRecoveryProperties.class).getAsyncCommittingRetryPeriod(),
+                1000);
+        assertEquals(
+                context.getBean(ServerRecoveryProperties.class).getCommittingRetryPeriod(), 1000);
+        assertEquals(
+                context.getBean(ServerRecoveryProperties.class).getRollbackingRetryPeriod(), 1000);
         assertEquals(context.getBean(ServerRecoveryProperties.class).getTimeoutRetryPeriod(), 1000);
     }
 

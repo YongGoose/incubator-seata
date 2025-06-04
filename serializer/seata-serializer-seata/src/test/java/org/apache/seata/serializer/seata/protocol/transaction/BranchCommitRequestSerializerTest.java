@@ -16,13 +16,13 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
-import org.apache.seata.core.model.BranchType;
-import org.apache.seata.core.protocol.transaction.BranchCommitRequest;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.seata.core.model.BranchType;
+import org.apache.seata.core.protocol.ProtocolConstants;
+import org.apache.seata.core.protocol.transaction.BranchCommitRequest;
+import org.apache.seata.serializer.seata.SeataSerializer;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Branch commit request codec test.
@@ -39,7 +39,7 @@ public class BranchCommitRequestSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         BranchCommitRequest branchCommitRequest = new BranchCommitRequest();
         branchCommitRequest.setApplicationData("abc");
         branchCommitRequest.setBranchId(123);
@@ -51,11 +51,13 @@ public class BranchCommitRequestSerializerTest {
 
         BranchCommitRequest branchCommitReques2 = seataSerializer.deserialize(bytes);
 
-        assertThat(branchCommitReques2.getApplicationData()).isEqualTo(branchCommitRequest.getApplicationData());
-        assertThat(branchCommitReques2.getBranchType()).isEqualTo(branchCommitRequest.getBranchType());
+        assertThat(branchCommitReques2.getApplicationData())
+                .isEqualTo(branchCommitRequest.getApplicationData());
+        assertThat(branchCommitReques2.getBranchType())
+                .isEqualTo(branchCommitRequest.getBranchType());
         assertThat(branchCommitReques2.getBranchId()).isEqualTo(branchCommitRequest.getBranchId());
-        assertThat(branchCommitReques2.getResourceId()).isEqualTo(branchCommitRequest.getResourceId());
+        assertThat(branchCommitReques2.getResourceId())
+                .isEqualTo(branchCommitRequest.getResourceId());
         assertThat(branchCommitReques2.getXid()).isEqualTo(branchCommitRequest.getXid());
     }
-
 }

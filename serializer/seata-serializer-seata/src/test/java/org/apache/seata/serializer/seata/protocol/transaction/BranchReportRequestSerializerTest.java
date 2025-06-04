@@ -16,14 +16,14 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.model.BranchType;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.transaction.BranchReportRequest;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Branch report request codec test.
@@ -40,7 +40,7 @@ public class BranchReportRequestSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         BranchReportRequest branchReportRequest = new BranchReportRequest();
         branchReportRequest.setBranchId(1346);
         branchReportRequest.setBranchType(BranchType.TCC);
@@ -53,11 +53,13 @@ public class BranchReportRequestSerializerTest {
 
         BranchReportRequest branchReportRequest2 = seataSerializer.deserialize(bytes);
         assertThat(branchReportRequest2.getBranchId()).isEqualTo(branchReportRequest.getBranchId());
-        assertThat(branchReportRequest2.getBranchType()).isEqualTo(branchReportRequest.getBranchType());
-        assertThat(branchReportRequest2.getApplicationData()).isEqualTo(branchReportRequest.getApplicationData());
-        assertThat(branchReportRequest2.getResourceId()).isEqualTo(branchReportRequest.getResourceId());
+        assertThat(branchReportRequest2.getBranchType())
+                .isEqualTo(branchReportRequest.getBranchType());
+        assertThat(branchReportRequest2.getApplicationData())
+                .isEqualTo(branchReportRequest.getApplicationData());
+        assertThat(branchReportRequest2.getResourceId())
+                .isEqualTo(branchReportRequest.getResourceId());
         assertThat(branchReportRequest2.getStatus()).isEqualTo(branchReportRequest.getStatus());
         assertThat(branchReportRequest2.getXid()).isEqualTo(branchReportRequest.getXid());
-
     }
 }

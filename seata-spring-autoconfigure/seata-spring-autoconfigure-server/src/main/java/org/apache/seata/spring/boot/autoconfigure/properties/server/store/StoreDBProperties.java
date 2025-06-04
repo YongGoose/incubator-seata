@@ -16,14 +16,13 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server.store;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.common.DefaultValues.DEFAULT_DB_MAX_CONN;
 import static org.apache.seata.common.DefaultValues.DEFAULT_DB_MIN_CONN;
 import static org.apache.seata.common.DefaultValues.DEFAULT_QUERY_LIMIT;
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_DB_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = STORE_DB_PREFIX)
@@ -177,5 +176,4 @@ public class StoreDBProperties {
         this.vgroupTable = vgroupTable;
         return this;
     }
-
 }

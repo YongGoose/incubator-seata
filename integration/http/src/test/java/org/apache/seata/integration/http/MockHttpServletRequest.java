@@ -16,8 +16,13 @@
  */
 package org.apache.seata.integration.http;
 
-import org.apache.seata.core.context.RootContext;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Map;
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
@@ -32,14 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-
+import org.apache.seata.core.context.RootContext;
 
 public class MockHttpServletRequest implements HttpServletRequest {
 
@@ -66,8 +64,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getHeader(String name) {
-        if (RootContext.KEY_XID.equals(name))
-            return myRequest.getHeader().get(RootContext.KEY_XID);
+        if (RootContext.KEY_XID.equals(name)) return myRequest.getHeader().get(RootContext.KEY_XID);
         else {
             return null;
         }
@@ -194,9 +191,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public void setCharacterEncoding(String env) {
-
-    }
+    public void setCharacterEncoding(String env) {}
 
     @Override
     public int getContentLength() {
@@ -269,14 +264,10 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public void setAttribute(String name, Object o) {
-
-    }
+    public void setAttribute(String name, Object o) {}
 
     @Override
-    public void removeAttribute(String name) {
-
-    }
+    public void removeAttribute(String name) {}
 
     @Override
     public Locale getLocale() {
@@ -334,14 +325,10 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public void login(String username, String password) throws ServletException {
-
-    }
+    public void login(String username, String password) throws ServletException {}
 
     @Override
-    public void logout() throws ServletException {
-
-    }
+    public void logout() throws ServletException {}
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
@@ -354,7 +341,8 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass)
+            throws IOException, ServletException {
         return null;
     }
 
@@ -374,7 +362,8 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
+            throws IllegalStateException {
         return null;
     }
 

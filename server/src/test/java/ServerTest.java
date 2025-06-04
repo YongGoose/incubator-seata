@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.apache.seata.common.XID;
-import org.apache.seata.common.util.NetUtil;
-import org.apache.seata.core.rpc.netty.NettyRemotingServer;
-import org.apache.seata.common.util.UUIDGenerator;
-import org.apache.seata.server.coordinator.DefaultCoordinator;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.apache.seata.common.XID;
+import org.apache.seata.common.util.NetUtil;
+import org.apache.seata.common.util.UUIDGenerator;
+import org.apache.seata.core.rpc.netty.NettyRemotingServer;
+import org.apache.seata.server.coordinator.DefaultCoordinator;
 
 /**
  * The type Server test.
@@ -30,9 +29,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServerTest {
 
-    private static final ThreadPoolExecutor workingThreads = new ThreadPoolExecutor(100, 500, 500, TimeUnit.SECONDS,
-            new LinkedBlockingQueue(20000), new ThreadPoolExecutor.CallerRunsPolicy());
-
+    private static final ThreadPoolExecutor workingThreads =
+            new ThreadPoolExecutor(
+                    100,
+                    500,
+                    500,
+                    TimeUnit.SECONDS,
+                    new LinkedBlockingQueue(20000),
+                    new ThreadPoolExecutor.CallerRunsPolicy());
 
     /**
      * The entry point of application.
@@ -49,5 +53,4 @@ public class ServerTest {
         nettyServer.init();
         System.exit(0);
     }
-
 }

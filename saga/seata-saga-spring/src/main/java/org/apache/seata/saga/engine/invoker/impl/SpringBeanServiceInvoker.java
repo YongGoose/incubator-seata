@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.saga.engine.exception.EngineExecutionException;
@@ -64,27 +63,39 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
             if (threadPoolExecutor == null) {
                 if (LOGGER.isWarnEnabled()) {
                     LOGGER.warn(
-                            "threadPoolExecutor is null, Service[{}.{}] cannot execute asynchronously, executing "
-                                    + "synchronously now. stateName: {}",
-                            state.getServiceName(), state.getServiceMethod(), state.getName());
+                            "threadPoolExecutor is null, Service[{}.{}] cannot execute"
+                                    + " asynchronously, executing synchronously now. stateName: {}",
+                            state.getServiceName(),
+                            state.getServiceMethod(),
+                            state.getName());
                 }
                 return doInvoke(state, input);
             }
 
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Submit Service[{}.{}] to asynchronously executing. stateName: {}", state.getServiceName(),
-                        state.getServiceMethod(), state.getName());
+                LOGGER.info(
+                        "Submit Service[{}.{}] to asynchronously executing. stateName: {}",
+                        state.getServiceName(),
+                        state.getServiceMethod(),
+                        state.getName());
             }
-            threadPoolExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        doInvoke(state, input);
-                    } catch (Throwable e) {
-                        LOGGER.error("Invoke Service[" + state.getServiceName() + "." + state.getServiceMethod() + "] failed.", e);
-                    }
-                }
-            });
+            threadPoolExecutor.execute(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                doInvoke(state, input);
+                            } catch (Throwable e) {
+                                LOGGER.error(
+                                        "Invoke Service["
+                                                + state.getServiceName()
+                                                + "."
+                                                + state.getServiceMethod()
+                                                + "] failed.",
+                                        e);
+                            }
+                        }
+                    });
             return null;
         } else {
             return doInvoke(state, input);
@@ -100,7 +111,11 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
             synchronized (state) {
                 method = state.getMethod();
                 if (method == null) {
-                    method = findMethod(bean.getClass(), state.getServiceMethod(), state.getParameterTypes());
+                    method =
+                            findMethod(
+                                    bean.getClass(),
+                                    state.getServiceMethod(),
+                                    state.getParameterTypes());
                     if (method != null) {
                         state.setMethod(method);
                     }
@@ -110,9 +125,12 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
 
         if (method == null) {
             throw new EngineExecutionException(
-                    "No such method[" + state.getServiceMethod() + "] on BeanClass[" + bean.getClass() + "]",
+                    "No such method["
+                            + state.getServiceMethod()
+                            + "] on BeanClass["
+                            + bean.getClass()
+                            + "]",
                     FrameworkErrorCode.NoSuchMethod);
-
         }
 
         Object[] args = new Object[method.getParameterCount()];
@@ -125,13 +143,19 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
                 }
             }
         } catch (Exception e) {
-            throw new EngineExecutionException(e,
-                    "Input to java object error, Method[" + state.getServiceMethod() + "] on BeanClass[" + bean.getClass()
-                            + "]", FrameworkErrorCode.InvalidParameter);
+            throw new EngineExecutionException(
+                    e,
+                    "Input to java object error, Method["
+                            + state.getServiceMethod()
+                            + "] on BeanClass["
+                            + bean.getClass()
+                            + "]",
+                    FrameworkErrorCode.InvalidParameter);
         }
 
         if (!Modifier.isPublic(method.getModifiers())) {
-            throw new EngineExecutionException("Method[" + method.getName() + "] must be public",
+            throw new EngineExecutionException(
+                    "Method[" + method.getName() + "] must be public",
                     FrameworkErrorCode.MethodNotPublic);
         }
 
@@ -145,20 +169,35 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
                     throw e;
                 }
 
-                AtomicInteger retryCount = CollectionUtils.computeIfAbsent(retryCountMap, matchedRetryConfig,
-                    key -> new AtomicInteger(0));
+                AtomicInteger retryCount =
+                        CollectionUtils.computeIfAbsent(
+                                retryCountMap, matchedRetryConfig, key -> new AtomicInteger(0));
                 if (retryCount.intValue() >= matchedRetryConfig.getMaxAttempts()) {
                     throw e;
                 }
 
                 double intervalSeconds = matchedRetryConfig.getIntervalSeconds();
                 double backoffRate = matchedRetryConfig.getBackoffRate();
-                long currentInterval = (long) (retryCount.intValue() > 0 ?
-                        (intervalSeconds * backoffRate * retryCount.intValue() * 1000) : (intervalSeconds * 1000));
+                long currentInterval =
+                        (long)
+                                (retryCount.intValue() > 0
+                                        ? (intervalSeconds
+                                                * backoffRate
+                                                * retryCount.intValue()
+                                                * 1000)
+                                        : (intervalSeconds * 1000));
 
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("Invoke Service[" + state.getServiceName() + "." + state.getServiceMethod() + "] failed, will retry after "
-                            + currentInterval + " millis, current retry count: " + retryCount.intValue(), e);
+                    LOGGER.warn(
+                            "Invoke Service["
+                                    + state.getServiceName()
+                                    + "."
+                                    + state.getServiceMethod()
+                                    + "] failed, will retry after "
+                                    + currentInterval
+                                    + " millis, current retry count: "
+                                    + retryCount.intValue(),
+                            e);
                 }
                 try {
                     Thread.sleep(currentInterval);
@@ -180,7 +219,8 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
                         return retryConfig;
                     }
                 } else {
-                    List<Class<? extends Exception>> exceptionClasses = retryConfig.getExceptionClasses();
+                    List<Class<? extends Exception>> exceptionClasses =
+                            retryConfig.getExceptionClasses();
                     if (exceptionClasses == null) {
                         synchronized (retryConfig) {
                             exceptionClasses = retryConfig.getExceptionClasses();
@@ -191,18 +231,28 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
 
                                     Class<? extends Exception> expClass = null;
                                     try {
-                                        expClass = (Class<? extends Exception>) ServiceTaskStateHandler.class
-                                                .getClassLoader().loadClass(expStr);
+                                        expClass =
+                                                (Class<? extends Exception>)
+                                                        ServiceTaskStateHandler.class
+                                                                .getClassLoader()
+                                                                .loadClass(expStr);
                                     } catch (Exception e1) {
 
-                                        LOGGER.warn("Cannot Load Exception Class by getClass().getClassLoader()", e1);
+                                        LOGGER.warn(
+                                                "Cannot Load Exception Class by"
+                                                        + " getClass().getClassLoader()",
+                                                e1);
 
                                         try {
-                                            expClass = (Class<? extends Exception>) Thread.currentThread()
-                                                    .getContextClassLoader().loadClass(expStr);
+                                            expClass =
+                                                    (Class<? extends Exception>)
+                                                            Thread.currentThread()
+                                                                    .getContextClassLoader()
+                                                                    .loadClass(expStr);
                                         } catch (Exception e2) {
                                             LOGGER.warn(
-                                                    "Cannot Load Exception Class by Thread.currentThread()"
+                                                    "Cannot Load Exception Class by"
+                                                            + " Thread.currentThread()"
                                                             + ".getContextClassLoader()",
                                                     e2);
                                         }
@@ -222,7 +272,6 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
                             return retryConfig;
                         }
                     }
-
                 }
             }
         }
@@ -261,25 +310,30 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
         }
         if (clazz == null) {
             try {
-                clazz = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+                clazz =
+                        Class.forName(
+                                className, true, Thread.currentThread().getContextClassLoader());
             } catch (ClassNotFoundException e) {
                 LOGGER.error(e.getMessage(), e);
             }
         }
         if (clazz == null) {
-            throw new EngineExecutionException("Parameter class not found [" + className + "]",
+            throw new EngineExecutionException(
+                    "Parameter class not found [" + className + "]",
                     FrameworkErrorCode.ObjectNotExists);
         }
         return clazz;
     }
 
-    protected Object invokeMethod(Object serviceBean, Method method, Object... input) throws Throwable {
+    protected Object invokeMethod(Object serviceBean, Method method, Object... input)
+            throws Throwable {
         try {
             return method.invoke(serviceBean, input);
         } catch (InvocationTargetException e) {
             Throwable targetExp = e.getTargetException();
             if (targetExp == null) {
-                throw new EngineExecutionException(e, e.getMessage(), FrameworkErrorCode.MethodInvokeError);
+                throw new EngineExecutionException(
+                        e, e.getMessage(), FrameworkErrorCode.MethodInvokeError);
             }
 
             throw targetExp;
@@ -298,11 +352,12 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
         } else {
             JsonParser jsonParser = JsonParserFactory.getJsonParser(getSagaJsonParser());
             if (jsonParser == null) {
-                throw new RuntimeException("Cannot get JsonParser by name : " + getSagaJsonParser());
+                throw new RuntimeException(
+                        "Cannot get JsonParser by name : " + getSagaJsonParser());
             }
             String jsonValue = jsonParser.toJsonString(value, true, false);
 
-            //compatible history autoType serialize json
+            // compatible history autoType serialize json
             boolean useAutoType = jsonParser.useAutoType(jsonValue);
 
             return jsonParser.parse(jsonValue, paramType, !useAutoType);
@@ -327,7 +382,7 @@ public class SpringBeanServiceInvoker implements ServiceInvoker, ApplicationCont
                 || clazz == java.sql.Time.class //
                 || clazz == java.sql.Timestamp.class //
                 || clazz.isEnum() //
-                ;
+        ;
     }
 
     protected Class getPrimitiveClass(String className) {

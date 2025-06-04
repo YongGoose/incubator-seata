@@ -17,7 +17,6 @@
 package org.apache.seata.saga.statelang.domain.impl;
 
 import java.util.Map;
-
 import org.apache.seata.saga.statelang.domain.State;
 import org.apache.seata.saga.statelang.domain.StateMachine;
 import org.apache.seata.saga.statelang.domain.StateType;

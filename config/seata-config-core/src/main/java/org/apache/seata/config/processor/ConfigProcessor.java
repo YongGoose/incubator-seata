@@ -16,14 +16,13 @@
  */
 package org.apache.seata.config.processor;
 
+import java.io.IOException;
+import java.util.Properties;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.config.ConfigurationKeys;
-
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * The Config Processor.
@@ -33,6 +32,7 @@ public class ConfigProcessor {
     private static final String SEPARATOR = ".";
     private static final Configuration FILE_CONFIG = ConfigurationFactory.CURRENT_FILE_INSTANCE;
     private static final String DEFAULT_DATA_TYPE = "properties";
+
     /**
      * processing configuration
      *
@@ -52,7 +52,8 @@ public class ConfigProcessor {
      * @return data type
      */
     public static String resolverConfigDataType(String dataId) {
-        return resolverConfigDataType(FILE_CONFIG.getConfig(getDataTypeKey()),dataId,DEFAULT_DATA_TYPE);
+        return resolverConfigDataType(
+                FILE_CONFIG.getConfig(getDataTypeKey()), dataId, DEFAULT_DATA_TYPE);
     }
 
     /**
@@ -63,7 +64,8 @@ public class ConfigProcessor {
      * @param defaultDataType the default data type
      * @return data type
      */
-    public static String resolverConfigDataType(String dataType,String dataId,String defaultDataType) {
+    public static String resolverConfigDataType(
+            String dataType, String dataId, String defaultDataType) {
         if (StringUtils.isNotBlank(dataType)) {
             return dataType;
         }
@@ -72,16 +74,18 @@ public class ConfigProcessor {
         }
         String[] splitString = dataId.split("\\" + SEPARATOR);
         try {
-            ConfigDataType configDataType = ConfigDataType.getTypeBySuffix(splitString[splitString.length - 1]);
+            ConfigDataType configDataType =
+                    ConfigDataType.getTypeBySuffix(splitString[splitString.length - 1]);
             return configDataType.name();
         } catch (IllegalArgumentException e) {
             return defaultDataType;
         }
-
     }
 
     private static String getDataTypeKey() {
-        return String.join(ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR, ConfigurationKeys.FILE_ROOT_CONFIG, ConfigurationKeys.DATA_TYPE);
+        return String.join(
+                ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR,
+                ConfigurationKeys.FILE_ROOT_CONFIG,
+                ConfigurationKeys.DATA_TYPE);
     }
-
 }

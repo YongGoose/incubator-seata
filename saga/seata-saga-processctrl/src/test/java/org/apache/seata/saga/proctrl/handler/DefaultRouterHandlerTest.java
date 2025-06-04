@@ -18,7 +18,6 @@ package org.apache.seata.saga.proctrl.handler;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.saga.proctrl.ProcessRouter;
 import org.apache.seata.saga.proctrl.ProcessType;
@@ -35,7 +34,8 @@ public class DefaultRouterHandlerTest {
     public void testRouteOfFrameworkException() {
         ProcessContextImpl context = new ProcessContextImpl();
         DefaultRouterHandler defaultRouterHandler = new DefaultRouterHandler();
-        Assertions.assertThrows(FrameworkException.class, () -> defaultRouterHandler.route(context));
+        Assertions.assertThrows(
+                FrameworkException.class, () -> defaultRouterHandler.route(context));
     }
 
     @Test

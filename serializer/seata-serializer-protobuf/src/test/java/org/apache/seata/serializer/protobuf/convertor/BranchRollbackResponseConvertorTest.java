@@ -16,15 +16,14 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.BranchRollbackResponseProto;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchRollbackResponse;
+import org.apache.seata.serializer.protobuf.generated.BranchRollbackResponseProto;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class BranchRollbackResponseConvertorTest {
 
@@ -32,7 +31,8 @@ public class BranchRollbackResponseConvertorTest {
     public void convert2Proto() {
 
         BranchRollbackResponse branchRollbackResponse = new BranchRollbackResponse();
-        branchRollbackResponse.setTransactionExceptionCode(TransactionExceptionCode.BranchTransactionNotExist);
+        branchRollbackResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.BranchTransactionNotExist);
         branchRollbackResponse.setResultCode(ResultCode.Success);
         branchRollbackResponse.setMsg("xx");
         branchRollbackResponse.setXid("xid");
@@ -40,14 +40,14 @@ public class BranchRollbackResponseConvertorTest {
         branchRollbackResponse.setBranchId(123);
 
         BranchRollbackResponseConvertor convertor = new BranchRollbackResponseConvertor();
-        BranchRollbackResponseProto proto = convertor.convert2Proto(
-            branchRollbackResponse);
+        BranchRollbackResponseProto proto = convertor.convert2Proto(branchRollbackResponse);
         BranchRollbackResponse real = convertor.convert2Model(proto);
 
         assertThat(real.getTypeCode()).isEqualTo(branchRollbackResponse.getTypeCode());
         assertThat(real.getMsg()).isEqualTo(branchRollbackResponse.getMsg());
         assertThat(real.getXid()).isEqualTo(branchRollbackResponse.getXid());
-        assertThat(real.getTransactionExceptionCode()).isEqualTo(branchRollbackResponse.getTransactionExceptionCode());
+        assertThat(real.getTransactionExceptionCode())
+                .isEqualTo(branchRollbackResponse.getTransactionExceptionCode());
         assertThat(real.getBranchStatus()).isEqualTo(branchRollbackResponse.getBranchStatus());
         assertThat(real.getResultCode()).isEqualTo(branchRollbackResponse.getResultCode());
     }

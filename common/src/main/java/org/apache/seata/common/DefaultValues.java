@@ -26,50 +26,62 @@ public interface DefaultValues {
      * The constant DEFAULT_CLIENT_LOCK_RETRY_INTERVAL.
      */
     int DEFAULT_CLIENT_LOCK_RETRY_INTERVAL = 10;
+
     /**
      * The constant DEFAULT_TM_DEGRADE_CHECK_ALLOW_TIMES.
      */
     int DEFAULT_TM_DEGRADE_CHECK_ALLOW_TIMES = 10;
+
     /**
      * The constant DEFAULT_CLIENT_LOCK_RETRY_TIMES.
      */
     int DEFAULT_CLIENT_LOCK_RETRY_TIMES = 30;
+
     /**
      * The constant DEFAULT_CLIENT_LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT.
      */
     boolean DEFAULT_CLIENT_LOCK_RETRY_POLICY_BRANCH_ROLLBACK_ON_CONFLICT = true;
+
     /**
      * The constant DEFAULT_LOG_EXCEPTION_RATE.
      */
     int DEFAULT_LOG_EXCEPTION_RATE = 100;
+
     /**
      * The constant DEFAULT_CLIENT_ASYNC_COMMIT_BUFFER_LIMIT.
      */
     int DEFAULT_CLIENT_ASYNC_COMMIT_BUFFER_LIMIT = 10000;
+
     /**
      * The constant DEFAULT_TM_DEGRADE_CHECK_PERIOD.
      */
     int DEFAULT_TM_DEGRADE_CHECK_PERIOD = 2000;
+
     /**
      * The constant DEFAULT_CLIENT_REPORT_RETRY_COUNT.
      */
     int DEFAULT_CLIENT_REPORT_RETRY_COUNT = 5;
+
     /**
      * The constant DEFAULT_CLIENT_REPORT_SUCCESS_ENABLE.
      */
     boolean DEFAULT_CLIENT_REPORT_SUCCESS_ENABLE = false;
+
     /**
      * The constant DEFAULT_CLIENT_TABLE_META_CHECK_ENABLE.
      */
     boolean DEFAULT_CLIENT_TABLE_META_CHECK_ENABLE = true;
+
     /**
      * The constant DEFAULT_TABLE_META_CHECKER_INTERVAL.
      */
     long DEFAULT_TABLE_META_CHECKER_INTERVAL = 60000L;
+
     /**
      * The constant DEFAULT_TM_DEGRADE_CHECK.
      */
     boolean DEFAULT_TM_DEGRADE_CHECK = false;
+
     /**
      * The constant DEFAULT_CLIENT_SAGA_BRANCH_REGISTER_ENABLE.
      */
@@ -79,18 +91,22 @@ public interface DefaultValues {
      * The default session store dir
      */
     String DEFAULT_SESSION_STORE_FILE_DIR = "sessionStore";
+
     /**
      * The constant DEFAULT_CLIENT_SAGA_RETRY_PERSIST_MODE_UPDATE.
      */
     boolean DEFAULT_CLIENT_SAGA_RETRY_PERSIST_MODE_UPDATE = false;
+
     /**
      * The constant DEFAULT_CLIENT_SAGA_COMPENSATE_PERSIST_MODE_UPDATE.
      */
     boolean DEFAULT_CLIENT_SAGA_COMPENSATE_PERSIST_MODE_UPDATE = false;
+
     /**
      * The constant DEFAULT_RAFT_SERIALIZATION.
      */
     String DEFAULT_RAFT_SERIALIZATION = "jackson";
+
     /**
      * The constant DEFAULT_RAFT_COMPRESSOR.
      */
@@ -100,10 +116,12 @@ public interface DefaultValues {
      * Shutdown timeout default 3s
      */
     int DEFAULT_SHUTDOWN_TIMEOUT_SEC = 13;
+
     /**
      * The constant DEFAULT_SELECTOR_THREAD_SIZE.
      */
     int DEFAULT_SELECTOR_THREAD_SIZE = -1;
+
     /**
      * The constant DEFAULT_BOSS_THREAD_SIZE.
      */
@@ -113,27 +131,32 @@ public interface DefaultValues {
      * The constant DEFAULT_SELECTOR_THREAD_PREFIX.
      */
     String DEFAULT_SELECTOR_THREAD_PREFIX = "NettyClientSelector";
+
     /**
      * The constant DEFAULT_WORKER_THREAD_PREFIX.
      */
     String DEFAULT_WORKER_THREAD_PREFIX = "NettyClientWorkerThread";
+
     /**
      * The constant DEFAULT_ENABLE_CLIENT_BATCH_SEND_REQUEST.
      */
-    @Deprecated
-    boolean DEFAULT_ENABLE_CLIENT_BATCH_SEND_REQUEST = true;
+    @Deprecated boolean DEFAULT_ENABLE_CLIENT_BATCH_SEND_REQUEST = true;
+
     /**
      * The constant DEFAULT_ENABLE_CLIENT_USE_SHARED_EVENT_LOOP.
      */
     boolean DEFAULT_ENABLE_CLIENT_USE_SHARED_EVENT_LOOP = false;
+
     /**
      * The constant DEFAULT_ENABLE_TM_CLIENT_BATCH_SEND_REQUEST.
      */
     boolean DEFAULT_ENABLE_TM_CLIENT_BATCH_SEND_REQUEST = false;
+
     /**
      * The constant DEFAULT_ENABLE_RM_CLIENT_BATCH_SEND_REQUEST.
      */
     boolean DEFAULT_ENABLE_RM_CLIENT_BATCH_SEND_REQUEST = true;
+
     /**
      * The constant DEFAULT_ENABLE_TC_SERVER_BATCH_SEND_RESPONSE.
      */
@@ -148,14 +171,17 @@ public interface DefaultValues {
      * The constant DEFAULT_BOSS_THREAD_PREFIX.
      */
     String DEFAULT_BOSS_THREAD_PREFIX = "NettyBoss";
+
     /**
      * The constant DEFAULT_NIO_WORKER_THREAD_PREFIX.
      */
     String DEFAULT_NIO_WORKER_THREAD_PREFIX = "NettyServerNIOWorker";
+
     /**
      * The constant DEFAULT_EXECUTOR_THREAD_PREFIX.
      */
     String DEFAULT_EXECUTOR_THREAD_PREFIX = "NettyServerBizHandler";
+
     /**
      * The constant DEFAULT_PROTOCOL.
      */
@@ -165,22 +191,27 @@ public interface DefaultValues {
      * The constant DEFAULT_TRANSPORT_HEARTBEAT.
      */
     boolean DEFAULT_TRANSPORT_HEARTBEAT = true;
+
     /**
      * The constant DEFAULT_TRANSACTION_UNDO_DATA_VALIDATION.
      */
     boolean DEFAULT_TRANSACTION_UNDO_DATA_VALIDATION = true;
+
     /**
      * The constant DEFAULT_TRANSACTION_UNDO_LOG_SERIALIZATION.
      */
     String DEFAULT_TRANSACTION_UNDO_LOG_SERIALIZATION = "jackson";
+
     /**
      * The constant DEFAULT_ONLY_CARE_UPDATE_COLUMNS.
      */
     boolean DEFAULT_ONLY_CARE_UPDATE_COLUMNS = true;
+
     /**
      * The constant  DEFAULT_TRANSACTION_UNDO_LOG_TABLE.
      */
     String DEFAULT_TRANSACTION_UNDO_LOG_TABLE = "undo_log";
+
     /**
      * The constant DEFAULT_STORE_DB_GLOBAL_TABLE.
      */
@@ -205,10 +236,12 @@ public interface DefaultValues {
      * The constant DEFAULT_TM_COMMIT_RETRY_COUNT.
      */
     int DEFAULT_TM_COMMIT_RETRY_COUNT = 5;
+
     /**
      * The constant DEFAULT_TM_ROLLBACK_RETRY_COUNT.
      */
     int DEFAULT_TM_ROLLBACK_RETRY_COUNT = 5;
+
     /**
      * The constant DEFAULT_GLOBAL_TRANSACTION_TIMEOUT.
      */
@@ -218,15 +251,17 @@ public interface DefaultValues {
      * The constant DEFAULT_TX_GROUP.
      */
     String DEFAULT_TX_GROUP = "default_tx_group";
+
     /**
      * The constant DEFAULT_TX_GROUP_OLD.
      */
-    @Deprecated
-    String DEFAULT_TX_GROUP_OLD = "my_test_tx_group";
+    @Deprecated String DEFAULT_TX_GROUP_OLD = "my_test_tx_group";
+
     /**
      * The constant DEFAULT_TC_CLUSTER.
      */
     String DEFAULT_TC_CLUSTER = "default";
+
     /**
      * The constant DEFAULT_GROUPLIST.
      */
@@ -245,9 +280,8 @@ public interface DefaultValues {
     /**
      * The constant SERVICE_DEFAULT_PORT.
      */
-    //currently not use and will be delete in the next version
-    @Deprecated
-    int SERVICE_DEFAULT_PORT = 8091;
+    // currently not use and will be delete in the next version
+    @Deprecated int SERVICE_DEFAULT_PORT = 8091;
 
     /**
      * The constant SERVICE_OFFSET_SPRING_BOOT.
@@ -284,6 +318,7 @@ public interface DefaultValues {
      * The constant DEFAULT_LOAD_BALANCE.
      */
     String DEFAULT_LOAD_BALANCE = "XID";
+
     /**
      * The constant VIRTUAL_NODES_DEFAULT.
      */
@@ -343,10 +378,12 @@ public interface DefaultValues {
      * the constant DEFAULT_COMMON_FENCE_CLEAN_PERIOD
      */
     int DEFAULT_COMMON_FENCE_CLEAN_PERIOD = 1;
+
     /**
      * the constant DEFAULT_COMMON_FENCE_LOG_TABLE_NAME
      */
     String DEFAULT_COMMON_FENCE_LOG_TABLE_NAME = "tcc_fence_log";
+
     /**
      * the constant COMMON_FENCE_BEAN_NAME
      */
@@ -391,6 +428,7 @@ public interface DefaultValues {
      * the constant DEFAULT_SERVER_RAFT_ELECTION_TIMEOUT_MS
      */
     int DEFAULT_SERVER_RAFT_ELECTION_TIMEOUT_MS = 1000;
+
     /**
      * the constant DEFAULT_COMMITING_RETRY_PERIOD
      */

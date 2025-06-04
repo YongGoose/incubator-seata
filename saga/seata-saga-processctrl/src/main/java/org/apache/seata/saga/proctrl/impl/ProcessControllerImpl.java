@@ -47,7 +47,8 @@ public class ProcessControllerImpl implements ProcessController {
             throw fex;
         } catch (Exception ex) {
             LOGGER.error("Unknown exception occurred, context = {}", context, ex);
-            throw new FrameworkException(ex, "Unknown exception occurred", FrameworkErrorCode.UnknownAppError);
+            throw new FrameworkException(
+                    ex, "Unknown exception occurred", FrameworkErrorCode.UnknownAppError);
         }
     }
 

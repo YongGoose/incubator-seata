@@ -16,6 +16,7 @@
  */
 package org.apache.seata.rm.datasource.sql;
 
+import java.util.List;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
@@ -23,18 +24,20 @@ import org.apache.seata.sqlparser.SQLRecognizer;
 import org.apache.seata.sqlparser.SQLRecognizerFactory;
 import org.apache.seata.sqlparser.SqlParserType;
 
-import java.util.List;
-
-
 public class SQLVisitorFactory {
     /**
      * SQLRecognizerFactory.
      */
-    private final static SQLRecognizerFactory SQL_RECOGNIZER_FACTORY;
+    private static final SQLRecognizerFactory SQL_RECOGNIZER_FACTORY;
 
     static {
-        String sqlParserType = ConfigurationFactory.getInstance().getConfig(ConfigurationKeys.SQL_PARSER_TYPE, SqlParserType.SQL_PARSER_TYPE_DRUID);
-        SQL_RECOGNIZER_FACTORY = EnhancedServiceLoader.load(SQLRecognizerFactory.class, sqlParserType);
+        String sqlParserType =
+                ConfigurationFactory.getInstance()
+                        .getConfig(
+                                ConfigurationKeys.SQL_PARSER_TYPE,
+                                SqlParserType.SQL_PARSER_TYPE_DRUID);
+        SQL_RECOGNIZER_FACTORY =
+                EnhancedServiceLoader.load(SQLRecognizerFactory.class, sqlParserType);
     }
 
     /**
@@ -47,6 +50,4 @@ public class SQLVisitorFactory {
     public static List<SQLRecognizer> get(String sql, String dbType) {
         return SQL_RECOGNIZER_FACTORY.create(sql, dbType);
     }
-
-
 }

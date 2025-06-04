@@ -16,50 +16,55 @@
  */
 package io.seata.common;
 
+import io.seata.saga.engine.AsyncCallback;
+import io.seata.saga.proctrl.ProcessContext;
+import io.seata.saga.statelang.domain.ExecutionStatus;
+import io.seata.saga.statelang.domain.StateMachineInstance;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import io.seata.saga.engine.AsyncCallback;
-import io.seata.saga.proctrl.ProcessContext;
-import io.seata.saga.statelang.domain.ExecutionStatus;
-import io.seata.saga.statelang.domain.StateMachineInstance;
-
 public class LockAndCallback {
     private final Lock lock;
     private final Condition notFinished;
     private final AsyncCallback callback;
-    private final static long DEFAULT_TIMEOUT = 60000;
+    private static final long DEFAULT_TIMEOUT = 60000;
     private String result;
 
     public LockAndCallback() {
         lock = new ReentrantLock();
         notFinished = lock.newCondition();
-        callback = new AsyncCallback() {
-            @Override
-            public void onFinished(ProcessContext context, StateMachineInstance stateMachineInstance) {
-                result = "onFinished";
-                try {
-                    lock.lock();
-                    notFinished.signal();
-                } finally {
-                    lock.unlock();
-                }
-            }
+        callback =
+                new AsyncCallback() {
+                    @Override
+                    public void onFinished(
+                            ProcessContext context, StateMachineInstance stateMachineInstance) {
+                        result = "onFinished";
+                        try {
+                            lock.lock();
+                            notFinished.signal();
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
 
-            @Override
-            public void onError(ProcessContext context, StateMachineInstance stateMachineInstance, Exception exp) {
-                result = "onError";
-                try {
-                    lock.lock();
-                    notFinished.signal();
-                } finally {
-                    lock.unlock();
-                }
-            }
-        };
+                    @Override
+                    public void onError(
+                            ProcessContext context,
+                            StateMachineInstance stateMachineInstance,
+                            Exception exp) {
+                        result = "onError";
+                        try {
+                            lock.lock();
+                            notFinished.signal();
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                };
     }
+
     public void waitingForFinish(StateMachineInstance inst) {
         waitingForFinish(inst, DEFAULT_TIMEOUT);
     }
@@ -71,21 +76,42 @@ public class LockAndCallback {
                 lock.lock();
                 boolean finished = notFinished.await(timeout, TimeUnit.MILLISECONDS);
                 if (finished) {
-                    System.out.printf("finish wait ====== XID: %s, status: %s, compensationStatus: %s, cost: %d ms, result: %s\r\n",
-                            inst.getId(), inst.getStatus(), inst.getCompensationStatus(), (System.nanoTime() - start) / 1000_000, result);
+                    System.out.printf(
+                            "finish wait ====== XID: %s, status: %s, compensationStatus: %s, cost:"
+                                    + " %d ms, result: %s\r\n",
+                            inst.getId(),
+                            inst.getStatus(),
+                            inst.getCompensationStatus(),
+                            (System.nanoTime() - start) / 1000_000,
+                            result);
                 } else {
-                    System.out.printf("timeout wait ====== XID: %s, status: %s, compensationStatus: %s, cost: %d ms, result: %s\r\n",
-                            inst.getId(), inst.getStatus(), inst.getCompensationStatus(), (System.nanoTime() - start) / 1000_000, result);
+                    System.out.printf(
+                            "timeout wait ====== XID: %s, status: %s, compensationStatus: %s, cost:"
+                                    + " %d ms, result: %s\r\n",
+                            inst.getId(),
+                            inst.getStatus(),
+                            inst.getCompensationStatus(),
+                            (System.nanoTime() - start) / 1000_000,
+                            result);
                 }
             } catch (Exception e) {
-                System.out.printf("error wait ====== XID: %s, status: %s, compensationStatus: %s, cost: %d ms, result: %s, error: %s\r\n",
-                        inst.getId(), inst.getStatus(), inst.getCompensationStatus(), (System.nanoTime() - start) / 1000_000, result, e.getMessage());
+                System.out.printf(
+                        "error wait ====== XID: %s, status: %s, compensationStatus: %s, cost: %d"
+                                + " ms, result: %s, error: %s\r\n",
+                        inst.getId(),
+                        inst.getStatus(),
+                        inst.getCompensationStatus(),
+                        (System.nanoTime() - start) / 1000_000,
+                        result,
+                        e.getMessage());
                 throw new RuntimeException("waitingForFinish failed", e);
             } finally {
                 lock.unlock();
             }
         } else {
-            System.out.printf("do not wait ====== XID: %s, status: %s, compensationStatus: %s, result: %s\r\n",
+            System.out.printf(
+                    "do not wait ====== XID: %s, status: %s, compensationStatus: %s, result:"
+                            + " %s\r\n",
                     inst.getId(), inst.getStatus(), inst.getCompensationStatus(), result);
         }
     }

@@ -16,14 +16,13 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.GlobalLockQueryResponseProto;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.GlobalLockQueryResponse;
+import org.apache.seata.serializer.protobuf.generated.GlobalLockQueryResponseProto;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class GlobalLockQueryResponseConvertorTest {
 
@@ -34,15 +33,15 @@ public class GlobalLockQueryResponseConvertorTest {
         globalLockQueryResponse.setLockable(true);
         globalLockQueryResponse.setMsg("msg");
         globalLockQueryResponse.setResultCode(ResultCode.Failed);
-        globalLockQueryResponse.setTransactionExceptionCode(TransactionExceptionCode.GlobalTransactionNotActive);
+        globalLockQueryResponse.setTransactionExceptionCode(
+                TransactionExceptionCode.GlobalTransactionNotActive);
         GlobalLockQueryResponseConvertor convertor = new GlobalLockQueryResponseConvertor();
-        GlobalLockQueryResponseProto proto = convertor.convert2Proto(
-            globalLockQueryResponse);
+        GlobalLockQueryResponseProto proto = convertor.convert2Proto(globalLockQueryResponse);
         GlobalLockQueryResponse real = convertor.convert2Model(proto);
         assertThat((real.getTypeCode())).isEqualTo(globalLockQueryResponse.getTypeCode());
         assertThat((real.getMsg())).isEqualTo(globalLockQueryResponse.getMsg());
         assertThat((real.getResultCode())).isEqualTo(globalLockQueryResponse.getResultCode());
-        assertThat((real.getTransactionExceptionCode())).isEqualTo(
-            globalLockQueryResponse.getTransactionExceptionCode());
+        assertThat((real.getTransactionExceptionCode()))
+                .isEqualTo(globalLockQueryResponse.getTransactionExceptionCode());
     }
 }

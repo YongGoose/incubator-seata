@@ -16,9 +16,9 @@
  */
 package org.apache.seata.integration.tx.api.util;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import javax.annotation.Nullable;
 
 /**
  * from spring utils
@@ -28,7 +28,9 @@ public class ClassUtils {
     private static final char PACKAGE_SEPARATOR = '.';
 
     public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
-        if (targetClass != null && targetClass != method.getDeclaringClass() && isOverridable(method, targetClass)) {
+        if (targetClass != null
+                && targetClass != method.getDeclaringClass()
+                && isOverridable(method, targetClass)) {
             try {
                 if (Modifier.isPublic(method.getModifiers())) {
                     try {
@@ -50,10 +52,12 @@ public class ClassUtils {
         if (Modifier.isPrivate(method.getModifiers())) {
             return false;
         }
-        if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
+        if (Modifier.isPublic(method.getModifiers())
+                || Modifier.isProtected(method.getModifiers())) {
             return true;
         }
-        return targetClass == null || getPackageName(method.getDeclaringClass()).equals(getPackageName(targetClass));
+        return targetClass == null
+                || getPackageName(method.getDeclaringClass()).equals(getPackageName(targetClass));
     }
 
     public static String getPackageName(Class<?> clazz) {

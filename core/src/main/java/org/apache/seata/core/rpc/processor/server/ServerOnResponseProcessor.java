@@ -16,10 +16,9 @@
  */
 package org.apache.seata.core.rpc.processor.server;
 
+import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.seata.common.util.NetUtil;
 import org.apache.seata.core.protocol.AbstractResultMessage;
 import org.apache.seata.core.protocol.MessageFuture;
@@ -57,8 +56,9 @@ public class ServerOnResponseProcessor implements RemotingProcessor {
      */
     private ConcurrentMap<Integer, MessageFuture> futures;
 
-    public ServerOnResponseProcessor(TransactionMessageHandler transactionMessageHandler,
-                                     ConcurrentHashMap<Integer, MessageFuture> futures) {
+    public ServerOnResponseProcessor(
+            TransactionMessageHandler transactionMessageHandler,
+            ConcurrentHashMap<Integer, MessageFuture> futures) {
         this.transactionMessageHandler = transactionMessageHandler;
         this.futures = futures;
     }
@@ -66,8 +66,13 @@ public class ServerOnResponseProcessor implements RemotingProcessor {
     @Override
     public void process(ChannelHandlerContext ctx, RpcMessage rpcMessage) throws Exception {
         MessageFuture messageFuture = futures.remove(rpcMessage.getId());
-        String receiveMsgLog = String.format("receive msg[single]: %s, clientIp: %s, vgroup: %s", rpcMessage.getBody(), NetUtil.toIpAddress(ctx.channel().remoteAddress()),
-            ChannelManager.getContextFromIdentified(ctx.channel()).getTransactionServiceGroup());
+        String receiveMsgLog =
+                String.format(
+                        "receive msg[single]: %s, clientIp: %s, vgroup: %s",
+                        rpcMessage.getBody(),
+                        NetUtil.toIpAddress(ctx.channel().remoteAddress()),
+                        ChannelManager.getContextFromIdentified(ctx.channel())
+                                .getTransactionServiceGroup());
         if (LOGGER.isInfoEnabled()) {
             BatchLogHandler.INSTANCE.writeLog(receiveMsgLog);
         }
@@ -84,7 +89,10 @@ public class ServerOnResponseProcessor implements RemotingProcessor {
                     LOGGER.error(exx.getMessage());
                 }
                 if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info(String.format("close a unhandled connection! [%s]", ctx.channel().toString()));
+                    LOGGER.info(
+                            String.format(
+                                    "close a unhandled connection! [%s]",
+                                    ctx.channel().toString()));
                 }
             }
         }
@@ -93,7 +101,8 @@ public class ServerOnResponseProcessor implements RemotingProcessor {
     private void onResponseMessage(ChannelHandlerContext ctx, RpcMessage rpcMessage) {
         if (rpcMessage.getBody() instanceof AbstractResultMessage) {
             RpcContext rpcContext = ChannelManager.getContextFromIdentified(ctx.channel());
-            transactionMessageHandler.onResponse((AbstractResultMessage) rpcMessage.getBody(), rpcContext);
+            transactionMessageHandler.onResponse(
+                    (AbstractResultMessage) rpcMessage.getBody(), rpcContext);
         }
     }
 }

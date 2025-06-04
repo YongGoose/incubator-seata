@@ -17,11 +17,9 @@
 package org.apache.seata.integration.tx.api.interceptor.handler;
 
 import java.util.Set;
-
 import org.apache.seata.integration.tx.api.interceptor.InvocationWrapper;
 import org.apache.seata.integration.tx.api.interceptor.SeataInterceptor;
 import org.apache.seata.integration.tx.api.interceptor.SeataInterceptorPosition;
-
 
 public interface ProxyInvocationHandler extends SeataInterceptor {
 

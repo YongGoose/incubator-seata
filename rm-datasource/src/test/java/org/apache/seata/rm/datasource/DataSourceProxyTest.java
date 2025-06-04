@@ -16,14 +16,16 @@
  */
 package org.apache.seata.rm.datasource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+import com.alibaba.druid.pool.DruidDataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-
-import com.alibaba.druid.pool.DruidDataSource;
-
-import org.apache.seata.rm.datasource.DataSourceProxy;
 import org.apache.seata.rm.datasource.mock.MockDataSource;
 import org.apache.seata.rm.datasource.mock.MockDriver;
 import org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory;
@@ -33,12 +35,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 
 public class DataSourceProxyTest {
 
@@ -65,36 +61,42 @@ public class DataSourceProxyTest {
         dataSource.setUsername(username);
         dataSource.setPassword("password");
 
-        Throwable throwable = Assertions.assertThrows(IllegalStateException.class, () -> new DataSourceProxy(dataSource));
+        Throwable throwable =
+                Assertions.assertThrows(
+                        IllegalStateException.class, () -> new DataSourceProxy(dataSource));
         assertThat(throwable).hasMessageContaining("AT mode don't support the dbtype");
     }
-
 
     @Test
     public void testUndologTableNotExist() {
         DataSource dataSource = new MockDataSource();
 
-        MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic = Mockito.mockStatic(UndoLogManagerFactory.class);
+        MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic =
+                Mockito.mockStatic(UndoLogManagerFactory.class);
 
         MySQLUndoLogManager mysqlUndoLogManager = mock(MySQLUndoLogManager.class);
-        undoLogManagerFactoryMockedStatic.when(()->UndoLogManagerFactory.getUndoLogManager(anyString()))
+        undoLogManagerFactoryMockedStatic
+                .when(() -> UndoLogManagerFactory.getUndoLogManager(anyString()))
                 .thenReturn(mysqlUndoLogManager);
 
         doReturn(false).when(mysqlUndoLogManager).hasUndoLogTable(any(Connection.class));
 
-        Throwable throwable = Assertions.assertThrows(IllegalStateException.class, () -> new DataSourceProxy(dataSource));
+        Throwable throwable =
+                Assertions.assertThrows(
+                        IllegalStateException.class, () -> new DataSourceProxy(dataSource));
         undoLogManagerFactoryMockedStatic.close();
 
         assertThat(throwable).hasMessageContaining("table not exist");
     }
 
     @Test
-    public void getResourceIdTest() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void getResourceIdTest()
+            throws SQLException, NoSuchFieldException, IllegalAccessException {
         // Disable 'DataSourceProxy.tableMetaExecutor' to prevent unit tests from being affected
-        Field enableField = TableMetaCacheFactory.class.getDeclaredField("ENABLE_TABLE_META_CHECKER_ENABLE");
+        Field enableField =
+                TableMetaCacheFactory.class.getDeclaredField("ENABLE_TABLE_META_CHECKER_ENABLE");
         enableField.setAccessible(true);
         enableField.set(null, false);
-
 
         final MockDriver mockDriver = new MockDriver();
         final String username = "username";
@@ -120,34 +122,45 @@ public class DataSourceProxyTest {
         Field jdbcUrlField = proxy.getClass().getDeclaredField("jdbcUrl");
         jdbcUrlField.setAccessible(true);
 
-
         // set userName
         String userNameFromMetaData = dataSource.getConnection().getMetaData().getUserName();
         Assertions.assertEquals(userNameFromMetaData, username);
         userNameField.set(proxy, username);
 
-
         // case: dbType = oracle
         {
             resourceIdField.set(proxy, null);
             dbTypeField.set(proxy, org.apache.seata.sqlparser.util.JdbcConstants.ORACLE);
-            Assertions.assertEquals("jdbc:mock:xxx/username", proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            Assertions.assertEquals(
+                    "jdbc:mock:xxx/username",
+                    proxy.getResourceId(),
+                    "dbType=" + dbTypeField.get(proxy));
         }
-
 
         // case: dbType = postgresql
         {
             resourceIdField.set(proxy, null);
             dbTypeField.set(proxy, org.apache.seata.sqlparser.util.JdbcConstants.POSTGRESQL);
-            Assertions.assertEquals(jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            Assertions.assertEquals(
+                    jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
 
             resourceIdField.set(proxy, null);
-            jdbcUrlField.set(proxy, "jdbc:postgresql://mock/postgresql?xxx=1111&currentSchema=schema1,schema2&yyy=1");
-            Assertions.assertEquals("jdbc:postgresql://mock/postgresql?currentSchema=schema1!schema2", proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            jdbcUrlField.set(
+                    proxy,
+                    "jdbc:postgresql://mock/postgresql?xxx=1111&currentSchema=schema1,schema2&yyy=1");
+            Assertions.assertEquals(
+                    "jdbc:postgresql://mock/postgresql?currentSchema=schema1!schema2",
+                    proxy.getResourceId(),
+                    "dbType=" + dbTypeField.get(proxy));
 
             resourceIdField.set(proxy, null);
-            jdbcUrlField.set(proxy, "jdbc:postgresql://192.168.1.123:30100,192.168.1.124:30100?xxx=1111&currentSchema=schema1,schema2&yyy=1");
-            Assertions.assertEquals("jdbc:postgresql://192.168.1.123:30100|192.168.1.124:30100?currentSchema=schema1!schema2", proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            jdbcUrlField.set(
+                    proxy,
+                    "jdbc:postgresql://192.168.1.123:30100,192.168.1.124:30100?xxx=1111&currentSchema=schema1,schema2&yyy=1");
+            Assertions.assertEquals(
+                    "jdbc:postgresql://192.168.1.123:30100|192.168.1.124:30100?currentSchema=schema1!schema2",
+                    proxy.getResourceId(),
+                    "dbType=" + dbTypeField.get(proxy));
 
             jdbcUrlField.set(proxy, jdbcUrl);
         }
@@ -156,11 +169,15 @@ public class DataSourceProxyTest {
         {
             resourceIdField.set(proxy, null);
             dbTypeField.set(proxy, org.apache.seata.sqlparser.util.JdbcConstants.DM);
-            Assertions.assertEquals(jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            Assertions.assertEquals(
+                    jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
 
             resourceIdField.set(proxy, null);
             jdbcUrlField.set(proxy, "jdbc:dm://mock/dm?xxx=1111&schema=schema1");
-            Assertions.assertEquals("jdbc:dm://mock/dm?schema=schema1", proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            Assertions.assertEquals(
+                    "jdbc:dm://mock/dm?schema=schema1",
+                    proxy.getResourceId(),
+                    "dbType=" + dbTypeField.get(proxy));
             jdbcUrlField.set(proxy, jdbcUrl);
         }
 
@@ -168,11 +185,17 @@ public class DataSourceProxyTest {
         {
             resourceIdField.set(proxy, null);
             dbTypeField.set(proxy, org.apache.seata.sqlparser.util.JdbcConstants.MYSQL);
-            Assertions.assertEquals(jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            Assertions.assertEquals(
+                    jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
 
             resourceIdField.set(proxy, null);
-            jdbcUrlField.set(proxy, "jdbc:mysql:loadbalance://192.168.100.2:3306,192.168.100.3:3306,192.168.100.1:3306/seata");
-            Assertions.assertEquals("jdbc:mysql:loadbalance://192.168.100.2:3306|192.168.100.3:3306|192.168.100.1:3306/seata", proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            jdbcUrlField.set(
+                    proxy,
+                    "jdbc:mysql:loadbalance://192.168.100.2:3306,192.168.100.3:3306,192.168.100.1:3306/seata");
+            Assertions.assertEquals(
+                    "jdbc:mysql:loadbalance://192.168.100.2:3306|192.168.100.3:3306|192.168.100.1:3306/seata",
+                    proxy.getResourceId(),
+                    "dbType=" + dbTypeField.get(proxy));
             jdbcUrlField.set(proxy, jdbcUrl);
         }
 
@@ -180,20 +203,27 @@ public class DataSourceProxyTest {
         {
             resourceIdField.set(proxy, null);
             dbTypeField.set(proxy, org.apache.seata.sqlparser.util.JdbcConstants.SQLSERVER);
-            Assertions.assertEquals(jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            Assertions.assertEquals(
+                    jdbcUrl, proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
 
             resourceIdField.set(proxy, null);
             jdbcUrlField.set(proxy, "jdbc:mock:xxx;database=test");
-            Assertions.assertEquals("jdbc:mock:xxx;database=test", proxy.getResourceId(), "dbType=" + dbTypeField.get(proxy));
+            Assertions.assertEquals(
+                    "jdbc:mock:xxx;database=test",
+                    proxy.getResourceId(),
+                    "dbType=" + dbTypeField.get(proxy));
             jdbcUrlField.set(proxy, jdbcUrl);
         }
     }
 
     // to skip the db & undolog table check
     public static DataSourceProxy getDataSourceProxy(DataSource dataSource) {
-        try (MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic = Mockito.mockStatic(UndoLogManagerFactory.class)) {
+        try (MockedStatic<UndoLogManagerFactory> undoLogManagerFactoryMockedStatic =
+                Mockito.mockStatic(UndoLogManagerFactory.class)) {
             MySQLUndoLogManager mysqlUndoLogManager = mock(MySQLUndoLogManager.class);
-            undoLogManagerFactoryMockedStatic.when(() -> UndoLogManagerFactory.getUndoLogManager(anyString())).thenReturn(mysqlUndoLogManager);
+            undoLogManagerFactoryMockedStatic
+                    .when(() -> UndoLogManagerFactory.getUndoLogManager(anyString()))
+                    .thenReturn(mysqlUndoLogManager);
 
             doReturn(true).when(mysqlUndoLogManager).hasUndoLogTable(any(Connection.class));
 

@@ -25,6 +25,7 @@ public interface RedisListener {
      * The constant REGISTER.
      */
     String REGISTER = "register";
+
     /**
      * The constant UN_REGISTER.
      */

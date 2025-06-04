@@ -16,14 +16,13 @@
  */
 package org.apache.seata.sqlparser.druid.polardbx;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLInSubQueryExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOrderingExpr;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.struct.NotPlaceholderExpr;
@@ -76,7 +75,8 @@ public class PolarDBXInsertRecognizerTest extends AbstractPolarDBXRecognizerTest
 
         Assertions.assertEquals(Arrays.asList("id", "name"), recognizer.getInsertColumns());
 
-        List<List<Object>> insertRows = recognizer.getInsertRows(Collections.singletonList(pkIndex));
+        List<List<Object>> insertRows =
+                recognizer.getInsertRows(Collections.singletonList(pkIndex));
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, "test")), insertRows);
     }
 
@@ -92,7 +92,8 @@ public class PolarDBXInsertRecognizerTest extends AbstractPolarDBXRecognizerTest
 
         Assertions.assertEquals(Arrays.asList("id", "name"), recognizer.getInsertColumns());
 
-        List<List<Object>> insertRows = recognizer.getInsertRows(Collections.singletonList(pkIndex));
+        List<List<Object>> insertRows =
+                recognizer.getInsertRows(Collections.singletonList(pkIndex));
         Assertions.assertEquals(Collections.singletonList(Arrays.asList("?", "?")), insertRows);
     }
 
@@ -115,41 +116,49 @@ public class PolarDBXInsertRecognizerTest extends AbstractPolarDBXRecognizerTest
         Assertions.assertEquals(Arrays.asList("id", "name"), insertColumns);
 
         // case3: unrecognized expression of columns
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String sql2 = "INSERT INTO t(a) VALUES (?)";
-            SQLStatement sqlStatement = getSQLStatement(sql2);
-            SQLInsertStatement ast2 = (SQLInsertStatement) sqlStatement;
-            ast2.getColumns().add(new SQLInSubQueryExpr());
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String sql2 = "INSERT INTO t(a) VALUES (?)";
+                    SQLStatement sqlStatement = getSQLStatement(sql2);
+                    SQLInsertStatement ast2 = (SQLInsertStatement) sqlStatement;
+                    ast2.getColumns().add(new SQLInSubQueryExpr());
 
-            PolarDBXInsertRecognizer recognizer2 = new PolarDBXInsertRecognizer(sql2, ast2);
-            recognizer2.getInsertColumns();
-        });
+                    PolarDBXInsertRecognizer recognizer2 = new PolarDBXInsertRecognizer(sql2, ast2);
+                    recognizer2.getInsertColumns();
+                });
     }
 
     @Test
     public void testGetInsertRows() {
         // case1: test expressions of value
         // VALUES(variant ref(placeholder etc.), value, null, method, default)
-        String sql = "INSERT INTO t(no, name, age, time, school) " +
-                "VALUES (?, 'test', null, now(), default)";
+        String sql =
+                "INSERT INTO t(no, name, age, time, school) "
+                        + "VALUES (?, 'test', null, now(), default)";
         SQLStatement ast = getSQLStatement(sql);
 
         PolarDBXInsertRecognizer recognizer = new PolarDBXInsertRecognizer(sql, ast);
-        List<List<Object>> insertRows = recognizer.getInsertRows(Collections.singletonList(pkIndex));
+        List<List<Object>> insertRows =
+                recognizer.getInsertRows(Collections.singletonList(pkIndex));
         Assertions.assertEquals(1, insertRows.size());
         List<Object> insertRow = insertRows.get(0);
-        Assertions.assertEquals(Arrays.asList("?", "test", Null.get(), SqlMethodExpr.get(), NotPlaceholderExpr.get()),
+        Assertions.assertEquals(
+                Arrays.asList(
+                        "?", "test", Null.get(), SqlMethodExpr.get(), NotPlaceholderExpr.get()),
                 insertRow);
 
         // case2: unrecognized expression of value
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String sql2 = "insert into t(a) values (?)";
-            SQLInsertStatement ast2 = (SQLInsertStatement) getSQLStatement(sql2);
-            ast2.getValuesList().get(0).getValues().set(pkIndex, new MySqlOrderingExpr());
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String sql2 = "insert into t(a) values (?)";
+                    SQLInsertStatement ast2 = (SQLInsertStatement) getSQLStatement(sql2);
+                    ast2.getValuesList().get(0).getValues().set(pkIndex, new MySqlOrderingExpr());
 
-            PolarDBXInsertRecognizer recognizer2 = new PolarDBXInsertRecognizer(sql2, ast2);
-            recognizer2.getInsertRows(Collections.singletonList(pkIndex));
-        });
+                    PolarDBXInsertRecognizer recognizer2 = new PolarDBXInsertRecognizer(sql2, ast2);
+                    recognizer2.getInsertRows(Collections.singletonList(pkIndex));
+                });
     }
 
     @Test

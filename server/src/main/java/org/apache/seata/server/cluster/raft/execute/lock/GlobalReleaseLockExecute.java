@@ -28,9 +28,10 @@ public class GlobalReleaseLockExecute extends AbstractRaftMsgExecute {
 
     @Override
     public Boolean execute(RaftBaseMsg syncMsg) throws Throwable {
-        RaftGlobalSessionSyncMsg sessionSyncMsg = (RaftGlobalSessionSyncMsg)syncMsg;
+        RaftGlobalSessionSyncMsg sessionSyncMsg = (RaftGlobalSessionSyncMsg) syncMsg;
         GlobalSession globalSession =
-            SessionHolder.getRootSessionManager().findGlobalSession(sessionSyncMsg.getGlobalSession().getXid());
+                SessionHolder.getRootSessionManager()
+                        .findGlobalSession(sessionSyncMsg.getGlobalSession().getXid());
         if (globalSession != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("releaseGlobalSessionLock xid: {}", globalSession.getXid());
@@ -40,5 +41,4 @@ public class GlobalReleaseLockExecute extends AbstractRaftMsgExecute {
         }
         return false;
     }
-
 }

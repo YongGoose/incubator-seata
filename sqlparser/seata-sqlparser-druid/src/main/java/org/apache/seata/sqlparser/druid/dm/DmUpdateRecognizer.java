@@ -28,14 +28,13 @@ import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.SQLUpdateRecognizer;
 import org.apache.seata.sqlparser.util.ColumnUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The type dm update recognizer.
@@ -53,7 +52,7 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
      */
     public DmUpdateRecognizer(String originalSQL, SQLStatement ast) {
         super(originalSQL);
-        this.ast = (SQLUpdateStatement)ast;
+        this.ast = (SQLUpdateStatement) ast;
     }
 
     @Override
@@ -68,15 +67,22 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
         for (SQLUpdateSetItem updateSetItem : updateSetItems) {
             SQLExpr expr = updateSetItem.getColumn();
             if (expr instanceof SQLIdentifierExpr) {
-                list.add(((SQLIdentifierExpr)expr).getName());
+                list.add(((SQLIdentifierExpr) expr).getName());
             } else if (expr instanceof SQLPropertyExpr) {
                 // This is alias case, like UPDATE xxx_tbl a SET a.name = ? WHERE a.id = ?
-                SQLExpr owner = ((SQLPropertyExpr)expr).getOwner();
+                SQLExpr owner = ((SQLPropertyExpr) expr).getOwner();
                 if (owner instanceof SQLIdentifierExpr) {
-                    list.add(((SQLIdentifierExpr)owner).getName() + "." + ((SQLPropertyExpr)expr).getName());
-                    //This is table Field Full path, like update xxx_database.xxx_tbl set xxx_database.xxx_tbl.xxx_field...
+                    list.add(
+                            ((SQLIdentifierExpr) owner).getName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
+                    // This is table Field Full path, like update xxx_database.xxx_tbl set
+                    // xxx_database.xxx_tbl.xxx_field...
                 } else if (((SQLPropertyExpr) expr).getOwnernName().split("\\.").length > 1) {
-                    list.add(((SQLPropertyExpr)expr).getOwnernName()  + "." + ((SQLPropertyExpr)expr).getName());
+                    list.add(
+                            ((SQLPropertyExpr) expr).getOwnernName()
+                                    + "."
+                                    + ((SQLPropertyExpr) expr).getName());
                 }
             } else {
                 wrapSQLParsingException(expr);
@@ -92,7 +98,7 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
         for (SQLUpdateSetItem updateSetItem : updateSetItems) {
             SQLExpr expr = updateSetItem.getValue();
             if (expr instanceof SQLValuableExpr) {
-                list.add(((SQLValuableExpr)expr).getValue());
+                list.add(((SQLValuableExpr) expr).getValue());
             } else if (expr instanceof SQLVariantRefExpr) {
                 list.add(new VMarker());
             } else {
@@ -103,8 +109,9 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-        final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         SQLExpr where = ast.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
     }
@@ -123,19 +130,21 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
     @Override
     public String getTableName() {
         StringBuilder sb = new StringBuilder();
-        OracleOutputVisitor visitor = new OracleOutputVisitor(sb) {
+        OracleOutputVisitor visitor =
+                new OracleOutputVisitor(sb) {
 
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
 
-            @Override
-            public boolean visit(SQLJoinTableSource x) {
-                throw new NotSupportYetException("not support the syntax of update with join table");
-            }
-        };
+                    @Override
+                    public boolean visit(SQLJoinTableSource x) {
+                        throw new NotSupportYetException(
+                                "not support the syntax of update with join table");
+                    }
+                };
         SQLTableSource tableSource = ast.getTableSource();
         if (tableSource instanceof SQLExprTableSource) {
             visitor.visit((SQLExprTableSource) tableSource);
@@ -153,7 +162,8 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
     }
 
     @Override
-    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getLimitCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 
@@ -163,7 +173,8 @@ public class DmUpdateRecognizer extends BaseDmRecognizer implements SQLUpdateRec
     }
 
     @Override
-    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getOrderByCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         return null;
     }
 

@@ -16,6 +16,7 @@
  */
 package org.apache.seata.sqlparser.druid.polardbx;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLType;
 import org.junit.jupiter.api.Assertions;
@@ -41,7 +40,8 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         String sql = "SELECT * FROM t FOR UPDATE";
         SQLStatement ast = getSQLStatement(sql);
 
-        PolarDBXSelectForUpdateRecognizer recognizer = new PolarDBXSelectForUpdateRecognizer(sql, ast);
+        PolarDBXSelectForUpdateRecognizer recognizer =
+                new PolarDBXSelectForUpdateRecognizer(sql, ast);
         Assertions.assertEquals(recognizer.getSQLType(), SQLType.SELECT_FOR_UPDATE);
     }
 
@@ -50,7 +50,8 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         String sql = "SELECT * FROM t FOR UPDATE";
         SQLStatement ast = getSQLStatement(sql);
 
-        PolarDBXSelectForUpdateRecognizer recognizer = new PolarDBXSelectForUpdateRecognizer(sql, ast);
+        PolarDBXSelectForUpdateRecognizer recognizer =
+                new PolarDBXSelectForUpdateRecognizer(sql, ast);
         Assertions.assertNull(recognizer.getTableAlias());
 
         sql = "SELECT * FROM t t1 FOR UPDATE";
@@ -66,7 +67,8 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         String sql = "SELECT name FROM t FOR UPDATE";
         SQLStatement ast = getSQLStatement(sql);
 
-        PolarDBXSelectForUpdateRecognizer recognizer = new PolarDBXSelectForUpdateRecognizer(sql, ast);
+        PolarDBXSelectForUpdateRecognizer recognizer =
+                new PolarDBXSelectForUpdateRecognizer(sql, ast);
 
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
         Assertions.assertEquals("t", recognizer.getTableName());
@@ -78,17 +80,22 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         String sql = "SELECT id, name FROM t WHERE id = ? FOR UPDATE";
         SQLStatement ast = getSQLStatement(sql);
 
-        PolarDBXSelectForUpdateRecognizer recognizer = new PolarDBXSelectForUpdateRecognizer(sql, ast);
+        PolarDBXSelectForUpdateRecognizer recognizer =
+                new PolarDBXSelectForUpdateRecognizer(sql, ast);
 
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
         Assertions.assertEquals("t", recognizer.getTableName());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1, new ArrayList<>(Collections.singletonList(1))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
-        Assertions.assertEquals(Collections.singletonList(Collections.singletonList(1)), paramAppenderList);
+        Assertions.assertEquals(
+                Collections.singletonList(Collections.singletonList(1)), paramAppenderList);
         Assertions.assertEquals("id = ?", whereCondition);
     }
 
@@ -97,16 +104,21 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         String sql = "SELECT id, name FROM t WHERE id in (?, ?) FOR UPDATE";
         SQLStatement ast = getSQLStatement(sql);
 
-        PolarDBXSelectForUpdateRecognizer recognizer = new PolarDBXSelectForUpdateRecognizer(sql, ast);
+        PolarDBXSelectForUpdateRecognizer recognizer =
+                new PolarDBXSelectForUpdateRecognizer(sql, ast);
 
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
         Assertions.assertEquals("t", recognizer.getTableName());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1, new ArrayList<>(Collections.singletonList(1))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(2))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2)), paramAppenderList);
         Assertions.assertEquals("id IN (?, ?)", whereCondition);
@@ -117,16 +129,21 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         String sql = "SELECT id, name FROM t WHERE id BETWEEN ? AND ? FOR UPDATE";
         SQLStatement ast = getSQLStatement(sql);
 
-        PolarDBXSelectForUpdateRecognizer recognizer = new PolarDBXSelectForUpdateRecognizer(sql, ast);
+        PolarDBXSelectForUpdateRecognizer recognizer =
+                new PolarDBXSelectForUpdateRecognizer(sql, ast);
 
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
         Assertions.assertEquals("t", recognizer.getTableName());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1, new ArrayList<>(Collections.singletonList(1))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(2))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
         Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2)), paramAppenderList);
         Assertions.assertEquals("id BETWEEN ? AND ?", whereCondition);
@@ -137,20 +154,28 @@ public class PolarDBXSelectForUpdateRecognizerTest extends AbstractPolarDBXRecog
         String sql = "SELECT id, name FROM t WHERE id in (?, ?) and name like ? FOR UPDATE";
         SQLStatement ast = getSQLStatement(sql);
 
-        PolarDBXSelectForUpdateRecognizer recognizer = new PolarDBXSelectForUpdateRecognizer(sql, ast);
+        PolarDBXSelectForUpdateRecognizer recognizer =
+                new PolarDBXSelectForUpdateRecognizer(sql, ast);
 
         Assertions.assertEquals(sql, recognizer.getOriginalSQL());
         Assertions.assertEquals("t", recognizer.getTableName());
 
         ArrayList<List<Object>> paramAppenderList = new ArrayList<>();
-        ParametersHolder parametersHolder = () -> Stream.of(
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(1, new ArrayList<>(Collections.singletonList(1))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(2, new ArrayList<>(Collections.singletonList(2))),
-                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(3, new ArrayList<>(Collections.singletonList("%test%"))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ParametersHolder parametersHolder =
+                () ->
+                        Stream.of(
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                1, new ArrayList<>(Collections.singletonList(1))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                2, new ArrayList<>(Collections.singletonList(2))),
+                                        new AbstractMap.SimpleEntry<Integer, ArrayList<Object>>(
+                                                3,
+                                                new ArrayList<>(
+                                                        Collections.singletonList("%test%"))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         String whereCondition = recognizer.getWhereCondition(parametersHolder, paramAppenderList);
-        Assertions.assertEquals(Collections.singletonList(Arrays.asList(1, 2, "%test%")), paramAppenderList);
-        Assertions.assertEquals("id IN (?, ?)\n" +
-                "\tAND name LIKE ?", whereCondition);
+        Assertions.assertEquals(
+                Collections.singletonList(Arrays.asList(1, 2, "%test%")), paramAppenderList);
+        Assertions.assertEquals("id IN (?, ?)\n" + "\tAND name LIKE ?", whereCondition);
     }
 }

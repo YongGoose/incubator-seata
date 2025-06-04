@@ -43,7 +43,8 @@ public class RmBranchCommitProcessor implements RemotingProcessor {
 
     private RemotingClient remotingClient;
 
-    public RmBranchCommitProcessor(TransactionMessageHandler handler, RemotingClient remotingClient) {
+    public RmBranchCommitProcessor(
+            TransactionMessageHandler handler, RemotingClient remotingClient) {
         this.handler = handler;
         this.remotingClient = remotingClient;
     }
@@ -58,7 +59,8 @@ public class RmBranchCommitProcessor implements RemotingProcessor {
         handleBranchCommit(rpcMessage, remoteAddress, (BranchCommitRequest) msg);
     }
 
-    private void handleBranchCommit(RpcMessage request, String serverAddress, BranchCommitRequest branchCommitRequest) {
+    private void handleBranchCommit(
+            RpcMessage request, String serverAddress, BranchCommitRequest branchCommitRequest) {
         BranchCommitResponse resultMessage;
         resultMessage = (BranchCommitResponse) handler.onRequest(branchCommitRequest, null);
         if (LOGGER.isDebugEnabled()) {

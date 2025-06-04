@@ -31,17 +31,20 @@ public class SeataMQProducerFactory {
     public static final String ROCKET_TCC_NAME = "tccRocketMQ";
     public static final BranchType ROCKET_BRANCH_TYPE = BranchType.TCC;
     private static final ResourceLock RESOURCE_LOCK = new ResourceLock();
+
     /**
      * Default Producer, it can be replaced to Map after multi-resource is supported
      */
     private static SeataMQProducer defaultProducer;
 
-    public static SeataMQProducer createSingle(String nameServer, String producerGroup) throws MQClientException {
+    public static SeataMQProducer createSingle(String nameServer, String producerGroup)
+            throws MQClientException {
         return createSingle(nameServer, null, producerGroup, null);
     }
 
-    public static SeataMQProducer createSingle(String nameServer, String namespace,
-                                               String groupName, RPCHook rpcHook) throws MQClientException {
+    public static SeataMQProducer createSingle(
+            String nameServer, String namespace, String groupName, RPCHook rpcHook)
+            throws MQClientException {
         if (defaultProducer == null) {
             try (ResourceLock ignored = RESOURCE_LOCK.obtain()) {
                 if (defaultProducer == null) {

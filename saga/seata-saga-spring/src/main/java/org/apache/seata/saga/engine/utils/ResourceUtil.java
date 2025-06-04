@@ -16,13 +16,12 @@
  */
 package org.apache.seata.saga.engine.utils;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
  * State lang resource util.
@@ -30,7 +29,8 @@ import java.util.stream.Stream;
  */
 public class ResourceUtil {
 
-    private static final ResourcePatternResolver RESOURCE_RESOLVER = new PathMatchingResourcePatternResolver();
+    private static final ResourcePatternResolver RESOURCE_RESOLVER =
+            new PathMatchingResourcePatternResolver();
 
     public static Resource[] getResources(String location) {
         try {
@@ -41,9 +41,8 @@ public class ResourceUtil {
     }
 
     public static Resource[] getResources(String[] locationArr) {
-        return Stream
-            .of(Optional.ofNullable(locationArr).orElse(new String[0]))
-            .flatMap(location -> Stream.of(getResources(location)))
-            .toArray(Resource[]::new);
+        return Stream.of(Optional.ofNullable(locationArr).orElse(new String[0]))
+                .flatMap(location -> Stream.of(getResources(location)))
+                .toArray(Resource[]::new);
     }
 }

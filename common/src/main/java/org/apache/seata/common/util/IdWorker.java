@@ -21,7 +21,6 @@ import java.util.Enumeration;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
-
 public class IdWorker {
 
     /**
@@ -98,7 +97,8 @@ public class IdWorker {
             workerId = generateWorkerId();
         }
         if (workerId > maxWorkerId || workerId < 0) {
-            String message = String.format("worker Id can't be greater than %d or less than 0", maxWorkerId);
+            String message =
+                    String.format("worker Id can't be greater than %d or less than 0", maxWorkerId);
             throw new IllegalArgumentException(message);
         }
         this.workerId = workerId << (timestampBits + sequenceBits);

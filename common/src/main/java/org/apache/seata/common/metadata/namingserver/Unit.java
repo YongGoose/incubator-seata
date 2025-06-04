@@ -16,9 +16,8 @@
  */
 package org.apache.seata.common.metadata.namingserver;
 
-import org.apache.seata.common.metadata.Node;
-
 import java.util.List;
+import org.apache.seata.common.metadata.Node;
 
 public class Unit {
 
@@ -62,8 +61,5 @@ public class Unit {
         }
         nodeList.add(node);
         return true;
-
     }
-
-
 }

@@ -16,11 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.client;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ServicePropertiesTest {
 
@@ -31,7 +30,8 @@ public class ServicePropertiesTest {
         Map<String, String> vGroupMapping = new HashMap<>();
         vGroupMapping.put("default_tx_group", "default");
         serviceProperties.setVgroupMapping(vGroupMapping);
-        Assertions.assertEquals("default", serviceProperties.getVgroupMapping().get("default_tx_group"));
+        Assertions.assertEquals(
+                "default", serviceProperties.getVgroupMapping().get("default_tx_group"));
 
         Map<String, String> groupList = new HashMap<>();
         groupList.put("default", "127.0.0.1:8091");
@@ -46,8 +46,10 @@ public class ServicePropertiesTest {
     public void testAfterPropertiesSet() throws Exception {
         ServiceProperties serviceProperties = new ServiceProperties();
         serviceProperties.afterPropertiesSet();
-        Assertions.assertEquals("default", serviceProperties.getVgroupMapping().get("default_tx_group"));
-        Assertions.assertEquals("default", serviceProperties.getVgroupMapping().get("my_test_tx_group"));
+        Assertions.assertEquals(
+                "default", serviceProperties.getVgroupMapping().get("default_tx_group"));
+        Assertions.assertEquals(
+                "default", serviceProperties.getVgroupMapping().get("my_test_tx_group"));
         Assertions.assertEquals("127.0.0.1:8091", serviceProperties.getGrouplist().get("default"));
 
         serviceProperties = new ServiceProperties();
@@ -61,7 +63,8 @@ public class ServicePropertiesTest {
         serviceProperties.setGrouplist(groupList);
 
         serviceProperties.afterPropertiesSet();
-        Assertions.assertEquals("default", serviceProperties.getVgroupMapping().get("default_tx_group"));
+        Assertions.assertEquals(
+                "default", serviceProperties.getVgroupMapping().get("default_tx_group"));
         Assertions.assertEquals("127.0.0.1:8091", serviceProperties.getGrouplist().get("default"));
     }
 }

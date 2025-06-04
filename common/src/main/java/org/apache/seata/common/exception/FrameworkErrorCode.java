@@ -30,7 +30,10 @@ public enum FrameworkErrorCode {
     /**
      * The Init services client error.
      */
-    InitSeataClientError("0008", "Seata app name or seata server group is null", "Please check your configuration"),
+    InitSeataClientError(
+            "0008",
+            "Seata app name or seata server group is null",
+            "Please check your configuration"),
 
     /**
      * The Null rule error.
@@ -40,27 +43,47 @@ public enum FrameworkErrorCode {
     /**
      * 0101 ~ 0199 Network related error. (Not connected, disconnected, dispatched, etc.)
      */
-    NetConnect("0101", "Can not connect to the server", "Please check if the seata service is started. Is the network connection to the seata server normal?"),
+    NetConnect(
+            "0101",
+            "Can not connect to the server",
+            "Please check if the seata service is started. Is the network connection to the seata"
+                    + " server normal?"),
 
     /**
      * The Net reg appname.
      */
-    NetRegAppname("0102", "Register client app name failed", "Please check if the seata service is started. Is the network connection to the seata server normal?"),
+    NetRegAppname(
+            "0102",
+            "Register client app name failed",
+            "Please check if the seata service is started. Is the network connection to the seata"
+                    + " server normal?"),
 
     /**
      * The Net disconnect.
      */
-    NetDisconnect("0103", "Seata connection closed", "The network is disconnected. Please check the network connection to the client or seata server."),
+    NetDisconnect(
+            "0103",
+            "Seata connection closed",
+            "The network is disconnected. Please check the network connection to the client or"
+                    + " seata server."),
 
     /**
      * The Net dispatch.
      */
-    NetDispatch("0104", "Dispatch error", "Network processing error. Please check the network connection to the client or seata server."),
+    NetDispatch(
+            "0104",
+            "Dispatch error",
+            "Network processing error. Please check the network connection to the client or seata"
+                    + " server."),
 
     /**
      * The Net on message.
      */
-    NetOnMessage("0105", "On message error", "Network processing error. Please check the network connection to the client or seata server."),
+    NetOnMessage(
+            "0105",
+            "On message error",
+            "Network processing error. Please check the network connection to the client or seata"
+                    + " server."),
     /**
      * Get channel error framework error code.
      */
@@ -140,7 +163,8 @@ public enum FrameworkErrorCode {
     /**
      * Evaluation returns non-Boolean
      */
-    EvaluationReturnsNonBoolean("0408", "Evaluation returns non-Boolean", "Evaluation returns non-Boolean"),
+    EvaluationReturnsNonBoolean(
+            "0408", "Evaluation returns non-Boolean", "Evaluation returns non-Boolean"),
 
     /**
      * Not a exception class
@@ -185,7 +209,8 @@ public enum FrameworkErrorCode {
     /**
      * Context variable replay failed
      */
-    ContextVariableReplayFailed("0417", "Context variable replay failed", "Context variable replay failed"),
+    ContextVariableReplayFailed(
+            "0417", "Context variable replay failed", "Context variable replay failed"),
 
     /**
      * Context variable replay failed
@@ -195,49 +220,60 @@ public enum FrameworkErrorCode {
     /**
      * Invoke transaction manager error
      */
-    TransactionManagerError("0419", "Invoke transaction manager error", "Invoke transaction manager error"),
+    TransactionManagerError(
+            "0419", "Invoke transaction manager error", "Invoke transaction manager error"),
 
     /**
      * State machine instance not exists
      */
-    StateMachineInstanceNotExists("0420", "State machine instance not exists", "State machine instance not exists"),
+    StateMachineInstanceNotExists(
+            "0420", "State machine instance not exists", "State machine instance not exists"),
 
     /**
      * State machine execution timeout
      */
-    StateMachineExecutionTimeout("0421", "State machine execution timeout", "State machine execution timeout"),
+    StateMachineExecutionTimeout(
+            "0421", "State machine execution timeout", "State machine execution timeout"),
 
     /**
      * State machine execution no choice matched
      */
-    StateMachineNoChoiceMatched("0422", "State machine no choice matched", "State machine no choice matched"),
+    StateMachineNoChoiceMatched(
+            "0422", "State machine no choice matched", "State machine no choice matched"),
 
     /** 0500~0599 TCC fence related error **/
 
     /**
      * TCC fence datasource need injected
      */
-    DateSourceNeedInjected("0501","TCC fence datasource need injected","TCC fence datasource need injected"),
+    DateSourceNeedInjected(
+            "0501", "TCC fence datasource need injected", "TCC fence datasource need injected"),
 
     /**
      * TCC fence record not exists
      */
-    RecordNotExists("0502","TCC fence record not exists","TCC fence record not exists"),
+    RecordNotExists("0502", "TCC fence record not exists", "TCC fence record not exists"),
 
     /**
      * Insert tcc fence record error
      */
-    InsertRecordError("0503","Insert tcc fence record error","Insert tcc fence record error"),
+    InsertRecordError("0503", "Insert tcc fence record error", "Insert tcc fence record error"),
 
     /**
      * Insert tcc fence record duplicate key exception
      */
-    DuplicateKeyException("0504", "Insert tcc fence record duplicate key exception", "Insert tcc fence record duplicate key exception"),
+    DuplicateKeyException(
+            "0504",
+            "Insert tcc fence record duplicate key exception",
+            "Insert tcc fence record duplicate key exception"),
 
     /**
      * TCC fence transactionManager need injected
      */
-    TransactionManagerNeedInjected("0505","TCC fence transactionManager need injected","TCC fence transactionManager need injected"),
+    TransactionManagerNeedInjected(
+            "0505",
+            "TCC fence transactionManager need injected",
+            "TCC fence transactionManager need injected"),
 
     /**
      * Undefined error

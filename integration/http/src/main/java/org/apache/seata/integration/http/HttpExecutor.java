@@ -37,7 +37,8 @@ public interface HttpExecutor {
      * @return the k
      * @throws IOException the io exception
      */
-    <T, K> K executePost(String host, String path, T paramObject, Class<K> returnType) throws IOException;
+    <T, K> K executePost(String host, String path, T paramObject, Class<K> returnType)
+            throws IOException;
 
     /**
      * get method only support param type of Map<String,String>
@@ -50,7 +51,8 @@ public interface HttpExecutor {
      * @return K k
      * @throws IOException the io exception
      */
-    <K> K executeGet(String host, String path, Map<String, String> paramObject, Class<K> returnType) throws IOException;
+    <K> K executeGet(String host, String path, Map<String, String> paramObject, Class<K> returnType)
+            throws IOException;
 
     /**
      * Execute put k.
@@ -64,6 +66,6 @@ public interface HttpExecutor {
      * @return the k
      * @throws IOException the io exception
      */
-    <T, K> K executePut(String host, String path, T paramObject, Class<K> returnType) throws IOException;
-
+    <T, K> K executePut(String host, String path, T paramObject, Class<K> returnType)
+            throws IOException;
 }

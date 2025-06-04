@@ -21,17 +21,14 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleCursorExpr;
-import org.apache.seata.sqlparser.ParametersHolder;
-import org.apache.seata.sqlparser.SQLParsingException;
-import org.apache.seata.sqlparser.SQLType;
-import org.apache.seata.sqlparser.druid.oracle.OracleUpdateRecognizer;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.seata.sqlparser.ParametersHolder;
+import org.apache.seata.sqlparser.SQLParsingException;
+import org.apache.seata.sqlparser.SQLType;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OracleUpdateRecognizerTest {
 
@@ -62,18 +59,22 @@ public class OracleUpdateRecognizerTest {
         updateColumns = recognizer.getUpdateColumns();
         Assertions.assertEquals(updateColumns.size(), 3);
 
-        //test with error
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "update t set a = a";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
-            SQLUpdateStatement sqlUpdateStatement = (SQLUpdateStatement) sqlStatements.get(0);
-            List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
-            for (SQLUpdateSetItem updateSetItem : updateSetItems) {
-                updateSetItem.setColumn(new OracleCursorExpr());
-            }
-            OracleUpdateRecognizer oracleUpdateRecognizer = new OracleUpdateRecognizer(s, sqlUpdateStatement);
-            oracleUpdateRecognizer.getUpdateColumns();
-        });
+        // test with error
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "update t set a = a";
+                    List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
+                    SQLUpdateStatement sqlUpdateStatement =
+                            (SQLUpdateStatement) sqlStatements.get(0);
+                    List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
+                    for (SQLUpdateSetItem updateSetItem : updateSetItems) {
+                        updateSetItem.setColumn(new OracleCursorExpr());
+                    }
+                    OracleUpdateRecognizer oracleUpdateRecognizer =
+                            new OracleUpdateRecognizer(s, sqlUpdateStatement);
+                    oracleUpdateRecognizer.getUpdateColumns();
+                });
     }
 
     @Test
@@ -93,17 +94,21 @@ public class OracleUpdateRecognizerTest {
         Assertions.assertEquals(updateValues.size(), 3);
 
         // test with error
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "update t set a = ?";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
-            SQLUpdateStatement sqlUpdateStatement = (SQLUpdateStatement)sqlStatements.get(0);
-            List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
-            for (SQLUpdateSetItem updateSetItem : updateSetItems) {
-                updateSetItem.setValue(new OracleCursorExpr());
-            }
-            OracleUpdateRecognizer oracleUpdateRecognizer = new OracleUpdateRecognizer(s, sqlUpdateStatement);
-            oracleUpdateRecognizer.getUpdateValues();
-        });
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "update t set a = ?";
+                    List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
+                    SQLUpdateStatement sqlUpdateStatement =
+                            (SQLUpdateStatement) sqlStatements.get(0);
+                    List<SQLUpdateSetItem> updateSetItems = sqlUpdateStatement.getItems();
+                    for (SQLUpdateSetItem updateSetItem : updateSetItems) {
+                        updateSetItem.setValue(new OracleCursorExpr());
+                    }
+                    OracleUpdateRecognizer oracleUpdateRecognizer =
+                            new OracleUpdateRecognizer(s, sqlUpdateStatement);
+                    oracleUpdateRecognizer.getUpdateValues();
+                });
     }
 
     @Test
@@ -113,12 +118,15 @@ public class OracleUpdateRecognizerTest {
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
         OracleUpdateRecognizer recognizer = new OracleUpdateRecognizer(sql, asts.get(0));
-        String whereCondition = recognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                return null;
-            }
-        }, new ArrayList<>());
+        String whereCondition =
+                recognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                return null;
+                            }
+                        },
+                        new ArrayList<>());
 
         Assertions.assertEquals("", whereCondition);
     }

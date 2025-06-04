@@ -16,10 +16,9 @@
  */
 package org.apache.seata.core.protocol;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
 
 /**
  * The type RegisterRMRequest test.

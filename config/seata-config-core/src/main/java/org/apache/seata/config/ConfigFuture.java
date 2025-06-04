@@ -16,15 +16,13 @@
  */
 package org.apache.seata.config;
 
-
-import org.apache.seata.common.exception.ShouldNeverHappenException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.apache.seata.common.exception.ShouldNeverHappenException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The type Config future.
@@ -59,7 +57,8 @@ public class ConfigFuture {
      * @param operation    the operation
      * @param timeoutMills the timeout mills
      */
-    public ConfigFuture(String dataId, String content, ConfigOperation operation, long timeoutMills) {
+    public ConfigFuture(
+            String dataId, String content, ConfigOperation operation, long timeoutMills) {
         this.dataId = dataId;
         this.content = content;
         this.operation = operation;
@@ -97,9 +96,14 @@ public class ConfigFuture {
         try {
             result = origin.get(timeout, unit);
         } catch (ExecutionException e) {
-            throw new ShouldNeverHappenException("Should not get results in a multi-threaded environment", e);
+            throw new ShouldNeverHappenException(
+                    "Should not get results in a multi-threaded environment", e);
         } catch (TimeoutException e) {
-            LOGGER.error("config operation timeout,cost:{} ms,op:{},dataId:{}", System.currentTimeMillis() - start, operation.name(), dataId);
+            LOGGER.error(
+                    "config operation timeout,cost:{} ms,op:{},dataId:{}",
+                    System.currentTimeMillis() - start,
+                    operation.name(),
+                    dataId);
             return getFailResult();
         } catch (InterruptedException exx) {
             LOGGER.error("config operate interrupted,error:{}", exx.getMessage(), exx);

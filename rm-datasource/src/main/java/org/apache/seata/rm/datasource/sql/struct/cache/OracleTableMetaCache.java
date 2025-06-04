@@ -20,7 +20,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.loader.LoadLevel;
@@ -30,10 +32,6 @@ import org.apache.seata.sqlparser.struct.IndexMeta;
 import org.apache.seata.sqlparser.struct.IndexType;
 import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The type Table meta cache.
@@ -47,9 +45,10 @@ public class OracleTableMetaCache extends AbstractTableMetaCache {
         StringBuilder cacheKey = new StringBuilder(resourceId);
         cacheKey.append(".");
 
-        //original: separate it to schemaName and tableName
-        //now: Use the original table name to avoid cache errors of tables with the same name across databases
-        //oracle does not implement supportsMixedCaseIdentifiers in DatabaseMetadata
+        // original: separate it to schemaName and tableName
+        // now: Use the original table name to avoid cache errors of tables with the same name
+        // across databases
+        // oracle does not implement supportsMixedCaseIdentifiers in DatabaseMetadata
         if (tableName.contains("\"")) {
             cacheKey.append(tableName.replace("\"", ""));
         } else {
@@ -71,7 +70,8 @@ public class OracleTableMetaCache extends AbstractTableMetaCache {
         }
     }
 
-    protected TableMeta resultSetMetaToSchema(DatabaseMetaData dbmd, String tableName) throws SQLException {
+    protected TableMeta resultSetMetaToSchema(DatabaseMetaData dbmd, String tableName)
+            throws SQLException {
         TableMeta tm = new TableMeta();
         //  Save the original table name information for active cache refresh
         //  to avoid refresh failure caused by missing catalog information
@@ -98,8 +98,8 @@ public class OracleTableMetaCache extends AbstractTableMetaCache {
         tm.setCaseSensitive(StringUtils.hasLowerCase(tableName));
 
         try (ResultSet rsColumns = dbmd.getColumns("", schemaName, tableName, "%");
-             ResultSet rsIndex = dbmd.getIndexInfo(null, schemaName, tableName, false, true);
-             ResultSet rsPrimary = dbmd.getPrimaryKeys(null, schemaName, tableName)) {
+                ResultSet rsIndex = dbmd.getIndexInfo(null, schemaName, tableName, false, true);
+                ResultSet rsPrimary = dbmd.getPrimaryKeys(null, schemaName, tableName)) {
             while (rsColumns.next()) {
                 ColumnMeta col = new ColumnMeta();
                 col.setTableCat(rsColumns.getString("TABLE_CAT"));
@@ -122,7 +122,9 @@ public class OracleTableMetaCache extends AbstractTableMetaCache {
                 col.setCaseSensitive(StringUtils.hasLowerCase(col.getColumnName()));
 
                 if (tm.getAllColumns().containsKey(col.getColumnName())) {
-                    throw new NotSupportYetException("Not support the table has the same column name with different case yet");
+                    throw new NotSupportYetException(
+                            "Not support the table has the same column name with different case"
+                                    + " yet");
                 }
                 tm.getAllColumns().put(col.getColumnName(), col);
             }
@@ -154,14 +156,15 @@ public class OracleTableMetaCache extends AbstractTableMetaCache {
                         index.setIndextype(IndexType.NORMAL);
                     }
                     tm.getAllIndexes().put(indexName, index);
-
                 }
             }
             if (tm.getAllIndexes().isEmpty()) {
-                throw new ShouldNeverHappenException(String.format("Could not found any index in the table: %s", tableName));
+                throw new ShouldNeverHappenException(
+                        String.format("Could not found any index in the table: %s", tableName));
             }
             // when we create a primary key constraint oracle will uses and existing unique index.
-            // if we create a unique index before create a primary constraint in the same column will cause the problem
+            // if we create a unique index before create a primary constraint in the same column
+            // will cause the problem
             // that primary key constraint name was different from the unique name.
             List<String> pkcol = new ArrayList<>();
             while (rsPrimary.next()) {
@@ -170,16 +173,18 @@ public class OracleTableMetaCache extends AbstractTableMetaCache {
                     IndexMeta index = tm.getAllIndexes().get(pkConstraintName);
                     index.setIndextype(IndexType.PRIMARY);
                 } else {
-                    //save the columns that constraint primary key name was different from unique index name
+                    // save the columns that constraint primary key name was different from unique
+                    // index name
                     pkcol.add(rsPrimary.getString("COLUMN_NAME"));
                 }
             }
-            //find the index that belong to the primary key constraint
+            // find the index that belong to the primary key constraint
             if (!pkcol.isEmpty()) {
                 int matchCols = 0;
                 for (Map.Entry<String, IndexMeta> entry : tm.getAllIndexes().entrySet()) {
                     IndexMeta index = entry.getValue();
-                    // only the unique index and all the unique index's columes same as primary key columes,
+                    // only the unique index and all the unique index's columes same as primary key
+                    // columes,
                     // it belongs to primary key
                     if (index.getIndextype().value() == IndexType.UNIQUE.value()) {
                         for (ColumnMeta col : index.getValues()) {

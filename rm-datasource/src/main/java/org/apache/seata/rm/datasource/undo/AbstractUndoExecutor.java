@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm.datasource.undo;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_DATA_VALIDATION;
+
+import com.alibaba.fastjson.JSON;
 import java.io.ByteArrayInputStream;
 import java.sql.Array;
 import java.sql.Connection;
@@ -27,13 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialClob;
 import javax.sql.rowset.serial.SerialDatalink;
-
-import com.alibaba.fastjson.JSON;
-
 import org.apache.seata.common.util.IOUtil;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.ConfigurationFactory;
@@ -51,8 +50,6 @@ import org.apache.seata.sqlparser.struct.TableMeta;
 import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_DATA_VALIDATION;
 
 /**
  * The type Abstract undo executor.
@@ -74,8 +71,11 @@ public abstract class AbstractUndoExecutor {
     /**
      * Switch of undo data validation
      */
-    public static final boolean IS_UNDO_DATA_VALIDATION_ENABLE = ConfigurationFactory.getInstance()
-            .getBoolean(ConfigurationKeys.TRANSACTION_UNDO_DATA_VALIDATION, DEFAULT_TRANSACTION_UNDO_DATA_VALIDATION);
+    public static final boolean IS_UNDO_DATA_VALIDATION_ENABLE =
+            ConfigurationFactory.getInstance()
+                    .getBoolean(
+                            ConfigurationKeys.TRANSACTION_UNDO_DATA_VALIDATION,
+                            DEFAULT_TRANSACTION_UNDO_DATA_VALIDATION);
 
     /**
      * The Sql undo log.
@@ -125,7 +125,8 @@ public abstract class AbstractUndoExecutor {
             TableRecords undoRows = getUndoRows();
             for (Row undoRow : undoRows.getRows()) {
                 ArrayList<Field> undoValues = new ArrayList<>();
-                List<Field> pkValueList = getOrderedPkList(undoRows, undoRow, connectionProxy.getDbType());
+                List<Field> pkValueList =
+                        getOrderedPkList(undoRows, undoRow, connectionProxy.getDbType());
                 for (Field field : undoRow.getFields()) {
                     if (field.getKeyType() != KeyType.PRIMARY_KEY) {
                         undoValues.add(field);
@@ -143,12 +144,10 @@ public abstract class AbstractUndoExecutor {
             } else {
                 throw new SQLException(ex);
             }
-        }
-        finally {
-            //important for oracle
+        } finally {
+            // important for oracle
             IOUtil.close(undoPST);
         }
-
     }
 
     /**
@@ -159,7 +158,8 @@ public abstract class AbstractUndoExecutor {
      * @param pkValueList the pk value
      * @throws SQLException the sql exception
      */
-    protected void undoPrepare(PreparedStatement undoPST, ArrayList<Field> undoValues, List<Field> pkValueList)
+    protected void undoPrepare(
+            PreparedStatement undoPST, ArrayList<Field> undoValues, List<Field> pkValueList)
             throws SQLException {
         int undoIndex = 0;
         for (Field undoValue : undoValues) {
@@ -180,7 +180,8 @@ public abstract class AbstractUndoExecutor {
                 } else {
                     undoPST.setObject(undoIndex, null);
                 }
-            } else if (type == JDBCType.CLOB.getVendorTypeNumber() || type == JDBCType.NCLOB.getVendorTypeNumber()) {
+            } else if (type == JDBCType.CLOB.getVendorTypeNumber()
+                    || type == JDBCType.NCLOB.getVendorTypeNumber()) {
                 SerialClob serialClob = (SerialClob) value;
                 if (serialClob != null) {
                     undoPST.setClob(undoIndex, serialClob.getCharacterStream());
@@ -197,7 +198,9 @@ public abstract class AbstractUndoExecutor {
             } else if (type == JDBCType.ARRAY.getVendorTypeNumber()) {
                 SerialArray array = (SerialArray) value;
                 if (array != null) {
-                    Array arrayOf = undoPST.getConnection().createArrayOf(array.getBaseTypeName(), array.getElements());
+                    Array arrayOf =
+                            undoPST.getConnection()
+                                    .createArrayOf(array.getBaseTypeName(), array.getElements());
                     undoPST.setArray(undoIndex, arrayOf);
                 } else {
                     undoPST.setObject(undoIndex, null);
@@ -219,7 +222,6 @@ public abstract class AbstractUndoExecutor {
             undoIndex++;
             undoPST.setObject(undoIndex, pkField.getValue(), pkField.getType());
         }
-
     }
 
     /**
@@ -243,11 +245,13 @@ public abstract class AbstractUndoExecutor {
 
         // Compare current data with before data
         // No need undo if the before data snapshot is equivalent to the after data snapshot.
-        Result<Boolean> beforeEqualsAfterResult = DataCompareUtils.isRecordsEquals(beforeRecords, afterRecords);
+        Result<Boolean> beforeEqualsAfterResult =
+                DataCompareUtils.isRecordsEquals(beforeRecords, afterRecords);
         if (beforeEqualsAfterResult.getResult()) {
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Stop rollback because there is no data change " +
-                        "between the before data snapshot and the after data snapshot.");
+                LOGGER.info(
+                        "Stop rollback because there is no data change "
+                                + "between the before data snapshot and the after data snapshot.");
             }
             // no need continue undo.
             return false;
@@ -256,30 +260,44 @@ public abstract class AbstractUndoExecutor {
         // Validate if data is dirty.
         TableRecords currentRecords = queryCurrentRecords(conn);
         // compare with current data and after image.
-        Result<Boolean> afterEqualsCurrentResult = DataCompareUtils.isRecordsEquals(afterRecords, currentRecords);
+        Result<Boolean> afterEqualsCurrentResult =
+                DataCompareUtils.isRecordsEquals(afterRecords, currentRecords);
         if (!afterEqualsCurrentResult.getResult()) {
 
-            // If current data is not equivalent to the after data, then compare the current data with the before
-            // data, too. No need continue to undo if current data is equivalent to the before data snapshot
-            Result<Boolean> beforeEqualsCurrentResult = DataCompareUtils.isRecordsEquals(beforeRecords, currentRecords);
+            // If current data is not equivalent to the after data, then compare the current data
+            // with the before
+            // data, too. No need continue to undo if current data is equivalent to the before data
+            // snapshot
+            Result<Boolean> beforeEqualsCurrentResult =
+                    DataCompareUtils.isRecordsEquals(beforeRecords, currentRecords);
             if (beforeEqualsCurrentResult.getResult()) {
                 if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("Stop rollback because there is no data change " +
-                            "between the before data snapshot and the current data snapshot.");
+                    LOGGER.info(
+                            "Stop rollback because there is no data change between the before data"
+                                    + " snapshot and the current data snapshot.");
                 }
                 // no need continue undo.
                 return false;
             } else {
                 if (LOGGER.isInfoEnabled()) {
                     if (StringUtils.isNotBlank(afterEqualsCurrentResult.getErrMsg())) {
-                        LOGGER.info(afterEqualsCurrentResult.getErrMsg(), afterEqualsCurrentResult.getErrMsgParams());
+                        LOGGER.info(
+                                afterEqualsCurrentResult.getErrMsg(),
+                                afterEqualsCurrentResult.getErrMsgParams());
                     }
                 }
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("check dirty data failed, old and new data are not equal, " +
-                            "tableName:[" + sqlUndoLog.getTableName() + "]," +
-                            "oldRows:[" + JSON.toJSONString(afterRecords.getRows()) + "]," +
-                            "newRows:[" + JSON.toJSONString(currentRecords.getRows()) + "].");
+                    LOGGER.debug(
+                            "check dirty data failed, old and new data are not equal, "
+                                    + "tableName:["
+                                    + sqlUndoLog.getTableName()
+                                    + "],"
+                                    + "oldRows:["
+                                    + JSON.toJSONString(afterRecords.getRows())
+                                    + "],"
+                                    + "newRows:["
+                                    + JSON.toJSONString(currentRecords.getRows())
+                                    + "].");
                 }
                 throw new SQLUndoDirtyException("Has dirty records when undo.");
             }
@@ -294,11 +312,12 @@ public abstract class AbstractUndoExecutor {
      * @return the table records
      * @throws SQLException the sql exception
      */
-    protected TableRecords queryCurrentRecords(ConnectionProxy connectionProxy) throws SQLException {
+    protected TableRecords queryCurrentRecords(ConnectionProxy connectionProxy)
+            throws SQLException {
         Connection conn = connectionProxy.getTargetConnection();
         TableRecords undoRecords = getUndoRows();
         TableMeta tableMeta = undoRecords.getTableMeta();
-        //the order of element matters
+        // the order of element matters
         List<String> pkNameList = tableMeta.getPrimaryKeyOnlyName();
 
         // pares pk values
@@ -309,7 +328,9 @@ public abstract class AbstractUndoExecutor {
         // build check sql
         String firstKey = pkRowValues.keySet().stream().findFirst().get();
         int pkRowSize = pkRowValues.get(firstKey).size();
-        List<SqlGenerateUtils.WhereSql> sqlConditions = SqlGenerateUtils.buildWhereConditionListByPKs(pkNameList, pkRowSize, connectionProxy.getDbType());
+        List<SqlGenerateUtils.WhereSql> sqlConditions =
+                SqlGenerateUtils.buildWhereConditionListByPKs(
+                        pkNameList, pkRowSize, connectionProxy.getDbType());
         TableRecords currentRecords = new TableRecords(tableMeta);
         int totalRowIndex = 0;
         for (SqlGenerateUtils.WhereSql sqlCondition : sqlConditions) {
@@ -331,7 +352,9 @@ public abstract class AbstractUndoExecutor {
                 totalRowIndex += sqlCondition.getRowSize();
 
                 checkSet = statement.executeQuery();
-                currentRecords.getRows().addAll(TableRecords.buildRecords(tableMeta, checkSet).getRows());
+                currentRecords
+                        .getRows()
+                        .addAll(TableRecords.buildRecords(tableMeta, checkSet).getRows());
             } finally {
                 IOUtil.close(checkSet, statement);
             }
@@ -354,20 +377,20 @@ public abstract class AbstractUndoExecutor {
         List<Field> pkFields = new ArrayList<>();
         // To ensure the order of the pk, the order should based on getPrimaryKeyOnlyName.
         List<String> pkColumnNameListByOrder = image.getTableMeta().getPrimaryKeyOnlyName();
-        List<String> pkColumnNameListNoOrder = row.primaryKeys()
-                .stream()
-                .map(e -> ColumnUtils.delEscape(e.getName(), dbType))
-                .collect(Collectors.toList());
-        pkColumnNameListByOrder.forEach(pkName -> {
-            int pkIndex = pkColumnNameListNoOrder.indexOf(pkName);
-            if (pkIndex != -1) {
-                // add PK to the last of the list.
-                pkFields.add(row.primaryKeys().get(pkIndex));
-            }
-        });
+        List<String> pkColumnNameListNoOrder =
+                row.primaryKeys().stream()
+                        .map(e -> ColumnUtils.delEscape(e.getName(), dbType))
+                        .collect(Collectors.toList());
+        pkColumnNameListByOrder.forEach(
+                pkName -> {
+                    int pkIndex = pkColumnNameListNoOrder.indexOf(pkName);
+                    if (pkIndex != -1) {
+                        // add PK to the last of the list.
+                        pkFields.add(row.primaryKeys().get(pkIndex));
+                    }
+                });
         return pkFields;
     }
-
 
     /**
      * Parse pk values Field List.
@@ -398,8 +421,8 @@ public abstract class AbstractUndoExecutor {
                 }
             }
         }
-        Map<String, List<Field>> pkValueMap = pkFieldList.stream().collect(Collectors.groupingBy(Field::getName));
+        Map<String, List<Field>> pkValueMap =
+                pkFieldList.stream().collect(Collectors.groupingBy(Field::getName));
         return pkValueMap;
     }
-
 }

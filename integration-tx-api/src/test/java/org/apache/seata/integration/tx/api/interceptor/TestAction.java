@@ -17,17 +17,14 @@
 package org.apache.seata.integration.tx.api.interceptor;
 
 import java.util.List;
-
 import org.apache.seata.rm.tcc.api.BusinessActionContext;
 import org.apache.seata.rm.tcc.api.BusinessActionContextParameter;
 
-
 public interface TestAction {
 
-
-    boolean prepare(BusinessActionContext actionContext,
-                    @BusinessActionContextParameter("a") int a,
-                    @BusinessActionContextParameter(paramName = "b", index = 0) List b,
-                    @BusinessActionContextParameter(isParamInProperty = true) TestParam tccParam);
-    
+    boolean prepare(
+            BusinessActionContext actionContext,
+            @BusinessActionContextParameter("a") int a,
+            @BusinessActionContextParameter(paramName = "b", index = 0) List b,
+            @BusinessActionContextParameter(isParamInProperty = true) TestParam tccParam);
 }

@@ -16,11 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.registry;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.REGISTRY_REDIS_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = REGISTRY_REDIS_PREFIX)
@@ -30,7 +29,6 @@ public class RegistryRedisProperties {
     private String password;
     private String cluster = "default";
     private int timeout = 0;
-
 
     public String getServerAddr() {
         return serverAddr;

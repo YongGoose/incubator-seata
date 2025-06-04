@@ -94,7 +94,17 @@ public class GlobalTransactionEvent implements Event {
      * @param retryGlobal   the retry(1. delay delete global session 2. asyn retry branch session)
      * @param retryBranch   retry branch session
      */
-    public GlobalTransactionEvent(long id, String role, String name, String applicationId, String group, Long beginTime, Long endTime, String status, boolean retryGlobal, boolean retryBranch) {
+    public GlobalTransactionEvent(
+            long id,
+            String role,
+            String name,
+            String applicationId,
+            String group,
+            Long beginTime,
+            Long endTime,
+            String status,
+            boolean retryGlobal,
+            boolean retryBranch) {
         this.id = id;
         this.role = role;
         this.name = name;
@@ -199,9 +209,32 @@ public class GlobalTransactionEvent implements Event {
 
     @Override
     public String toString() {
-        return "GlobalTransactionEvent{" + "id=" + id + ", role='" + role + '\'' + ", name='" + name + '\''
-            + ", applicationId='" + applicationId + '\'' + ", group='" + group + '\'' + ", beginTime=" + beginTime
-            + ", endTime=" + endTime + ", status='" + status + '\'' + ", retryGlobal=" + retryGlobal + ", retryBranch="
-            + retryBranch + '}';
+        return "GlobalTransactionEvent{"
+                + "id="
+                + id
+                + ", role='"
+                + role
+                + '\''
+                + ", name='"
+                + name
+                + '\''
+                + ", applicationId='"
+                + applicationId
+                + '\''
+                + ", group='"
+                + group
+                + '\''
+                + ", beginTime="
+                + beginTime
+                + ", endTime="
+                + endTime
+                + ", status='"
+                + status
+                + '\''
+                + ", retryGlobal="
+                + retryGlobal
+                + ", retryBranch="
+                + retryBranch
+                + '}';
     }
 }

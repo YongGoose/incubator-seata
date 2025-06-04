@@ -20,7 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.seata.common.thread.NamedThreadFactory;
 
 /**
@@ -32,16 +31,23 @@ public interface ConfigurationChangeListener {
      * The constant CORE_LISTENER_THREAD.
      */
     int CORE_LISTENER_THREAD = 1;
+
     /**
      * The constant MAX_LISTENER_THREAD.
      */
     int MAX_LISTENER_THREAD = 1;
+
     /**
      * The constant EXECUTOR_SERVICE.
      */
-    ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(CORE_LISTENER_THREAD, MAX_LISTENER_THREAD,
-        Integer.MAX_VALUE, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(),
-        new NamedThreadFactory("configListenerOperate", MAX_LISTENER_THREAD));
+    ExecutorService EXECUTOR_SERVICE =
+            new ThreadPoolExecutor(
+                    CORE_LISTENER_THREAD,
+                    MAX_LISTENER_THREAD,
+                    Integer.MAX_VALUE,
+                    TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<>(),
+                    new NamedThreadFactory("configListenerOperate", MAX_LISTENER_THREAD));
 
     /**
      * Process.
@@ -56,11 +62,13 @@ public interface ConfigurationChangeListener {
      * @param event the event
      */
     default void onProcessEvent(ConfigurationChangeEvent event) {
-        getExecutorService().submit(() -> {
-            beforeEvent();
-            onChangeEvent(event);
-            afterEvent();
-        });
+        getExecutorService()
+                .submit(
+                        () -> {
+                            beforeEvent();
+                            onChangeEvent(event);
+                            afterEvent();
+                        });
     }
 
     /**
@@ -82,14 +90,10 @@ public interface ConfigurationChangeListener {
     /**
      * Before event.
      */
-    default void beforeEvent() {
-
-    }
+    default void beforeEvent() {}
 
     /**
      * After event.
      */
-    default void afterEvent() {
-
-    }
+    default void afterEvent() {}
 }

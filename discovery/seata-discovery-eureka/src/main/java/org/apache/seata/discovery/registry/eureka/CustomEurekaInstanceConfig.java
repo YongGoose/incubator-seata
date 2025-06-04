@@ -16,15 +16,16 @@
  */
 package org.apache.seata.discovery.registry.eureka;
 
-import org.apache.seata.common.util.StringUtils;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.MyDataCenterInstanceConfig;
+import org.apache.seata.common.util.StringUtils;
 
 /**
  * override MyDataCenterInstanceConfig for set value,
  * eg: instanceId \ipAddress \ applicationName...
  */
-public class CustomEurekaInstanceConfig extends MyDataCenterInstanceConfig implements EurekaInstanceConfig {
+public class CustomEurekaInstanceConfig extends MyDataCenterInstanceConfig
+        implements EurekaInstanceConfig {
     private String applicationName;
     private String instanceId;
     private String ipAddress;

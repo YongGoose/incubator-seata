@@ -17,13 +17,11 @@
 package org.apache.seata.serializer.protobuf;
 
 import com.google.protobuf.MessageLite;
-import org.apache.seata.common.exception.ShouldNeverHappenException;
-import org.apache.seata.common.util.CollectionUtils;
-
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
+import org.apache.seata.common.exception.ShouldNeverHappenException;
+import org.apache.seata.common.util.CollectionUtils;
 
 public class ProtobufHelper {
 
@@ -48,20 +46,25 @@ public class ProtobufHelper {
      * @return the protobuf class
      */
     public Class getPbClass(String clazzName) {
-        return CollectionUtils.computeIfAbsent(requestClassCache, clazzName, key -> {
-            // get the parameter and result
-            Class clazz;
-            try {
-                clazz = Class.forName(clazzName);
-            } catch (ClassNotFoundException e) {
-                throw new ShouldNeverHappenException("get class occurs exception", e);
-            }
-            if (clazz == void.class || !isProtoBufMessageClass(clazz)) {
-                throw new ShouldNeverHappenException("class based protobuf: " + clazz.getName()
-                        + ", only support return protobuf message!");
-            }
-            return clazz;
-        });
+        return CollectionUtils.computeIfAbsent(
+                requestClassCache,
+                clazzName,
+                key -> {
+                    // get the parameter and result
+                    Class clazz;
+                    try {
+                        clazz = Class.forName(clazzName);
+                    } catch (ClassNotFoundException e) {
+                        throw new ShouldNeverHappenException("get class occurs exception", e);
+                    }
+                    if (clazz == void.class || !isProtoBufMessageClass(clazz)) {
+                        throw new ShouldNeverHappenException(
+                                "class based protobuf: "
+                                        + clazz.getName()
+                                        + ", only support return protobuf message!");
+                    }
+                    return clazz;
+                });
     }
 
     /**

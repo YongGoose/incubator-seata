@@ -30,11 +30,11 @@ public class SeataNamingserverWebConfig {
     @Bean
     @Conditional(RaftCondition.class)
     @DependsOn("raftRequestFilter")
-    public FilterRegistrationBean<RaftRequestFilter> raftRequestServletFilter(RaftRequestFilter raftRequestFilter) {
+    public FilterRegistrationBean<RaftRequestFilter> raftRequestServletFilter(
+            RaftRequestFilter raftRequestFilter) {
         FilterRegistrationBean<RaftRequestFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(raftRequestFilter);
         registrationBean.addUrlPatterns("/api/v1/console/*", "/vgroup/v1/*");
         return registrationBean;
     }
-
 }

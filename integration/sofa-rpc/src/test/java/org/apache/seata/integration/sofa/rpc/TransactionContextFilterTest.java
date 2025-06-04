@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-
 public class TransactionContextFilterTest {
 
     @Test
@@ -44,46 +43,58 @@ public class TransactionContextFilterTest {
         // mock A -> B -> C
 
         { // C
-            ServerConfig serverConfig1 = new ServerConfig()
-                    .setStopTimeout(0).setPort(22222)
-                    .setQueues(5).setCoreThreads(1).setMaxThreads(1);
+            ServerConfig serverConfig1 =
+                    new ServerConfig()
+                            .setStopTimeout(0)
+                            .setPort(22222)
+                            .setQueues(5)
+                            .setCoreThreads(1)
+                            .setMaxThreads(1);
             helloServiceImpl = new HelloServiceImpl();
-            ProviderConfig<HelloService> providerConfig = new ProviderConfig<HelloService>()
-                    .setInterfaceId(HelloService.class.getName())
-                    .setRef(helloServiceImpl)
-                    .setServer(serverConfig1)
-                    .setUniqueId("x1")
-                    .setRegister(false);
+            ProviderConfig<HelloService> providerConfig =
+                    new ProviderConfig<HelloService>()
+                            .setInterfaceId(HelloService.class.getName())
+                            .setRef(helloServiceImpl)
+                            .setServer(serverConfig1)
+                            .setUniqueId("x1")
+                            .setRegister(false);
             providerConfig.export();
         }
         { // B
-            ConsumerConfig<HelloService> consumerConfig = new ConsumerConfig<HelloService>()
-                    .setInterfaceId(HelloService.class.getName())
-                    .setTimeout(1000)
-                    .setDirectUrl("bolt://127.0.0.1:22222")
-                    .setUniqueId("x1")
-                    .setRegister(false);
+            ConsumerConfig<HelloService> consumerConfig =
+                    new ConsumerConfig<HelloService>()
+                            .setInterfaceId(HelloService.class.getName())
+                            .setTimeout(1000)
+                            .setDirectUrl("bolt://127.0.0.1:22222")
+                            .setUniqueId("x1")
+                            .setRegister(false);
             helloServiceRef = consumerConfig.refer();
 
-            ServerConfig serverConfig2 = new ServerConfig()
-                    .setStopTimeout(0).setPort(22223)
-                    .setQueues(5).setCoreThreads(1).setMaxThreads(1);
+            ServerConfig serverConfig2 =
+                    new ServerConfig()
+                            .setStopTimeout(0)
+                            .setPort(22223)
+                            .setQueues(5)
+                            .setCoreThreads(1)
+                            .setMaxThreads(1);
             helloServiceProxy = new HelloServiceProxy(helloServiceRef);
-            ProviderConfig<HelloService> providerConfig = new ProviderConfig<HelloService>()
-                    .setInterfaceId(HelloService.class.getName())
-                    .setRef(helloServiceProxy)
-                    .setServer(serverConfig2)
-                    .setUniqueId("x2")
-                    .setRegister(false);
+            ProviderConfig<HelloService> providerConfig =
+                    new ProviderConfig<HelloService>()
+                            .setInterfaceId(HelloService.class.getName())
+                            .setRef(helloServiceProxy)
+                            .setServer(serverConfig2)
+                            .setUniqueId("x2")
+                            .setRegister(false);
             providerConfig.export();
         }
         { // A
-            ConsumerConfig<HelloService> consumerConfig = new ConsumerConfig<HelloService>()
-                    .setInterfaceId(HelloService.class.getName())
-                    .setTimeout(1000)
-                    .setDirectUrl("bolt://127.0.0.1:22223")
-                    .setUniqueId("x2")
-                    .setRegister(false);
+            ConsumerConfig<HelloService> consumerConfig =
+                    new ConsumerConfig<HelloService>()
+                            .setInterfaceId(HelloService.class.getName())
+                            .setTimeout(1000)
+                            .setDirectUrl("bolt://127.0.0.1:22223")
+                            .setUniqueId("x2")
+                            .setRegister(false);
             helloService = consumerConfig.refer();
         }
 
@@ -133,7 +144,8 @@ public class TransactionContextFilterTest {
         RpcInternalContext.getContext().setAttachment(RootContext.HIDDEN_KEY_XID, "xidddd");
         Object xid = RpcInternalContext.getContext().getAttachment(RootContext.HIDDEN_KEY_XID);
         Assertions.assertEquals("xidddd", xid);
-        Assertions.assertNotNull(RpcInternalContext.getContext().removeAttachment(RootContext.HIDDEN_KEY_XID));
+        Assertions.assertNotNull(
+                RpcInternalContext.getContext().removeAttachment(RootContext.HIDDEN_KEY_XID));
     }
 
     @BeforeAll

@@ -17,19 +17,18 @@
 package org.apache.seata.spring.annotation;
 
 import java.lang.reflect.Method;
-
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.apache.seata.integration.tx.api.annotation.AspectTransactional;
 import org.apache.seata.integration.tx.api.interceptor.DefaultInvocationWrapper;
 import org.apache.seata.integration.tx.api.interceptor.InvocationWrapper;
 import org.apache.seata.integration.tx.api.interceptor.handler.GlobalTransactionalInterceptorHandler;
 import org.apache.seata.tm.api.FailureHandler;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.util.ClassUtils;
 
 /**
- * Aspect transactional interceptor. 
+ * Aspect transactional interceptor.
  *
  */
 public class AspectTransactionalInterceptor implements MethodInterceptor {
@@ -38,7 +37,8 @@ public class AspectTransactionalInterceptor implements MethodInterceptor {
     private final AspectTransactional aspectTransactional;
     private final GlobalTransactionalInterceptorHandler globalTransactionalInterceptorHandler;
 
-    private static final AspectTransactional DEFAULT_ASPECT_TRANSACTIONAL = new AspectTransactional();
+    private static final AspectTransactional DEFAULT_ASPECT_TRANSACTIONAL =
+            new AspectTransactional();
 
     public AspectTransactionalInterceptor() {
         this(DEFAULT_ASPECT_TRANSACTIONAL);
@@ -52,17 +52,24 @@ public class AspectTransactionalInterceptor implements MethodInterceptor {
         this(failureHandler, DEFAULT_ASPECT_TRANSACTIONAL);
     }
 
-    public AspectTransactionalInterceptor(FailureHandler failureHandler, AspectTransactional aspectTransactional) {
+    public AspectTransactionalInterceptor(
+            FailureHandler failureHandler, AspectTransactional aspectTransactional) {
         this.failureHandler = failureHandler;
         this.aspectTransactional = aspectTransactional;
-        this.globalTransactionalInterceptorHandler = new GlobalTransactionalInterceptorHandler(this.failureHandler, null, this.aspectTransactional);
+        this.globalTransactionalInterceptorHandler =
+                new GlobalTransactionalInterceptorHandler(
+                        this.failureHandler, null, this.aspectTransactional);
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        Class<?> targetClass = invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null;
-        Method specificMethod = ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
-        InvocationWrapper invocationWrapper = new DefaultInvocationWrapper(null, invocation.getThis(), specificMethod, invocation.getArguments());
+        Class<?> targetClass =
+                invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null;
+        Method specificMethod =
+                ClassUtils.getMostSpecificMethod(invocation.getMethod(), targetClass);
+        InvocationWrapper invocationWrapper =
+                new DefaultInvocationWrapper(
+                        null, invocation.getThis(), specificMethod, invocation.getArguments());
         return this.globalTransactionalInterceptorHandler.invoke(invocationWrapper);
     }
 }

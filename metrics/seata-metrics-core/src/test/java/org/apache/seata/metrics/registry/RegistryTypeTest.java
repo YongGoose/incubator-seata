@@ -32,7 +32,8 @@ class RegistryTypeTest {
 
     @Test
     void getType_invalidTypeName_throwException() {
-        Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> RegistryType.getType("comp"));
+        Assertions.assertThrowsExactly(
+                IllegalArgumentException.class, () -> RegistryType.getType("comp"));
     }
 
     @Test
@@ -47,6 +48,7 @@ class RegistryTypeTest {
 
     @Test
     void values() {
-        Assertions.assertArrayEquals(new RegistryType[]{RegistryType.COMPACT}, RegistryType.values());
+        Assertions.assertArrayEquals(
+                new RegistryType[] {RegistryType.COMPACT}, RegistryType.values());
     }
 }

@@ -22,23 +22,31 @@ import org.apache.seata.serializer.protobuf.generated.AbstractMessageProto;
 import org.apache.seata.serializer.protobuf.generated.MessageTypeProto;
 import org.apache.seata.serializer.protobuf.generated.RegisterTMRequestProto;
 
-
-public class RegisterTMRequestConvertor implements PbConvertor<RegisterTMRequest, RegisterTMRequestProto> {
+public class RegisterTMRequestConvertor
+        implements PbConvertor<RegisterTMRequest, RegisterTMRequestProto> {
     @Override
     public RegisterTMRequestProto convert2Proto(RegisterTMRequest registerTMRequest) {
         final short typeCode = registerTMRequest.getTypeCode();
 
-        final AbstractMessageProto abstractMessage = AbstractMessageProto.newBuilder().setMessageType(
-            MessageTypeProto.forNumber(typeCode)).build();
+        final AbstractMessageProto abstractMessage =
+                AbstractMessageProto.newBuilder()
+                        .setMessageType(MessageTypeProto.forNumber(typeCode))
+                        .build();
 
         final String extraData = registerTMRequest.getExtraData();
-        AbstractIdentifyRequestProto abstractIdentifyRequestProto = AbstractIdentifyRequestProto.newBuilder()
-            .setAbstractMessage(abstractMessage).setApplicationId(registerTMRequest.getApplicationId()).setExtraData(
-                extraData == null ? "" : extraData).setTransactionServiceGroup(
-                registerTMRequest.getTransactionServiceGroup()).setVersion(registerTMRequest.getVersion()).build();
+        AbstractIdentifyRequestProto abstractIdentifyRequestProto =
+                AbstractIdentifyRequestProto.newBuilder()
+                        .setAbstractMessage(abstractMessage)
+                        .setApplicationId(registerTMRequest.getApplicationId())
+                        .setExtraData(extraData == null ? "" : extraData)
+                        .setTransactionServiceGroup(registerTMRequest.getTransactionServiceGroup())
+                        .setVersion(registerTMRequest.getVersion())
+                        .build();
 
-        RegisterTMRequestProto result = RegisterTMRequestProto.newBuilder().setAbstractIdentifyRequest(
-            abstractIdentifyRequestProto).build();
+        RegisterTMRequestProto result =
+                RegisterTMRequestProto.newBuilder()
+                        .setAbstractIdentifyRequest(abstractIdentifyRequestProto)
+                        .build();
 
         return result;
     }
@@ -47,10 +55,12 @@ public class RegisterTMRequestConvertor implements PbConvertor<RegisterTMRequest
     public RegisterTMRequest convert2Model(RegisterTMRequestProto registerTMRequestProto) {
         RegisterTMRequest registerRMRequest = new RegisterTMRequest();
 
-        AbstractIdentifyRequestProto abstractIdentifyRequest = registerTMRequestProto.getAbstractIdentifyRequest();
+        AbstractIdentifyRequestProto abstractIdentifyRequest =
+                registerTMRequestProto.getAbstractIdentifyRequest();
         registerRMRequest.setApplicationId(abstractIdentifyRequest.getApplicationId());
         registerRMRequest.setExtraData(abstractIdentifyRequest.getExtraData());
-        registerRMRequest.setTransactionServiceGroup(abstractIdentifyRequest.getTransactionServiceGroup());
+        registerRMRequest.setTransactionServiceGroup(
+                abstractIdentifyRequest.getTransactionServiceGroup());
         registerRMRequest.setVersion(abstractIdentifyRequest.getVersion());
 
         return registerRMRequest;

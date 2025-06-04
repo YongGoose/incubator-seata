@@ -32,7 +32,8 @@ public enum RecoverStrategy {
      */
     Forward;
 
-    public static RecoverStrategy wrap(org.apache.seata.saga.statelang.domain.RecoverStrategy target) {
+    public static RecoverStrategy wrap(
+            org.apache.seata.saga.statelang.domain.RecoverStrategy target) {
         if (target == null) {
             return null;
         }

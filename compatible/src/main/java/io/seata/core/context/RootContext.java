@@ -16,13 +16,10 @@
  */
 package io.seata.core.context;
 
-
+import io.seata.core.model.BranchType;
 import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import io.seata.core.model.BranchType;
 
 /**
  * The type Root context.
@@ -56,7 +53,8 @@ public class RootContext {
      * @param defaultBranchType the default branch type
      */
     public static void setDefaultBranchType(BranchType defaultBranchType) {
-        org.apache.seata.core.context.RootContext.setDefaultBranchType(defaultBranchType.convertBranchType());
+        org.apache.seata.core.context.RootContext.setDefaultBranchType(
+                defaultBranchType.convertBranchType());
     }
 
     /**

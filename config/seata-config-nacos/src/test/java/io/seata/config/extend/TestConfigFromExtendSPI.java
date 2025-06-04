@@ -16,17 +16,15 @@
  */
 package io.seata.config.extend;
 
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import java.security.SecureRandom;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
-
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.seata.config.CachedConfigurationChangeListener;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationCache;
@@ -42,7 +40,7 @@ import org.junit.jupiter.api.condition.OS;
 
 public class TestConfigFromExtendSPI {
 
-    private static  Config FILE_CONFIG;
+    private static Config FILE_CONFIG;
     private static ConfigService configService;
 
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
@@ -70,23 +68,24 @@ public class TestConfigFromExtendSPI {
         String group = FILE_CONFIG.getString("config.test.group");
         String content = "seata";
         CountDownLatch listenerCountDown = new CountDownLatch(1);
-        configuration.addConfigListener(dataId, new CachedConfigurationChangeListener() {
-            @Override
-            public void onChangeEvent(ConfigurationChangeEvent event) {
-                Assertions.assertEquals(content, event.getNewValue());
-                listenerCountDown.countDown();
-            }
-        });
+        configuration.addConfigListener(
+                dataId,
+                new CachedConfigurationChangeListener() {
+                    @Override
+                    public void onChangeEvent(ConfigurationChangeEvent event) {
+                        Assertions.assertEquals(content, event.getNewValue());
+                        listenerCountDown.countDown();
+                    }
+                });
         configService.publishConfig(dataId, group, content);
         boolean reachZero = listenerCountDown.await(5, TimeUnit.SECONDS);
         Assertions.assertTrue(reachZero);
-        //get config
+        // get config
         String config = configuration.getConfig(dataId);
         Assertions.assertEquals(content, config);
-        //listener
+        // listener
         Set<ConfigurationChangeListener> listeners = configuration.getConfigListeners(dataId);
         Assertions.assertEquals(1, listeners.size());
-
     }
 
     public static String generateRandomString() {

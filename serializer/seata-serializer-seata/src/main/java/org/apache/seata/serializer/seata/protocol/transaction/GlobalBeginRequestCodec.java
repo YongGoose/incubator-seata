@@ -16,9 +16,8 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import java.nio.ByteBuffer;
-
 import io.netty.buffer.ByteBuf;
+import java.nio.ByteBuffer;
 import org.apache.seata.core.protocol.transaction.GlobalBeginRequest;
 
 /**
@@ -34,25 +33,25 @@ public class GlobalBeginRequestCodec extends AbstractTransactionRequestToTCCodec
 
     @Override
     public <T> void encode(T t, ByteBuf out) {
-        GlobalBeginRequest globalBeginRequest = (GlobalBeginRequest)t;
+        GlobalBeginRequest globalBeginRequest = (GlobalBeginRequest) t;
         int timeout = globalBeginRequest.getTimeout();
         String transactionName = globalBeginRequest.getTransactionName();
 
         out.writeInt(timeout);
         if (transactionName != null) {
             byte[] bs = transactionName.getBytes(UTF8);
-            out.writeShort((short)bs.length);
+            out.writeShort((short) bs.length);
             if (bs.length > 0) {
                 out.writeBytes(bs);
             }
         } else {
-            out.writeShort((short)0);
+            out.writeShort((short) 0);
         }
     }
 
     @Override
     public <T> void decode(T t, ByteBuffer in) {
-        GlobalBeginRequest globalBeginRequest = (GlobalBeginRequest)t;
+        GlobalBeginRequest globalBeginRequest = (GlobalBeginRequest) t;
 
         globalBeginRequest.setTimeout(in.getInt());
         short len = in.getShort();
@@ -62,5 +61,4 @@ public class GlobalBeginRequestCodec extends AbstractTransactionRequestToTCCodec
             globalBeginRequest.setTransactionName(new String(bs, UTF8));
         }
     }
-
 }

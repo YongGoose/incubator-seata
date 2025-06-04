@@ -16,16 +16,14 @@
  */
 package org.apache.seata.saga.engine.config;
 
+import static org.mockito.Mockito.when;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-
-import static org.mockito.Mockito.when;
 
 /**
  * DbStateMachineConfigTest
@@ -39,7 +37,8 @@ public class DbStateMachineConfigTest {
         when(databaseMetaData.getDatabaseProductName()).thenReturn("test");
         MockDataSource mockDataSource = new MockDataSource();
         mockDataSource.setConnection(connection);
-        Assertions.assertEquals(DbStateMachineConfig.getDbTypeFromDataSource(mockDataSource), "test");
+        Assertions.assertEquals(
+                DbStateMachineConfig.getDbTypeFromDataSource(mockDataSource), "test");
     }
 
     @Test

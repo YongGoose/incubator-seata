@@ -19,22 +19,29 @@ package org.apache.seata.common.exception;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class RetryableExceptionTest {
 
     @Test
     public void testRetryableException() {
-        Assertions.assertThrowsExactly(RetryableException.class, () -> {
-            throw new RetryableException();
-        });
-        Assertions.assertThrowsExactly(RetryableException.class, () -> {
-            throw new RetryableException("error");
-        });
-        Assertions.assertThrowsExactly(RetryableException.class, () -> {
-            throw new RetryableException(new Throwable("error"));
-        });
-        Assertions.assertThrowsExactly(RetryableException.class, () -> {
-            throw new RetryableException("error", new Throwable("error"));
-        });
+        Assertions.assertThrowsExactly(
+                RetryableException.class,
+                () -> {
+                    throw new RetryableException();
+                });
+        Assertions.assertThrowsExactly(
+                RetryableException.class,
+                () -> {
+                    throw new RetryableException("error");
+                });
+        Assertions.assertThrowsExactly(
+                RetryableException.class,
+                () -> {
+                    throw new RetryableException(new Throwable("error"));
+                });
+        Assertions.assertThrowsExactly(
+                RetryableException.class,
+                () -> {
+                    throw new RetryableException("error", new Throwable("error"));
+                });
     }
 }

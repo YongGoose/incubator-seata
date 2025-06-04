@@ -20,10 +20,11 @@ import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.rm.datasource.undo.BaseUndoLogParserTest;
 import org.apache.seata.rm.datasource.undo.UndoLogParser;
 
-
 public class Fastjson2UndoLogParserTest extends BaseUndoLogParserTest {
 
-    Fastjson2UndoLogParser parser = (Fastjson2UndoLogParser) EnhancedServiceLoader.load(UndoLogParser.class, Fastjson2UndoLogParser.NAME);
+    Fastjson2UndoLogParser parser =
+            (Fastjson2UndoLogParser)
+                    EnhancedServiceLoader.load(UndoLogParser.class, Fastjson2UndoLogParser.NAME);
 
     @Override
     public UndoLogParser getParser() {
@@ -31,6 +32,5 @@ public class Fastjson2UndoLogParserTest extends BaseUndoLogParserTest {
     }
 
     @Override
-    public void testTimestampEncodeAndDecode() {
-    }
+    public void testTimestampEncodeAndDecode() {}
 }

@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm.datasource.undo.kingbase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.seata.rm.datasource.sql.struct.Row;
 import org.apache.seata.rm.datasource.sql.struct.TableRecords;
 import org.apache.seata.rm.datasource.undo.BaseExecutorTest;
@@ -25,11 +28,6 @@ import org.apache.seata.sqlparser.struct.TableMeta;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 
 public class KingbaseUndoDeleteExecutorTest extends BaseExecutorTest {
 
@@ -52,7 +50,8 @@ public class KingbaseUndoDeleteExecutorTest extends BaseExecutorTest {
 
     private KingbaseUndoDeleteExecutor upperCase() {
         TableMeta tableMeta = Mockito.mock(TableMeta.class);
-        Mockito.when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Arrays.asList(new String[]{"ID"}));
+        Mockito.when(tableMeta.getPrimaryKeyOnlyName())
+                .thenReturn(Arrays.asList(new String[] {"ID"}));
         Mockito.when(tableMeta.getTableName()).thenReturn("TABLE_NAME");
 
         TableRecords beforeImage = new TableRecords();
@@ -92,6 +91,4 @@ public class KingbaseUndoDeleteExecutorTest extends BaseExecutorTest {
 
         return new KingbaseUndoDeleteExecutor(sqlUndoLog);
     }
-
-
 }

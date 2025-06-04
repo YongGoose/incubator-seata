@@ -33,16 +33,23 @@ public class IndexTypeTest {
 
     @Test
     public void testValueOf() {
-        assertEquals(IndexType.PRIMARY, IndexType.valueOf(0), "IndexType of value 0 should be PRIMARY");
-        assertEquals(IndexType.NORMAL, IndexType.valueOf(1), "IndexType of value 1 should be NORMAL");
-        assertEquals(IndexType.UNIQUE, IndexType.valueOf(2), "IndexType of value 2 should be UNIQUE");
-        assertEquals(IndexType.FULL_TEXT, IndexType.valueOf(3), "IndexType of value 3 should be FULL_TEXT");
+        assertEquals(
+                IndexType.PRIMARY, IndexType.valueOf(0), "IndexType of value 0 should be PRIMARY");
+        assertEquals(
+                IndexType.NORMAL, IndexType.valueOf(1), "IndexType of value 1 should be NORMAL");
+        assertEquals(
+                IndexType.UNIQUE, IndexType.valueOf(2), "IndexType of value 2 should be UNIQUE");
+        assertEquals(
+                IndexType.FULL_TEXT,
+                IndexType.valueOf(3),
+                "IndexType of value 3 should be FULL_TEXT");
     }
 
     @Test
     public void testInvalidValueOf() {
-        assertThrows(IllegalArgumentException.class, () -> IndexType.valueOf(4),
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> IndexType.valueOf(4),
                 "Should throw IllegalArgumentException for invalid value 4");
     }
-
 }

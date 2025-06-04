@@ -16,13 +16,13 @@
  */
 package org.apache.seata.server.limit.ratelimit;
 
+import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.XID;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.NumberUtils;
 import org.apache.seata.config.CachedConfigurationChangeListener;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationChangeEvent;
-import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.exception.TransactionExceptionCode;
 import org.apache.seata.core.protocol.MessageType;
@@ -37,7 +37,8 @@ import org.apache.seata.server.metrics.MetricsPublisher;
 /**
  * RateLimiterHandler
  */
-public class RateLimiterHandler extends AbstractTransactionRequestHandler implements CachedConfigurationChangeListener {
+public class RateLimiterHandler extends AbstractTransactionRequestHandler
+        implements CachedConfigurationChangeListener {
     /**
      * The instance of RateLimiterHandler
      */
@@ -70,7 +71,8 @@ public class RateLimiterHandler extends AbstractTransactionRequestHandler implem
     }
 
     @Override
-    public AbstractTransactionResponse handle(AbstractTransactionRequestToTC originRequest, RpcContext context) {
+    public AbstractTransactionResponse handle(
+            AbstractTransactionRequestToTC originRequest, RpcContext context) {
         if (!rateLimiter.isEnable()) {
             return next(originRequest, context);
         }
@@ -80,10 +82,17 @@ public class RateLimiterHandler extends AbstractTransactionRequestHandler implem
                 GlobalBeginResponse response = new GlobalBeginResponse();
                 response.setTransactionExceptionCode(TransactionExceptionCode.BeginFailed);
                 response.setResultCode(ResultCode.Failed);
-                RateLimitInfo rateLimitInfo = RateLimitInfo.generateRateLimitInfo(context.getApplicationId(),
-                        RateLimitInfo.GLOBAL_BEGIN_FAILED, context.getClientId(), XID.getIpAddressAndPort());
+                RateLimitInfo rateLimitInfo =
+                        RateLimitInfo.generateRateLimitInfo(
+                                context.getApplicationId(),
+                                RateLimitInfo.GLOBAL_BEGIN_FAILED,
+                                context.getClientId(),
+                                XID.getIpAddressAndPort());
                 MetricsPublisher.postRateLimitEvent(rateLimitInfo);
-                response.setMsg(String.format("TransactionException[rate limit exception, rate limit info: %s]", rateLimitInfo));
+                response.setMsg(
+                        String.format(
+                                "TransactionException[rate limit exception, rate limit info: %s]",
+                                rateLimitInfo));
                 return response;
             }
         }
@@ -109,13 +118,15 @@ public class RateLimiterHandler extends AbstractTransactionRequestHandler implem
             config.setEnable(Boolean.parseBoolean(newValue));
         }
         if (ConfigurationKeys.RATE_LIMIT_BUCKET_TOKEN_NUM_PER_SECOND.equals(dataId)) {
-            config.setBucketTokenNumPerSecond(NumberUtils.toInt(newValue, config.getBucketTokenNumPerSecond()));
+            config.setBucketTokenNumPerSecond(
+                    NumberUtils.toInt(newValue, config.getBucketTokenNumPerSecond()));
         }
         if (ConfigurationKeys.RATE_LIMIT_BUCKET_TOKEN_MAX_NUM.equals(dataId)) {
             config.setBucketTokenMaxNum(NumberUtils.toInt(newValue, config.getBucketTokenMaxNum()));
         }
         if (ConfigurationKeys.RATE_LIMIT_BUCKET_TOKEN_INITIAL_NUM.equals(dataId)) {
-            config.setBucketTokenInitialNum(NumberUtils.toInt(newValue, config.getBucketTokenInitialNum()));
+            config.setBucketTokenInitialNum(
+                    NumberUtils.toInt(newValue, config.getBucketTokenInitialNum()));
         }
         rateLimiter.reInit(config);
     }

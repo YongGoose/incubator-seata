@@ -113,7 +113,8 @@ public interface TransactionalExecutor {
          * @param code              the code
          * @param originalException the original exception
          */
-        public ExecutionException(GlobalTransaction transaction, Code code, Throwable originalException) {
+        public ExecutionException(
+                GlobalTransaction transaction, Code code, Throwable originalException) {
             this(transaction, null, code, originalException);
         }
 
@@ -125,8 +126,11 @@ public interface TransactionalExecutor {
          * @param code              the code
          * @param originalException the original exception
          */
-        public ExecutionException(GlobalTransaction transaction, Throwable cause, Code code,
-                                  Throwable originalException) {
+        public ExecutionException(
+                GlobalTransaction transaction,
+                Throwable cause,
+                Code code,
+                Throwable originalException) {
             this(transaction, null, cause, code, originalException);
         }
 
@@ -139,8 +143,12 @@ public interface TransactionalExecutor {
          * @param code              the code
          * @param originalException the original exception
          */
-        public ExecutionException(GlobalTransaction transaction, String message, Throwable cause, Code code,
-                                  Throwable originalException) {
+        public ExecutionException(
+                GlobalTransaction transaction,
+                String message,
+                Throwable cause,
+                Code code,
+                Throwable originalException) {
             super(message, cause);
             this.transaction = transaction;
             this.code = code;

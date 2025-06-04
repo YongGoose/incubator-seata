@@ -16,6 +16,9 @@
  */
 package org.apache.seata.core.rpc.netty.grpc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,13 +34,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-
 public class GrpcDecoderTest {
     private GrpcDecoder grpcDecoder;
-    @Mock
-    private ChannelHandlerContext ctx;
+    @Mock private ChannelHandlerContext ctx;
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +46,7 @@ public class GrpcDecoderTest {
 
     private byte[] createMessageBytes(GrpcMessageProto proto) {
         byte[] data = proto.toByteArray();
-        byte[] lengthBytes = new byte[]{0, 0, 0, 0, (byte) data.length};
+        byte[] lengthBytes = new byte[] {0, 0, 0, 0, (byte) data.length};
         byte[] messageBytes = new byte[lengthBytes.length + data.length];
         System.arraycopy(lengthBytes, 0, messageBytes, 0, lengthBytes.length);
         System.arraycopy(data, 0, messageBytes, lengthBytes.length, data.length);

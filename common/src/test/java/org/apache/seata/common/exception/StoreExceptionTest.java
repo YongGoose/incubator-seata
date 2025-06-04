@@ -16,9 +16,9 @@
  */
 package org.apache.seata.common.exception;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 public class StoreExceptionTest {
 
@@ -35,28 +35,38 @@ public class StoreExceptionTest {
     @Test
     public void testConstructorWithMessageAndFrameworkErrorCode() {
         exceptionAsserts(
-            new StoreException(FrameworkErrorCode.UnknownAppError.getErrMessage(), FrameworkErrorCode.UnknownAppError));
+                new StoreException(
+                        FrameworkErrorCode.UnknownAppError.getErrMessage(),
+                        FrameworkErrorCode.UnknownAppError));
     }
 
     @Test
     public void testConstructorWithCauseExceptionMessageAndFrameworkErrorCode() {
-        exceptionAsserts(new StoreException(new Throwable(), FrameworkErrorCode.UnknownAppError.getErrMessage(),
-            FrameworkErrorCode.UnknownAppError));
+        exceptionAsserts(
+                new StoreException(
+                        new Throwable(),
+                        FrameworkErrorCode.UnknownAppError.getErrMessage(),
+                        FrameworkErrorCode.UnknownAppError));
     }
 
     @Test
     public void testConstructorWithThrowable() {
-        exceptionAsserts(new StoreException(new Throwable(FrameworkErrorCode.UnknownAppError.getErrMessage())));
+        exceptionAsserts(
+                new StoreException(
+                        new Throwable(FrameworkErrorCode.UnknownAppError.getErrMessage())));
     }
 
     @Test
     public void testConstructorWithThrowableAndMessage() {
-        exceptionAsserts(new StoreException(new Throwable(), FrameworkErrorCode.UnknownAppError.getErrMessage()));
+        exceptionAsserts(
+                new StoreException(
+                        new Throwable(), FrameworkErrorCode.UnknownAppError.getErrMessage()));
     }
 
     private static void exceptionAsserts(StoreException exception) {
-        assertThat(exception).isInstanceOf(StoreException.class).hasMessage(
-            FrameworkErrorCode.UnknownAppError.getErrMessage());
+        assertThat(exception)
+                .isInstanceOf(StoreException.class)
+                .hasMessage(FrameworkErrorCode.UnknownAppError.getErrMessage());
         assertThat(exception.getErrcode()).isEqualTo(FrameworkErrorCode.UnknownAppError);
     }
 }

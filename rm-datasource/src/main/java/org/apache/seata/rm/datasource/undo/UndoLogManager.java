@@ -20,7 +20,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Set;
-
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.rm.datasource.ConnectionProxy;
 import org.apache.seata.rm.datasource.DataSourceProxy;
@@ -46,7 +45,8 @@ public interface UndoLogManager {
      * @param branchId        the branch id
      * @throws TransactionException the transaction exception
      */
-    void undo(DataSourceProxy dataSourceProxy, String xid, long branchId) throws TransactionException;
+    void undo(DataSourceProxy dataSourceProxy, String xid, long branchId)
+            throws TransactionException;
 
     /**
      * Delete undo log.
@@ -66,7 +66,8 @@ public interface UndoLogManager {
      * @param conn the connection
      * @throws SQLException the sql exception
      */
-    void batchDeleteUndoLog(Set<String> xids, Set<Long> branchIds, Connection conn) throws SQLException;
+    void batchDeleteUndoLog(Set<String> xids, Set<Long> branchIds, Connection conn)
+            throws SQLException;
 
     /**
      * delete undolog by created
@@ -76,7 +77,8 @@ public interface UndoLogManager {
      * @return the update rows
      * @throws SQLException the sql exception
      */
-    int deleteUndoLogByLogCreated(Date logCreated, int limitRows, Connection conn) throws SQLException;
+    int deleteUndoLogByLogCreated(Date logCreated, int limitRows, Connection conn)
+            throws SQLException;
 
     /**
      * does this resource have undolog table?(some may not have, if they don't use AT mode at all)

@@ -26,19 +26,19 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLSelectRecognizer;
 import org.apache.seata.sqlparser.SQLType;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * The type My sql select for update recognizer.
  *
  */
-public class MySQLSelectForUpdateRecognizer extends BaseMySQLRecognizer implements SQLSelectRecognizer {
+public class MySQLSelectForUpdateRecognizer extends BaseMySQLRecognizer
+        implements SQLSelectRecognizer {
 
     private final SQLSelectStatement ast;
 
@@ -50,7 +50,7 @@ public class MySQLSelectForUpdateRecognizer extends BaseMySQLRecognizer implemen
      */
     public MySQLSelectForUpdateRecognizer(String originalSQL, SQLStatement ast) {
         super(originalSQL);
-        this.ast = (SQLSelectStatement)ast;
+        this.ast = (SQLSelectStatement) ast;
     }
 
     @Override
@@ -59,8 +59,9 @@ public class MySQLSelectForUpdateRecognizer extends BaseMySQLRecognizer implemen
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-        final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         SQLSelectQueryBlock selectQueryBlock = getSelect();
         SQLExpr where = selectQueryBlock.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
@@ -80,7 +81,8 @@ public class MySQLSelectForUpdateRecognizer extends BaseMySQLRecognizer implemen
     }
 
     @Override
-    public String getLimitCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getLimitCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         SQLLimit limit = getSelect().getLimit();
         return super.getLimitCondition(limit, parametersHolder, paramAppenderList);
     }
@@ -92,7 +94,8 @@ public class MySQLSelectForUpdateRecognizer extends BaseMySQLRecognizer implemen
     }
 
     @Override
-    public String getOrderByCondition(ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
+    public String getOrderByCondition(
+            ParametersHolder parametersHolder, ArrayList<List<Object>> paramAppenderList) {
         SQLOrderBy sqlOrderBy = getSelect().getOrderBy();
         return super.getOrderByCondition(sqlOrderBy, parametersHolder, paramAppenderList);
     }
@@ -121,15 +124,16 @@ public class MySQLSelectForUpdateRecognizer extends BaseMySQLRecognizer implemen
         SQLSelectQueryBlock selectQueryBlock = getSelect();
         SQLTableSource tableSource = selectQueryBlock.getFrom();
         StringBuilder sb = new StringBuilder();
-        MySqlOutputVisitor visitor = new MySqlOutputVisitor(sb) {
+        MySqlOutputVisitor visitor =
+                new MySqlOutputVisitor(sb) {
 
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
-        };
-        visitor.visit((SQLExprTableSource)tableSource);
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
+                };
+        visitor.visit((SQLExprTableSource) tableSource);
         return sb.toString();
     }
 

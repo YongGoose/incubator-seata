@@ -29,8 +29,7 @@ import java.util.function.Function;
  */
 public class CollectionUtils {
 
-    private CollectionUtils() {
-    }
+    private CollectionUtils() {}
 
     /**
      * Is empty boolean.
@@ -106,22 +105,24 @@ public class CollectionUtils {
             return "[]";
         }
 
-        return CycleDependencyHandler.wrap(col, o -> {
-            StringBuilder sb = new StringBuilder(32);
-            sb.append("[");
-            for (Object obj : col) {
-                if (sb.length() > 1) {
-                    sb.append(", ");
-                }
-                if (obj == col) {
-                    sb.append("(this ").append(obj.getClass().getSimpleName()).append(")");
-                } else {
-                    sb.append(StringUtils.toString(obj));
-                }
-            }
-            sb.append("]");
-            return sb.toString();
-        });
+        return CycleDependencyHandler.wrap(
+                col,
+                o -> {
+                    StringBuilder sb = new StringBuilder(32);
+                    sb.append("[");
+                    for (Object obj : col) {
+                        if (sb.length() > 1) {
+                            sb.append(", ");
+                        }
+                        if (obj == col) {
+                            sb.append("(this ").append(obj.getClass().getSimpleName()).append(")");
+                        } else {
+                            sb.append(StringUtils.toString(obj));
+                        }
+                    }
+                    sb.append("]");
+                    return sb.toString();
+                });
     }
 
     /**
@@ -138,28 +139,35 @@ public class CollectionUtils {
             return "{}";
         }
 
-        return CycleDependencyHandler.wrap(map, o -> {
-            StringBuilder sb = new StringBuilder(32);
-            sb.append("{");
-            map.forEach((key, value) -> {
-                if (sb.length() > 1) {
-                    sb.append(", ");
-                }
-                if (key == map) {
-                    sb.append("(this ").append(map.getClass().getSimpleName()).append(")");
-                } else {
-                    sb.append(StringUtils.toString(key));
-                }
-                sb.append("->");
-                if (value == map) {
-                    sb.append("(this ").append(map.getClass().getSimpleName()).append(")");
-                } else {
-                    sb.append(StringUtils.toString(value));
-                }
-            });
-            sb.append("}");
-            return sb.toString();
-        });
+        return CycleDependencyHandler.wrap(
+                map,
+                o -> {
+                    StringBuilder sb = new StringBuilder(32);
+                    sb.append("{");
+                    map.forEach(
+                            (key, value) -> {
+                                if (sb.length() > 1) {
+                                    sb.append(", ");
+                                }
+                                if (key == map) {
+                                    sb.append("(this ")
+                                            .append(map.getClass().getSimpleName())
+                                            .append(")");
+                                } else {
+                                    sb.append(StringUtils.toString(key));
+                                }
+                                sb.append("->");
+                                if (value == map) {
+                                    sb.append("(this ")
+                                            .append(map.getClass().getSimpleName())
+                                            .append(")");
+                                } else {
+                                    sb.append(StringUtils.toString(value));
+                                }
+                            });
+                    sb.append("}");
+                    return sb.toString();
+                });
     }
 
     /**
@@ -171,15 +179,16 @@ public class CollectionUtils {
     public static Map<String, String> toStringMap(Map<String, Object> param) {
         Map<String, String> covertMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(param)) {
-            param.forEach((key, value) -> {
-                if (value != null) {
-                    if (value instanceof CharSequence || value instanceof Character) {
-                        covertMap.put(key, value.toString());
-                    } else {
-                        covertMap.put(key, StringUtils.toString(value));
-                    }
-                }
-            });
+            param.forEach(
+                    (key, value) -> {
+                        if (value != null) {
+                            if (value instanceof CharSequence || value instanceof Character) {
+                                covertMap.put(key, value.toString());
+                            } else {
+                                covertMap.put(key, StringUtils.toString(value));
+                            }
+                        }
+                    });
         }
         return covertMap;
     }
@@ -270,7 +279,8 @@ public class CollectionUtils {
      * @param <V>             the type of value
      * @return the value
      */
-    public static <K, V> V computeIfAbsent(Map<K, V> map, K key, Function<? super K, ? extends V> mappingFunction) {
+    public static <K, V> V computeIfAbsent(
+            Map<K, V> map, K key, Function<? super K, ? extends V> mappingFunction) {
         V value = map.get(key);
         if (value != null) {
             return value;

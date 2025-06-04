@@ -16,13 +16,12 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
-import org.apache.seata.serializer.protobuf.generated.BranchRollbackRequestProto;
-import org.apache.seata.core.model.BranchType;
-import org.apache.seata.core.protocol.transaction.BranchRollbackRequest;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.seata.core.model.BranchType;
+import org.apache.seata.core.protocol.transaction.BranchRollbackRequest;
+import org.apache.seata.serializer.protobuf.generated.BranchRollbackRequestProto;
+import org.junit.jupiter.api.Test;
 
 public class BranchRollbackRequestConvertorTest {
 
@@ -37,17 +36,16 @@ public class BranchRollbackRequestConvertorTest {
         branchRegisterRequest.setBranchId(123);
 
         BranchRollbackRequestConvertor convertor = new BranchRollbackRequestConvertor();
-        BranchRollbackRequestProto proto = convertor.convert2Proto(
-            branchRegisterRequest);
+        BranchRollbackRequestProto proto = convertor.convert2Proto(branchRegisterRequest);
 
         BranchRollbackRequest real = convertor.convert2Model(proto);
 
         assertThat((real.getTypeCode())).isEqualTo(branchRegisterRequest.getTypeCode());
-        assertThat((real.getApplicationData())).isEqualTo(branchRegisterRequest.getApplicationData());
+        assertThat((real.getApplicationData()))
+                .isEqualTo(branchRegisterRequest.getApplicationData());
         assertThat((real.getBranchType())).isEqualTo(branchRegisterRequest.getBranchType());
         assertThat((real.getXid())).isEqualTo(branchRegisterRequest.getXid());
         assertThat((real.getResourceId())).isEqualTo(branchRegisterRequest.getResourceId());
         assertThat((real.getBranchId())).isEqualTo(branchRegisterRequest.getBranchId());
-
     }
 }

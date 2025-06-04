@@ -17,11 +17,10 @@
 package org.apache.seata.core.rpc.netty;
 
 import io.netty.channel.Channel;
+import java.net.SocketAddress;
 import org.apache.seata.common.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.net.SocketAddress;
-
 
 public class ChannelUtil {
 
@@ -65,7 +64,10 @@ public class ChannelUtil {
         Integer port = 0;
         try {
             if (address.contains(Constants.IP_PORT_SPLIT_CHAR)) {
-                port = Integer.parseInt(address.substring(address.lastIndexOf(Constants.IP_PORT_SPLIT_CHAR) + 1));
+                port =
+                        Integer.parseInt(
+                                address.substring(
+                                        address.lastIndexOf(Constants.IP_PORT_SPLIT_CHAR) + 1));
             }
         } catch (NumberFormatException exx) {
             LOGGER.error(exx.getMessage());

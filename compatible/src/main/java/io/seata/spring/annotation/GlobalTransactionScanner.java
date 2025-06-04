@@ -16,6 +16,9 @@
  */
 package io.seata.spring.annotation;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP_OLD;
+
 import io.seata.common.util.StringUtils;
 import io.seata.rm.RMClient;
 import io.seata.tm.TMClient;
@@ -23,14 +26,12 @@ import io.seata.tm.api.FailureHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP_OLD;
-
 /**
  * The type Global transaction scanner.
  */
 @Deprecated
-public class GlobalTransactionScanner extends org.apache.seata.spring.annotation.GlobalTransactionScanner {
+public class GlobalTransactionScanner
+        extends org.apache.seata.spring.annotation.GlobalTransactionScanner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalTransactionScanner.class);
 
@@ -81,7 +82,8 @@ public class GlobalTransactionScanner extends org.apache.seata.spring.annotation
      * @param txServiceGroup     the tx service group
      * @param failureHandlerHook the failure handler hook
      */
-    public GlobalTransactionScanner(String applicationId, String txServiceGroup, FailureHandler failureHandlerHook) {
+    public GlobalTransactionScanner(
+            String applicationId, String txServiceGroup, FailureHandler failureHandlerHook) {
         super(applicationId, txServiceGroup, failureHandlerHook);
     }
 
@@ -93,7 +95,11 @@ public class GlobalTransactionScanner extends org.apache.seata.spring.annotation
      * @param exposeProxy        the exposeProxy
      * @param failureHandlerHook the failure handler hook
      */
-    public GlobalTransactionScanner(String applicationId, String txServiceGroup, boolean exposeProxy, FailureHandler failureHandlerHook) {
+    public GlobalTransactionScanner(
+            String applicationId,
+            String txServiceGroup,
+            boolean exposeProxy,
+            FailureHandler failureHandlerHook) {
         super(applicationId, txServiceGroup, exposeProxy, failureHandlerHook);
     }
 
@@ -105,7 +111,11 @@ public class GlobalTransactionScanner extends org.apache.seata.spring.annotation
      * @param mode               the mode
      * @param failureHandlerHook the failure handler hook
      */
-    public GlobalTransactionScanner(String applicationId, String txServiceGroup, int mode, FailureHandler failureHandlerHook) {
+    public GlobalTransactionScanner(
+            String applicationId,
+            String txServiceGroup,
+            int mode,
+            FailureHandler failureHandlerHook) {
         super(applicationId, txServiceGroup, mode, false, failureHandlerHook);
     }
 
@@ -118,7 +128,12 @@ public class GlobalTransactionScanner extends org.apache.seata.spring.annotation
      * @param exposeProxy        the exposeProxy
      * @param failureHandlerHook the failure handler hook
      */
-    public GlobalTransactionScanner(String applicationId, String txServiceGroup, int mode, boolean exposeProxy, FailureHandler failureHandlerHook) {
+    public GlobalTransactionScanner(
+            String applicationId,
+            String txServiceGroup,
+            int mode,
+            boolean exposeProxy,
+            FailureHandler failureHandlerHook) {
         super(applicationId, txServiceGroup, mode, exposeProxy, failureHandlerHook);
     }
 
@@ -127,23 +142,37 @@ public class GlobalTransactionScanner extends org.apache.seata.spring.annotation
             LOGGER.info("Initializing Global Transaction Clients ... ");
         }
         if (DEFAULT_TX_GROUP_OLD.equals(getTxServiceGroup())) {
-            LOGGER.warn("the default value of seata.tx-service-group: {} has already changed to {} since Seata 1.5, " +
-                            "please change your default configuration as soon as possible " +
-                            "and we don't recommend you to use default tx-service-group's value provided by seata",
-                    DEFAULT_TX_GROUP_OLD, DEFAULT_TX_GROUP);
+            LOGGER.warn(
+                    "the default value of seata.tx-service-group: {} has already changed to {}"
+                        + " since Seata 1.5, please change your default configuration as soon as"
+                        + " possible and we don't recommend you to use default tx-service-group's"
+                        + " value provided by seata",
+                    DEFAULT_TX_GROUP_OLD,
+                    DEFAULT_TX_GROUP);
         }
-        if (StringUtils.isNullOrEmpty(getApplicationId()) || StringUtils.isNullOrEmpty(getTxServiceGroup())) {
-            throw new IllegalArgumentException(String.format("applicationId: %s, txServiceGroup: %s", getApplicationId(), getTxServiceGroup()));
+        if (StringUtils.isNullOrEmpty(getApplicationId())
+                || StringUtils.isNullOrEmpty(getTxServiceGroup())) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "applicationId: %s, txServiceGroup: %s",
+                            getApplicationId(), getTxServiceGroup()));
         }
-        //init TM
+        // init TM
         TMClient.init(getApplicationId(), getTxServiceGroup(), getAccessKey(), getSecretKey());
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Transaction Manager Client is initialized. applicationId[{}] txServiceGroup[{}]", getApplicationId(), getTxServiceGroup());
+            LOGGER.info(
+                    "Transaction Manager Client is initialized. applicationId[{}]"
+                            + " txServiceGroup[{}]",
+                    getApplicationId(),
+                    getTxServiceGroup());
         }
-        //init RM
+        // init RM
         RMClient.init(getApplicationId(), getTxServiceGroup());
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Resource Manager is initialized. applicationId[{}] txServiceGroup[{}]", getApplicationId(), getTxServiceGroup());
+            LOGGER.info(
+                    "Resource Manager is initialized. applicationId[{}] txServiceGroup[{}]",
+                    getApplicationId(),
+                    getTxServiceGroup());
         }
 
         if (LOGGER.isInfoEnabled()) {

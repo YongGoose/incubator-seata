@@ -81,7 +81,8 @@ public class ChannelEventHandler extends ChannelDuplexHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         Channel channel = ctx.channel();
-        LOGGER.warn("Channel exception: {}, cause: {}", channel.remoteAddress(), cause.getMessage());
+        LOGGER.warn(
+                "Channel exception: {}, cause: {}", channel.remoteAddress(), cause.getMessage());
         remotingClient.onChannelException(channel, cause);
         super.exceptionCaught(ctx, cause);
     }

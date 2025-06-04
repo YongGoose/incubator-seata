@@ -16,9 +16,6 @@
  */
 package io.seata.saga.engine.db.mockserver;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import io.seata.saga.SagaCostPrint;
 import io.seata.saga.engine.StateMachineEngine;
 import io.seata.saga.engine.mock.DemoService.Engineer;
@@ -27,6 +24,8 @@ import io.seata.saga.rm.StateMachineEngineHolder;
 import io.seata.saga.statelang.domain.DomainConstants;
 import io.seata.saga.statelang.domain.ExecutionStatus;
 import io.seata.saga.statelang.domain.StateMachineInstance;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,347 +42,431 @@ public class StateMachineDBMockServerTests {
 
     @BeforeAll
     public static void initApplicationContext() {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-                "classpath:saga/spring/statemachine_engine_db_mockserver_test.xml");
-        stateMachineEngine = applicationContext.getBean("stateMachineEngine", StateMachineEngine.class);
+        ApplicationContext applicationContext =
+                new ClassPathXmlApplicationContext(
+                        "classpath:saga/spring/statemachine_engine_db_mockserver_test.xml");
+        stateMachineEngine =
+                applicationContext.getBean("stateMachineEngine", StateMachineEngine.class);
         StateMachineEngineHolder.setStateMachineEngine(stateMachineEngine);
     }
 
     @Test
     public void testSimpleStateMachine() throws Exception {
-        SagaCostPrint.executeAndPrint("5-1", () -> {
-            stateMachineEngine.start("simpleTestStateMachine", null, new HashMap<>());
-        });
+        SagaCostPrint.executeAndPrint(
+                "5-1",
+                () -> {
+                    stateMachineEngine.start("simpleTestStateMachine", null, new HashMap<>());
+                });
     }
 
     @Test
     public void testSimpleStateMachineWithChoice() throws Exception {
         String stateMachineName = "simpleChoiceTestStateMachine";
 
-        SagaCostPrint.executeAndPrint("5-2", () -> {
-            Map<String, Object> paramMap = new HashMap<>(1);
-            paramMap.put("a", 1);
+        SagaCostPrint.executeAndPrint(
+                "5-2",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(1);
+                    paramMap.put("a", 1);
 
-            String businessKey = String.valueOf(System.currentTimeMillis());
-            StateMachineInstance inst = stateMachineEngine.startWithBusinessKey(stateMachineName, null, businessKey, paramMap);
+                    String businessKey = String.valueOf(System.currentTimeMillis());
+                    StateMachineInstance inst =
+                            stateMachineEngine.startWithBusinessKey(
+                                    stateMachineName, null, businessKey, paramMap);
 
-            Assertions.assertNotNull(inst);
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                    Assertions.assertNotNull(inst);
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
 
-            //TODO
-            inst = stateMachineEngine.getStateMachineConfig().getStateLogStore().getStateMachineInstanceByBusinessKey(businessKey, null);
-            Assertions.assertNotNull(inst);
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
-        });
+                    // TODO
+                    inst =
+                            stateMachineEngine
+                                    .getStateMachineConfig()
+                                    .getStateLogStore()
+                                    .getStateMachineInstanceByBusinessKey(businessKey, null);
+                    Assertions.assertNotNull(inst);
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                });
 
-        SagaCostPrint.executeAndPrint("5-3", () -> {
-            Map<String, Object> paramMap = new HashMap<>(1);
-            paramMap.put("a", 2);
+        SagaCostPrint.executeAndPrint(
+                "5-3",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(1);
+                    paramMap.put("a", 2);
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertNotNull(inst);
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
-        });
+                    Assertions.assertNotNull(inst);
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                });
     }
 
     @Test
     public void testSimpleStateMachineWithChoiceAndEnd() throws Exception {
         String stateMachineName = "simpleChoiceAndEndTestStateMachine";
 
-        SagaCostPrint.executeAndPrint("5-4", () -> {
-            Map<String, Object> paramMap = new HashMap<>(1);
-            paramMap.put("a", 1);
+        SagaCostPrint.executeAndPrint(
+                "5-4",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(1);
+                    paramMap.put("a", 1);
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
-        });
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
+                });
 
-        SagaCostPrint.executeAndPrint("5-5", () -> {
-            Map<String, Object> paramMap = new HashMap<>(1);
+        SagaCostPrint.executeAndPrint(
+                "5-5",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(1);
 
-            paramMap.put("a", 3);
-            stateMachineEngine.start(stateMachineName, null, paramMap);
-        });
+                    paramMap.put("a", 3);
+                    stateMachineEngine.start(stateMachineName, null, paramMap);
+                });
     }
 
     @Test
     public void testSimpleInputAssignmentStateMachine() throws Exception {
         String stateMachineName = "simpleInputAssignmentStateMachine";
 
-        SagaCostPrint.executeAndPrint("5-6", () -> {
-            Map<String, Object> paramMap = new HashMap<>(1);
-            paramMap.put("a", 1);
+        SagaCostPrint.executeAndPrint(
+                "5-6",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(1);
+                    paramMap.put("a", 1);
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            String businessKey = inst.getStateList().get(0).getBusinessKey();
-            Assertions.assertNotNull(businessKey);
-            System.out.println("====== businessKey :" + businessKey);
+                    String businessKey = inst.getStateList().get(0).getBusinessKey();
+                    Assertions.assertNotNull(businessKey);
+                    System.out.println("====== businessKey :" + businessKey);
 
-            String contextBusinessKey = (String)inst.getEndParams().get(
-                    inst.getStateList().get(0).getName() + DomainConstants.VAR_NAME_BUSINESSKEY);
-            Assertions.assertNotNull(contextBusinessKey);
-            System.out.println("====== context businessKey :" + businessKey);
-        });
+                    String contextBusinessKey =
+                            (String)
+                                    inst.getEndParams()
+                                            .get(
+                                                    inst.getStateList().get(0).getName()
+                                                            + DomainConstants.VAR_NAME_BUSINESSKEY);
+                    Assertions.assertNotNull(contextBusinessKey);
+                    System.out.println("====== context businessKey :" + businessKey);
+                });
     }
 
     @Test
     public void testSimpleCatchesStateMachine() throws Exception {
         String stateMachineName = "simpleCachesStateMachine";
 
-        SagaCostPrint.executeAndPrint("5-7", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 1);
-            paramMap.put("barThrowException", "true");
+        SagaCostPrint.executeAndPrint(
+                "5-7",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 1);
+                    paramMap.put("barThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertNotNull(inst.getException());
-            Assertions.assertEquals(ExecutionStatus.FA, inst.getStatus());
-        });
+                    Assertions.assertNotNull(inst.getException());
+                    Assertions.assertEquals(ExecutionStatus.FA, inst.getStatus());
+                });
     }
 
     @Test
     public void testSimpleRetryStateMachine() throws Exception {
         String stateMachineName = "simpleRetryStateMachine";
 
-        SagaCostPrint.executeAndPrint("5-11", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 1);
-            paramMap.put("barThrowException", "true");
+        SagaCostPrint.executeAndPrint(
+                "5-11",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 1);
+                    paramMap.put("barThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertNotNull(inst.getException());
-            Assertions.assertEquals(ExecutionStatus.FA, inst.getStatus());
-        });
+                    Assertions.assertNotNull(inst.getException());
+                    Assertions.assertEquals(ExecutionStatus.FA, inst.getStatus());
+                });
     }
 
     @Test
     public void testStatusMatchingStateMachine() throws Exception {
         String stateMachineName = "simpleStatusMatchingStateMachine";
 
-        SagaCostPrint.executeAndPrint("5-12", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 1);
-            paramMap.put("barThrowException", "true");
+        SagaCostPrint.executeAndPrint(
+                "5-12",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 1);
+                    paramMap.put("barThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertNotNull(inst.getException());
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
-        });
+                    Assertions.assertNotNull(inst.getException());
+                    Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                });
     }
 
     @Test
     public void testCompensationStateMachine() throws Exception {
         String stateMachineName = "simpleCompensationStateMachine";
 
-        SagaCostPrint.executeAndPrint("5-13", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 1);
-            paramMap.put("barThrowException", "true");
+        SagaCostPrint.executeAndPrint(
+                "5-13",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 1);
+                    paramMap.put("barThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
+                });
     }
 
     @Test
     public void testSubStateMachine() throws Exception {
         String stateMachineName = "simpleStateMachineWithCompensationAndSubMachine";
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-14", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 2);
-            paramMap.put("barThrowException", "true");
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-14",
+                        () -> {
+                            Map<String, Object> paramMap = new HashMap<>(2);
+                            paramMap.put("a", 2);
+                            paramMap.put("barThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-15", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 2);
-            paramMap.put("barThrowException", "false");
+        SagaCostPrint.executeAndPrint(
+                "5-15",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 2);
+                    paramMap.put("barThrowException", "false");
 
-            StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
+                    StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                });
     }
 
     @Test
     public void testSubStateMachineWithLayout() throws Exception {
         String stateMachineName = "simpleStateMachineWithCompensationAndSubMachine_layout";
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-16", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 2);
-            paramMap.put("barThrowException", "true");
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-16",
+                        () -> {
+                            Map<String, Object> paramMap = new HashMap<>(2);
+                            paramMap.put("a", 2);
+                            paramMap.put("barThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-17", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 2);
-            paramMap.put("barThrowException", "false");
+        SagaCostPrint.executeAndPrint(
+                "5-17",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 2);
+                    paramMap.put("barThrowException", "false");
 
-            StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
+                    StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                });
     }
 
     @Test
     public void testForwardSubStateMachine() throws Exception {
         String stateMachineName = "simpleStateMachineWithCompensationAndSubMachine";
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-18", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 2);
-            paramMap.put("fooThrowException", "true");
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-18",
+                        () -> {
+                            Map<String, Object> paramMap = new HashMap<>(2);
+                            paramMap.put("a", 2);
+                            paramMap.put("fooThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-19", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 2);
-            paramMap.put("fooThrowException", "false");
+        SagaCostPrint.executeAndPrint(
+                "5-19",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 2);
+                    paramMap.put("fooThrowException", "false");
 
-            StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
+                    StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                });
     }
 
     @Test
     public void testUserDefCompensateSubStateMachine() throws Exception {
         String stateMachineName = "simpleStateMachineWithUseDefCompensationSubMachine";
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-26", () -> {
-            Map<String, Object> paramMap = new HashMap<>(3);
-            paramMap.put("a", 2);
-            paramMap.put("barThrowException", "true");
-            paramMap.put("compensateFooThrowException", "true");
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-26",
+                        () -> {
+                            Map<String, Object> paramMap = new HashMap<>(3);
+                            paramMap.put("a", 2);
+                            paramMap.put("barThrowException", "true");
+                            paramMap.put("compensateFooThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-27", () -> {
-            Map<String, Object> paramMap = new HashMap<>(3);
-            paramMap.put("a", 2);
-            paramMap.put("barThrowException", "true");
-            paramMap.put("compensateFooThrowException", "false");
+        SagaCostPrint.executeAndPrint(
+                "5-27",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(3);
+                    paramMap.put("a", 2);
+                    paramMap.put("barThrowException", "true");
+                    paramMap.put("compensateFooThrowException", "false");
 
-            StateMachineInstance inst = stateMachineEngine.compensate(inst0.getId(), paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.compensate(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
+                });
     }
 
     @Test
     public void testCommitRetryingThenRetryCommitted() throws Exception {
         String stateMachineName = "simpleCompensationStateMachineForRecovery";
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-28", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 1);
-            paramMap.put("fooThrowException", "true");
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-28",
+                        () -> {
+                            Map<String, Object> paramMap = new HashMap<>(2);
+                            paramMap.put("a", 1);
+                            paramMap.put("fooThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-29", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 1);
-            paramMap.put("fooThrowException", "false");
+        SagaCostPrint.executeAndPrint(
+                "5-29",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("a", 1);
+                    paramMap.put("fooThrowException", "false");
 
-            StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
+                    StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                });
     }
 
     @Test
     public void testCommitRetryingThenRetryRollbacked() throws Exception {
         String stateMachineName = "simpleCompensationStateMachineForRecovery";
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-30", () -> {
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("a", 1);
-            paramMap.put("fooThrowException", "true");
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-30",
+                        () -> {
+                            Map<String, Object> paramMap = new HashMap<>(2);
+                            paramMap.put("a", 1);
+                            paramMap.put("fooThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-31", () -> {
-            Map<String, Object> paramMap = new HashMap<>(3);
-            paramMap.put("a", 1);
-            paramMap.put("fooThrowException", "false");
-            paramMap.put("barThrowException", "true");
+        SagaCostPrint.executeAndPrint(
+                "5-31",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(3);
+                    paramMap.put("a", 1);
+                    paramMap.put("fooThrowException", "false");
+                    paramMap.put("barThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
+                    StateMachineInstance inst = stateMachineEngine.forward(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
+                });
     }
 
     @Test
     public void testRollbackRetryingThenRetryRollbacked() throws Exception {
         String stateMachineName = "simpleCompensationStateMachineForRecovery";
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-32", () -> {
-            Map<String, Object> paramMap = new HashMap<>(3);
-            paramMap.put("a", 1);
-            paramMap.put("barThrowException", "true");
-            paramMap.put("compensateFooThrowException", "true");
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-32",
+                        () -> {
+                            Map<String, Object> paramMap = new HashMap<>(3);
+                            paramMap.put("a", 1);
+                            paramMap.put("barThrowException", "true");
+                            paramMap.put("compensateFooThrowException", "true");
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getCompensationStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(
+                                    ExecutionStatus.UN, inst.getCompensationStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-33", () -> {
-            Map<String, Object> paramMap = new HashMap<>(3);
-            paramMap.put("a", 1);
-            paramMap.put("barThrowException", "false");
-            paramMap.put("compensateFooThrowException", "false");
+        SagaCostPrint.executeAndPrint(
+                "5-33",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(3);
+                    paramMap.put("a", 1);
+                    paramMap.put("barThrowException", "false");
+                    paramMap.put("compensateFooThrowException", "false");
 
-            StateMachineInstance inst = stateMachineEngine.compensate(inst0.getId(), paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.compensate(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
+                });
     }
 
     @Test
@@ -395,69 +478,87 @@ public class StateMachineDBMockServerTests {
         paramMap.put("barThrowException", "true");
         paramMap.put("compensateFooThrowException", "true");
 
-        StateMachineInstance inst0 = SagaCostPrint.executeAndPrint("5-34", () -> {
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+        StateMachineInstance inst0 =
+                SagaCostPrint.executeAndPrint(
+                        "5-34",
+                        () -> {
+                            StateMachineInstance inst =
+                                    stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getCompensationStatus());
+                            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                            Assertions.assertEquals(
+                                    ExecutionStatus.UN, inst.getCompensationStatus());
 
-            return inst;
-        });
+                            return inst;
+                        });
 
-        SagaCostPrint.executeAndPrint("5-35", () -> {
-            StateMachineInstance inst = stateMachineEngine.compensate(inst0.getId(), paramMap);
+        SagaCostPrint.executeAndPrint(
+                "5-35",
+                () -> {
+                    StateMachineInstance inst =
+                            stateMachineEngine.compensate(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
-            Assertions.assertEquals(ExecutionStatus.UN, inst.getCompensationStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.UN, inst.getStatus());
+                    Assertions.assertEquals(ExecutionStatus.UN, inst.getCompensationStatus());
+                });
 
         paramMap.put("barThrowException", "false");
         paramMap.put("compensateFooThrowException", "false");
-        SagaCostPrint.executeAndPrint("5-36", () -> {
-            StateMachineInstance inst = stateMachineEngine.compensate(inst0.getId(), paramMap);
+        SagaCostPrint.executeAndPrint(
+                "5-36",
+                () -> {
+                    StateMachineInstance inst =
+                            stateMachineEngine.compensate(inst0.getId(), paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getCompensationStatus());
+                });
     }
 
     @Test
     public void testStateMachineWithComplexParams() throws Exception {
         String stateMachineName = "simpleStateMachineWithComplexParamsJackson";
 
-        SagaCostPrint.executeAndPrint("5-37", () -> {
-            People people = new People();
-            people.setName("lilei");
-            people.setAge(18);
+        SagaCostPrint.executeAndPrint(
+                "5-37",
+                () -> {
+                    People people = new People();
+                    people.setName("lilei");
+                    people.setAge(18);
 
-            Engineer engineer = new Engineer();
-            engineer.setName("programmer");
+                    Engineer engineer = new Engineer();
+                    engineer.setName("programmer");
 
-            Map<String, Object> paramMap = new HashMap<>(2);
-            paramMap.put("people", people);
-            paramMap.put("career", engineer);
+                    Map<String, Object> paramMap = new HashMap<>(2);
+                    paramMap.put("people", people);
+                    paramMap.put("career", engineer);
 
-            StateMachineInstance instance = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance instance =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            People peopleResult = (People)instance.getEndParams().get("complexParameterMethodResult");
-            Assertions.assertNotNull(peopleResult);
-            Assertions.assertEquals(people.getName(), peopleResult.getName());
+                    People peopleResult =
+                            (People) instance.getEndParams().get("complexParameterMethodResult");
+                    Assertions.assertNotNull(peopleResult);
+                    Assertions.assertEquals(people.getName(), peopleResult.getName());
 
-            Assertions.assertEquals(ExecutionStatus.SU, instance.getStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, instance.getStatus());
+                });
     }
 
     @Test
     public void testSimpleStateMachineWithAsyncState() throws Exception {
         String stateMachineName = "simpleStateMachineWithAsyncState";
 
-        SagaCostPrint.executeAndPrint("5-38", () -> {
-            Map<String, Object> paramMap = new HashMap<>(1);
-            paramMap.put("a", 1);
+        SagaCostPrint.executeAndPrint(
+                "5-38",
+                () -> {
+                    Map<String, Object> paramMap = new HashMap<>(1);
+                    paramMap.put("a", 1);
 
-            StateMachineInstance inst = stateMachineEngine.start(stateMachineName, null, paramMap);
+                    StateMachineInstance inst =
+                            stateMachineEngine.start(stateMachineName, null, paramMap);
 
-            Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
-        });
+                    Assertions.assertEquals(ExecutionStatus.SU, inst.getStatus());
+                });
 
         try {
             Thread.sleep(500);
@@ -468,10 +569,15 @@ public class StateMachineDBMockServerTests {
 
     @Test
     public void testReloadStateMachineInstance() throws Exception {
-        SagaCostPrint.executeAndPrint("5-39", () -> {
-            StateMachineInstance instance = stateMachineEngine.getStateMachineConfig().getStateLogStore().getStateMachineInstance(
-                    "10.15.232.93:8091:2019567124");
-            System.out.println(instance);
-        });
+        SagaCostPrint.executeAndPrint(
+                "5-39",
+                () -> {
+                    StateMachineInstance instance =
+                            stateMachineEngine
+                                    .getStateMachineConfig()
+                                    .getStateLogStore()
+                                    .getStateMachineInstance("10.15.232.93:8091:2019567124");
+                    System.out.println(instance);
+                });
     }
 }

@@ -16,6 +16,15 @@
  */
 package org.apache.seata.namingserver;
 
+import static org.apache.seata.common.NamingServerConstants.CONSTANT_GROUP;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.apache.seata.common.metadata.Cluster;
 import org.apache.seata.common.metadata.Node;
 import org.apache.seata.common.metadata.namingserver.MetaResponse;
@@ -32,18 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-
-import static org.apache.seata.common.NamingServerConstants.CONSTANT_GROUP;
-import static org.junit.jupiter.api.Assertions.*;
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class NamingControllerTest {
@@ -53,9 +50,8 @@ class NamingControllerTest {
 
     @Value("${heartbeat.period}")
     private int period;
-    @Autowired
-    NamingController namingController;
 
+    @Autowired NamingController namingController;
 
     @Test
     void mockRegister() {
@@ -110,7 +106,8 @@ class NamingControllerTest {
         String unitName2 = UUID.randomUUID().toString();
         vGroups2.put(UUID.randomUUID().toString(), unitName2);
         meatadata2.put(CONSTANT_GROUP, vGroups2);
-        namingController.registerInstance(namespace, UUID.randomUUID().toString(), unitName2, node2);
+        namingController.registerInstance(
+                namespace, UUID.randomUUID().toString(), unitName2, node2);
         MetaResponse metaResponse = namingController.discovery(vGroup, namespace);
         assertNotNull(metaResponse);
         assertNotNull(metaResponse.getClusterList());
@@ -145,7 +142,7 @@ class NamingControllerTest {
         vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
         namingController.registerInstance(namespace, clusterName, unitName, node);
-        //namingController.changeGroup(namespace, clusterName, vGroup, vGroup);
+        // namingController.changeGroup(namespace, clusterName, vGroup, vGroup);
         MetaResponse metaResponse = namingController.discovery(vGroup, namespace);
         assertNotNull(metaResponse);
         assertNotNull(metaResponse.getClusterList());
@@ -234,16 +231,19 @@ class NamingControllerTest {
         vGroups2.put(vGroup, unitName2);
         meatadata2.put(CONSTANT_GROUP, vGroups2);
         namingController.registerInstance(namespace, clusterName, unitName2, node2);
-        Thread thread = new Thread(() -> {
-            for (int i = 0; i < 5; i++) {
-                try {
-                    TimeUnit.SECONDS.sleep(5);
-                    namingController.registerInstance(namespace, clusterName, unitName, node);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+        Thread thread =
+                new Thread(
+                        () -> {
+                            for (int i = 0; i < 5; i++) {
+                                try {
+                                    TimeUnit.SECONDS.sleep(5);
+                                    namingController.registerInstance(
+                                            namespace, clusterName, unitName, node);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
         thread.start();
         MetaResponse metaResponse = namingController.discovery(vGroup, namespace);
         assertNotNull(metaResponse);
@@ -280,7 +280,8 @@ class NamingControllerTest {
         Map<String, Object> vGroups = new HashMap<>();
         vGroups.put(vGroup, unitName);
         meatadata.put(CONSTANT_GROUP, vGroups);
-        Result<String> result = namingController.registerInstance(namespace, clusterName, unitName, node);
+        Result<String> result =
+                namingController.registerInstance(namespace, clusterName, unitName, node);
         assertNotNull(result);
         assertEquals("200", result.getCode());
         assertEquals("node has registered successfully!", result.getMessage());
@@ -293,7 +294,8 @@ class NamingControllerTest {
         String namespace = "public7";
         String unitName = String.valueOf(UUID.randomUUID());
         NamingServerNode invalidNode = new NamingServerNode();
-        Result<String> result = namingController.registerInstance(namespace, clusterName, unitName, invalidNode);
+        Result<String> result =
+                namingController.registerInstance(namespace, clusterName, unitName, invalidNode);
         assertNotNull(result);
         assertEquals("500", result.getCode());
         assertEquals("node registered unsuccessfully!", result.getMessage());
@@ -315,7 +317,8 @@ class NamingControllerTest {
         ArrayList<NamingServerNode> nodeList = new ArrayList<>();
         nodeList.add(node1);
         nodeList.add(node2);
-        Result<String> result = namingController.batchRegisterInstance(namespace, clusterName, nodeList);
+        Result<String> result =
+                namingController.batchRegisterInstance(namespace, clusterName, nodeList);
         assertNotNull(result);
         assertEquals("200", result.getCode());
         assertEquals("node has registered successfully!", result.getMessage());
@@ -334,7 +337,8 @@ class NamingControllerTest {
         ArrayList<NamingServerNode> nodeList = new ArrayList<>();
         nodeList.add(node1);
         nodeList.add(invalidNode);
-        Result<String> result = namingController.batchRegisterInstance(namespace, clusterName, nodeList);
+        Result<String> result =
+                namingController.batchRegisterInstance(namespace, clusterName, nodeList);
         assertNotNull(result);
         assertEquals("500", result.getCode());
         assertEquals("node registered unsuccessfully!", result.getMessage());
@@ -348,18 +352,23 @@ class NamingControllerTest {
         String vGroup = "testAddGroupMessageSuccess";
         NamingManager mockNamingManager = Mockito.mock(NamingManager.class);
         Result<String> expectedResult = new Result<>("200", "add vGroup successfully!");
-        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName)).thenReturn(expectedResult);
+        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName))
+                .thenReturn(expectedResult);
         try {
             Field field = NamingController.class.getDeclaredField("namingManager");
             field.setAccessible(true);
             NamingManager originalNamingManager = (NamingManager) field.get(namingController);
             field.set(namingController, mockNamingManager);
             try {
-                Result<String> result = namingController.addGroup(namespace, clusterName, unitName, vGroup);
+                Result<String> result =
+                        namingController.addGroup(namespace, clusterName, unitName, vGroup);
                 assertNotNull(result);
                 assertEquals("200", result.getCode());
-                assertEquals("change vGroup " + vGroup + "to cluster " + clusterName + " successfully!", result.getMessage());
-                Mockito.verify(mockNamingManager).createGroup(namespace, vGroup, clusterName, unitName);
+                assertEquals(
+                        "change vGroup " + vGroup + "to cluster " + clusterName + " successfully!",
+                        result.getMessage());
+                Mockito.verify(mockNamingManager)
+                        .createGroup(namespace, vGroup, clusterName, unitName);
             } finally {
                 field.set(namingController, originalNamingManager);
             }
@@ -376,18 +385,21 @@ class NamingControllerTest {
         String vGroup = "testAddGroupMessageFailure";
         NamingManager mockNamingManager = Mockito.mock(NamingManager.class);
         Result<String> expectedResult = new Result<>("500", "add vGroup in new cluster failed");
-        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName)).thenReturn(expectedResult);
+        Mockito.when(mockNamingManager.createGroup(namespace, vGroup, clusterName, unitName))
+                .thenReturn(expectedResult);
         try {
             Field field = NamingController.class.getDeclaredField("namingManager");
             field.setAccessible(true);
             NamingManager originalNamingManager = (NamingManager) field.get(namingController);
             field.set(namingController, mockNamingManager);
             try {
-                Result<String> result = namingController.addGroup(namespace, clusterName, unitName, vGroup);
+                Result<String> result =
+                        namingController.addGroup(namespace, clusterName, unitName, vGroup);
                 assertNotNull(result);
                 assertEquals("500", result.getCode());
                 assertEquals("add vGroup in new cluster failed", result.getMessage());
-                Mockito.verify(mockNamingManager).createGroup(namespace, vGroup, clusterName, unitName);
+                Mockito.verify(mockNamingManager)
+                        .createGroup(namespace, vGroup, clusterName, unitName);
             } finally {
                 field.set(namingController, originalNamingManager);
             }
@@ -395,5 +407,4 @@ class NamingControllerTest {
             fail("Test failed due to exception: " + e.getMessage());
         }
     }
-
 }

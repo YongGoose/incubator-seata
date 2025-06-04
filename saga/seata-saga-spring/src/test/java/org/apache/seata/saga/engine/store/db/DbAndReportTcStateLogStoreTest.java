@@ -16,10 +16,11 @@
  */
 package org.apache.seata.saga.engine.store.db;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
 import org.apache.seata.saga.engine.config.DbStateMachineConfig;
 import org.apache.seata.saga.engine.sequence.UUIDSeqGenerator;
 import org.apache.seata.saga.proctrl.impl.ProcessContextImpl;
@@ -30,8 +31,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import static org.mockito.ArgumentMatchers.any;
 
 /**
  * DbAndReportTcStateLogStoreTest
@@ -47,7 +46,9 @@ public class DbAndReportTcStateLogStoreTest {
         dbAndReportTcStateLogStore.setSagaTransactionalTemplate(new MockSagaTransactionTemplate());
         dbAndReportTcStateLogStore.setTablePrefix("test_");
         Mockito.doReturn(new StateInstanceImpl()).when(mock).selectOne(any(), any(), any(), any());
-        Mockito.doReturn(Collections.singletonList(new StateInstanceImpl())).when(mock).selectList(any(), any(), any());
+        Mockito.doReturn(Collections.singletonList(new StateInstanceImpl()))
+                .when(mock)
+                .selectList(any(), any(), any());
         Mockito.doReturn(1).when(mock).executeUpdate(any(), any(), any());
         Mockito.doReturn(1).when(mock).executeUpdate(any(), any(), any());
     }
@@ -57,9 +58,13 @@ public class DbAndReportTcStateLogStoreTest {
         DbAndReportTcStateLogStore dbAndReportTcStateLogStore = new DbAndReportTcStateLogStore();
         StateMachineInstanceImpl stateMachineInstance = new StateMachineInstanceImpl();
         ProcessContextImpl context = new ProcessContextImpl();
-        context.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG,  new DbStateMachineConfig());
-        Assertions.assertThrows(NullPointerException.class,
-                () -> dbAndReportTcStateLogStore.recordStateMachineStarted(stateMachineInstance, context));
+        context.setVariable(
+                DomainConstants.VAR_NAME_STATEMACHINE_CONFIG, new DbStateMachineConfig());
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () ->
+                        dbAndReportTcStateLogStore.recordStateMachineStarted(
+                                stateMachineInstance, context));
     }
 
     @Test
@@ -67,9 +72,13 @@ public class DbAndReportTcStateLogStoreTest {
         DbAndReportTcStateLogStore dbAndReportTcStateLogStore = new DbAndReportTcStateLogStore();
         StateMachineInstanceImpl stateMachineInstance = new StateMachineInstanceImpl();
         ProcessContextImpl context = new ProcessContextImpl();
-        context.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG,  new DbStateMachineConfig());
-        Assertions.assertThrows(NullPointerException.class,
-                () -> dbAndReportTcStateLogStore.recordStateMachineFinished(stateMachineInstance, context));
+        context.setVariable(
+                DomainConstants.VAR_NAME_STATEMACHINE_CONFIG, new DbStateMachineConfig());
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () ->
+                        dbAndReportTcStateLogStore.recordStateMachineFinished(
+                                stateMachineInstance, context));
     }
 
     @Test
@@ -77,9 +86,13 @@ public class DbAndReportTcStateLogStoreTest {
         DbAndReportTcStateLogStore dbAndReportTcStateLogStore = new DbAndReportTcStateLogStore();
         StateMachineInstanceImpl stateMachineInstance = new StateMachineInstanceImpl();
         ProcessContextImpl context = new ProcessContextImpl();
-        context.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG,  new DbStateMachineConfig());
-        Assertions.assertThrows(NullPointerException.class,
-                () -> dbAndReportTcStateLogStore.recordStateMachineRestarted(stateMachineInstance, context));
+        context.setVariable(
+                DomainConstants.VAR_NAME_STATEMACHINE_CONFIG, new DbStateMachineConfig());
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () ->
+                        dbAndReportTcStateLogStore.recordStateMachineRestarted(
+                                stateMachineInstance, context));
     }
 
     @Test
@@ -87,8 +100,10 @@ public class DbAndReportTcStateLogStoreTest {
         DbAndReportTcStateLogStore dbAndReportTcStateLogStore = new DbAndReportTcStateLogStore();
         StateInstanceImpl stateMachineInstance = new StateInstanceImpl();
         ProcessContextImpl context = new ProcessContextImpl();
-        context.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG,  new DbStateMachineConfig());
-        Assertions.assertThrows(NullPointerException.class,
+        context.setVariable(
+                DomainConstants.VAR_NAME_STATEMACHINE_CONFIG, new DbStateMachineConfig());
+        Assertions.assertThrows(
+                NullPointerException.class,
                 () -> dbAndReportTcStateLogStore.recordStateStarted(stateMachineInstance, context));
     }
 
@@ -97,14 +112,19 @@ public class DbAndReportTcStateLogStoreTest {
         DbAndReportTcStateLogStore dbAndReportTcStateLogStore = new DbAndReportTcStateLogStore();
         StateInstanceImpl stateMachineInstance = new StateInstanceImpl();
         ProcessContextImpl context = new ProcessContextImpl();
-        context.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONFIG,  new DbStateMachineConfig());
-        Assertions.assertThrows(NullPointerException.class,
-                () -> dbAndReportTcStateLogStore.recordStateFinished(stateMachineInstance, context));
+        context.setVariable(
+                DomainConstants.VAR_NAME_STATEMACHINE_CONFIG, new DbStateMachineConfig());
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () ->
+                        dbAndReportTcStateLogStore.recordStateFinished(
+                                stateMachineInstance, context));
     }
 
     @Test
     public void testGetStateMachineInstance() {
-        Assertions.assertDoesNotThrow(() -> dbAndReportTcStateLogStore.getStateInstance("test", "test"));
+        Assertions.assertDoesNotThrow(
+                () -> dbAndReportTcStateLogStore.getStateInstance("test", "test"));
     }
 
     @Test
@@ -112,29 +132,35 @@ public class DbAndReportTcStateLogStoreTest {
         StateMachineInstanceImpl stateMachineInstance = new StateMachineInstanceImpl();
         stateMachineInstance.setStateMap(new HashMap<>());
         stateMachineInstance.setStateList(new ArrayList<>());
-        Mockito.doReturn(stateMachineInstance).when(dbAndReportTcStateLogStore).selectOne(any(), any(), any(), any());
+        Mockito.doReturn(stateMachineInstance)
+                .when(dbAndReportTcStateLogStore)
+                .selectOne(any(), any(), any(), any());
         dbAndReportTcStateLogStore.getStateMachineInstanceByBusinessKey("test", "test");
     }
 
     @Test
     public void testQueryStateMachineInstanceByParentId() {
-        Assertions.assertDoesNotThrow(() -> dbAndReportTcStateLogStore.queryStateMachineInstanceByParentId("test"));
+        Assertions.assertDoesNotThrow(
+                () -> dbAndReportTcStateLogStore.queryStateMachineInstanceByParentId("test"));
     }
 
     @Test
     public void testGetStateInstance() {
-        Assertions.assertDoesNotThrow(() -> dbAndReportTcStateLogStore.getStateInstance("test", "test"));
+        Assertions.assertDoesNotThrow(
+                () -> dbAndReportTcStateLogStore.getStateInstance("test", "test"));
     }
 
     @Test
     public void testQueryStateInstanceListByMachineInstanceId() {
-        Assertions.assertDoesNotThrow(() -> dbAndReportTcStateLogStore.queryStateInstanceListByMachineInstanceId("test"));
+        Assertions.assertDoesNotThrow(
+                () -> dbAndReportTcStateLogStore.queryStateInstanceListByMachineInstanceId("test"));
     }
 
     @Test
     public void testClearUp() {
         ProcessContextImpl context = new ProcessContextImpl();
-        context.setVariable(DomainConstants.VAR_NAME_STATEMACHINE_INST, new StateMachineInstanceImpl());
+        context.setVariable(
+                DomainConstants.VAR_NAME_STATEMACHINE_INST, new StateMachineInstanceImpl());
         Assertions.assertDoesNotThrow(() -> dbAndReportTcStateLogStore.clearUp(context));
     }
 }

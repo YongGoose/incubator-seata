@@ -48,11 +48,10 @@ public class AppTest {
         TMClient.init(APPLICATION_ID, TX_SERVICE_GROUP);
         RMClient.init(APPLICATION_ID, TX_SERVICE_GROUP);
 
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-                "basic-test-context.xml");
+        ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("basic-test-context.xml");
 
-        final JdbcTemplate jdbcTemplate = (JdbcTemplate) context
-                .getBean("jdbcTemplate");
+        final JdbcTemplate jdbcTemplate = (JdbcTemplate) context.getBean("jdbcTemplate");
 
         jdbcTemplate.update("delete from undo_log");
         jdbcTemplate.update("delete from user0");
@@ -61,41 +60,43 @@ public class AppTest {
         final MyBusinessException bizException = new MyBusinessException("mock bizException");
         TransactionalTemplate transactionalTemplate = new TransactionalTemplate();
         try {
-            transactionalTemplate.execute(new TransactionalExecutor() {
-                @Override
-                public Object execute() throws Throwable {
-                    if (LOGGER.isInfoEnabled()) {
-                        LOGGER.info("Exception Rollback Business Begin ...");
-                    }
-                    jdbcTemplate.update("update user0 set name = 'xxx' where id = ?", new Object[]{1});
-                    jdbcTemplate.update("insert into user1 (id, name, gmt) values (1, 'user1', '2019-01-01')");
-                    throw bizException;
-                }
+            transactionalTemplate.execute(
+                    new TransactionalExecutor() {
+                        @Override
+                        public Object execute() throws Throwable {
+                            if (LOGGER.isInfoEnabled()) {
+                                LOGGER.info("Exception Rollback Business Begin ...");
+                            }
+                            jdbcTemplate.update(
+                                    "update user0 set name = 'xxx' where id = ?", new Object[] {1});
+                            jdbcTemplate.update(
+                                    "insert into user1 (id, name, gmt) values (1, 'user1',"
+                                            + " '2019-01-01')");
+                            throw bizException;
+                        }
 
-                @Override
-                public TransactionInfo getTransactionInfo() {
-                    TransactionInfo txInfo = new TransactionInfo();
-                    txInfo.setTimeOut(TX_TIME_OUT);
-                    txInfo.setName(TX_NAME);
-                    return txInfo;
-                }
-
-            });
+                        @Override
+                        public TransactionInfo getTransactionInfo() {
+                            TransactionInfo txInfo = new TransactionInfo();
+                            txInfo.setTimeOut(TX_TIME_OUT);
+                            txInfo.setName(TX_NAME);
+                            return txInfo;
+                        }
+                    });
         } catch (TransactionalExecutor.ExecutionException e) {
             TransactionalExecutor.Code code = e.getCode();
             if (code == TransactionalExecutor.Code.RollbackDone) {
                 Throwable businessEx = e.getOriginalException();
                 if (businessEx instanceof MyBusinessException) {
-                    Assertions.assertEquals(((MyBusinessException) businessEx).getBusinessErrorCode(),
+                    Assertions.assertEquals(
+                            ((MyBusinessException) businessEx).getBusinessErrorCode(),
                             bizException.businessErrorCode);
                 }
             } else {
                 Assertions.assertFalse(false, "Not expected," + e.getMessage());
-
             }
         }
         new ApplicationKeeper(context).keep();
-
     }
 
     private static class MyBusinessException extends Exception {

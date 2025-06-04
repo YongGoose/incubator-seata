@@ -16,6 +16,11 @@
  */
 package org.apache.seata.metrics.exporter.prometheus;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import org.apache.seata.metrics.Id;
 import org.apache.seata.metrics.Measurement;
 import org.apache.seata.metrics.registry.compact.CompactTimer;
@@ -24,15 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
 public class CompactTimerTest {
-    @Mock
-    private Id id;
+    @Mock private Id id;
 
     private CompactTimer compactTimer;
 

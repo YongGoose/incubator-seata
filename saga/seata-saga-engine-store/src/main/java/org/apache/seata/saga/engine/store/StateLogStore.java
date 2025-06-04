@@ -17,7 +17,6 @@
 package org.apache.seata.saga.engine.store;
 
 import java.util.List;
-
 import org.apache.seata.saga.proctrl.ProcessContext;
 import org.apache.seata.saga.statelang.domain.StateInstance;
 import org.apache.seata.saga.statelang.domain.StateMachineInstance;

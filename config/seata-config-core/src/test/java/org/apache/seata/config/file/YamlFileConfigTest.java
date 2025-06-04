@@ -16,24 +16,25 @@
  */
 package org.apache.seata.config.file;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.io.IOException;
-
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class YamlFileConfigTest {
 
     @Test
     void getString() throws IOException {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            YamlFileConfig config = new YamlFileConfig(new File("registry-test-yaml.yml"), "");
-            config.getString("registry.type");
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    YamlFileConfig config =
+                            new YamlFileConfig(new File("registry-test-yaml.yml"), "");
+                    config.getString("registry.type");
+                });
 
-        YamlFileConfig config = new YamlFileConfig(new File("src/test/resources/registry-test-yaml.yml"), "");
+        YamlFileConfig config =
+                new YamlFileConfig(new File("src/test/resources/registry-test-yaml.yml"), "");
         Assertions.assertEquals("file", config.getString("registry.type"));
         Assertions.assertEquals("file.conf", config.getString("registry.file.name"));
 

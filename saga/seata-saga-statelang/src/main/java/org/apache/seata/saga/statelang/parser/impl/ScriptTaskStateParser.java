@@ -16,18 +16,18 @@
  */
 package org.apache.seata.saga.statelang.parser.impl;
 
+import java.util.Map;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.saga.statelang.domain.ScriptTaskState;
 import org.apache.seata.saga.statelang.domain.impl.ScriptTaskStateImpl;
 import org.apache.seata.saga.statelang.parser.StateParser;
 
-import java.util.Map;
-
 /**
  * ScriptTaskState parser
  *
  */
-public class ScriptTaskStateParser extends AbstractTaskStateParser implements StateParser<ScriptTaskState> {
+public class ScriptTaskStateParser extends AbstractTaskStateParser
+        implements StateParser<ScriptTaskState> {
 
     @Override
     public ScriptTaskState parse(Object node) {
@@ -36,12 +36,12 @@ public class ScriptTaskStateParser extends AbstractTaskStateParser implements St
 
         parseTaskAttributes(scriptTaskState, node);
 
-        Map<String, Object> nodeMap = (Map<String, Object>)node;
+        Map<String, Object> nodeMap = (Map<String, Object>) node;
         String scriptType = (String) nodeMap.get("ScriptType");
         if (StringUtils.isNotBlank(scriptType)) {
             scriptTaskState.setScriptType(scriptType);
         }
-        scriptTaskState.setScriptContent((String)nodeMap.get("ScriptContent"));
+        scriptTaskState.setScriptContent((String) nodeMap.get("ScriptContent"));
 
         scriptTaskState.setForCompensation(false);
         scriptTaskState.setForUpdate(false);

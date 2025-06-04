@@ -16,7 +16,6 @@
  */
 package org.apache.seata.integration.tx.api.fence.hook;
 
-
 import org.apache.seata.rm.tcc.api.BusinessActionContext;
 
 public interface TccHook {
@@ -24,30 +23,36 @@ public interface TccHook {
     /**
      * before tcc prepare
      */
-    void beforeTccPrepare(String xid, Long branchId, String actionName, BusinessActionContext context);
+    void beforeTccPrepare(
+            String xid, Long branchId, String actionName, BusinessActionContext context);
 
     /**
      * after tcc prepare
      */
-    void afterTccPrepare(String xid, Long branchId, String actionName, BusinessActionContext context);
+    void afterTccPrepare(
+            String xid, Long branchId, String actionName, BusinessActionContext context);
 
     /**
      * before tcc commit
      */
-    void beforeTccCommit(String xid, Long branchId, String actionName, BusinessActionContext context);
+    void beforeTccCommit(
+            String xid, Long branchId, String actionName, BusinessActionContext context);
 
     /**
      * after tcc commit
      */
-    void afterTccCommit(String xid, Long branchId, String actionName, BusinessActionContext context);
+    void afterTccCommit(
+            String xid, Long branchId, String actionName, BusinessActionContext context);
 
     /**
      * before tcc rollback
      */
-    void beforeTccRollback(String xid, Long branchId, String actionName, BusinessActionContext context);
+    void beforeTccRollback(
+            String xid, Long branchId, String actionName, BusinessActionContext context);
 
     /**
      * after tcc rollback
      */
-    void afterTccRollback(String xid, Long branchId, String actionName, BusinessActionContext context);
+    void afterTccRollback(
+            String xid, Long branchId, String actionName, BusinessActionContext context);
 }

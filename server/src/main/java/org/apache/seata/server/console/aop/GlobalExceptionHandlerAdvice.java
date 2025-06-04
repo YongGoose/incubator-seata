@@ -30,7 +30,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice(basePackages = "org.apache.seata.server.console.controller")
 @Component
 public class GlobalExceptionHandlerAdvice {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandlerAdvice.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(GlobalExceptionHandlerAdvice.class);
 
     @ExceptionHandler(ConsoleException.class)
     @ResponseBody

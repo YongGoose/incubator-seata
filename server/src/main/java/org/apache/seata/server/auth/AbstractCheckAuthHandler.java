@@ -16,20 +16,23 @@
  */
 package org.apache.seata.server.auth;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_SERVER_ENABLE_CHECK_AUTH;
+
 import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.core.constants.ConfigurationKeys;
 import org.apache.seata.core.protocol.RegisterRMRequest;
 import org.apache.seata.core.protocol.RegisterTMRequest;
 import org.apache.seata.core.rpc.RegisterCheckAuthHandler;
 
-import static org.apache.seata.common.DefaultValues.DEFAULT_SERVER_ENABLE_CHECK_AUTH;
-
 /**
  */
 public abstract class AbstractCheckAuthHandler implements RegisterCheckAuthHandler {
 
-    private static final Boolean ENABLE_CHECK_AUTH = ConfigurationFactory.getInstance().getBoolean(
-        ConfigurationKeys.SERVER_ENABLE_CHECK_AUTH, DEFAULT_SERVER_ENABLE_CHECK_AUTH);
+    private static final Boolean ENABLE_CHECK_AUTH =
+            ConfigurationFactory.getInstance()
+                    .getBoolean(
+                            ConfigurationKeys.SERVER_ENABLE_CHECK_AUTH,
+                            DEFAULT_SERVER_ENABLE_CHECK_AUTH);
 
     @Override
     public boolean regTransactionManagerCheckAuth(RegisterTMRequest request) {

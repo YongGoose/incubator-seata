@@ -16,11 +16,12 @@
  */
 package org.apache.seata.core.context;
 
-import java.util.Map;
+import static org.apache.seata.core.model.BranchType.AT;
+import static org.apache.seata.core.model.BranchType.XA;
 
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.apache.seata.common.Constants;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.util.StringUtils;
@@ -29,17 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import static org.apache.seata.core.model.BranchType.AT;
-import static org.apache.seata.core.model.BranchType.XA;
-
 /**
  * The type Root context.
  *
  */
 public class RootContext {
 
-    private RootContext() {
-    }
+    private RootContext() {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RootContext.class);
 
@@ -80,12 +77,14 @@ public class RootContext {
     /**
      * The constant HIDDEN_KEY_BRANCH_TYPE for sofa-rpc integration.
      */
-    public static final String HIDDEN_KEY_BRANCH_TYPE = Constants.HIDE_KEY_PREFIX_CHAR + KEY_BRANCH_TYPE;
+    public static final String HIDDEN_KEY_BRANCH_TYPE =
+            Constants.HIDE_KEY_PREFIX_CHAR + KEY_BRANCH_TYPE;
 
     /**
      * The constant KEY_GLOBAL_LOCK_FLAG, VALUE_GLOBAL_LOCK_FLAG
      */
     public static final String KEY_GLOBAL_LOCK_FLAG = "TX_LOCK";
+
     public static final Boolean VALUE_GLOBAL_LOCK_FLAG = true;
 
     private static ContextCore CONTEXT_HOLDER = ContextCoreLoader.load();
@@ -94,12 +93,24 @@ public class RootContext {
 
     public static void setDefaultBranchType(BranchType defaultBranchType) {
         if (defaultBranchType != AT && defaultBranchType != XA) {
-            throw new IllegalArgumentException("The default branch type must be " + AT + " or " + XA + "." +
-                " the value of the argument is: " + defaultBranchType);
+            throw new IllegalArgumentException(
+                    "The default branch type must be "
+                            + AT
+                            + " or "
+                            + XA
+                            + "."
+                            + " the value of the argument is: "
+                            + defaultBranchType);
         }
-        if (DEFAULT_BRANCH_TYPE != null && DEFAULT_BRANCH_TYPE != defaultBranchType && LOGGER.isWarnEnabled()) {
-            LOGGER.warn("The `{}.DEFAULT_BRANCH_TYPE` has been set repeatedly. The value changes from {} to {}",
-                RootContext.class.getSimpleName(), DEFAULT_BRANCH_TYPE, defaultBranchType);
+        if (DEFAULT_BRANCH_TYPE != null
+                && DEFAULT_BRANCH_TYPE != defaultBranchType
+                && LOGGER.isWarnEnabled()) {
+            LOGGER.warn(
+                    "The `{}.DEFAULT_BRANCH_TYPE` has been set repeatedly. The value changes from"
+                            + " {} to {}",
+                    RootContext.class.getSimpleName(),
+                    DEFAULT_BRANCH_TYPE,
+                    defaultBranchType);
         }
         DEFAULT_BRANCH_TYPE = defaultBranchType;
     }
@@ -139,7 +150,7 @@ public class RootContext {
     }
 
     public static void setTimeout(Integer timeout) {
-        CONTEXT_HOLDER.put(KEY_TIMEOUT,timeout);
+        CONTEXT_HOLDER.put(KEY_TIMEOUT, timeout);
     }
 
     /**
@@ -150,7 +161,7 @@ public class RootContext {
             LOGGER.debug("Local Transaction Global Lock support enabled");
         }
 
-        //just put something not null
+        // just put something not null
         CONTEXT_HOLDER.put(KEY_GLOBAL_LOCK_FLAG, VALUE_GLOBAL_LOCK_FLAG);
     }
 
@@ -217,7 +228,7 @@ public class RootContext {
             if (branchType != null) {
                 return branchType;
             }
-            //Returns the default branch type.
+            // Returns the default branch type.
             return DEFAULT_BRANCH_TYPE != null ? DEFAULT_BRANCH_TYPE : BranchType.AT;
         }
         return null;
@@ -267,8 +278,8 @@ public class RootContext {
      */
     public static void assertNotInGlobalTransaction() {
         if (inGlobalTransaction()) {
-            throw new ShouldNeverHappenException(String.format("expect has not xid, but was:%s",
-                CONTEXT_HOLDER.get(KEY_XID)));
+            throw new ShouldNeverHappenException(
+                    String.format("expect has not xid, but was:%s", CONTEXT_HOLDER.get(KEY_XID)));
         }
     }
 

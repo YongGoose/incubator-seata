@@ -57,7 +57,8 @@ public enum ExecutionStatus {
         return statusString;
     }
 
-    public static ExecutionStatus wrap(org.apache.seata.saga.statelang.domain.ExecutionStatus target) {
+    public static ExecutionStatus wrap(
+            org.apache.seata.saga.statelang.domain.ExecutionStatus target) {
         if (target == null) {
             return null;
         }

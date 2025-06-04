@@ -22,12 +22,14 @@ import org.apache.seata.sqlparser.util.DbTypeParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
 public class DruidDbTypeParserTest {
     @Test
     public void testDruidDbTypeParserLoading() {
         String jdbcUrl = "jdbc:mysql://127.0.0.1:3306/seata";
-        DruidDelegatingDbTypeParser dbTypeParser = (DruidDelegatingDbTypeParser) EnhancedServiceLoader.load(DbTypeParser.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
+        DruidDelegatingDbTypeParser dbTypeParser =
+                (DruidDelegatingDbTypeParser)
+                        EnhancedServiceLoader.load(
+                                DbTypeParser.class, SqlParserType.SQL_PARSER_TYPE_DRUID);
         Assertions.assertNotNull(dbTypeParser);
         Assertions.assertEquals(DruidDelegatingDbTypeParser.class, dbTypeParser.getClass());
         String dbType = dbTypeParser.parseFromJdbcUrl(jdbcUrl);
@@ -35,6 +37,7 @@ public class DruidDbTypeParserTest {
 
         DruidLoader druidLoaderForTest = new DruidLoaderForTest();
         dbTypeParser.setClassLoader(new DruidIsolationClassLoader(druidLoaderForTest));
-        Assertions.assertThrows(NoClassDefFoundError.class, () -> dbTypeParser.parseFromJdbcUrl(jdbcUrl));
+        Assertions.assertThrows(
+                NoClassDefFoundError.class, () -> dbTypeParser.parseFromJdbcUrl(jdbcUrl));
     }
 }

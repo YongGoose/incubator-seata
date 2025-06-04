@@ -74,23 +74,17 @@ import org.mockito.MockitoAnnotations;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class EtcdRegistryServiceImplMockTest {
 
-    @Mock
-    private Client mockClient;
+    @Mock private Client mockClient;
 
-    @Mock
-    private KV mockKVClient;
+    @Mock private KV mockKVClient;
 
-    @Mock
-    private Lease mockLeaseClient;
+    @Mock private Lease mockLeaseClient;
 
-    @Mock
-    private Watch mockWatchClient;
+    @Mock private Watch mockWatchClient;
 
-    @Mock
-    private Watch.Watcher mockWatcher;
+    @Mock private Watch.Watcher mockWatcher;
 
-    @Mock
-    Configuration configuration;
+    @Mock Configuration configuration;
 
     private EtcdRegistryServiceImpl registryService;
     private ExecutorService executorService;
@@ -110,7 +104,8 @@ public class EtcdRegistryServiceImplMockTest {
         when(mockClient.getKVClient()).thenReturn(mockKVClient);
 
         // inject spy executorService
-        Field executorServiceField = EtcdRegistryServiceImpl.class.getDeclaredField("executorService");
+        Field executorServiceField =
+                EtcdRegistryServiceImpl.class.getDeclaredField("executorService");
         executorServiceField.setAccessible(true);
         executorService = spy((ExecutorService) executorServiceField.get(registryService));
         executorServiceField.set(registryService, executorService);
@@ -140,10 +135,12 @@ public class EtcdRegistryServiceImplMockTest {
         // Mock lease grant response
         LeaseGrantResponse leaseGrantResponse = mock(LeaseGrantResponse.class);
         when(leaseGrantResponse.getID()).thenReturn(leaseId);
-        when(mockLeaseClient.grant(anyLong())).thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
+        when(mockLeaseClient.grant(anyLong()))
+                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
 
         // Mock put response
-        when(mockKVClient.put(any(), any(), any(PutOption.class))).thenReturn(CompletableFuture.completedFuture(null));
+        when(mockKVClient.put(any(), any(), any(PutOption.class)))
+                .thenReturn(CompletableFuture.completedFuture(null));
 
         // timeToLive response
         io.etcd.jetcd.api.LeaseTimeToLiveResponse timeToLiveResponseApi =
@@ -152,13 +149,17 @@ public class EtcdRegistryServiceImplMockTest {
                         .setTTL(6)
                         .build();
         when(mockLeaseClient.timeToLive(eq(leaseId), any()))
-                .thenReturn(CompletableFuture.completedFuture(new LeaseTimeToLiveResponse(timeToLiveResponseApi)));
+                .thenReturn(
+                        CompletableFuture.completedFuture(
+                                new LeaseTimeToLiveResponse(timeToLiveResponseApi)));
 
         // keepAlive response
         io.etcd.jetcd.api.LeaseKeepAliveResponse leaseKeepAliveResponse =
                 io.etcd.jetcd.api.LeaseKeepAliveResponse.newBuilder().build();
         when(mockLeaseClient.keepAliveOnce(eq(leaseId)))
-                .thenReturn(CompletableFuture.completedFuture(new LeaseKeepAliveResponse(leaseKeepAliveResponse)));
+                .thenReturn(
+                        CompletableFuture.completedFuture(
+                                new LeaseKeepAliveResponse(leaseKeepAliveResponse)));
 
         // Act
         registryService.register(address);
@@ -192,44 +193,49 @@ public class EtcdRegistryServiceImplMockTest {
         when(mockKVClient.get(any(ByteSequence.class), any(GetOption.class)))
                 .thenReturn(CompletableFuture.completedFuture(mockGetResponse));
 
-        try (MockedStatic<ConfigurationFactory> mockConfig = Mockito.mockStatic(ConfigurationFactory.class)) {
+        try (MockedStatic<ConfigurationFactory> mockConfig =
+                Mockito.mockStatic(ConfigurationFactory.class)) {
             // 1. run success case
             mockConfig.when(ConfigurationFactory::getInstance).thenReturn(configuration);
             when(configuration.getConfig("service.vgroupMapping.default_tx_group"))
                     .thenReturn(CLUSTER_NAME);
             List<InetSocketAddress> lookup = registryService.lookup(DEFAULT_TX_GROUP);
-            List<String> lookupServices = lookup.stream()
-                    .map(address -> address.getHostString() + ":" + address.getPort())
-                    .collect(Collectors.toList());
+            List<String> lookupServices =
+                    lookup.stream()
+                            .map(address -> address.getHostString() + ":" + address.getPort())
+                            .collect(Collectors.toList());
 
             // assert
             assertEquals(lookupServices, services);
 
             // 2. config not found case
             when(configuration.getConfig(any())).thenReturn(null);
-            Assertions.assertThrows(ConfigNotFoundException.class, () -> {
-                registryService.lookup(DEFAULT_TX_GROUP);
-            });
+            Assertions.assertThrows(
+                    ConfigNotFoundException.class,
+                    () -> {
+                        registryService.lookup(DEFAULT_TX_GROUP);
+                    });
         }
     }
 
     private GetResponse createMockGetResponse(List<String> addresses) {
         // Create mock ResponseHeader
-        ResponseHeader mockHeader =
-                ResponseHeader.newBuilder().setRevision(12345L).build();
+        ResponseHeader mockHeader = ResponseHeader.newBuilder().setRevision(12345L).build();
 
         // Create mock KeyValue list
-        List<KeyValue> mockKeyValues = addresses.stream()
-                .map(address -> {
-                    KeyValue mockKeyValue = mock(KeyValue.class);
-                    when(mockKeyValue.getValue()).thenReturn(ByteSequence.from(address, UTF_8));
-                    return mockKeyValue;
-                })
-                .collect(Collectors.toList());
+        List<KeyValue> mockKeyValues =
+                addresses.stream()
+                        .map(
+                                address -> {
+                                    KeyValue mockKeyValue = mock(KeyValue.class);
+                                    when(mockKeyValue.getValue())
+                                            .thenReturn(ByteSequence.from(address, UTF_8));
+                                    return mockKeyValue;
+                                })
+                        .collect(Collectors.toList());
 
         // Create mock RangeResponse
-        RangeResponse mockRangeResponse =
-                RangeResponse.newBuilder().setHeader(mockHeader).build();
+        RangeResponse mockRangeResponse = RangeResponse.newBuilder().setHeader(mockHeader).build();
 
         // Create mock GetResponse
         GetResponse mockGetResponse = spy(new GetResponse(mockRangeResponse, ByteSequence.EMPTY));
@@ -252,10 +258,11 @@ public class EtcdRegistryServiceImplMockTest {
         CountDownLatch latch = new CountDownLatch(1);
 
         when(mockWatchClient.watch(any(), any(WatchOption.class), any(Watch.Listener.class)))
-                .thenAnswer(invocation -> {
-                    latch.countDown();
-                    return mockWatcher;
-                });
+                .thenAnswer(
+                        invocation -> {
+                            latch.countDown();
+                            return mockWatcher;
+                        });
 
         registryService.subscribe(DEFAULT_TX_GROUP, mockListener);
         latch.await(1, TimeUnit.SECONDS);

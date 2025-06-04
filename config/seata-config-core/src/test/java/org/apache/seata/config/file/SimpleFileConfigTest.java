@@ -16,11 +16,9 @@
  */
 package org.apache.seata.config.file;
 
+import java.io.File;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-
 
 class SimpleFileConfigTest {
 
@@ -28,11 +26,13 @@ class SimpleFileConfigTest {
     void getString() {
         SimpleFileConfig config = new SimpleFileConfig();
         Assertions.assertEquals(File.pathSeparator, config.getString("path.separator"));
-        
+
         config = new SimpleFileConfig(new File("file.conf"), "");
-        Assertions.assertEquals("default", config.getString("service.vgroupMapping.default_tx_group"));
-        
+        Assertions.assertEquals(
+                "default", config.getString("service.vgroupMapping.default_tx_group"));
+
         config = new SimpleFileConfig(new File("src/test/resources/file"), "file:");
-        Assertions.assertEquals("default", config.getString("service.vgroupMapping.default_tx_group"));
+        Assertions.assertEquals(
+                "default", config.getString("service.vgroupMapping.default_tx_group"));
     }
 }

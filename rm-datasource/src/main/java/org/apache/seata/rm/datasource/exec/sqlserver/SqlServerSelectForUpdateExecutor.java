@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.exec.sqlserver;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.rm.datasource.StatementProxy;
 import org.apache.seata.rm.datasource.exec.SelectForUpdateExecutor;
@@ -32,7 +31,8 @@ import org.apache.seata.sqlparser.SQLSelectRecognizer;
  *
  * @param <S> the type parameter
  */
-public class SqlServerSelectForUpdateExecutor<T, S extends Statement> extends SelectForUpdateExecutor<T, S> {
+public class SqlServerSelectForUpdateExecutor<T, S extends Statement>
+        extends SelectForUpdateExecutor<T, S> {
     /**
      * Instantiates a new Sqlserver Select for update executor.
      *
@@ -40,7 +40,10 @@ public class SqlServerSelectForUpdateExecutor<T, S extends Statement> extends Se
      * @param statementCallback the statement callback
      * @param sqlRecognizer     the sql recognizer
      */
-    public SqlServerSelectForUpdateExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback, SQLRecognizer sqlRecognizer) {
+    public SqlServerSelectForUpdateExecutor(
+            StatementProxy<S> statementProxy,
+            StatementCallback<T, S> statementCallback,
+            SQLRecognizer sqlRecognizer) {
         super(statementProxy, statementCallback, sqlRecognizer);
     }
 
@@ -48,10 +51,9 @@ public class SqlServerSelectForUpdateExecutor<T, S extends Statement> extends Se
     protected String buildSelectSQL(ArrayList<List<Object>> paramAppenderList) {
         SQLSelectRecognizer recognizer = (SQLSelectRecognizer) sqlRecognizer;
         StringBuilder selectSQLAppender = new StringBuilder("SELECT ");
-        selectSQLAppender.append(getColumnNamesInSQL(getTableMeta().getEscapePkNameList(getDbType())));
-        selectSQLAppender.append(" FROM ")
-                .append(getFromTableInSQL())
-                .append(" WITH(UPDLOCK) ");
+        selectSQLAppender.append(
+                getColumnNamesInSQL(getTableMeta().getEscapePkNameList(getDbType())));
+        selectSQLAppender.append(" FROM ").append(getFromTableInSQL()).append(" WITH(UPDLOCK) ");
         String whereCondition = buildWhereCondition(recognizer, paramAppenderList);
         String orderByCondition = buildOrderCondition(recognizer, paramAppenderList);
         String limitCondition = buildLimitCondition(recognizer, paramAppenderList);

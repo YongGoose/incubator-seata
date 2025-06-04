@@ -16,14 +16,12 @@
  */
 package org.apache.seata.tm.api.transaction;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 public class TransactionHookManagerTest {
 
@@ -56,8 +54,10 @@ public class TransactionHookManagerTest {
         TransactionHookManager.clear();
         assertThat(TransactionHookManager.getHooks()).isEmpty();
     }
+
     @Test
     public void testNPE() {
-        Assertions.assertThrows(NullPointerException.class, () -> TransactionHookManager.registerHook(null));
+        Assertions.assertThrows(
+                NullPointerException.class, () -> TransactionHookManager.registerHook(null));
     }
 }

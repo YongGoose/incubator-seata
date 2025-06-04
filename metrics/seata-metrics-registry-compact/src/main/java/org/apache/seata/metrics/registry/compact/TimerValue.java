@@ -59,7 +59,8 @@ public class TimerValue {
         if (value < 0) {
             return;
         }
-        long changeValue = unit == TimeUnit.MICROSECONDS ? value : TimeUnit.MICROSECONDS.convert(value, unit);
+        long changeValue =
+                unit == TimeUnit.MICROSECONDS ? value : TimeUnit.MICROSECONDS.convert(value, unit);
         this.count.increment();
         this.total.add(changeValue);
         this.max.accumulateAndGet(changeValue, Math::max);

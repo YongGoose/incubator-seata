@@ -21,7 +21,6 @@ import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParser;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParserBaseListener;
 import org.apache.seata.sqlparser.antlr.mysql.visit.StatementSqlVisitor;
 
-
 public class DeleteSpecificationSqlListener extends MySqlParserBaseListener {
 
     private MySqlContext sqlQueryContext;
@@ -46,7 +45,8 @@ public class DeleteSpecificationSqlListener extends MySqlParserBaseListener {
     }
 
     @Override
-    public void enterFullColumnNameExpressionAtom(MySqlParser.FullColumnNameExpressionAtomContext ctx) {
+    public void enterFullColumnNameExpressionAtom(
+            MySqlParser.FullColumnNameExpressionAtomContext ctx) {
         sqlQueryContext.addDeleteWhereColumnNames(ctx.getText());
         super.enterFullColumnNameExpressionAtom(ctx);
     }
@@ -78,5 +78,4 @@ public class DeleteSpecificationSqlListener extends MySqlParserBaseListener {
         sqlQueryContext.setWhereCondition(text);
         super.enterInPredicate(ctx);
     }
-
 }

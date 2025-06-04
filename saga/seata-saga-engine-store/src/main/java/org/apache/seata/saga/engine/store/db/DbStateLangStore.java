@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
-
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.saga.engine.store.StateLangStore;
@@ -36,22 +35,30 @@ import org.apache.seata.saga.statelang.domain.impl.StateMachineImpl;
  */
 public class DbStateLangStore extends AbstractStore implements StateLangStore {
 
-    private static final ResultSetToStateMachine RESULT_SET_TO_STATE_MACHINE = new ResultSetToStateMachine();
+    private static final ResultSetToStateMachine RESULT_SET_TO_STATE_MACHINE =
+            new ResultSetToStateMachine();
 
-    private static final StateMachineToStatement STATE_MACHINE_TO_STATEMENT = new StateMachineToStatement();
+    private static final StateMachineToStatement STATE_MACHINE_TO_STATEMENT =
+            new StateMachineToStatement();
 
     private StateLangStoreSqls stateLangStoreSqls;
 
     @Override
     public StateMachine getStateMachineById(String stateMachineId) {
-        return selectOne(stateLangStoreSqls.getGetStateMachineByIdSql(dbType), RESULT_SET_TO_STATE_MACHINE,
-            stateMachineId);
+        return selectOne(
+                stateLangStoreSqls.getGetStateMachineByIdSql(dbType),
+                RESULT_SET_TO_STATE_MACHINE,
+                stateMachineId);
     }
 
     @Override
     public StateMachine getLastVersionStateMachine(String stateMachineName, String tenantId) {
-        List<StateMachine> list = selectList(stateLangStoreSqls.getQueryStateMachinesByNameAndTenantSql(dbType),
-            RESULT_SET_TO_STATE_MACHINE, stateMachineName, tenantId);
+        List<StateMachine> list =
+                selectList(
+                        stateLangStoreSqls.getQueryStateMachinesByNameAndTenantSql(dbType),
+                        RESULT_SET_TO_STATE_MACHINE,
+                        stateMachineName,
+                        tenantId);
         if (CollectionUtils.isNotEmpty(list)) {
             return list.get(0);
         }
@@ -60,8 +67,11 @@ public class DbStateLangStore extends AbstractStore implements StateLangStore {
 
     @Override
     public boolean storeStateMachine(StateMachine stateMachine) {
-        return executeUpdate(stateLangStoreSqls.getInsertStateMachineSql(dbType), STATE_MACHINE_TO_STATEMENT,
-            stateMachine) > 0;
+        return executeUpdate(
+                        stateLangStoreSqls.getInsertStateMachineSql(dbType),
+                        STATE_MACHINE_TO_STATEMENT,
+                        stateMachine)
+                > 0;
     }
 
     @Override
@@ -94,7 +104,8 @@ public class DbStateLangStore extends AbstractStore implements StateLangStore {
 
     private static class StateMachineToStatement implements ObjectToStatement<StateMachine> {
         @Override
-        public void toStatement(StateMachine stateMachine, PreparedStatement statement) throws SQLException {
+        public void toStatement(StateMachine stateMachine, PreparedStatement statement)
+                throws SQLException {
             statement.setString(1, stateMachine.getId());
             statement.setString(2, stateMachine.getTenantId());
             statement.setString(3, stateMachine.getAppName());
@@ -104,7 +115,11 @@ public class DbStateLangStore extends AbstractStore implements StateLangStore {
             statement.setString(7, stateMachine.getVersion());
             statement.setString(8, stateMachine.getType());
             statement.setString(9, stateMachine.getContent());
-            statement.setString(10, stateMachine.getRecoverStrategy() != null ? stateMachine.getRecoverStrategy().name() : null);
+            statement.setString(
+                    10,
+                    stateMachine.getRecoverStrategy() != null
+                            ? stateMachine.getRecoverStrategy().name()
+                            : null);
             statement.setString(11, stateMachine.getComment());
         }
     }

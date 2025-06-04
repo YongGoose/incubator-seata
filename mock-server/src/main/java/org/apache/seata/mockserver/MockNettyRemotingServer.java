@@ -16,9 +16,8 @@
  */
 package org.apache.seata.mockserver;
 
-import java.util.concurrent.ThreadPoolExecutor;
-
 import io.netty.channel.Channel;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.rpc.TransactionMessageHandler;
 import org.apache.seata.core.rpc.netty.AbstractNettyRemotingServer;
@@ -70,7 +69,8 @@ public class MockNettyRemotingServer extends AbstractNettyRemotingServer {
      * @param messageExecutor   the message executor
      * @param nettyServerConfig the netty server config
      */
-    public MockNettyRemotingServer(ThreadPoolExecutor messageExecutor, NettyServerConfig nettyServerConfig) {
+    public MockNettyRemotingServer(
+            ThreadPoolExecutor messageExecutor, NettyServerConfig nettyServerConfig) {
         super(messageExecutor, nettyServerConfig);
     }
 
@@ -86,31 +86,44 @@ public class MockNettyRemotingServer extends AbstractNettyRemotingServer {
     private void registerProcessor() {
         // 1. registry on request message processor
         MockOnReqProcessor onRequestProcessor = new MockOnReqProcessor(this, handler);
-        super.registerProcessor(MessageType.TYPE_BRANCH_REGISTER, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_BRANCH_STATUS_REPORT, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_REGISTER, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_STATUS_REPORT, onRequestProcessor, messageExecutor);
         super.registerProcessor(MessageType.TYPE_GLOBAL_BEGIN, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_COMMIT, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_LOCK_QUERY, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_REPORT, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_ROLLBACK, onRequestProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_GLOBAL_STATUS, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_COMMIT, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_LOCK_QUERY, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_REPORT, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_ROLLBACK, onRequestProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_GLOBAL_STATUS, onRequestProcessor, messageExecutor);
         super.registerProcessor(MessageType.TYPE_SEATA_MERGE, onRequestProcessor, messageExecutor);
 
         // 2. registry on response message processor
-        MockOnRespProcessor onResponseProcessor = new MockOnRespProcessor(this, handler, getFutures());
-        super.registerProcessor(MessageType.TYPE_BRANCH_COMMIT_RESULT, onResponseProcessor, messageExecutor);
-        super.registerProcessor(MessageType.TYPE_BRANCH_ROLLBACK_RESULT, onResponseProcessor, messageExecutor);
+        MockOnRespProcessor onResponseProcessor =
+                new MockOnRespProcessor(this, handler, getFutures());
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_COMMIT_RESULT, onResponseProcessor, messageExecutor);
+        super.registerProcessor(
+                MessageType.TYPE_BRANCH_ROLLBACK_RESULT, onResponseProcessor, messageExecutor);
 
         // 3. registry rm reg processor
-        MockRegisterProcessor regRmProcessor = new MockRegisterProcessor(this, MockRegisterProcessor.Role.RM);
+        MockRegisterProcessor regRmProcessor =
+                new MockRegisterProcessor(this, MockRegisterProcessor.Role.RM);
         super.registerProcessor(MessageType.TYPE_REG_RM, regRmProcessor, messageExecutor);
 
         // 4. registry tm reg processor
-        MockRegisterProcessor regTmProcessor = new MockRegisterProcessor(this, MockRegisterProcessor.Role.TM);
+        MockRegisterProcessor regTmProcessor =
+                new MockRegisterProcessor(this, MockRegisterProcessor.Role.TM);
         super.registerProcessor(MessageType.TYPE_REG_CLT, regTmProcessor, null);
 
         // 5. registry heartbeat message processor
-        MockHeartbeatProcessor heartbeatMessageProcessor = new MockHeartbeatProcessor(this, handler);
+        MockHeartbeatProcessor heartbeatMessageProcessor =
+                new MockHeartbeatProcessor(this, handler);
         super.registerProcessor(MessageType.TYPE_HEARTBEAT_MSG, heartbeatMessageProcessor, null);
     }
 

@@ -16,21 +16,18 @@
  */
 package org.apache.seata.rm.datasource;
 
-import org.apache.seata.rm.datasource.DataCompareUtils;
-import org.apache.seata.rm.datasource.sql.struct.Field;
-import org.apache.seata.rm.datasource.sql.struct.Row;
-import org.apache.seata.sqlparser.struct.TableMeta;
-import org.apache.seata.rm.datasource.sql.struct.TableRecords;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import java.sql.JDBCType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.seata.rm.datasource.sql.struct.Field;
+import org.apache.seata.rm.datasource.sql.struct.Row;
+import org.apache.seata.rm.datasource.sql.struct.TableRecords;
+import org.apache.seata.sqlparser.struct.TableMeta;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class DataCompareUtilsTest {
 
@@ -54,15 +51,24 @@ public class DataCompareUtilsTest {
         Assertions.assertTrue(DataCompareUtils.isFieldEquals(field0, field10).getResult());
         Assertions.assertTrue(DataCompareUtils.isFieldEquals(field4, field11).getResult());
 
-        Field field12 = new Field("information", JDBCType.BLOB.getVendorTypeNumber(), "hello world".getBytes());
-        Field field13 = new Field("information", JDBCType.BLOB.getVendorTypeNumber(), "hello world".getBytes());
+        Field field12 =
+                new Field(
+                        "information",
+                        JDBCType.BLOB.getVendorTypeNumber(),
+                        "hello world".getBytes());
+        Field field13 =
+                new Field(
+                        "information",
+                        JDBCType.BLOB.getVendorTypeNumber(),
+                        "hello world".getBytes());
         Assertions.assertTrue(DataCompareUtils.isFieldEquals(field12, field13).getResult());
     }
 
     @Test
     public void isRecordsEquals() {
         TableMeta tableMeta = Mockito.mock(TableMeta.class);
-        Mockito.when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Arrays.asList(new String[]{"pk"}));
+        Mockito.when(tableMeta.getPrimaryKeyOnlyName())
+                .thenReturn(Arrays.asList(new String[] {"pk"}));
         Mockito.when(tableMeta.getTableName()).thenReturn("table_name");
 
         TableRecords beforeImage = new TableRecords();
@@ -71,8 +77,8 @@ public class DataCompareUtilsTest {
 
         List<Row> rows = new ArrayList<>();
         Row row = new Row();
-        Field field01 = addField(row,"pk", 1, "12345");
-        Field field02 = addField(row,"age", 1, "18");
+        Field field01 = addField(row, "pk", 1, "12345");
+        Field field02 = addField(row, "age", 1, "18");
         rows.add(row);
         beforeImage.setRows(rows);
 
@@ -83,44 +89,51 @@ public class DataCompareUtilsTest {
         afterImage.setTableName("table_name1"); // wrong table name
         afterImage.setTableMeta(tableMeta);
 
-        Assertions.assertFalse(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
+        Assertions.assertFalse(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
         afterImage.setTableName("table_name");
 
-        Assertions.assertFalse(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
+        Assertions.assertFalse(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
 
         List<Row> rows2 = new ArrayList<>();
         Row row2 = new Row();
-        Field field11 = addField(row2,"pk", 1, "12345");
-        Field field12 = addField(row2,"age", 1, "18");
+        Field field11 = addField(row2, "pk", 1, "12345");
+        Field field12 = addField(row2, "age", 1, "18");
         rows2.add(row2);
         afterImage.setRows(rows2);
-        Assertions.assertTrue(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
+        Assertions.assertTrue(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
 
         field11.setValue("23456");
-        Assertions.assertFalse(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
+        Assertions.assertFalse(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
         field11.setValue("12345");
 
         field12.setName("sex");
-        Assertions.assertFalse(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
+        Assertions.assertFalse(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
         field12.setName("age");
 
         field12.setValue("19");
-        Assertions.assertFalse(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
+        Assertions.assertFalse(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
         field12.setName("18");
 
         Field field3 = new Field("pk", 1, "12346");
         Row row3 = new Row();
         row3.add(field3);
         rows2.add(row3);
-        Assertions.assertFalse(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
-        
+        Assertions.assertFalse(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
 
         beforeImage.setRows(new ArrayList<>());
         afterImage.setRows(new ArrayList<>());
-        Assertions.assertTrue(DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
+        Assertions.assertTrue(
+                DataCompareUtils.isRecordsEquals(beforeImage, afterImage).getResult());
     }
-    
-    private Field addField(Row row, String name, int type, Object value){
+
+    private Field addField(Row row, String name, int type, Object value) {
         Field field = new Field(name, type, value);
         row.add(field);
         return field;
@@ -129,7 +142,8 @@ public class DataCompareUtilsTest {
     @Test
     public void isRowsEquals() {
         TableMeta tableMeta = Mockito.mock(TableMeta.class);
-        Mockito.when(tableMeta.getPrimaryKeyOnlyName()).thenReturn(Arrays.asList(new String[]{"pk"}));
+        Mockito.when(tableMeta.getPrimaryKeyOnlyName())
+                .thenReturn(Arrays.asList(new String[] {"pk"}));
         Mockito.when(tableMeta.getTableName()).thenReturn("table_name");
 
         List<Row> rows = new ArrayList<>();
@@ -160,7 +174,7 @@ public class DataCompareUtilsTest {
     }
 
     @Test
-    public void testRowListToMapWithSinglePk(){
+    public void testRowListToMapWithSinglePk() {
         List<String> primaryKeyList = new ArrayList<>();
         primaryKeyList.add("id");
 
@@ -180,15 +194,14 @@ public class DataCompareUtilsTest {
         row3.add(field3);
         rows.add(row3);
 
-        Map<String, Map<String, Field>> result =DataCompareUtils.rowListToMap(rows,primaryKeyList);
+        Map<String, Map<String, Field>> result =
+                DataCompareUtils.rowListToMap(rows, primaryKeyList);
         Assertions.assertEquals(3, result.size());
-        Assertions.assertEquals(result.keySet().iterator().next(),"1");
-
+        Assertions.assertEquals(result.keySet().iterator().next(), "1");
     }
 
-
     @Test
-    public void testRowListToMapWithMultipPk(){
+    public void testRowListToMapWithMultipPk() {
         List<String> primaryKeyList = new ArrayList<>();
         primaryKeyList.add("id1");
         primaryKeyList.add("id2");
@@ -215,9 +228,9 @@ public class DataCompareUtilsTest {
         row3.add(field33);
         rows.add(row3);
 
-        Map<String, Map<String, Field>> result =DataCompareUtils.rowListToMap(rows,primaryKeyList);
+        Map<String, Map<String, Field>> result =
+                DataCompareUtils.rowListToMap(rows, primaryKeyList);
         Assertions.assertEquals(3, result.size());
-        Assertions.assertEquals(result.keySet().iterator().next(),"1_2");
-
+        Assertions.assertEquals(result.keySet().iterator().next(), "1_2");
     }
 }

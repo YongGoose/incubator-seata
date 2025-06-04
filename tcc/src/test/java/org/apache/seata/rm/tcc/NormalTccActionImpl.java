@@ -16,11 +16,8 @@
  */
 package org.apache.seata.rm.tcc;
 
-
 import java.util.List;
-
 import org.apache.seata.rm.tcc.api.BusinessActionContext;
-
 
 public class NormalTccActionImpl implements NormalTccAction {
 
@@ -44,8 +41,8 @@ public class NormalTccActionImpl implements NormalTccAction {
     }
 
     @Override
-    public String prepareWithException(BusinessActionContext actionContext, int a, List b, TccParam tccParam) {
+    public String prepareWithException(
+            BusinessActionContext actionContext, int a, List b, TccParam tccParam) {
         throw new IllegalArgumentException();
     }
-
 }

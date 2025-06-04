@@ -16,11 +16,12 @@
  */
 package org.apache.seata.serializer.seata.protocol;
 
-import org.apache.seata.serializer.seata.SeataSerializer;
-import org.apache.seata.core.protocol.RegisterRMRequest;
-import org.junit.jupiter.api.Test;
-import org.apache.seata.core.protocol.ProtocolConstants;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.seata.core.protocol.ProtocolConstants;
+import org.apache.seata.core.protocol.RegisterRMRequest;
+import org.apache.seata.serializer.seata.SeataSerializer;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type Register rm request codec test.
@@ -48,12 +49,13 @@ public class RegisterRMRequestSerializerTest {
         byte[] body = seataSerializer.serialize(registerRMRequest);
 
         RegisterRMRequest registerRMRequest2 = seataSerializer.deserialize(body);
-        assertThat(registerRMRequest2.getResourceIds()).isEqualTo(registerRMRequest.getResourceIds());
+        assertThat(registerRMRequest2.getResourceIds())
+                .isEqualTo(registerRMRequest.getResourceIds());
         assertThat(registerRMRequest2.getExtraData()).isEqualTo(registerRMRequest.getExtraData());
-        assertThat(registerRMRequest2.getApplicationId()).isEqualTo(registerRMRequest.getApplicationId());
+        assertThat(registerRMRequest2.getApplicationId())
+                .isEqualTo(registerRMRequest.getApplicationId());
         assertThat(registerRMRequest2.getVersion()).isEqualTo(registerRMRequest.getVersion());
-        assertThat(registerRMRequest2.getTransactionServiceGroup()).isEqualTo(registerRMRequest.getTransactionServiceGroup());
-
+        assertThat(registerRMRequest2.getTransactionServiceGroup())
+                .isEqualTo(registerRMRequest.getTransactionServiceGroup());
     }
-
 }

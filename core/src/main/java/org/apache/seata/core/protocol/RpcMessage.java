@@ -16,11 +16,10 @@
  */
 package org.apache.seata.core.protocol;
 
-import org.apache.seata.common.util.StringUtils;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.seata.common.util.StringUtils;
 
 /**
  * The type Rpc message.

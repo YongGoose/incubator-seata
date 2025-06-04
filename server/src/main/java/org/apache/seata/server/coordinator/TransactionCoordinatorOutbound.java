@@ -37,7 +37,8 @@ public interface TransactionCoordinatorOutbound {
      * @throws TransactionException Any exception that fails this will be wrapped with TransactionException and thrown
      *                              out.
      */
-    BranchStatus branchCommit(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    BranchStatus branchCommit(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 
     /**
      * Rollback a branch transaction.
@@ -48,7 +49,8 @@ public interface TransactionCoordinatorOutbound {
      * @throws TransactionException Any exception that fails this will be wrapped with TransactionException and thrown
      *                              out.
      */
-    BranchStatus branchRollback(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    BranchStatus branchRollback(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 
     /**
      * Delete a branch transaction.
@@ -59,5 +61,6 @@ public interface TransactionCoordinatorOutbound {
      * @throws TransactionException Any exception that fails this will be wrapped with TransactionException and thrown
      *                              out.
      */
-    BranchStatus branchDelete(GlobalSession globalSession, BranchSession branchSession) throws TransactionException;
+    BranchStatus branchDelete(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException;
 }

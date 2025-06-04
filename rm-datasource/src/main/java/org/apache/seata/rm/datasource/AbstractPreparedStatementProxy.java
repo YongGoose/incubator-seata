@@ -16,8 +16,6 @@
  */
 package org.apache.seata.rm.datasource;
 
-import org.apache.seata.common.util.CollectionUtils;
-import org.apache.seata.sqlparser.struct.Null;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -41,13 +39,15 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.seata.common.util.CollectionUtils;
+import org.apache.seata.sqlparser.struct.Null;
 
 /**
  * The type Abstract prepared statement proxy.
  *
  */
 public abstract class AbstractPreparedStatementProxy extends StatementProxy<PreparedStatement>
-    implements PreparedStatement {
+        implements PreparedStatement {
 
     /**
      * The Parameters.
@@ -66,8 +66,11 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
      * @param targetSQL       the target sql
      * @throws SQLException the sql exception
      */
-    public AbstractPreparedStatementProxy(AbstractConnectionProxy connectionProxy, PreparedStatement targetStatement,
-                                          String targetSQL) throws SQLException {
+    public AbstractPreparedStatementProxy(
+            AbstractConnectionProxy connectionProxy,
+            PreparedStatement targetStatement,
+            String targetSQL)
+            throws SQLException {
         super(connectionProxy, targetStatement, targetSQL);
         initParameterHolder();
     }
@@ -79,8 +82,9 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
      * @param targetStatement the target statement
      * @throws SQLException the sql exception
      */
-    public AbstractPreparedStatementProxy(AbstractConnectionProxy connectionProxy, PreparedStatement targetStatement)
-        throws SQLException {
+    public AbstractPreparedStatementProxy(
+            AbstractConnectionProxy connectionProxy, PreparedStatement targetStatement)
+            throws SQLException {
         super(connectionProxy, targetStatement);
         initParameterHolder();
     }
@@ -102,8 +106,7 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
      * @param x     the x
      */
     protected void setParamByIndex(int index, Object x) {
-        CollectionUtils.computeIfAbsent(parameters, index, e -> new ArrayList<>())
-                .add(x);
+        CollectionUtils.computeIfAbsent(parameters, index, e -> new ArrayList<>()).add(x);
     }
 
     @Override
@@ -198,7 +201,8 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
 
     @Deprecated
     @Override
-    public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
+    public void setUnicodeStream(int parameterIndex, InputStream x, int length)
+            throws SQLException {
         setParamByIndex(parameterIndex, x);
         targetStatement.setUnicodeStream(parameterIndex, x, length);
     }
@@ -233,7 +237,8 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
     }
 
     @Override
-    public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
+    public void setCharacterStream(int parameterIndex, Reader reader, int length)
+            throws SQLException {
         setParamByIndex(parameterIndex, reader);
         targetStatement.setCharacterStream(parameterIndex, reader, length);
     }
@@ -315,7 +320,8 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
     }
 
     @Override
-    public void setNCharacterStream(int parameterIndex, Reader value, long length) throws SQLException {
+    public void setNCharacterStream(int parameterIndex, Reader value, long length)
+            throws SQLException {
         setParamByIndex(parameterIndex, value);
         targetStatement.setNCharacterStream(parameterIndex, value, length);
     }
@@ -333,7 +339,8 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
     }
 
     @Override
-    public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException {
+    public void setBlob(int parameterIndex, InputStream inputStream, long length)
+            throws SQLException {
         setParamByIndex(parameterIndex, inputStream);
         targetStatement.setBlob(parameterIndex, inputStream, length);
     }
@@ -351,7 +358,8 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
     }
 
     @Override
-    public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) throws SQLException {
+    public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength)
+            throws SQLException {
         setParamByIndex(parameterIndex, x);
         targetStatement.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
@@ -363,13 +371,15 @@ public abstract class AbstractPreparedStatementProxy extends StatementProxy<Prep
     }
 
     @Override
-    public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {
+    public void setBinaryStream(int parameterIndex, InputStream x, long length)
+            throws SQLException {
         setParamByIndex(parameterIndex, x);
         targetStatement.setBinaryStream(parameterIndex, x, length);
     }
 
     @Override
-    public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
+    public void setCharacterStream(int parameterIndex, Reader reader, long length)
+            throws SQLException {
         setParamByIndex(parameterIndex, reader);
         targetStatement.setCharacterStream(parameterIndex, reader, length);
     }

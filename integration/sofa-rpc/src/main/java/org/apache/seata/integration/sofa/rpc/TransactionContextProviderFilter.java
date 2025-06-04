@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TransactionContext on provider side.
- * 
+ *
  * @since 0.6.0
  */
 @Extension(value = "transactionContextProvider")
@@ -42,21 +42,29 @@ public class TransactionContextProviderFilter extends Filter {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionContextProviderFilter.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(TransactionContextProviderFilter.class);
 
     @Override
-    public SofaResponse invoke(FilterInvoker filterInvoker, SofaRequest sofaRequest) throws SofaRpcException {
+    public SofaResponse invoke(FilterInvoker filterInvoker, SofaRequest sofaRequest)
+            throws SofaRpcException {
         String xid = RootContext.getXID();
         String rpcXid = getRpcXid(sofaRequest);
         BranchType branchType = RootContext.getBranchType();
         String rpcBranchType = getBranchType(sofaRequest);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("context in RootContext[{},{}], context in RpcContext[{},{}]", xid, branchType, rpcXid, rpcBranchType);
+            LOGGER.debug(
+                    "context in RootContext[{},{}], context in RpcContext[{},{}]",
+                    xid,
+                    branchType,
+                    rpcXid,
+                    rpcBranchType);
         }
         boolean bind = false;
         if (xid != null) {
             RpcInternalContext.getContext().setAttachment(RootContext.HIDDEN_KEY_XID, xid);
-            RpcInternalContext.getContext().setAttachment(RootContext.HIDDEN_KEY_BRANCH_TYPE, branchType.name());
+            RpcInternalContext.getContext()
+                    .setAttachment(RootContext.HIDDEN_KEY_BRANCH_TYPE, branchType.name());
         } else {
             if (null != rpcXid) {
                 RootContext.bind(rpcXid);
@@ -65,7 +73,7 @@ public class TransactionContextProviderFilter extends Filter {
                 }
                 bind = true;
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("bind[{}] to RootContext",rpcXid);
+                    LOGGER.debug("bind[{}] to RootContext", rpcXid);
                 }
             }
         }
@@ -74,12 +82,13 @@ public class TransactionContextProviderFilter extends Filter {
         } finally {
             if (xid != null) {
                 RpcInternalContext.getContext().removeAttachment(RootContext.HIDDEN_KEY_XID);
-                RpcInternalContext.getContext().removeAttachment(RootContext.HIDDEN_KEY_BRANCH_TYPE);
+                RpcInternalContext.getContext()
+                        .removeAttachment(RootContext.HIDDEN_KEY_BRANCH_TYPE);
             }
             if (bind) {
                 String unbindXid = RootContext.unbind();
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("unbind[{}] from RootContext",unbindXid);
+                    LOGGER.debug("unbind[{}] from RootContext", unbindXid);
                 }
                 BranchType previousBranchType = RootContext.getBranchType();
                 if (BranchType.TCC == previousBranchType) {
@@ -87,16 +96,18 @@ public class TransactionContextProviderFilter extends Filter {
                 }
                 if (!rpcXid.equalsIgnoreCase(unbindXid)) {
                     if (LOGGER.isWarnEnabled()) {
-                        LOGGER.warn("xid in change during RPC from [{}] to [{}]", rpcXid,unbindXid);
+                        LOGGER.warn(
+                                "xid in change during RPC from [{}] to [{}]", rpcXid, unbindXid);
                     }
                     if (unbindXid != null) {
                         RootContext.bind(unbindXid);
                         if (LOGGER.isWarnEnabled()) {
-                            LOGGER.warn("bind [{}] back to RootContext",unbindXid);
+                            LOGGER.warn("bind [{}] back to RootContext", unbindXid);
                         }
                         if (BranchType.TCC == previousBranchType) {
                             RootContext.bindBranchType(BranchType.TCC);
-                            LOGGER.warn("bind branchType [{}] back to RootContext", previousBranchType);
+                            LOGGER.warn(
+                                    "bind branchType [{}] back to RootContext", previousBranchType);
                         }
                     }
                 }
@@ -119,5 +130,4 @@ public class TransactionContextProviderFilter extends Filter {
     private String getBranchType(SofaRequest sofaRequest) {
         return (String) sofaRequest.getRequestProp(RootContext.KEY_BRANCH_TYPE);
     }
-
 }

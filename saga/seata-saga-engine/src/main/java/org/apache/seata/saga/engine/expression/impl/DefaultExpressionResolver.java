@@ -45,9 +45,11 @@ public class DefaultExpressionResolver implements ExpressionResolver {
     public Expression getExpression(String expressionStr) {
         ExpressionStruct struct = parseExpressionStruct(expressionStr);
 
-        ExpressionFactory expressionFactory = expressionFactoryManager.getExpressionFactory(struct.type);
+        ExpressionFactory expressionFactory =
+                expressionFactoryManager.getExpressionFactory(struct.type);
         if (expressionFactory == null) {
-            throw new IllegalArgumentException("Cannot get ExpressionFactory by Type[" + struct + "]");
+            throw new IllegalArgumentException(
+                    "Cannot get ExpressionFactory by Type[" + struct + "]");
         }
         return expressionFactory.createExpression(struct.content);
     }
@@ -58,11 +60,11 @@ public class DefaultExpressionResolver implements ExpressionResolver {
         int dot = expressionStr.indexOf(".", struct.typeStart);
         int leftBracket = expressionStr.indexOf("{", struct.typeStart);
 
-
         boolean isOldEvaluatorStyle = false;
         if (struct.typeStart == 0) {
             if (leftBracket < 0 && dot < 0) {
-                throw new IllegalArgumentException(String.format("Expression [%s] type is not closed", expressionStr));
+                throw new IllegalArgumentException(
+                        String.format("Expression [%s] type is not closed", expressionStr));
             }
             // Backward compatible for structure: $expressionType{expressionContent}
             if (leftBracket > 0 && (leftBracket < dot || dot < 0)) {

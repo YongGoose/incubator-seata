@@ -86,7 +86,8 @@ public class GlobalTransactionException extends TransactionException {
      * @param message the message
      * @param cause   the cause
      */
-    public GlobalTransactionException(TransactionExceptionCode code, String message, Throwable cause) {
+    public GlobalTransactionException(
+            TransactionExceptionCode code, String message, Throwable cause) {
         super(code, message, cause);
     }
 }

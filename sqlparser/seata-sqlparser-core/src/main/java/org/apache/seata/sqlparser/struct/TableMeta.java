@@ -17,16 +17,15 @@
 package org.apache.seata.sqlparser.struct;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Collections;
-import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.exception.NotSupportYetException;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.LowerCaseLinkHashMap;
@@ -158,16 +157,18 @@ public class TableMeta {
      */
     public Map<String, ColumnMeta> getPrimaryKeyMap() {
         Map<String, ColumnMeta> pk = new HashMap<>();
-        allIndexes.forEach((key, index) -> {
-            if (index.getIndextype().value() == IndexType.PRIMARY.value()) {
-                for (ColumnMeta col : index.getValues()) {
-                    pk.put(col.getColumnName(), col);
-                }
-            }
-        });
+        allIndexes.forEach(
+                (key, index) -> {
+                    if (index.getIndextype().value() == IndexType.PRIMARY.value()) {
+                        for (ColumnMeta col : index.getValues()) {
+                            pk.put(col.getColumnName(), col);
+                        }
+                    }
+                });
 
         if (pk.size() < 1) {
-            throw new NotSupportYetException(String.format("%s needs to contain the primary key.", tableName));
+            throw new NotSupportYetException(
+                    String.format("%s needs to contain the primary key.", tableName));
         }
 
         return pk;
@@ -180,15 +181,17 @@ public class TableMeta {
      */
     public Set<String> getCaseInsensitivePKs() {
         Set<String> pks = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        allIndexes.forEach((key, index) -> {
-            if (index.getIndextype().value() == IndexType.PRIMARY.value()) {
-                for (ColumnMeta col : index.getValues()) {
-                    pks.add(col.getColumnName());
-                }
-            }
-        });
+        allIndexes.forEach(
+                (key, index) -> {
+                    if (index.getIndextype().value() == IndexType.PRIMARY.value()) {
+                        for (ColumnMeta col : index.getValues()) {
+                            pks.add(col.getColumnName());
+                        }
+                    }
+                });
         if (pks.size() < 1) {
-            throw new NotSupportYetException(String.format("%s needs to contain the primary key.", tableName));
+            throw new NotSupportYetException(
+                    String.format("%s needs to contain the primary key.", tableName));
         }
         return Collections.unmodifiableSet(pks);
     }
@@ -213,7 +216,10 @@ public class TableMeta {
      * @return all the on update columns only name
      */
     public List<String> getOnUpdateColumnsOnlyName() {
-        return allColumns.values().stream().filter(ColumnMeta::isOnUpdate).map(ColumnMeta::getColumnName).collect(Collectors.toList());
+        return allColumns.values().stream()
+                .filter(ColumnMeta::isOnUpdate)
+                .map(ColumnMeta::getColumnName)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -242,8 +248,7 @@ public class TableMeta {
             return false;
         }
 
-
-        //at least contain one pk
+        // at least contain one pk
         if (cols.containsAll(pk)) {
             return true;
         } else {

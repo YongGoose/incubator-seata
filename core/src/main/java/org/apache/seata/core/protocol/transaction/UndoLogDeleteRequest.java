@@ -16,11 +16,10 @@
  */
 package org.apache.seata.core.protocol.transaction;
 
+import java.io.Serializable;
 import org.apache.seata.core.model.BranchType;
 import org.apache.seata.core.protocol.MessageType;
 import org.apache.seata.core.rpc.RpcContext;
-
-import java.io.Serializable;
 
 /**
  * The type to delete undolog  request.

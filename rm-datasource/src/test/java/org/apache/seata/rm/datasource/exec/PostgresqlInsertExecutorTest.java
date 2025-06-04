@@ -16,20 +16,10 @@
  */
 package org.apache.seata.rm.datasource.exec;
 
-import org.apache.seata.rm.datasource.ConnectionProxy;
-import org.apache.seata.rm.datasource.PreparedStatementProxy;
-import org.apache.seata.rm.datasource.StatementProxy;
-import org.apache.seata.rm.datasource.exec.StatementCallback;
-import org.apache.seata.rm.datasource.exec.postgresql.PostgresqlInsertExecutor;
-import org.apache.seata.sqlparser.struct.ColumnMeta;
-import org.apache.seata.sqlparser.struct.TableMeta;
-import org.apache.seata.sqlparser.SQLInsertRecognizer;
-import org.apache.seata.sqlparser.struct.SqlDefaultExpr;
-import org.apache.seata.sqlparser.util.JdbcConstants;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -38,12 +28,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import org.apache.seata.rm.datasource.ConnectionProxy;
+import org.apache.seata.rm.datasource.PreparedStatementProxy;
+import org.apache.seata.rm.datasource.StatementProxy;
+import org.apache.seata.rm.datasource.exec.postgresql.PostgresqlInsertExecutor;
+import org.apache.seata.sqlparser.SQLInsertRecognizer;
+import org.apache.seata.sqlparser.struct.ColumnMeta;
+import org.apache.seata.sqlparser.struct.SqlDefaultExpr;
+import org.apache.seata.sqlparser.struct.TableMeta;
+import org.apache.seata.sqlparser.util.JdbcConstants;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class PostgresqlInsertExecutorTest {
 
@@ -78,20 +75,25 @@ public class PostgresqlInsertExecutorTest {
         StatementCallback statementCallback = mock(StatementCallback.class);
         sqlInsertRecognizer = mock(SQLInsertRecognizer.class);
         tableMeta = mock(TableMeta.class);
-        insertExecutor = Mockito.spy(new PostgresqlInsertExecutor(statementProxy, statementCallback, sqlInsertRecognizer));
+        insertExecutor =
+                Mockito.spy(
+                        new PostgresqlInsertExecutor(
+                                statementProxy, statementCallback, sqlInsertRecognizer));
 
-        pkIndexMap = new HashMap<String, Integer>() {
-            {
-                put(ID_COLUMN, pkIndexId);
-            }
-        };
+        pkIndexMap =
+                new HashMap<String, Integer>() {
+                    {
+                        put(ID_COLUMN, pkIndexId);
+                    }
+                };
 
-        multiPkIndexMap = new HashMap<String, Integer>() {
-            {
-                put(ID_COLUMN, pkIndexId);
-                put(USER_ID_COLUMN, pkIndexUserId);
-            }
-        };
+        multiPkIndexMap =
+                new HashMap<String, Integer>() {
+                    {
+                        put(ID_COLUMN, pkIndexId);
+                        put(USER_ID_COLUMN, pkIndexUserId);
+                    }
+                };
     }
 
     @Test
@@ -109,10 +111,10 @@ public class PostgresqlInsertExecutorTest {
 
         List<Object> pkValuesAuto = new ArrayList<>();
         pkValuesAuto.add(PK_VALUE_ID);
-        //mock getPkValuesByAuto
+        // mock getPkValuesByAuto
         doReturn(pkValuesAuto).when(insertExecutor).getGeneratedKeys(ID_COLUMN);
         Map<String, List<Object>> pkValuesMap = insertExecutor.getPkValuesByColumn();
-        //pk value = DEFAULT so getPkValuesByDefault
+        // pk value = DEFAULT so getPkValuesByDefault
         doReturn(new ArrayList<>()).when(insertExecutor).getPkValuesByDefault(ID_COLUMN);
 
         verify(insertExecutor).getPkValuesByDefault(ID_COLUMN);
@@ -137,11 +139,11 @@ public class PostgresqlInsertExecutorTest {
         pkValuesAutoId.add(PK_VALUE_ID);
         List<Object> pkValuesAutoUserId = new ArrayList<>();
         pkValuesAutoUserId.add(PK_VALUE_USER_ID);
-        //mock getPkValuesByAuto
+        // mock getPkValuesByAuto
         doReturn(pkValuesAutoId).when(insertExecutor).getGeneratedKeys(ID_COLUMN);
         doReturn(pkValuesAutoUserId).when(insertExecutor).getGeneratedKeys(USER_ID_COLUMN);
         Map<String, List<Object>> pkValuesMap = insertExecutor.getPkValuesByColumn();
-        //pk value = DEFAULT so getPkValuesByDefault
+        // pk value = DEFAULT so getPkValuesByDefault
         doReturn(new ArrayList<>()).when(insertExecutor).getPkValuesByDefault(ID_COLUMN);
         doReturn(new ArrayList<>()).when(insertExecutor).getPkValuesByDefault(USER_ID_COLUMN);
 
@@ -172,7 +174,8 @@ public class PostgresqlInsertExecutorTest {
         List<String> columns = new ArrayList<>();
         when(sqlInsertRecognizer.getInsertColumns()).thenReturn(columns);
         when(sqlInsertRecognizer.insertColumnsIsEmpty()).thenReturn(true);
-        Assertions.assertIterableEquals(mockPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
+        Assertions.assertIterableEquals(
+                mockPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
 
         // situation2: insert columns contain the pk column
         columns = new ArrayList<>();
@@ -180,7 +183,8 @@ public class PostgresqlInsertExecutorTest {
         columns.add(USER_NAME_COLUMN);
         when(sqlInsertRecognizer.getInsertColumns()).thenReturn(columns);
         when(sqlInsertRecognizer.insertColumnsIsEmpty()).thenReturn(false);
-        Assertions.assertIterableEquals(mockPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
+        Assertions.assertIterableEquals(
+                mockPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
 
         // situation3: insert columns are not empty and do not contain the pk column
         columns = new ArrayList<>();
@@ -188,8 +192,8 @@ public class PostgresqlInsertExecutorTest {
         when(sqlInsertRecognizer.getInsertColumns()).thenReturn(columns);
         when(sqlInsertRecognizer.insertColumnsIsEmpty()).thenReturn(false);
         Assertions.assertIterableEquals(
-            Collections.singletonMap(ID_COLUMN, mockPkValuesAutoGenerated).entrySet(),
-            insertExecutor.getPkValues().entrySet());
+                Collections.singletonMap(ID_COLUMN, mockPkValuesAutoGenerated).entrySet(),
+                insertExecutor.getPkValues().entrySet());
     }
 
     @Test
@@ -204,20 +208,25 @@ public class PostgresqlInsertExecutorTest {
         // mock all pk values from insert rows
         Map<String, List<Object>> mockAllPkValuesFromColumn = new HashMap<>();
         mockAllPkValuesFromColumn.put(ID_COLUMN, Collections.singletonList(PK_VALUE_ID + 1));
-        mockAllPkValuesFromColumn.put(USER_ID_COLUMN, Collections.singletonList(PK_VALUE_USER_ID + 1));
+        mockAllPkValuesFromColumn.put(
+                USER_ID_COLUMN, Collections.singletonList(PK_VALUE_USER_ID + 1));
         doReturn(mockAllPkValuesFromColumn).when(insertExecutor).getPkValuesByColumn();
 
         // mock pk values from auto increment
         List<Object> mockPkValuesAutoGenerated_ID = Collections.singletonList(PK_VALUE_ID);
         doReturn(mockPkValuesAutoGenerated_ID).when(insertExecutor).getGeneratedKeys(ID_COLUMN);
-        List<Object> mockPkValuesAutoGenerated_USER_ID = Collections.singletonList(PK_VALUE_USER_ID);
-        doReturn(mockPkValuesAutoGenerated_USER_ID).when(insertExecutor).getGeneratedKeys(USER_ID_COLUMN);
+        List<Object> mockPkValuesAutoGenerated_USER_ID =
+                Collections.singletonList(PK_VALUE_USER_ID);
+        doReturn(mockPkValuesAutoGenerated_USER_ID)
+                .when(insertExecutor)
+                .getGeneratedKeys(USER_ID_COLUMN);
 
         // situation1: insert columns are empty
         List<String> insertColumns = new ArrayList<>();
         when(sqlInsertRecognizer.getInsertColumns()).thenReturn(insertColumns);
         when(sqlInsertRecognizer.insertColumnsIsEmpty()).thenReturn(true);
-        Assertions.assertIterableEquals(mockAllPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
+        Assertions.assertIterableEquals(
+                mockAllPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
 
         // situation2: insert columns contain all pk columns
         insertColumns = new ArrayList<>();
@@ -226,7 +235,8 @@ public class PostgresqlInsertExecutorTest {
         insertColumns.add(USER_NAME_COLUMN);
         when(sqlInsertRecognizer.getInsertColumns()).thenReturn(insertColumns);
         when(sqlInsertRecognizer.insertColumnsIsEmpty()).thenReturn(false);
-        Assertions.assertIterableEquals(mockAllPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
+        Assertions.assertIterableEquals(
+                mockAllPkValuesFromColumn.entrySet(), insertExecutor.getPkValues().entrySet());
 
         // situation3: insert columns contain partial pk columns
         insertColumns = new ArrayList<>();
@@ -241,7 +251,8 @@ public class PostgresqlInsertExecutorTest {
 
         Map<String, List<Object>> expectPkValues = new HashMap<>(mockPkValuesFromColumn_ID);
         expectPkValues.put(USER_ID_COLUMN, mockPkValuesAutoGenerated_USER_ID);
-        Assertions.assertIterableEquals(expectPkValues.entrySet(), insertExecutor.getPkValues().entrySet());
+        Assertions.assertIterableEquals(
+                expectPkValues.entrySet(), insertExecutor.getPkValues().entrySet());
 
         // situation4: insert columns are not empty and do not contain the pk column
         insertColumns = new ArrayList<>();
@@ -254,7 +265,8 @@ public class PostgresqlInsertExecutorTest {
         expectPkValues = new HashMap<>();
         expectPkValues.put(ID_COLUMN, mockPkValuesAutoGenerated_ID);
         expectPkValues.put(USER_ID_COLUMN, mockPkValuesAutoGenerated_USER_ID);
-        Assertions.assertIterableEquals(expectPkValues.entrySet(), insertExecutor.getPkValues().entrySet());
+        Assertions.assertIterableEquals(
+                expectPkValues.entrySet(), insertExecutor.getPkValues().entrySet());
     }
 
     @Test
@@ -359,5 +371,4 @@ public class PostgresqlInsertExecutorTest {
         doReturn(multiPkIndexMap).when(insertExecutor).getPkIndex();
         return columns;
     }
-
 }

@@ -29,7 +29,8 @@ import org.junit.jupiter.api.Test;
 public class SqlServerKeywordCheckerTest {
     @Test
     public void testSqlServerKeywordChecker() {
-        EscapeHandler escapeHandler = EscapeHandlerFactory.getEscapeHandler(JdbcConstants.SQLSERVER);
+        EscapeHandler escapeHandler =
+                EscapeHandlerFactory.getEscapeHandler(JdbcConstants.SQLSERVER);
         Assertions.assertNotNull(escapeHandler);
     }
 }

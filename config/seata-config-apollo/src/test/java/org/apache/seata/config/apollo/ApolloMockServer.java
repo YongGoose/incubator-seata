@@ -16,16 +16,15 @@
  */
 package org.apache.seata.config.apollo;
 
+import com.ctrip.framework.apollo.core.dto.ApolloConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import com.ctrip.framework.apollo.core.dto.ApolloConfig;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -50,30 +49,32 @@ public class ApolloMockServer {
     public ApolloMockServer(int port) throws IOException {
 
         server = new MockWebServer();
-        server.setDispatcher(new Dispatcher() {
-            @Override
-            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-                if (request.getPath().startsWith(CONFIG_PREFIX_PATH)) {
-                    List<String> pathSegments = request.getRequestUrl().pathSegments();
-                    String appId = pathSegments.get(1);
-                    String cluster = pathSegments.get(2);
-                    String namespace = pathSegments.get(3);
-                    String result;
-                    try {
-                        result = loadMockData(appId, cluster, namespace);
-                        return new MockResponse().setResponseCode(200).setBody(result);
-                    } catch (JsonProcessingException e) {
+        server.setDispatcher(
+                new Dispatcher() {
+                    @Override
+                    public MockResponse dispatch(RecordedRequest request)
+                            throws InterruptedException {
+                        if (request.getPath().startsWith(CONFIG_PREFIX_PATH)) {
+                            List<String> pathSegments = request.getRequestUrl().pathSegments();
+                            String appId = pathSegments.get(1);
+                            String cluster = pathSegments.get(2);
+                            String namespace = pathSegments.get(3);
+                            String result;
+                            try {
+                                result = loadMockData(appId, cluster, namespace);
+                                return new MockResponse().setResponseCode(200).setBody(result);
+                            } catch (JsonProcessingException e) {
+                            }
+                        }
+                        return new MockResponse().setResponseCode(404);
                     }
-                }
-                return new MockResponse().setResponseCode(404);
-            }
-        });
+                });
         server.start(port);
         System.setProperty("apollo.configService", "http://localhost:" + port);
-
     }
 
-    private String loadMockData(String appId, String Cluster, String namespace) throws JsonProcessingException {
+    private String loadMockData(String appId, String Cluster, String namespace)
+            throws JsonProcessingException {
         String fileName = "mock-" + namespace + ".properties";
         ApolloConfig apolloConfig = new ApolloConfig(appId, Cluster, namespace, "releaseKey");
         Properties properties = new Properties();
@@ -90,7 +91,6 @@ public class ApolloMockServer {
         apolloConfig.setConfigurations(configurations);
         String json = mapper.writeValueAsString(apolloConfig);
         return json;
-
     }
 
     /**
@@ -103,5 +103,4 @@ public class ApolloMockServer {
             server.shutdown();
         }
     }
-
 }

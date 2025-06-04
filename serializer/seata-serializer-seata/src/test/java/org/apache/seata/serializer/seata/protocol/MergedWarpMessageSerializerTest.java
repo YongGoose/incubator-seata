@@ -16,17 +16,16 @@
  */
 package org.apache.seata.serializer.seata.protocol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.core.protocol.AbstractMessage;
 import org.apache.seata.core.protocol.MergedWarpMessage;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.transaction.GlobalBeginRequest;
 import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-import org.apache.seata.core.protocol.ProtocolConstants;
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * The type Merged warp message codec test.
@@ -43,7 +42,7 @@ public class MergedWarpMessageSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         MergedWarpMessage mergedWarpMessage = new MergedWarpMessage();
         final ArrayList<AbstractMessage> msgs = new ArrayList<>();
         final List<Integer> msgIds = new ArrayList<>();
@@ -56,7 +55,6 @@ public class MergedWarpMessageSerializerTest {
         mergedWarpMessage.msgs = msgs;
         mergedWarpMessage.msgIds = msgIds;
 
-
         byte[] body = seataSerializer.serialize(mergedWarpMessage);
 
         MergedWarpMessage mergedWarpMessage2 = seataSerializer.deserialize(body);
@@ -66,15 +64,17 @@ public class MergedWarpMessageSerializerTest {
         assertThat(mergedWarpMessage2.msgIds.get(0)).isEqualTo(1);
         assertThat(mergedWarpMessage2.msgIds.get(1)).isEqualTo(2);
 
-        GlobalBeginRequest globalBeginRequest21 = (GlobalBeginRequest) mergedWarpMessage2.msgs.get(0);
+        GlobalBeginRequest globalBeginRequest21 =
+                (GlobalBeginRequest) mergedWarpMessage2.msgs.get(0);
         assertThat(globalBeginRequest21.getTimeout()).isEqualTo(globalBeginRequest1.getTimeout());
-        assertThat(globalBeginRequest21.getTransactionName()).isEqualTo(globalBeginRequest1.getTransactionName());
+        assertThat(globalBeginRequest21.getTransactionName())
+                .isEqualTo(globalBeginRequest1.getTransactionName());
 
-
-        GlobalBeginRequest globalBeginRequest22 = (GlobalBeginRequest) mergedWarpMessage2.msgs.get(1);
+        GlobalBeginRequest globalBeginRequest22 =
+                (GlobalBeginRequest) mergedWarpMessage2.msgs.get(1);
         assertThat(globalBeginRequest22.getTimeout()).isEqualTo(globalBeginRequest2.getTimeout());
-        assertThat(globalBeginRequest22.getTransactionName()).isEqualTo(globalBeginRequest2.getTransactionName());
-
+        assertThat(globalBeginRequest22.getTransactionName())
+                .isEqualTo(globalBeginRequest2.getTransactionName());
     }
 
     private GlobalBeginRequest buildGlobalBeginRequest(String name) {

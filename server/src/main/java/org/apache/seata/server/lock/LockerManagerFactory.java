@@ -65,13 +65,13 @@ public class LockerManagerFactory {
                         lockMode = StoreConfig.getLockMode();
                     }
                     LOGGER.info("use lock store mode: {}", lockMode.getName());
-                    //if not exist the lock mode, throw exception
+                    // if not exist the lock mode, throw exception
                     if (null != StoreMode.get(lockMode.name())) {
-                        LOCK_MANAGER = EnhancedServiceLoader.load(LockManager.class, lockMode.getName());
+                        LOCK_MANAGER =
+                                EnhancedServiceLoader.load(LockManager.class, lockMode.getName());
                     }
                 }
             }
         }
     }
-
 }

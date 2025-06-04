@@ -16,17 +16,16 @@
  */
 package org.apache.seata.integration.tx.api.interceptor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.seata.common.Constants;
 import org.apache.seata.core.model.BranchType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TwoPhaseBusinessActionParamTest {
 
@@ -64,7 +63,8 @@ public class TwoPhaseBusinessActionParamTest {
         actionParam.setBusinessActionContext(businessActionContextMap);
 
         assertEquals("commit", actionParam.getBusinessActionContext().get(Constants.COMMIT_METHOD));
-        assertFalse((Boolean) actionParam.getBusinessActionContext().get(Constants.USE_COMMON_FENCE));
+        assertFalse(
+                (Boolean) actionParam.getBusinessActionContext().get(Constants.USE_COMMON_FENCE));
     }
 
     @Test

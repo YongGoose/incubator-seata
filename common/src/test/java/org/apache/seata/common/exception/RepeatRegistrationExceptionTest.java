@@ -16,26 +16,34 @@
  */
 package org.apache.seata.common.exception;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
+import org.junit.jupiter.api.Test;
 
 class RepeatRegistrationExceptionTest {
 
     @Test
     void testRepeatRegistrationException() {
         assertAll(
-                () -> assertThrowsExactly(RepeatRegistrationException.class, () -> {
-                    throw new RepeatRegistrationException("error");
-                }),
-                () -> assertThrowsExactly(RepeatRegistrationException.class, () -> {
-                    throw new RepeatRegistrationException("error", new Throwable("error"));
-                }),
-                () -> assertThrowsExactly(RepeatRegistrationException.class, () -> {
-                    throw new RepeatRegistrationException(new Throwable("error"));
-                })
-        );
+                () ->
+                        assertThrowsExactly(
+                                RepeatRegistrationException.class,
+                                () -> {
+                                    throw new RepeatRegistrationException("error");
+                                }),
+                () ->
+                        assertThrowsExactly(
+                                RepeatRegistrationException.class,
+                                () -> {
+                                    throw new RepeatRegistrationException(
+                                            "error", new Throwable("error"));
+                                }),
+                () ->
+                        assertThrowsExactly(
+                                RepeatRegistrationException.class,
+                                () -> {
+                                    throw new RepeatRegistrationException(new Throwable("error"));
+                                }));
     }
 }

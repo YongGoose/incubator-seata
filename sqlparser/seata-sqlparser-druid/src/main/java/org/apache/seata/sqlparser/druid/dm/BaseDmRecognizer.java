@@ -19,16 +19,14 @@ package org.apache.seata.sqlparser.druid.dm;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.druid.BaseRecognizer;
 import org.apache.seata.sqlparser.struct.Null;
 import org.apache.seata.sqlparser.util.JdbcConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 
 public abstract class BaseDmRecognizer extends BaseRecognizer {
 
@@ -41,15 +39,17 @@ public abstract class BaseDmRecognizer extends BaseRecognizer {
         super(originalSql);
     }
 
-    public OracleOutputVisitor createOutputVisitor(final ParametersHolder parametersHolder,
-                                                   final ArrayList<List<Object>> paramAppenderList,
-                                                   final StringBuilder sb) {
+    public OracleOutputVisitor createOutputVisitor(
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList,
+            final StringBuilder sb) {
 
         return new OracleOutputVisitor(sb) {
             @Override
             public boolean visit(SQLVariantRefExpr x) {
                 if ("?".equals(x.getName())) {
-                    ArrayList<Object> oneParamValues = parametersHolder.getParameters().get(x.getIndex() + 1);
+                    ArrayList<Object> oneParamValues =
+                            parametersHolder.getParameters().get(x.getIndex() + 1);
                     if (paramAppenderList.isEmpty()) {
                         oneParamValues.forEach(t -> paramAppenderList.add(new ArrayList<>()));
                     }
@@ -63,7 +63,10 @@ public abstract class BaseDmRecognizer extends BaseRecognizer {
         };
     }
 
-    public String getWhereCondition(SQLExpr where, final ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            SQLExpr where,
+            final ParametersHolder parametersHolder,
+            final ArrayList<List<Object>> paramAppenderList) {
         if (Objects.isNull(where)) {
             return StringUtils.EMPTY;
         }
@@ -86,5 +89,4 @@ public abstract class BaseDmRecognizer extends BaseRecognizer {
     public String getDbType() {
         return JdbcConstants.DM;
     }
-
 }

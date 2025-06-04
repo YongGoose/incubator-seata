@@ -19,17 +19,14 @@ package org.apache.seata.sqlparser.druid.oracle;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import org.apache.seata.sqlparser.ParametersHolder;
-import org.apache.seata.sqlparser.SQLParsingException;
-import org.apache.seata.sqlparser.SQLType;
-import org.apache.seata.sqlparser.druid.oracle.OracleSelectForUpdateRecognizer;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.seata.sqlparser.ParametersHolder;
+import org.apache.seata.sqlparser.SQLParsingException;
+import org.apache.seata.sqlparser.SQLType;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OracleSelectForUpdateRecognizerTest {
 
@@ -40,23 +37,27 @@ public class OracleSelectForUpdateRecognizerTest {
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
-        OracleSelectForUpdateRecognizer recognizer = new OracleSelectForUpdateRecognizer(sql, asts.get(0));
+        OracleSelectForUpdateRecognizer recognizer =
+                new OracleSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertEquals(recognizer.getSQLType(), SQLType.SELECT_FOR_UPDATE);
     }
-
 
     @Test
     public void testGetWhereCondition_0() {
         String sql = "select * from t for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
-        OracleSelectForUpdateRecognizer recognizer = new OracleSelectForUpdateRecognizer(sql, asts.get(0));
-        String whereCondition = recognizer.getWhereCondition(new ParametersHolder() {
-            @Override
-            public Map<Integer,ArrayList<Object>> getParameters() {
-                return null;
-            }
-        }, new ArrayList<>());
+        OracleSelectForUpdateRecognizer recognizer =
+                new OracleSelectForUpdateRecognizer(sql, asts.get(0));
+        String whereCondition =
+                recognizer.getWhereCondition(
+                        new ParametersHolder() {
+                            @Override
+                            public Map<Integer, ArrayList<Object>> getParameters() {
+                                return null;
+                            }
+                        },
+                        new ArrayList<>());
         Assertions.assertEquals("", whereCondition);
     }
 
@@ -65,28 +66,33 @@ public class OracleSelectForUpdateRecognizerTest {
         String sql = "select * from t for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
-        OracleSelectForUpdateRecognizer recognizer = new OracleSelectForUpdateRecognizer(sql, asts.get(0));
+        OracleSelectForUpdateRecognizer recognizer =
+                new OracleSelectForUpdateRecognizer(sql, asts.get(0));
         String whereCondition = recognizer.getWhereCondition();
 
         Assertions.assertEquals("", whereCondition);
 
-        //test for select was null
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "select * from t for update";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
-            SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
-            selectAst.setSelect(null);
-            new OracleSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
-        });
+        // test for select was null
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "select * from t for update";
+                    List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
+                    SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
+                    selectAst.setSelect(null);
+                    new OracleSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
+                });
 
-        //test for query was null
-        Assertions.assertThrows(SQLParsingException.class, () -> {
-            String s = "select * from t";
-            List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
-            SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
-            selectAst.getSelect().setQuery(null);
-            new OracleSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
-        });
+        // test for query was null
+        Assertions.assertThrows(
+                SQLParsingException.class,
+                () -> {
+                    String s = "select * from t";
+                    List<SQLStatement> sqlStatements = SQLUtils.parseStatements(s, DB_TYPE);
+                    SQLSelectStatement selectAst = (SQLSelectStatement) sqlStatements.get(0);
+                    selectAst.getSelect().setQuery(null);
+                    new OracleSelectForUpdateRecognizer(s, selectAst).getWhereCondition();
+                });
     }
 
     @Test
@@ -94,7 +100,8 @@ public class OracleSelectForUpdateRecognizerTest {
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
-        OracleSelectForUpdateRecognizer recognizer = new OracleSelectForUpdateRecognizer(sql, asts.get(0));
+        OracleSelectForUpdateRecognizer recognizer =
+                new OracleSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertNull(recognizer.getTableAlias());
     }
 
@@ -103,7 +110,8 @@ public class OracleSelectForUpdateRecognizerTest {
         String sql = "select * from t where id = ? for update";
         List<SQLStatement> asts = SQLUtils.parseStatements(sql, DB_TYPE);
 
-        OracleSelectForUpdateRecognizer recognizer = new OracleSelectForUpdateRecognizer(sql, asts.get(0));
+        OracleSelectForUpdateRecognizer recognizer =
+                new OracleSelectForUpdateRecognizer(sql, asts.get(0));
         Assertions.assertEquals(recognizer.getTableName(), "t");
     }
 }

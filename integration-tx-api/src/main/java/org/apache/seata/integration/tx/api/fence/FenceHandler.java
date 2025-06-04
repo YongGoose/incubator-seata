@@ -16,20 +16,25 @@
  */
 package org.apache.seata.integration.tx.api.fence;
 
-import org.apache.seata.common.executor.Callback;
-
 import java.lang.reflect.Method;
 import java.util.Date;
-
+import org.apache.seata.common.executor.Callback;
 
 public interface FenceHandler {
 
-    Object prepareFence(String xid, Long branchId, String actionName, Callback<Object> targetCallback);
+    Object prepareFence(
+            String xid, Long branchId, String actionName, Callback<Object> targetCallback);
 
-    boolean commitFence(Method commitMethod, Object targetTCCBean, String xid, Long branchId, Object[] args);
+    boolean commitFence(
+            Method commitMethod, Object targetTCCBean, String xid, Long branchId, Object[] args);
 
-    boolean rollbackFence(Method rollbackMethod, Object targetTCCBean, String xid, Long branchId, Object[] args, String actionName);
+    boolean rollbackFence(
+            Method rollbackMethod,
+            Object targetTCCBean,
+            String xid,
+            Long branchId,
+            Object[] args,
+            String actionName);
 
     int deleteFenceByDate(Date datetime);
-
 }

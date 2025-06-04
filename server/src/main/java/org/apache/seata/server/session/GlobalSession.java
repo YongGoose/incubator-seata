@@ -71,23 +71,28 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
      * ThreadLocal should be optimize.
      * It is tied to the current threading model. threadlocal's public set method does nothing to protect it from abuse.
      */
-    private static final ThreadLocal<GlobalStatus> EXPECTED_STATUS_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<GlobalStatus> EXPECTED_STATUS_THREAD_LOCAL =
+            new ThreadLocal<>();
 
     /**
      * If the global session's status is (Rollbacking or Committing) and currentTime - createTime >= RETRY_DEAD_THRESHOLD
      *  then the tx will be remand as need to retry rollback
      */
-    private static final int RETRY_DEAD_THRESHOLD = ConfigurationFactory.getInstance()
-            .getInt(ConfigurationKeys.RETRY_DEAD_THRESHOLD, DefaultValues.DEFAULT_RETRY_DEAD_THRESHOLD);
+    private static final int RETRY_DEAD_THRESHOLD =
+            ConfigurationFactory.getInstance()
+                    .getInt(
+                            ConfigurationKeys.RETRY_DEAD_THRESHOLD,
+                            DefaultValues.DEFAULT_RETRY_DEAD_THRESHOLD);
 
     /**
      * If the global session's status is in an end state and currentTime - createTime >= END_STATE_RETRY_DEAD_THRESHOLD
      * then the tx will be remand as need to retry rollback
      */
-    private static final int END_STATE_RETRY_DEAD_THRESHOLD = ConfigurationFactory.getInstance()
-            .getInt(
-                    ConfigurationKeys.END_STATE_RETRY_DEAD_THRESHOLD,
-                    DefaultValues.DEFAULT_END_STATE_RETRY_DEAD_THRESHOLD);
+    private static final int END_STATE_RETRY_DEAD_THRESHOLD =
+            ConfigurationFactory.getInstance()
+                    .getInt(
+                            ConfigurationKeys.END_STATE_RETRY_DEAD_THRESHOLD,
+                            DefaultValues.DEFAULT_END_STATE_RETRY_DEAD_THRESHOLD);
 
     private String xid;
 
@@ -227,8 +232,12 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
     }
 
     private boolean isEndStatus() {
-        EnumSet<GlobalStatus> endStatuses = EnumSet.of(
-                GlobalStatus.Rollbacked, GlobalStatus.TimeoutRollbacked, GlobalStatus.Committed, GlobalStatus.Finished);
+        EnumSet<GlobalStatus> endStatuses =
+                EnumSet.of(
+                        GlobalStatus.Rollbacked,
+                        GlobalStatus.TimeoutRollbacked,
+                        GlobalStatus.Committed,
+                        GlobalStatus.Finished);
         return endStatuses.contains(this.status);
     }
 
@@ -257,7 +266,8 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
     }
 
     @Override
-    public void changeBranchStatus(BranchSession branchSession, BranchStatus status) throws TransactionException {
+    public void changeBranchStatus(BranchSession branchSession, BranchStatus status)
+            throws TransactionException {
         SessionHolder.getRootSessionManager().onBranchStatusChange(this, branchSession, status);
         for (SessionLifecycleListener lifecycleListener : lifecycleListeners) {
             lifecycleListener.onBranchStatusChange(this, branchSession, status);
@@ -349,8 +359,13 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
             synchronized (this) {
                 if (branchSessions == null && isLazyLoadBranch()) {
                     branchSessions = new ArrayList<>();
-                    Optional.ofNullable(SessionHolder.getRootSessionManager().findGlobalSession(xid, true))
-                            .ifPresent(globalSession -> branchSessions.addAll(globalSession.getBranchSessions()));
+                    Optional.ofNullable(
+                                    SessionHolder.getRootSessionManager()
+                                            .findGlobalSession(xid, true))
+                            .ifPresent(
+                                    globalSession ->
+                                            branchSessions.addAll(
+                                                    globalSession.getBranchSessions()));
                 }
             }
         }
@@ -360,10 +375,15 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
     public void unlockBranch(BranchSession branchSession) throws TransactionException {
         // do not unlock if global status in (Committing, CommitRetrying, AsyncCommitting),
         // because it's already unlocked in 'DefaultCore.commit()'
-        if (this.status != Committing && this.status != CommitRetrying && this.status != AsyncCommitting) {
+        if (this.status != Committing
+                && this.status != CommitRetrying
+                && this.status != AsyncCommitting) {
             if (!branchSession.unlock()) {
                 throw new TransactionException(
-                        "Unlock branch lock failed, xid = " + this.xid + ", branchId = " + branchSession.getBranchId());
+                        "Unlock branch lock failed, xid = "
+                                + this.xid
+                                + ", branchId = "
+                                + branchSession.getBranchId());
             }
         }
     }
@@ -468,7 +488,11 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
      * @param transactionName         the transaction name
      * @param timeout                 the timeout
      */
-    public GlobalSession(String applicationId, String transactionServiceGroup, String transactionName, int timeout) {
+    public GlobalSession(
+            String applicationId,
+            String transactionServiceGroup,
+            String transactionName,
+            int timeout) {
         this(applicationId, transactionServiceGroup, transactionName, timeout, false);
     }
 
@@ -613,7 +637,8 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
      */
     public static GlobalSession createGlobalSession(
             String applicationId, String txServiceGroup, String txName, int timeout) {
-        GlobalSession session = new GlobalSession(applicationId, txServiceGroup, txName, timeout, false);
+        GlobalSession session =
+                new GlobalSession(applicationId, txServiceGroup, txName, timeout, false);
         return session;
     }
 
@@ -630,7 +655,8 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
     public byte[] encode() {
         byte[] byApplicationIdBytes = applicationId != null ? applicationId.getBytes() : null;
 
-        byte[] byServiceGroupBytes = transactionServiceGroup != null ? transactionServiceGroup.getBytes() : null;
+        byte[] byServiceGroupBytes =
+                transactionServiceGroup != null ? transactionServiceGroup.getBytes() : null;
 
         byte[] byTxNameBytes = transactionName != null ? transactionName.getBytes() : null;
 
@@ -638,7 +664,12 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
 
         byte[] applicationDataBytes = applicationData != null ? applicationData.getBytes() : null;
         if (!RaftServerManager.isRaftMode()) {
-            checkSize(byApplicationIdBytes, byServiceGroupBytes, byTxNameBytes, xidBytes, applicationDataBytes);
+            checkSize(
+                    byApplicationIdBytes,
+                    byServiceGroupBytes,
+                    byTxNameBytes,
+                    xidBytes,
+                    applicationDataBytes);
         }
         ByteBuffer byteBuffer = byteBufferThreadLocal.get();
         // recycle
@@ -696,7 +727,8 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
 
         byte[] byApplicationIdBytes = applicationId != null ? applicationId.getBytes() : null;
 
-        byte[] byServiceGroupBytes = transactionServiceGroup != null ? transactionServiceGroup.getBytes() : null;
+        byte[] byServiceGroupBytes =
+                transactionServiceGroup != null ? transactionServiceGroup.getBytes() : null;
 
         byte[] byTxNameBytes = transactionName != null ? transactionName.getBytes() : null;
 
@@ -704,7 +736,12 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
 
         byte[] applicationDataBytes = applicationData != null ? applicationData.getBytes() : null;
         try {
-            checkSize(byApplicationIdBytes, byServiceGroupBytes, byTxNameBytes, xidBytes, applicationDataBytes);
+            checkSize(
+                    byApplicationIdBytes,
+                    byServiceGroupBytes,
+                    byTxNameBytes,
+                    xidBytes,
+                    applicationDataBytes);
         } catch (RuntimeException e) {
             throw new TransactionException(e.getMessage(), e);
         }
@@ -728,11 +765,20 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
             byte[] byTxNameBytes,
             byte[] xidBytes,
             byte[] applicationDataBytes) {
-        int size = calGlobalSessionSize(
-                byApplicationIdBytes, byServiceGroupBytes, byTxNameBytes, xidBytes, applicationDataBytes);
+        int size =
+                calGlobalSessionSize(
+                        byApplicationIdBytes,
+                        byServiceGroupBytes,
+                        byTxNameBytes,
+                        xidBytes,
+                        applicationDataBytes);
         if (size > MAX_GLOBAL_SESSION_SIZE) {
-            throw new RuntimeException("global session size exceeded, size : " + size + " byte, maxGlobalSessionSize : "
-                    + MAX_GLOBAL_SESSION_SIZE + " byte");
+            throw new RuntimeException(
+                    "global session size exceeded, size : "
+                            + size
+                            + " byte, maxGlobalSessionSize : "
+                            + MAX_GLOBAL_SESSION_SIZE
+                            + " byte");
         }
     }
 
@@ -835,14 +881,16 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
 
         public void lock() throws TransactionException {
             try {
-                if (globalSessionLock.tryLock(GLOBAL_SESSION_LOCK_TIME_OUT_MILLS, TimeUnit.MILLISECONDS)) {
+                if (globalSessionLock.tryLock(
+                        GLOBAL_SESSION_LOCK_TIME_OUT_MILLS, TimeUnit.MILLISECONDS)) {
                     return;
                 }
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted error", e);
             }
             throw new GlobalTransactionException(
-                    TransactionExceptionCode.FailedLockGlobalTransaction, "Lock global session failed");
+                    TransactionExceptionCode.FailedLockGlobalTransaction,
+                    "Lock global session failed");
         }
 
         public void unlock() {
@@ -906,12 +954,40 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
 
     @Override
     public String toString() {
-        return "GlobalSession{" + "xid='" + xid + '\'' + ", transactionId=" + transactionId + ", status=" + status
-                + ", applicationId='" + applicationId + '\'' + ", transactionServiceGroup='" + transactionServiceGroup
-                + '\'' + ", transactionName='" + transactionName + '\'' + ", timeout=" + timeout + ", beginTime="
-                + beginTime + ", applicationData='" + applicationData + '\'' + ", lazyLoadBranch=" + lazyLoadBranch
-                + ", active=" + active + ", branchSessions=" + branchSessions + ", globalSessionLock="
+        return "GlobalSession{"
+                + "xid='"
+                + xid
+                + '\''
+                + ", transactionId="
+                + transactionId
+                + ", status="
+                + status
+                + ", applicationId='"
+                + applicationId
+                + '\''
+                + ", transactionServiceGroup='"
+                + transactionServiceGroup
+                + '\''
+                + ", transactionName='"
+                + transactionName
+                + '\''
+                + ", timeout="
+                + timeout
+                + ", beginTime="
+                + beginTime
+                + ", applicationData='"
+                + applicationData
+                + '\''
+                + ", lazyLoadBranch="
+                + lazyLoadBranch
+                + ", active="
+                + active
+                + ", branchSessions="
+                + branchSessions
+                + ", globalSessionLock="
                 + globalSessionLock
-                + ", lifecycleListeners=" + lifecycleListeners + '}';
+                + ", lifecycleListeners="
+                + lifecycleListeners
+                + '}';
     }
 }

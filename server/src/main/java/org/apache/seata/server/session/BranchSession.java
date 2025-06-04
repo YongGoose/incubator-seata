@@ -84,7 +84,8 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
 
     public BranchSession(BranchType branchType) {
         this.branchType = branchType;
-        this.lockHolder = branchType == BranchType.AT ? new ConcurrentHashMap<>(8) : Collections.emptyMap();
+        this.lockHolder =
+                branchType == BranchType.AT ? new ConcurrentHashMap<>(8) : Collections.emptyMap();
     }
 
     /**
@@ -438,12 +439,21 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
             byte[] applicationDataBytes,
             byte[] xidBytes) {
 
-        int size = calBranchSessionSize(resourceIdBytes, lockKeyBytes, clientIdBytes, applicationDataBytes, xidBytes);
+        int size =
+                calBranchSessionSize(
+                        resourceIdBytes,
+                        lockKeyBytes,
+                        clientIdBytes,
+                        applicationDataBytes,
+                        xidBytes);
 
         if (size > MAX_BRANCH_SESSION_SIZE) {
             if (lockKeyBytes == null) {
-                throw new RuntimeException("branch session size exceeded, size : " + size + " maxBranchSessionSize : "
-                        + MAX_BRANCH_SESSION_SIZE);
+                throw new RuntimeException(
+                        "branch session size exceeded, size : "
+                                + size
+                                + " maxBranchSessionSize : "
+                                + MAX_BRANCH_SESSION_SIZE);
             }
             // try compress lockkey
             try {
@@ -456,8 +466,11 @@ public class BranchSession implements Lockable, Comparable<BranchSession>, Sessi
             }
 
             if (size > MAX_BRANCH_SESSION_SIZE) {
-                throw new RuntimeException("compress branch session size exceeded, compressSize : " + size
-                        + " maxBranchSessionSize : " + MAX_BRANCH_SESSION_SIZE);
+                throw new RuntimeException(
+                        "compress branch session size exceeded, compressSize : "
+                                + size
+                                + " maxBranchSessionSize : "
+                                + MAX_BRANCH_SESSION_SIZE);
             }
         }
     }

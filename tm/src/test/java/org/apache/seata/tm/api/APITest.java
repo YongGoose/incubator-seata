@@ -45,33 +45,39 @@ public class APITest {
     @BeforeAll
     public static void init() {
         backTransactionManager = TransactionManagerHolder.get();
-        TransactionManagerHolder.set(new TransactionManager() {
-            @Override
-            public String begin(String applicationId, String transactionServiceGroup, String name, int timeout)
-                    throws TransactionException {
-                return DEFAULT_XID;
-            }
+        TransactionManagerHolder.set(
+                new TransactionManager() {
+                    @Override
+                    public String begin(
+                            String applicationId,
+                            String transactionServiceGroup,
+                            String name,
+                            int timeout)
+                            throws TransactionException {
+                        return DEFAULT_XID;
+                    }
 
-            @Override
-            public GlobalStatus commit(String xid) throws TransactionException {
-                return GlobalStatus.Committed;
-            }
+                    @Override
+                    public GlobalStatus commit(String xid) throws TransactionException {
+                        return GlobalStatus.Committed;
+                    }
 
-            @Override
-            public GlobalStatus rollback(String xid) throws TransactionException {
-                return GlobalStatus.Rollbacked;
-            }
+                    @Override
+                    public GlobalStatus rollback(String xid) throws TransactionException {
+                        return GlobalStatus.Rollbacked;
+                    }
 
-            @Override
-            public GlobalStatus getStatus(String xid) throws TransactionException {
-                return GlobalStatus.Begin;
-            }
+                    @Override
+                    public GlobalStatus getStatus(String xid) throws TransactionException {
+                        return GlobalStatus.Begin;
+                    }
 
-            @Override
-            public GlobalStatus globalReport(String xid, GlobalStatus globalStatus) throws TransactionException {
-                return globalStatus;
-            }
-        });
+                    @Override
+                    public GlobalStatus globalReport(String xid, GlobalStatus globalStatus)
+                            throws TransactionException {
+                        return globalStatus;
+                    }
+                });
     }
 
     @AfterAll
@@ -98,7 +104,6 @@ public class APITest {
         GlobalTransaction tx = GlobalTransactionContext.getCurrentOrCreate();
         Assertions.assertEquals(tx.getXid(), DEFAULT_XID);
         Assertions.assertEquals(tx.getStatus(), GlobalStatus.Begin);
-
     }
 
     /**
@@ -124,7 +129,6 @@ public class APITest {
         tx.begin();
         Assertions.assertEquals(tx.getStatus(), GlobalStatus.Begin);
         Assertions.assertNotNull(tx.getXid());
-
     }
 
     /**
@@ -135,28 +139,32 @@ public class APITest {
     @Test
     public void testNestedCommit() throws Throwable {
         TransactionalTemplate template = new TransactionalTemplate();
-        template.execute(new AbstractTransactionalExecutor() {
-            @Override
-            public Object execute() throws Throwable {
-
-                TransactionalTemplate template = new TransactionalTemplate();
-                template.execute(new AbstractTransactionalExecutor() {
+        template.execute(
+                new AbstractTransactionalExecutor() {
                     @Override
                     public Object execute() throws Throwable {
 
                         TransactionalTemplate template = new TransactionalTemplate();
-                        template.execute(new AbstractTransactionalExecutor() {
-                            @Override
-                            public Object execute() throws Throwable {
-                                return null;
-                            }
-                        });
+                        template.execute(
+                                new AbstractTransactionalExecutor() {
+                                    @Override
+                                    public Object execute() throws Throwable {
+
+                                        TransactionalTemplate template =
+                                                new TransactionalTemplate();
+                                        template.execute(
+                                                new AbstractTransactionalExecutor() {
+                                                    @Override
+                                                    public Object execute() throws Throwable {
+                                                        return null;
+                                                    }
+                                                });
+                                        return null;
+                                    }
+                                });
                         return null;
                     }
                 });
-                return null;
-            }
-        });
     }
 
     /**
@@ -171,36 +179,44 @@ public class APITest {
 
         TransactionalTemplate template = new TransactionalTemplate();
         try {
-            template.execute(new AbstractTransactionalExecutor() {
-                @Override
-                public Object execute() throws Throwable {
+            template.execute(
+                    new AbstractTransactionalExecutor() {
+                        @Override
+                        public Object execute() throws Throwable {
 
-                    TransactionalTemplate template = new TransactionalTemplate();
-                    try {
-                        template.execute(new AbstractTransactionalExecutor() {
-                            @Override
-                            public Object execute() throws Throwable {
+                            TransactionalTemplate template = new TransactionalTemplate();
+                            try {
+                                template.execute(
+                                        new AbstractTransactionalExecutor() {
+                                            @Override
+                                            public Object execute() throws Throwable {
 
-                                TransactionalTemplate template = new TransactionalTemplate();
-                                try {
-                                    template.execute(new AbstractTransactionalExecutor() {
-                                        @Override
-                                        public Object execute() throws Throwable {
-                                            throw new RuntimeException(oexMsg);
-                                        }
-                                    });
-                                } catch (TransactionalExecutor.ExecutionException ex) {
-                                    throw ex.getOriginalException();
-                                }
-                                return null;
+                                                TransactionalTemplate template =
+                                                        new TransactionalTemplate();
+                                                try {
+                                                    template.execute(
+                                                            new AbstractTransactionalExecutor() {
+                                                                @Override
+                                                                public Object execute()
+                                                                        throws Throwable {
+                                                                    throw new RuntimeException(
+                                                                            oexMsg);
+                                                                }
+                                                            });
+                                                } catch (
+                                                        TransactionalExecutor.ExecutionException
+                                                                ex) {
+                                                    throw ex.getOriginalException();
+                                                }
+                                                return null;
+                                            }
+                                        });
+                            } catch (TransactionalExecutor.ExecutionException ex) {
+                                throw ex.getOriginalException();
                             }
-                        });
-                    } catch (TransactionalExecutor.ExecutionException ex) {
-                        throw ex.getOriginalException();
-                    }
-                    return null;
-                }
-            });
+                            return null;
+                        }
+                    });
         } catch (TransactionalExecutor.ExecutionException ex) {
             Throwable oex = ex.getOriginalException();
             Assertions.assertEquals(oex.getMessage(), oexMsg);
@@ -214,19 +230,19 @@ public class APITest {
         tx.globalReport(tx.getStatus());
 
         Assertions.assertThrows(IllegalStateException.class, () -> tx.globalReport(null));
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            RootContext.unbind();
-            GlobalTransaction tx2 = GlobalTransactionContext.getCurrentOrCreate();
-            tx2.globalReport(tx2.getStatus());
-        });
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> {
+                    RootContext.unbind();
+                    GlobalTransaction tx2 = GlobalTransactionContext.getCurrentOrCreate();
+                    tx2.globalReport(tx2.getStatus());
+                });
 
         Assertions.assertEquals(tx.getStatus(), GlobalStatus.Begin);
         Assertions.assertNotNull(tx.getXid());
-
     }
 
-
-    private static abstract class AbstractTransactionalExecutor implements TransactionalExecutor {
+    private abstract static class AbstractTransactionalExecutor implements TransactionalExecutor {
 
         @Override
         public TransactionInfo getTransactionInfo() {

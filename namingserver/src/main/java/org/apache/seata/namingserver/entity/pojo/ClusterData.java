@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.metadata.Cluster;
 import org.apache.seata.common.metadata.Node;
 import org.apache.seata.common.metadata.namingserver.NamingServerNode;
@@ -41,9 +40,8 @@ public class ClusterData {
     private String clusterName;
     private String clusterType;
     private final Map<String, Unit> unitData;
-    
-    private final Lock lock = new ReentrantLock();
 
+    private final Lock lock = new ReentrantLock();
 
     public ClusterData() {
         this.unitData = new ConcurrentHashMap<>();
@@ -76,7 +74,6 @@ public class ClusterData {
         this.clusterType = clusterType;
     }
 
-
     public Map<String, Unit> getUnitData() {
         return unitData;
     }
@@ -106,7 +103,6 @@ public class ClusterData {
                 .collect(Collectors.toList());
     }
 
-
     public Cluster getClusterByUnits(Set<String> unitNames) {
         Cluster clusterResponse = new Cluster();
         clusterResponse.setClusterName(clusterName);
@@ -125,13 +121,16 @@ public class ClusterData {
     }
 
     public boolean registerInstance(NamingServerNode instance, String unitName) {
-        Unit currentUnit = unitData.computeIfAbsent(unitName, value -> {
-            Unit unit = new Unit();
-            List<NamingServerNode> instances = new CopyOnWriteArrayList<>();
-            unit.setUnitName(unitName);
-            unit.setNamingInstanceList(instances);
-            return unit;
-        });
+        Unit currentUnit =
+                unitData.computeIfAbsent(
+                        unitName,
+                        value -> {
+                            Unit unit = new Unit();
+                            List<NamingServerNode> instances = new CopyOnWriteArrayList<>();
+                            unit.setUnitName(unitName);
+                            unit.setNamingInstanceList(instances);
+                            return unit;
+                        });
         // ensure that when adding an instance, the remove side will not delete the unit.
         lock.lock();
         try {
@@ -139,8 +138,5 @@ public class ClusterData {
         } finally {
             lock.unlock();
         }
-
     }
-
-
 }

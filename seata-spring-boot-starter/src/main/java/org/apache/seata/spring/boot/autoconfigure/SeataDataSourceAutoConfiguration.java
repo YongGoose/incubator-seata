@@ -16,6 +16,8 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.spring.annotation.datasource.AutoDataSourceProxyRegistrar.BEAN_NAME_SEATA_AUTO_DATA_SOURCE_PROXY_CREATOR;
+
 import javax.sql.DataSource;
 import org.apache.seata.spring.annotation.datasource.SeataAutoDataSourceProxyCreator;
 import org.apache.seata.spring.boot.autoconfigure.properties.SeataProperties;
@@ -27,17 +29,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
-import static org.apache.seata.spring.annotation.datasource.AutoDataSourceProxyRegistrar.BEAN_NAME_SEATA_AUTO_DATA_SOURCE_PROXY_CREATOR;
-
 /**
  * The type Seata data source auto configuration.
  *
  */
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnExpression("${seata.enabled:true} && ${seata.enableAutoDataSourceProxy:true} && ${seata.enable-auto-data-source-proxy:true}")
+@ConditionalOnExpression(
+        "${seata.enabled:true} && ${seata.enableAutoDataSourceProxy:true} &&"
+                + " ${seata.enable-auto-data-source-proxy:true}")
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@AutoConfigureAfter(value = {SeataCoreAutoConfiguration.class},
-    name = "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
+@AutoConfigureAfter(
+        value = {SeataCoreAutoConfiguration.class},
+        name = "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
 public class SeataDataSourceAutoConfiguration {
 
     /**
@@ -45,9 +48,11 @@ public class SeataDataSourceAutoConfiguration {
      */
     @Bean(BEAN_NAME_SEATA_AUTO_DATA_SOURCE_PROXY_CREATOR)
     @ConditionalOnMissingBean(SeataAutoDataSourceProxyCreator.class)
-    public static SeataAutoDataSourceProxyCreator seataAutoDataSourceProxyCreator(SeataProperties seataProperties) {
-        return new SeataAutoDataSourceProxyCreator(seataProperties.isUseJdkProxy(),
-            seataProperties.getExcludesForAutoProxying(), seataProperties.getDataSourceProxyMode());
+    public static SeataAutoDataSourceProxyCreator seataAutoDataSourceProxyCreator(
+            SeataProperties seataProperties) {
+        return new SeataAutoDataSourceProxyCreator(
+                seataProperties.isUseJdkProxy(),
+                seataProperties.getExcludesForAutoProxying(),
+                seataProperties.getDataSourceProxyMode());
     }
-
 }

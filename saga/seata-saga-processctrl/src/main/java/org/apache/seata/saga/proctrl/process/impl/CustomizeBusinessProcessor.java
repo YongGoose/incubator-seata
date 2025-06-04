@@ -17,7 +17,6 @@
 package org.apache.seata.saga.proctrl.process.impl;
 
 import java.util.Map;
-
 import org.apache.seata.common.exception.FrameworkErrorCode;
 import org.apache.seata.common.exception.FrameworkException;
 import org.apache.seata.saga.proctrl.ProcessContext;
@@ -41,7 +40,8 @@ public class CustomizeBusinessProcessor implements BusinessProcessor {
     private Map<String, RouterHandler> routerHandlers;
 
     public static ProcessType matchProcessType(ProcessContext context) {
-        ProcessType processType = (ProcessType)context.getVariable(ProcessContext.VAR_NAME_PROCESS_TYPE);
+        ProcessType processType =
+                (ProcessType) context.getVariable(ProcessContext.VAR_NAME_PROCESS_TYPE);
         if (processType == null) {
             processType = ProcessType.STATE_LANG;
         }
@@ -61,7 +61,10 @@ public class CustomizeBusinessProcessor implements BusinessProcessor {
 
         ProcessHandler processor = processHandlers.get(processType.getCode());
         if (processor == null) {
-            LOGGER.error("Cannot find process handler by type {}, context= {}", processType.getCode(), context);
+            LOGGER.error(
+                    "Cannot find process handler by type {}, context= {}",
+                    processType.getCode(),
+                    context);
             throw new FrameworkException(FrameworkErrorCode.ProcessHandlerNotFound);
         }
 
@@ -74,14 +77,19 @@ public class CustomizeBusinessProcessor implements BusinessProcessor {
         ProcessType processType = matchProcessType(context);
         if (processType == null) {
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("Process type not found, the process is no longer advanced, context= {}", context);
+                LOGGER.warn(
+                        "Process type not found, the process is no longer advanced, context= {}",
+                        context);
             }
             return;
         }
 
         RouterHandler router = routerHandlers.get(processType.getCode());
         if (router == null) {
-            LOGGER.error("Cannot find router handler by type {}, context= {}", processType.getCode(), context);
+            LOGGER.error(
+                    "Cannot find router handler by type {}, context= {}",
+                    processType.getCode(),
+                    context);
             return;
         }
 

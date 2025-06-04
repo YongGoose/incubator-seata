@@ -16,11 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SERVER_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = SERVER_PREFIX)
@@ -70,7 +69,8 @@ public class ServerProperties {
         return rollbackRetryTimeoutUnlockEnable;
     }
 
-    public ServerProperties setRollbackRetryTimeoutUnlockEnable(Boolean rollbackRetryTimeoutUnlockEnable) {
+    public ServerProperties setRollbackRetryTimeoutUnlockEnable(
+            Boolean rollbackRetryTimeoutUnlockEnable) {
         this.rollbackRetryTimeoutUnlockEnable = rollbackRetryTimeoutUnlockEnable;
         return this;
     }

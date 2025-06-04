@@ -16,11 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server.store;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_DB_DRUID_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = STORE_DB_DRUID_PREFIX)
@@ -30,7 +29,6 @@ public class DruidProperties {
     private Boolean testWhileIdle = true;
     private Boolean testOnBorrow = false;
     private Boolean keepAlive = false;
-
 
     public Long getTimeBetweenEvictionRunsMillis() {
         return timeBetweenEvictionRunsMillis;
@@ -79,12 +77,17 @@ public class DruidProperties {
 
     @Override
     public String toString() {
-        return "DruidProperties{" +
-                "timeBetweenEvictionRunsMillis=" + timeBetweenEvictionRunsMillis +
-                ", minEvictableIdleTimeMillis=" + minEvictableIdleTimeMillis +
-                ", testWhileIdle=" + testWhileIdle +
-                ", testOnBorrow=" + testOnBorrow +
-                ", keepAlive=" + keepAlive +
-                '}';
+        return "DruidProperties{"
+                + "timeBetweenEvictionRunsMillis="
+                + timeBetweenEvictionRunsMillis
+                + ", minEvictableIdleTimeMillis="
+                + minEvictableIdleTimeMillis
+                + ", testWhileIdle="
+                + testWhileIdle
+                + ", testOnBorrow="
+                + testOnBorrow
+                + ", keepAlive="
+                + keepAlive
+                + '}';
     }
 }

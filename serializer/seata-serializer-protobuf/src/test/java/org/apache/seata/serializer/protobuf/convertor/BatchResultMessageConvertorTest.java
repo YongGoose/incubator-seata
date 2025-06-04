@@ -16,14 +16,14 @@
  */
 package org.apache.seata.serializer.protobuf.convertor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.model.BranchStatus;
 import org.apache.seata.core.protocol.BatchResultMessage;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.BranchCommitResponse;
 import org.apache.seata.serializer.protobuf.generated.BatchResultMessageProto;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type batch result message protobuf convertor test.
@@ -38,9 +38,10 @@ public class BatchResultMessageConvertorTest {
         BranchCommitResponse branchCommitResponse = buildBranchCommitResponsePhaseTwoCommitted();
         batchResultMessage.getResultMessages().add(branchCommitResponse);
         BatchResultMessageConvertor pbConvertor = new BatchResultMessageConvertor();
-        BatchResultMessageProto batchResultMessageProto = pbConvertor.convert2Proto(batchResultMessage);
+        BatchResultMessageProto batchResultMessageProto =
+                pbConvertor.convert2Proto(batchResultMessage);
         BatchResultMessage model = pbConvertor.convert2Model(batchResultMessageProto);
-        BranchCommitResponse decodeModel = (BranchCommitResponse)model.getResultMessages().get(0);
+        BranchCommitResponse decodeModel = (BranchCommitResponse) model.getResultMessages().get(0);
         assertThat(decodeModel.getXid()).isEqualTo(branchCommitResponse.getXid());
         assertThat(decodeModel.getBranchId()).isEqualTo(branchCommitResponse.getBranchId());
         assertThat(decodeModel.getResultCode()).isEqualTo(branchCommitResponse.getResultCode());

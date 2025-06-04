@@ -16,6 +16,9 @@
  */
 package org.apache.seata.rm.datasource.util;
 
+import static java.lang.Short.toUnsignedInt;
+import static java.time.ZoneOffset.UTC;
+
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -23,9 +26,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.Short.toUnsignedInt;
-import static java.time.ZoneOffset.UTC;
 
 /**
  * Currently, common time zones are supported
@@ -38,7 +38,7 @@ public class OffsetTimeUtils {
 
     public static final String PATTERN_FORMAT_TIME = "yyyy-MM-dd HH:mm:ss.SSS";
 
-    private static final byte REGIONIDBIT = (byte)0b1000_0000;
+    private static final byte REGIONIDBIT = (byte) 0b1000_0000;
 
     private static final Map<Integer, String> ZONE_ID_MAP = new HashMap<>(36);
 
@@ -106,8 +106,11 @@ public class OffsetTimeUtils {
         int second = bytes[6] - 1;
         int nanoOfSecond = 0;
         if (bytes.length >= 8) {
-            nanoOfSecond = (toUnsignedInt(bytes[7]) << 24) | (toUnsignedInt(bytes[8]) << 16)
-                | (toUnsignedInt(bytes[9]) << 8) | toUnsignedInt(bytes[10]);
+            nanoOfSecond =
+                    (toUnsignedInt(bytes[7]) << 24)
+                            | (toUnsignedInt(bytes[8]) << 16)
+                            | (toUnsignedInt(bytes[9]) << 8)
+                            | toUnsignedInt(bytes[10]);
         }
         return LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, nanoOfSecond);
     }

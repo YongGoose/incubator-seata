@@ -19,7 +19,6 @@ package org.apache.seata.config;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.seata.common.util.StringUtils;
 
 /**
@@ -29,6 +28,7 @@ import org.apache.seata.common.util.StringUtils;
 public interface Configuration {
 
     Map<String, String> ENV_MAP = System.getenv();
+
     /**
      * Gets short.
      *
@@ -310,5 +310,4 @@ public interface Configuration {
         }
         return System.getProperty(dataId);
     }
-
 }

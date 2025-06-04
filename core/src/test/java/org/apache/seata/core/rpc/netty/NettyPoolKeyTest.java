@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 public class NettyPoolKeyTest {
 
     private NettyPoolKey nettyPoolKey;
@@ -29,8 +28,10 @@ public class NettyPoolKeyTest {
     private static final NettyPoolKey.TransactionRole TM_ROLE = NettyPoolKey.TransactionRole.TMROLE;
     private static final String ADDRESS1 = "127.0.0.1:8091";
     private static final String ADDRESS2 = "127.0.0.1:8092";
-    private static final RegisterRMRequest MSG1 = new RegisterRMRequest("applicationId1", "transactionServiceGroup1");
-    private static final RegisterRMRequest MSG2 = new RegisterRMRequest("applicationId2", "transactionServiceGroup2");
+    private static final RegisterRMRequest MSG1 =
+            new RegisterRMRequest("applicationId1", "transactionServiceGroup1");
+    private static final RegisterRMRequest MSG2 =
+            new RegisterRMRequest("applicationId2", "transactionServiceGroup2");
 
     @BeforeEach
     public void init() {
@@ -72,7 +73,8 @@ public class NettyPoolKeyTest {
 
     @Test
     public void testToString() {
-        String expectStr = "transactionRole:RMROLE,address:127.0.0.1:8091,msg:< " + MSG1.toString() + " >";
+        String expectStr =
+                "transactionRole:RMROLE,address:127.0.0.1:8091,msg:< " + MSG1.toString() + " >";
         Assertions.assertEquals(nettyPoolKey.toString(), expectStr);
     }
 }

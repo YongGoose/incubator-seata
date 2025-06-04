@@ -19,7 +19,6 @@ package org.apache.seata.saga.statelang.parser.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.seata.common.util.NumberUtils;
 import org.apache.seata.saga.statelang.domain.TaskState.ExceptionMatch;
 import org.apache.seata.saga.statelang.domain.TaskState.Loop;
@@ -58,7 +57,8 @@ public abstract class AbstractTaskStateParser extends BaseStatePaser {
         // customize if update last or append new compensateStateInstLog
         Object isCompensatePersistModeUpdate = nodeMap.get("IsCompensatePersistModeUpdate");
         if (isCompensatePersistModeUpdate instanceof Boolean) {
-            state.setCompensatePersistModeUpdate(Boolean.TRUE.equals(isCompensatePersistModeUpdate));
+            state.setCompensatePersistModeUpdate(
+                    Boolean.TRUE.equals(isCompensatePersistModeUpdate));
         }
 
         List<Object> retryList = (List<Object>) nodeMap.get("Retry");
@@ -81,7 +81,8 @@ public abstract class AbstractTaskStateParser extends BaseStatePaser {
             state.setOutput(outputMap);
         }
 
-        Map<String/* expression */, String /* status */> statusMap = (Map<String, String>) nodeMap.get("Status");
+        Map<String /* expression */, String /* status */> statusMap =
+                (Map<String, String>) nodeMap.get("Status");
         if (statusMap != null) {
             state.setStatus(statusMap);
         }
@@ -134,18 +135,21 @@ public abstract class AbstractTaskStateParser extends BaseStatePaser {
     }
 
     protected Loop parseLoop(Object loopObj) {
-        Map<String, Object> loopMap = (Map<String, Object>)loopObj;
+        Map<String, Object> loopMap = (Map<String, Object>) loopObj;
         LoopImpl loop = new LoopImpl();
 
         Object parallel = loopMap.get("Parallel");
         loop.setParallel(NumberUtils.toInt(parallel.toString(), 1));
 
-        loop.setCollection((String)loopMap.get("Collection"));
-        loop.setElementVariableName((String)loopMap.getOrDefault("ElementVariableName", "loopElement"));
-        loop.setElementIndexName((String)loopMap.getOrDefault("ElementIndexName", "loopCounter"));
+        loop.setCollection((String) loopMap.get("Collection"));
+        loop.setElementVariableName(
+                (String) loopMap.getOrDefault("ElementVariableName", "loopElement"));
+        loop.setElementIndexName((String) loopMap.getOrDefault("ElementIndexName", "loopCounter"));
         loop.setCompletionCondition(
-            (String)loopMap.getOrDefault("CompletionCondition", "[nrOfInstances] == [nrOfCompletedInstances]"));
+                (String)
+                        loopMap.getOrDefault(
+                                "CompletionCondition",
+                                "[nrOfInstances] == [nrOfCompletedInstances]"));
         return loop;
-
     }
 }

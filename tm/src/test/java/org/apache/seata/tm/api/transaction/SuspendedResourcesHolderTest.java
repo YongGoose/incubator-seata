@@ -24,18 +24,21 @@ import org.junit.jupiter.api.Test;
  */
 public class SuspendedResourcesHolderTest {
 
-    private final static String DEFAULT_XID = "1234567890";
+    private static final String DEFAULT_XID = "1234567890";
 
     @Test
     void testIllegalArgumentException() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new SuspendedResourcesHolder(null);
-        });
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new SuspendedResourcesHolder(null);
+                });
     }
 
     @Test
     void getXidTest() {
-        SuspendedResourcesHolder suspendedResourcesHolder = new SuspendedResourcesHolder(DEFAULT_XID);
+        SuspendedResourcesHolder suspendedResourcesHolder =
+                new SuspendedResourcesHolder(DEFAULT_XID);
         Assertions.assertEquals(DEFAULT_XID, suspendedResourcesHolder.getXid());
     }
 }

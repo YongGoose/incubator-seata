@@ -16,6 +16,9 @@
  */
 package org.apache.seata.integration.tx.api.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.AbstractMap;
@@ -23,11 +26,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ClassUtilsTest {
 
@@ -68,18 +67,22 @@ public class ClassUtilsTest {
     public void testGetMostSpecificPublicMethod() throws NoSuchMethodException {
         Method method = Map.class.getDeclaredMethod("remove", Object.class, Object.class);
         Method specificMethod = ClassUtils.getMostSpecificMethod(method, HashMap.class);
-        assertEquals(HashMap.class.getDeclaredMethod("remove", Object.class, Object.class), specificMethod);
+        assertEquals(
+                HashMap.class.getDeclaredMethod("remove", Object.class, Object.class),
+                specificMethod);
     }
 
     @Test
     public void testGetMostSpecificPrivateMethod() throws NoSuchMethodException {
         Method method = AbstractList.class.getDeclaredMethod("rangeCheckForAdd", int.class);
         Method specificMethod = ClassUtils.getMostSpecificMethod(method, ArrayList.class);
-        assertNotEquals(ArrayList.class.getDeclaredMethod("rangeCheckForAdd", int.class), specificMethod);
+        assertNotEquals(
+                ArrayList.class.getDeclaredMethod("rangeCheckForAdd", int.class), specificMethod);
     }
 
     @Test
-    public void testGetMostSpecificMethodWhichNotExistsInTargetClass() throws NoSuchMethodException {
+    public void testGetMostSpecificMethodWhichNotExistsInTargetClass()
+            throws NoSuchMethodException {
         Method method = ArrayList.class.getDeclaredMethod("sort", Comparator.class);
         Method specificMethod = ClassUtils.getMostSpecificMethod(method, Map.class);
         assertEquals(ArrayList.class.getDeclaredMethod("sort", Comparator.class), specificMethod);

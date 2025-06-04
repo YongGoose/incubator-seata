@@ -20,10 +20,11 @@ import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.rm.datasource.undo.BaseUndoLogParserTest;
 import org.apache.seata.rm.datasource.undo.UndoLogParser;
 
-
 public class FuryUndoLogParserTest extends BaseUndoLogParserTest {
 
-    FuryUndoLogParser parser = (FuryUndoLogParser) EnhancedServiceLoader.load(UndoLogParser.class, FuryUndoLogParser.NAME);
+    FuryUndoLogParser parser =
+            (FuryUndoLogParser)
+                    EnhancedServiceLoader.load(UndoLogParser.class, FuryUndoLogParser.NAME);
 
     @Override
     public UndoLogParser getParser() {
@@ -31,6 +32,5 @@ public class FuryUndoLogParserTest extends BaseUndoLogParserTest {
     }
 
     @Override
-    public void testTimestampEncodeAndDecode() {
-    }
+    public void testTimestampEncodeAndDecode() {}
 }

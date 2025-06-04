@@ -16,6 +16,12 @@
  */
 package org.apache.seata.server.console.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.BranchStatus;
@@ -29,13 +35,6 @@ import org.apache.seata.server.session.SessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * The abstract service.
  */
@@ -44,31 +43,46 @@ public abstract class AbstractService {
 
     protected final LockManager lockManager = LockerManagerFactory.getLockManager();
 
-    protected static final List<GlobalStatus> RETRY_COMMIT_STATUS = Arrays.asList(GlobalStatus.CommitRetrying);
+    protected static final List<GlobalStatus> RETRY_COMMIT_STATUS =
+            Arrays.asList(GlobalStatus.CommitRetrying);
 
-    protected static final List<GlobalStatus> RETRY_ROLLBACK_STATUS = Arrays.asList(GlobalStatus.RollbackRetrying,
-            GlobalStatus.TimeoutRollbackRetrying, GlobalStatus.TimeoutRollbacking);
+    protected static final List<GlobalStatus> RETRY_ROLLBACK_STATUS =
+            Arrays.asList(
+                    GlobalStatus.RollbackRetrying,
+                    GlobalStatus.TimeoutRollbackRetrying,
+                    GlobalStatus.TimeoutRollbacking);
 
-    protected static final List<GlobalStatus> COMMIT_ING_STATUS = Stream.concat(RETRY_COMMIT_STATUS.stream(),
-            Collections.singletonList(GlobalStatus.Committing).stream()).collect(Collectors.toList());
+    protected static final List<GlobalStatus> COMMIT_ING_STATUS =
+            Stream.concat(
+                            RETRY_COMMIT_STATUS.stream(),
+                            Collections.singletonList(GlobalStatus.Committing).stream())
+                    .collect(Collectors.toList());
 
-    protected static final List<GlobalStatus> ROLLBACK_ING_STATUS = Stream.concat(RETRY_ROLLBACK_STATUS.stream(),
-            Collections.singletonList(GlobalStatus.Rollbacking).stream()).collect(Collectors.toList());
+    protected static final List<GlobalStatus> ROLLBACK_ING_STATUS =
+            Stream.concat(
+                            RETRY_ROLLBACK_STATUS.stream(),
+                            Collections.singletonList(GlobalStatus.Rollbacking).stream())
+                    .collect(Collectors.toList());
 
-    protected static final List<GlobalStatus> RETRY_STATUS = Stream.concat(RETRY_COMMIT_STATUS.stream(),
-            RETRY_ROLLBACK_STATUS.stream()).collect(Collectors.toList());
+    protected static final List<GlobalStatus> RETRY_STATUS =
+            Stream.concat(RETRY_COMMIT_STATUS.stream(), RETRY_ROLLBACK_STATUS.stream())
+                    .collect(Collectors.toList());
 
-    protected static final List<GlobalStatus> FAIL_COMMIT_STATUS = Arrays.asList(GlobalStatus.CommitFailed,
-            GlobalStatus.CommitRetryTimeout);
+    protected static final List<GlobalStatus> FAIL_COMMIT_STATUS =
+            Arrays.asList(GlobalStatus.CommitFailed, GlobalStatus.CommitRetryTimeout);
 
-    protected static final List<GlobalStatus> FAIL_ROLLBACK_STATUS = Arrays.asList(GlobalStatus.TimeoutRollbacked,
-            GlobalStatus.RollbackFailed, GlobalStatus.RollbackRetryTimeout);
+    protected static final List<GlobalStatus> FAIL_ROLLBACK_STATUS =
+            Arrays.asList(
+                    GlobalStatus.TimeoutRollbacked,
+                    GlobalStatus.RollbackFailed,
+                    GlobalStatus.RollbackRetryTimeout);
 
-    protected static final List<GlobalStatus> FAIL_STATUS = Stream.concat(FAIL_COMMIT_STATUS.stream(),
-            FAIL_ROLLBACK_STATUS.stream()).collect(Collectors.toList());
+    protected static final List<GlobalStatus> FAIL_STATUS =
+            Stream.concat(FAIL_COMMIT_STATUS.stream(), FAIL_ROLLBACK_STATUS.stream())
+                    .collect(Collectors.toList());
 
-    protected static final List<GlobalStatus> FINISH_STATUS = Arrays.asList(GlobalStatus.Committed,
-            GlobalStatus.Finished, GlobalStatus.Rollbacked);
+    protected static final List<GlobalStatus> FINISH_STATUS =
+            Arrays.asList(GlobalStatus.Committed, GlobalStatus.Finished, GlobalStatus.Rollbacked);
 
     protected void commonCheck(String xid, String branchId) {
         if (StringUtils.isBlank(xid)) {
@@ -80,7 +94,8 @@ public abstract class AbstractService {
         try {
             Long.parseLong(branchId);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Wrong parameter for branchId, branch Id is not number");
+            throw new IllegalArgumentException(
+                    "Wrong parameter for branchId, branch Id is not number");
         }
     }
 
@@ -110,24 +125,33 @@ public abstract class AbstractService {
         }
         List<BranchSession> branchSessions = globalSession.getBranchSessions();
         Long paramBranchId = Long.valueOf(branchId);
-        BranchSession branchSession = branchSessions.stream()
-                .filter(session -> paramBranchId.equals(session.getBranchId()))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("branch session is not exist, may be finished"));
+        BranchSession branchSession =
+                branchSessions.stream()
+                        .filter(session -> paramBranchId.equals(session.getBranchId()))
+                        .findAny()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "branch session is not exist, may be finished"));
         return new CheckResult(globalSession, branchSession);
     }
 
-    protected boolean doDeleteBranch(GlobalSession globalSession, BranchSession branchSession) throws TransactionException {
+    protected boolean doDeleteBranch(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Branch delete start, xid:{} branchId:{} branchType:{}",
-                    branchSession.getXid(), branchSession.getBranchId(), branchSession.getBranchType());
+            LOGGER.debug(
+                    "Branch delete start, xid:{} branchId:{} branchType:{}",
+                    branchSession.getXid(),
+                    branchSession.getBranchId(),
+                    branchSession.getBranchType());
         }
         // local transaction failed, not need to do branch del for phase two
         if (branchSession.getStatus() == BranchStatus.PhaseOne_Failed) {
             globalSession.removeBranch(branchSession);
             return true;
         }
-        boolean result = DefaultCoordinator.getInstance().doBranchDelete(globalSession, branchSession);
+        boolean result =
+                DefaultCoordinator.getInstance().doBranchDelete(globalSession, branchSession);
         if (result) {
             result = branchSession.unlock();
             if (result) {
@@ -138,10 +162,14 @@ public abstract class AbstractService {
         return false;
     }
 
-    protected boolean doForceDeleteBranch(GlobalSession globalSession, BranchSession branchSession) throws TransactionException {
+    protected boolean doForceDeleteBranch(GlobalSession globalSession, BranchSession branchSession)
+            throws TransactionException {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Branch force delete start, xid:{} branchId:{} branchType:{}",
-                    branchSession.getXid(), branchSession.getBranchId(), branchSession.getBranchType());
+            LOGGER.debug(
+                    "Branch force delete start, xid:{} branchId:{} branchType:{}",
+                    branchSession.getXid(),
+                    branchSession.getBranchId(),
+                    branchSession.getBranchType());
         }
         globalSession.removeBranch(branchSession);
         return true;
@@ -151,7 +179,8 @@ public abstract class AbstractService {
         return DefaultCoordinator.getInstance().doGlobalCommit(globalSession, true);
     }
 
-    protected boolean doRetryRollbackGlobal(GlobalSession globalSession) throws TransactionException {
+    protected boolean doRetryRollbackGlobal(GlobalSession globalSession)
+            throws TransactionException {
         return DefaultCoordinator.getInstance().doGlobalRollback(globalSession, true);
     }
 

@@ -17,7 +17,6 @@
 package org.apache.seata.mockserver.model;
 
 import java.util.List;
-
 import org.apache.seata.common.XID;
 import org.apache.seata.common.util.UUIDGenerator;
 import org.apache.seata.core.model.GlobalStatus;
@@ -56,7 +55,11 @@ public class MockGlobalSession {
      * @param transactionName         the transaction name
      * @param timeout                 the timeout
      */
-    public MockGlobalSession(String applicationId, String transactionServiceGroup, String transactionName, int timeout) {
+    public MockGlobalSession(
+            String applicationId,
+            String transactionServiceGroup,
+            String transactionName,
+            int timeout) {
         this.transactionId = UUIDGenerator.generateUUID();
         this.status = GlobalStatus.Begin;
         this.applicationId = applicationId;

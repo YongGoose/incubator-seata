@@ -29,21 +29,24 @@ public class PolarDBXOperateRecognizerHolderTest extends AbstractPolarDBXRecogni
     public void getDeleteRecognizerTest() {
         String sql = "DELETE FROM t WHERE id = 1";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new PolarDBXOperateRecognizerHolder().getDeleteRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new PolarDBXOperateRecognizerHolder().getDeleteRecognizer(sql, sqlStatement));
     }
 
     @Test
     public void getInsertRecognizerTest() {
         String sql = "INSERT INTO t (name) VALUES ('test')";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new PolarDBXOperateRecognizerHolder().getInsertRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new PolarDBXOperateRecognizerHolder().getInsertRecognizer(sql, sqlStatement));
     }
 
     @Test
     public void getUpdateRecognizerTest() {
         String sql = "UPDATE t SET name = 'test' WHERE id = 1";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new PolarDBXOperateRecognizerHolder().getUpdateRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new PolarDBXOperateRecognizerHolder().getUpdateRecognizer(sql, sqlStatement));
     }
 
     @Test
@@ -51,11 +54,15 @@ public class PolarDBXOperateRecognizerHolderTest extends AbstractPolarDBXRecogni
         // common select without lock
         String sql = "SELECT name FROM t1 WHERE id = 1";
         SQLStatement sqlStatement = getSQLStatement(sql);
-        Assertions.assertNull(new PolarDBXOperateRecognizerHolder().getSelectForUpdateRecognizer(sql, sqlStatement));
+        Assertions.assertNull(
+                new PolarDBXOperateRecognizerHolder()
+                        .getSelectForUpdateRecognizer(sql, sqlStatement));
 
         // select for update
         sql += " FOR UPDATE";
         sqlStatement = getSQLStatement(sql);
-        Assertions.assertNotNull(new PolarDBXOperateRecognizerHolder().getSelectForUpdateRecognizer(sql, sqlStatement));
+        Assertions.assertNotNull(
+                new PolarDBXOperateRecognizerHolder()
+                        .getSelectForUpdateRecognizer(sql, sqlStatement));
     }
 }

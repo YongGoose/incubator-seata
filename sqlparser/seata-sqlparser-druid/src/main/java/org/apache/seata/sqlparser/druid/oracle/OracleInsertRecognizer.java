@@ -16,9 +16,6 @@
  */
 package org.apache.seata.sqlparser.druid.oracle;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -31,14 +28,17 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.apache.seata.common.util.CollectionUtils;
-import org.apache.seata.sqlparser.util.ColumnUtils;
 import org.apache.seata.sqlparser.SQLInsertRecognizer;
 import org.apache.seata.sqlparser.SQLType;
 import org.apache.seata.sqlparser.struct.NotPlaceholderExpr;
 import org.apache.seata.sqlparser.struct.Null;
 import org.apache.seata.sqlparser.struct.SqlMethodExpr;
 import org.apache.seata.sqlparser.struct.SqlSequenceExpr;
+import org.apache.seata.sqlparser.util.ColumnUtils;
 
 /**
  * The type oracle insert recognizer.
@@ -56,7 +56,7 @@ public class OracleInsertRecognizer extends BaseOracleRecognizer implements SQLI
      */
     public OracleInsertRecognizer(String originalSQL, SQLStatement ast) {
         super(originalSQL);
-        this.ast = (OracleInsertStatement)ast;
+        this.ast = (OracleInsertStatement) ast;
     }
 
     @Override
@@ -72,14 +72,15 @@ public class OracleInsertRecognizer extends BaseOracleRecognizer implements SQLI
     @Override
     public String getTableName() {
         StringBuilder sb = new StringBuilder();
-        OracleOutputVisitor visitor = new OracleOutputVisitor(sb) {
+        OracleOutputVisitor visitor =
+                new OracleOutputVisitor(sb) {
 
-            @Override
-            public boolean visit(SQLExprTableSource x) {
-                printTableSourceExpr(x.getExpr());
-                return false;
-            }
-        };
+                    @Override
+                    public boolean visit(SQLExprTableSource x) {
+                        printTableSourceExpr(x.getExpr());
+                        return false;
+                    }
+                };
         visitor.visit(ast.getTableSource());
         return sb.toString();
     }
@@ -99,7 +100,7 @@ public class OracleInsertRecognizer extends BaseOracleRecognizer implements SQLI
         List<String> list = new ArrayList<>(columnSQLExprs.size());
         for (SQLExpr expr : columnSQLExprs) {
             if (expr instanceof SQLIdentifierExpr) {
-                list.add(((SQLIdentifierExpr)expr).getName());
+                list.add(((SQLIdentifierExpr) expr).getName());
             } else {
                 wrapSQLParsingException(expr);
             }

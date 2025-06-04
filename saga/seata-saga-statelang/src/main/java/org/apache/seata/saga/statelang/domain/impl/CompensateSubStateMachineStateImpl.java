@@ -23,7 +23,8 @@ import org.apache.seata.saga.statelang.domain.StateType;
  * Used to compensate the state of the sub state machine, inherited from ServiceTaskState
  *
  */
-public class CompensateSubStateMachineStateImpl extends ServiceTaskStateImpl implements CompensateSubStateMachineState {
+public class CompensateSubStateMachineStateImpl extends ServiceTaskStateImpl
+        implements CompensateSubStateMachineState {
     public CompensateSubStateMachineStateImpl() {
         setType(StateType.SUB_MACHINE_COMPENSATION);
     }
