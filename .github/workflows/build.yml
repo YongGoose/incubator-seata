@@ -80,8 +80,8 @@ jobs:
       - name: "Test, Spotless style, Check PMD, Check license with Maven and Java8"
         if: matrix.java == '8'
         run: |
-          ./mvnw -T 4C clean test \
-                 -DspotlessCheck.skip=false -DredisCaseEnabled=true \
+          ./mvnw -T 4C clean test spotless:check \
+                 -Dpmd.skip=false -Dlicense.skip=false -DredisCaseEnabled=true \
                  -e -B \
                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
                  -Dorg.slf4j.simpleLogger.log.net.sourceforge.pmd=error;
