@@ -16,6 +16,13 @@
  */
 package org.apache.seata.discovery.loadbalance;
 
+import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
+
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import org.apache.seata.discovery.registry.RegistryFactory;
 import org.apache.seata.discovery.registry.RegistryService;
 import org.junit.jupiter.api.Assertions;
@@ -23,14 +30,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
-
-import static org.apache.seata.common.DefaultValues.DEFAULT_TX_GROUP;
 
 /**
  * The type Load balance factory test.
@@ -95,7 +94,7 @@ public class LoadBalanceFactoryTest {
         List<InetSocketAddress> addressList = registryService.lookup(DEFAULT_TX_GROUP);
         InetSocketAddress balanceAddress = loadBalance.select(addressList, XID);
         Assertions.assertNotNull(balanceAddress);
-        //wait trigger testUnRegistry
+        // wait trigger testUnRegistry
         TimeUnit.SECONDS.sleep(30);
         List<InetSocketAddress> addressList1 = registryService.lookup(DEFAULT_TX_GROUP);
         Assertions.assertEquals(1, addressList1.size());
@@ -125,8 +124,6 @@ public class LoadBalanceFactoryTest {
      */
     static Stream<Arguments> instanceProvider() {
         LoadBalance loadBalance = LoadBalanceFactory.getInstance();
-        return Stream.of(
-                Arguments.of(loadBalance)
-        );
+        return Stream.of(Arguments.of(loadBalance));
     }
 }

@@ -16,15 +16,6 @@
  */
 package org.apache.seata.rm.datasource.undo;
 
-import org.apache.seata.sqlparser.util.JdbcConstants;
-import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -34,12 +25,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import org.apache.seata.sqlparser.util.JdbcConstants;
+import org.junit.jupiter.api.Test;
 
 public class UndoLogManagerTest {
 
-
     private static final int APPEND_IN_SIZE = 10;
-
 
     private static final String THE_APPEND_IN_SIZE_PARAM_STRING = " (?,?,?,?,?,?,?,?,?,?) ";
 
@@ -60,7 +56,7 @@ public class UndoLogManagerTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         UndoLogManagerFactory.getUndoLogManager(JdbcConstants.MYSQL).batchDeleteUndoLog(xids, branchIds, connection);
 
-        //verify
+        // verify
         for (int i = 1; i <= APPEND_IN_SIZE; i++) {
             verify(preparedStatement).setLong(eq(i), anyLong());
             verify(preparedStatement).setString(eq(i), anyString());
@@ -73,11 +69,11 @@ public class UndoLogManagerTest {
 
     @Test
     public void testToBatchDeleteUndoLogSql() {
-        String expectedSqlString = "DELETE FROM undo_log WHERE  branch_id IN " +
-                THE_APPEND_IN_SIZE_PARAM_STRING +
-                " AND xid IN " +
-                THE_DOUBLE_APPEND_IN_SIZE_PARAM_STRING;
-        String batchDeleteUndoLogSql = AbstractUndoLogManager.toBatchDeleteUndoLogSql(APPEND_IN_SIZE * 2, APPEND_IN_SIZE);
+        String expectedSqlString = "DELETE FROM undo_log WHERE  branch_id IN " + THE_APPEND_IN_SIZE_PARAM_STRING
+                + " AND xid IN "
+                + THE_DOUBLE_APPEND_IN_SIZE_PARAM_STRING;
+        String batchDeleteUndoLogSql =
+                AbstractUndoLogManager.toBatchDeleteUndoLogSql(APPEND_IN_SIZE * 2, APPEND_IN_SIZE);
         System.out.println(batchDeleteUndoLogSql);
         assertThat(batchDeleteUndoLogSql).isEqualTo(expectedSqlString);
     }

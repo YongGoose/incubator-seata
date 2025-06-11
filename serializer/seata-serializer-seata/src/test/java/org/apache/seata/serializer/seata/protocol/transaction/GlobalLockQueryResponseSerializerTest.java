@@ -16,14 +16,14 @@
  */
 package org.apache.seata.serializer.seata.protocol.transaction;
 
-import org.apache.seata.core.protocol.ProtocolConstants;
-import org.apache.seata.serializer.seata.SeataSerializer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.core.exception.TransactionExceptionCode;
+import org.apache.seata.core.protocol.ProtocolConstants;
 import org.apache.seata.core.protocol.ResultCode;
 import org.apache.seata.core.protocol.transaction.GlobalLockQueryResponse;
+import org.apache.seata.serializer.seata.SeataSerializer;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Global lock query response codec test.
@@ -40,7 +40,7 @@ public class GlobalLockQueryResponseSerializerTest {
      * Test codec.
      */
     @Test
-    public void test_codec(){
+    public void test_codec() {
         GlobalLockQueryResponse globalLockQueryResponse = new GlobalLockQueryResponse();
         globalLockQueryResponse.setLockable(true);
         globalLockQueryResponse.setMsg("aa");
@@ -53,8 +53,8 @@ public class GlobalLockQueryResponseSerializerTest {
 
         assertThat(globalLockQueryResponse2.isLockable()).isEqualTo(globalLockQueryResponse.isLockable());
         assertThat(globalLockQueryResponse2.getResultCode()).isEqualTo(globalLockQueryResponse.getResultCode());
-        assertThat(globalLockQueryResponse2.getTransactionExceptionCode()).isEqualTo(globalLockQueryResponse.getTransactionExceptionCode());
+        assertThat(globalLockQueryResponse2.getTransactionExceptionCode())
+                .isEqualTo(globalLockQueryResponse.getTransactionExceptionCode());
         assertThat(globalLockQueryResponse2.getMsg()).isEqualTo(globalLockQueryResponse.getMsg());
     }
-
 }

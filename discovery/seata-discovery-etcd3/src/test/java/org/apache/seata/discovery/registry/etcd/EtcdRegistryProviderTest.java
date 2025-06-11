@@ -16,11 +16,11 @@
  */
 package org.apache.seata.discovery.registry.etcd;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.discovery.registry.etcd3.EtcdRegistryProvider;
 import org.apache.seata.discovery.registry.etcd3.EtcdRegistryServiceImpl;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * the type etcd registry provider test

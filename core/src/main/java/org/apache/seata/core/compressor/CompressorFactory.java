@@ -16,12 +16,11 @@
  */
 package org.apache.seata.core.compressor;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.CollectionUtils;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * the type compressor factory
@@ -45,8 +44,8 @@ public class CompressorFactory {
      */
     public static Compressor getCompressor(byte code) {
         CompressorType type = CompressorType.getByCode(code);
-        return CollectionUtils.computeIfAbsent(COMPRESSOR_MAP, type,
-            key -> EnhancedServiceLoader.load(Compressor.class, type.name()));
+        return CollectionUtils.computeIfAbsent(
+                COMPRESSOR_MAP, type, key -> EnhancedServiceLoader.load(Compressor.class, type.name()));
     }
 
     /**
@@ -64,5 +63,4 @@ public class CompressorFactory {
             return bytes;
         }
     }
-
 }

@@ -16,11 +16,9 @@
  */
 package org.apache.seata.common.metadata;
 
+import java.util.HashMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-
 
 public class NodeTest {
 
@@ -45,6 +43,5 @@ public class NodeTest {
         Assertions.assertEquals("127.0.0.1:80", endpoint1.createAddress());
         Assertions.assertEquals("Endpoint{host='127.0.0.1', port=80}", endpoint1.toString());
         Assertions.assertEquals("Endpoint{host='127.0.0.1', port=80}", new Node.Endpoint("127.0.0.1", 80).toString());
-
     }
 }

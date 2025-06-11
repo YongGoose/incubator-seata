@@ -17,7 +17,6 @@
 package org.apache.seata.server.lock;
 
 import java.util.List;
-
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.lock.RowLock;
 import org.apache.seata.core.model.LockStatus;
@@ -48,7 +47,8 @@ public interface LockManager {
      * @return the boolean
      * @throws TransactionException the transaction exception
      */
-    boolean acquireLock(BranchSession branchSession, boolean autoCommit, boolean skipCheckLock) throws TransactionException;
+    boolean acquireLock(BranchSession branchSession, boolean autoCommit, boolean skipCheckLock)
+            throws TransactionException;
 
     /**
      * Un lock boolean.
@@ -102,5 +102,4 @@ public interface LockManager {
      *
      */
     void updateLockStatus(String xid, LockStatus lockStatus) throws TransactionException;
-
 }

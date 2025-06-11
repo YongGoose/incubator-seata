@@ -16,12 +16,12 @@
  */
 package org.apache.seata.server.cluster.raft.serializer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.common.exception.ErrorCode;
 import org.apache.seata.common.exception.SeataRuntimeException;
 
@@ -41,7 +41,7 @@ public class CustomDeserializer extends JsonDeserializer<Class<?>> {
 
     @Override
     public Class<?> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-        throws IOException {
+            throws IOException {
         String className = jsonParser.getValueAsString();
         if (className.startsWith(oldPackage)) {
             className = className.replaceFirst(oldPackage, currentPackage);
@@ -55,8 +55,8 @@ public class CustomDeserializer extends JsonDeserializer<Class<?>> {
                 }
             }
         }
-        throw new SeataRuntimeException(ErrorCode.ERR_DESERIALIZATION_SECURITY,
-            "Failed to deserialize object: " + className + " is not permitted");
+        throw new SeataRuntimeException(
+                ErrorCode.ERR_DESERIALIZATION_SECURITY,
+                "Failed to deserialize object: " + className + " is not permitted");
     }
-
 }

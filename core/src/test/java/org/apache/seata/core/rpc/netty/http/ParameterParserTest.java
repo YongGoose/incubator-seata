@@ -16,21 +16,20 @@
  */
 package org.apache.seata.core.rpc.netty.http;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.seata.common.rpc.http.HttpContext;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.apache.seata.common.rpc.http.HttpContext;
+import org.junit.jupiter.api.Test;
 
 class ParameterParserTest {
 
@@ -84,12 +83,9 @@ class ParameterParserTest {
         ObjectNode bodyNode = paramMap.putObject("body");
         bodyNode.put("field1", "value1");
         bodyNode.put("field2", "value2");
-        HttpContext httpContext = new HttpContext(null,null,false);
-        Object[] args = ParameterParser.getArgValues(
-                new ParamMetaData[]{paramMetaData},
-                method,
-                paramMap, httpContext
-        );
+        HttpContext httpContext = new HttpContext(null, null, false);
+        Object[] args =
+                ParameterParser.getArgValues(new ParamMetaData[] {paramMetaData}, method, paramMap, httpContext);
 
         assertEquals(1, args.length);
         assertNotNull(args[0]);
@@ -97,7 +93,6 @@ class ParameterParserTest {
 
     // 测试辅助类
     class TestClass {
-        public void objectMethod(Object obj) {
-        }
+        public void objectMethod(Object obj) {}
     }
 }

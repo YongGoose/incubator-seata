@@ -16,15 +16,14 @@
  */
 package org.apache.seata.spring.annotation.scannercheckers;
 
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
-import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Test for {@link PackageScannerChecker} class
@@ -42,7 +41,7 @@ public class PackageScannerCheckerTest {
     public void setUp() throws Exception {
         // Save original packages
         originalPackages = getScannablePackageSet();
-        
+
         // Clear the package set for testing
         clearScannablePackageSet();
     }
@@ -79,7 +78,7 @@ public class PackageScannerCheckerTest {
     public void testCheckWithMatchingPackage() throws Exception {
         // Add test packages
         PackageScannerChecker.addScannablePackages("org.apache.seata");
-        
+
         // Test with bean in the scannable package
         TestBean testBean = new TestBean();
         boolean result = checker.check(testBean, "testBean", beanFactory);
@@ -93,7 +92,7 @@ public class PackageScannerCheckerTest {
     public void testCheckWithNonMatchingPackage() throws Exception {
         // Add test packages
         PackageScannerChecker.addScannablePackages("com.example");
-        
+
         // Test with bean not in the scannable package
         TestBean testBean = new TestBean();
         boolean result = checker.check(testBean, "testBean", beanFactory);
@@ -107,7 +106,7 @@ public class PackageScannerCheckerTest {
     public void testAddScannablePackages() throws Exception {
         // Add test packages
         PackageScannerChecker.addScannablePackages("com.example", "org.apache.seata");
-        
+
         // Verify packages were added
         Set<String> packages = getScannablePackageSet();
         Assertions.assertEquals(2, packages.size(), "Should have 2 packages in the set");
@@ -122,7 +121,7 @@ public class PackageScannerCheckerTest {
     public void testAddScannablePackagesWithBlankPackages() throws Exception {
         // Add test packages including blank ones
         PackageScannerChecker.addScannablePackages("com.example", "", "  ", null);
-        
+
         // Verify only non-blank packages were added
         Set<String> packages = getScannablePackageSet();
         Assertions.assertEquals(1, packages.size(), "Should have 1 package in the set");
@@ -135,8 +134,8 @@ public class PackageScannerCheckerTest {
     @Test
     public void testAddScannablePackagesWithNull() throws Exception {
         // Add null packages
-        PackageScannerChecker.addScannablePackages((String[])null);
-        
+        PackageScannerChecker.addScannablePackages((String[]) null);
+
         // Verify no packages were added
         Set<String> packages = getScannablePackageSet();
         Assertions.assertTrue(packages.isEmpty(), "Package set should be empty");
@@ -149,7 +148,7 @@ public class PackageScannerCheckerTest {
     public void testPackageNameCaseSensitivity() throws Exception {
         // Add test packages with mixed case
         PackageScannerChecker.addScannablePackages("Com.Example");
-        
+
         // Verify package was added in lowercase
         Set<String> packages = getScannablePackageSet();
         Assertions.assertEquals(1, packages.size(), "Should have 1 package in the set");
@@ -164,7 +163,7 @@ public class PackageScannerCheckerTest {
     private Set<String> getScannablePackageSet() throws Exception {
         Field field = PackageScannerChecker.class.getDeclaredField("SCANNABLE_PACKAGE_SET");
         field.setAccessible(true);
-        Set<String> packages = (Set<String>)field.get(null);
+        Set<String> packages = (Set<String>) field.get(null);
         return new HashSet<>(packages); // Return a copy to avoid modifying the original
     }
 
@@ -174,7 +173,7 @@ public class PackageScannerCheckerTest {
     private void clearScannablePackageSet() throws Exception {
         Field field = PackageScannerChecker.class.getDeclaredField("SCANNABLE_PACKAGE_SET");
         field.setAccessible(true);
-        Set<String> packages = (Set<String>)field.get(null);
+        Set<String> packages = (Set<String>) field.get(null);
         packages.clear();
     }
 
@@ -184,4 +183,4 @@ public class PackageScannerCheckerTest {
     private static class TestBean {
         // Empty class for testing
     }
-} 
+}

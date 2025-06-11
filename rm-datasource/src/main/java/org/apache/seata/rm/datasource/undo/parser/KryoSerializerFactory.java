@@ -16,6 +16,12 @@
  */
 package org.apache.seata.rm.datasource.undo.parser;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.util.Pool;
+import de.javakaffee.kryoserializers.JdkProxySerializer;
 import java.lang.reflect.InvocationHandler;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -25,15 +31,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialClob;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.util.Pool;
-import de.javakaffee.kryoserializers.JdkProxySerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class KryoSerializerFactory {
 
@@ -66,12 +65,11 @@ public class KryoSerializerFactory {
                 if (ser == null) {
                     kryo.register(clazz);
                 } else {
-                    kryo.register(clazz, (Serializer)ser);
+                    kryo.register(clazz, (Serializer) ser);
                 }
             });
             return kryo;
         }
-
     };
 
     private KryoSerializerFactory() {}
@@ -102,7 +100,7 @@ public class KryoSerializerFactory {
         @Override
         public void write(Kryo kryo, Output output, Blob object) {
             try {
-                byte[] bytes = object.getBytes(1L, (int)object.length());
+                byte[] bytes = object.getBytes(1L, (int) object.length());
                 output.writeInt(bytes.length, true);
                 output.write(bytes);
             } catch (SQLException e) {
@@ -121,7 +119,6 @@ public class KryoSerializerFactory {
             }
             return null;
         }
-
     }
 
     private static class ClobSerializer extends Serializer<Clob> {
@@ -129,7 +126,7 @@ public class KryoSerializerFactory {
         @Override
         public void write(Kryo kryo, Output output, Clob object) {
             try {
-                String s = object.getSubString(1, (int)object.length());
+                String s = object.getSubString(1, (int) object.length());
                 output.writeString(s);
             } catch (SQLException e) {
                 LOGGER.error("kryo write java.sql.Clob error: {}", e.getMessage(), e);
@@ -146,7 +143,6 @@ public class KryoSerializerFactory {
             }
             return null;
         }
-
     }
 
     private class TimestampSerializer extends Serializer<Timestamp> {

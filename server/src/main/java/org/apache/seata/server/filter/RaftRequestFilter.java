@@ -16,6 +16,19 @@
  */
 package org.apache.seata.server.filter;
 
+import static org.apache.seata.common.Constants.RAFT_GROUP_HEADER;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.seata.common.store.SessionMode;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.exception.TransactionException;
@@ -28,20 +41,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.apache.seata.common.Constants.RAFT_GROUP_HEADER;
 
 /**
  * Raft Leader Write Filter
@@ -57,8 +56,8 @@ public class RaftRequestFilter implements Filter, ApplicationListener<ClusterCha
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-        throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest)servletRequest;
+            throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         String group = httpRequest.getParameter("unit");
         if (StringUtils.isBlank(group)) {
             group = httpRequest.getHeader(RAFT_GROUP_HEADER);
@@ -71,9 +70,10 @@ public class RaftRequestFilter implements Filter, ApplicationListener<ClusterCha
             if (!HttpMethod.GET.name().equalsIgnoreCase(method)) {
                 if (!isPass(group)) {
                     throw new ConsoleException(
-                        new TransactionException(TransactionExceptionCode.NotRaftLeader,
-                            " The current TC is not a leader node, interrupt processing of transactions!"),
-                        " The current TC is not a leader node, interrupt processing of transactions!");
+                            new TransactionException(
+                                    TransactionExceptionCode.NotRaftLeader,
+                                    " The current TC is not a leader node, interrupt processing of transactions!"),
+                            " The current TC is not a leader node, interrupt processing of transactions!");
                 }
             }
             filterChain.doFilter(servletRequest, servletResponse);

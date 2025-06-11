@@ -17,7 +17,6 @@
 package org.apache.seata.discovery.registry;
 
 import java.util.Objects;
-
 import org.apache.seata.common.loader.EnhancedServiceLoader;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.ConfigurationFactory;
@@ -42,8 +41,10 @@ public class RegistryFactory {
     }
 
     private static RegistryService buildRegistryService() {
-        String registryTypeName = ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(
-                ConfigurationKeys.FILE_ROOT_REGISTRY + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR + ConfigurationKeys.FILE_ROOT_TYPE);
+        String registryTypeName =
+                ConfigurationFactory.CURRENT_FILE_INSTANCE.getConfig(ConfigurationKeys.FILE_ROOT_REGISTRY
+                        + ConfigurationKeys.FILE_CONFIG_SPLIT_CHAR
+                        + ConfigurationKeys.FILE_ROOT_TYPE);
 
         // If blank, use default configuration
         if (StringUtils.isBlank(registryTypeName)) {
@@ -53,8 +54,10 @@ public class RegistryFactory {
         LOGGER.info("use registry center type: {}", registryTypeName);
 
         RegistryType registryType = RegistryType.getType(registryTypeName);
-        return EnhancedServiceLoader.load(RegistryProvider.class, Objects.requireNonNull(registryType).name()).provide();
-
+        return EnhancedServiceLoader.load(
+                        RegistryProvider.class,
+                        Objects.requireNonNull(registryType).name())
+                .provide();
     }
 
     private static class RegistryFactoryHolder {

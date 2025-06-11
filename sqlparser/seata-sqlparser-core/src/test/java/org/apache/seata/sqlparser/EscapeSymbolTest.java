@@ -16,8 +16,9 @@
  */
 package org.apache.seata.sqlparser;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class EscapeSymbolTest {
 
@@ -25,7 +26,9 @@ public class EscapeSymbolTest {
     public void testGetLeftSymbol() {
         char expectedLeftSymbol = '"';
         EscapeSymbol escapeSymbol = new EscapeSymbol(expectedLeftSymbol, '"');
-        assertEquals(expectedLeftSymbol, escapeSymbol.getLeftSymbol(),
+        assertEquals(
+                expectedLeftSymbol,
+                escapeSymbol.getLeftSymbol(),
                 "The left symbol should be '" + expectedLeftSymbol + "'");
     }
 
@@ -33,7 +36,9 @@ public class EscapeSymbolTest {
     public void testGetRightSymbol() {
         char expectedRightSymbol = '"';
         EscapeSymbol escapeSymbol = new EscapeSymbol('"', expectedRightSymbol);
-        assertEquals(expectedRightSymbol, escapeSymbol.getRightSymbol(),
+        assertEquals(
+                expectedRightSymbol,
+                escapeSymbol.getRightSymbol(),
                 "The right symbol should be '" + expectedRightSymbol + "'");
     }
 }

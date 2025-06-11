@@ -16,11 +16,10 @@
  */
 package org.apache.seata.common.exception;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
+import org.junit.jupiter.api.Test;
 
 class RepeatRegistrationExceptionTest {
 
@@ -35,7 +34,6 @@ class RepeatRegistrationExceptionTest {
                 }),
                 () -> assertThrowsExactly(RepeatRegistrationException.class, () -> {
                     throw new RepeatRegistrationException(new Throwable("error"));
-                })
-        );
+                }));
     }
 }

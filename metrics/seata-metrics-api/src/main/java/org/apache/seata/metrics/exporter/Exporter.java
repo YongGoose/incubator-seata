@@ -17,7 +17,6 @@
 package org.apache.seata.metrics.exporter;
 
 import java.io.Closeable;
-
 import org.apache.seata.metrics.registry.Registry;
 
 /**

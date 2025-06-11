@@ -17,17 +17,14 @@
 package org.apache.seata.rm.datasource;
 
 import com.alibaba.druid.mock.MockSavepoint;
-
-import org.apache.seata.rm.datasource.ConnectionContext;
-import org.apache.seata.rm.datasource.undo.SQLUndoLog;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Savepoint;
 import java.util.List;
+import org.apache.seata.rm.datasource.undo.SQLUndoLog;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * ConnectionContextProxy test
@@ -60,7 +57,8 @@ public class ConnectionContextProxyTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetAfterSavepoints() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void testGetAfterSavepoints()
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Savepoint sp1 = new MockSavepoint();
         Savepoint sp2 = new MockSavepoint();
         Savepoint sp3 = new MockSavepoint();
@@ -71,7 +69,7 @@ public class ConnectionContextProxyTest {
         Method m = ConnectionContext.class.getDeclaredMethod("getAfterSavepoints", Savepoint.class);
         m.setAccessible(true);
 
-        List<Savepoint> invoke = (List<Savepoint>) m.invoke(connectionContext, new Object[]{null});
+        List<Savepoint> invoke = (List<Savepoint>) m.invoke(connectionContext, new Object[] {null});
         Assertions.assertEquals(invoke.size(), 3);
 
         invoke = (List<Savepoint>) m.invoke(connectionContext, sp2);
@@ -107,7 +105,6 @@ public class ConnectionContextProxyTest {
         Assertions.assertEquals(connectionContext.getUndoItems().size(), 2);
         Assertions.assertEquals(connectionContext.buildLockKeys(), "sp3-lock-key;sp1-lock-key");
 
-
         connectionContext.removeSavepoint(sp3);
         Assertions.assertEquals(connectionContext.getUndoItems().size(), 1);
         Assertions.assertEquals(connectionContext.buildLockKeys(), "sp1-lock-key");
@@ -116,7 +113,6 @@ public class ConnectionContextProxyTest {
         Assertions.assertEquals(connectionContext.getUndoItems().size(), 0);
         Assertions.assertNull(connectionContext.buildLockKeys());
     }
-
 
     @Test
     public void testReleaseSavepoint() {
@@ -136,7 +132,6 @@ public class ConnectionContextProxyTest {
         Assertions.assertEquals(connectionContext.getUndoItems().size(), 2);
         Assertions.assertEquals(connectionContext.buildLockKeys(), "sp3-lock-key;sp1-lock-key");
 
-
         connectionContext.releaseSavepoint(sp3);
         Assertions.assertEquals(connectionContext.getUndoItems().size(), 2);
         Assertions.assertEquals(connectionContext.buildLockKeys(), "sp3-lock-key;sp1-lock-key");
@@ -145,8 +140,6 @@ public class ConnectionContextProxyTest {
         Assertions.assertEquals(connectionContext.getUndoItems().size(), 2);
         Assertions.assertEquals(connectionContext.buildLockKeys(), "sp3-lock-key;sp1-lock-key");
     }
-
-
 
     @AfterEach
     public void clear() {

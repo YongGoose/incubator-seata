@@ -16,12 +16,11 @@
  */
 package org.apache.seata.sqlparser.antlr.mysql.visit;
 
+import java.util.Arrays;
+import java.util.List;
 import org.apache.seata.sqlparser.antlr.mysql.MySqlContext;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParser;
 import org.apache.seata.sqlparser.antlr.mysql.parser.MySqlParserBaseVisitor;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * InsertSpecificationSqlVisitor
@@ -51,7 +50,8 @@ public class InsertSpecificationSqlVisitor extends MySqlParserBaseVisitor<MySqlC
         }
 
         MySqlParser.InsertStatementValueContext insertStatementValueContext = ctx.insertStatementValue();
-        List<MySqlParser.ExpressionsWithDefaultsContext> expressionsWithDefaultsContexts = insertStatementValueContext.expressionsWithDefaults();
+        List<MySqlParser.ExpressionsWithDefaultsContext> expressionsWithDefaultsContexts =
+                insertStatementValueContext.expressionsWithDefaults();
 
         for (MySqlParser.ExpressionsWithDefaultsContext expressions : expressionsWithDefaultsContexts) {
 

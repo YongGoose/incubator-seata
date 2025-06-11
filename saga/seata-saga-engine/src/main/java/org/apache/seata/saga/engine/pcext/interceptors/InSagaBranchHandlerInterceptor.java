@@ -16,6 +16,7 @@
  */
 package org.apache.seata.saga.engine.pcext.interceptors;
 
+import java.util.Map;
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.context.RootContext;
@@ -29,8 +30,6 @@ import org.apache.seata.saga.statelang.domain.StateMachineInstance;
 import org.apache.seata.tm.api.GlobalTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * InSagaBranchHandler Interceptor
@@ -61,8 +60,10 @@ public class InSagaBranchHandlerInterceptor implements StateHandlerInterceptor {
             String previousXid = RootContext.getXID();
             if (previousXid != null) {
                 if (!StringUtils.equalsIgnoreCase(previousXid, xid)) {
-                    LOGGER.warn("xid in change from {} to {}, Please don't use state machine engine in other global transaction.",
-                        previousXid, xid);
+                    LOGGER.warn(
+                            "xid in change from {} to {}, Please don't use state machine engine in other global transaction.",
+                            previousXid,
+                            xid);
                 }
             }
         }
@@ -92,12 +93,15 @@ public class InSagaBranchHandlerInterceptor implements StateHandlerInterceptor {
      */
     protected String getXidFromProcessContext(ProcessContext context) {
         String xid = null;
-        Map<String, Object> contextVariable = (Map<String, Object>) context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONTEXT);
+        Map<String, Object> contextVariable =
+                (Map<String, Object>) context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_CONTEXT);
         if (contextVariable != null && contextVariable.containsKey(DomainConstants.VAR_NAME_GLOBAL_TX)) {
-            GlobalTransaction globalTransaction = (GlobalTransaction) contextVariable.get(DomainConstants.VAR_NAME_GLOBAL_TX);
+            GlobalTransaction globalTransaction =
+                    (GlobalTransaction) contextVariable.get(DomainConstants.VAR_NAME_GLOBAL_TX);
             xid = globalTransaction.getXid();
         } else {
-            StateMachineInstance stateMachineInstance = (StateMachineInstance) context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_INST);
+            StateMachineInstance stateMachineInstance =
+                    (StateMachineInstance) context.getVariable(DomainConstants.VAR_NAME_STATEMACHINE_INST);
             if (stateMachineInstance != null) {
                 xid = stateMachineInstance.getId();
             }

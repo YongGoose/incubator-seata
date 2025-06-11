@@ -16,6 +16,8 @@
  */
 package org.apache.seata.integration.rocketmq;
 
+import java.util.Arrays;
+import java.util.List;
 import org.apache.rocketmq.client.Validators;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -37,9 +39,6 @@ import org.apache.seata.rm.DefaultResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Seata MQ Producer
  **/
@@ -48,9 +47,9 @@ public class SeataMQProducer extends TransactionMQProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeataMQProducer.class);
 
     private static final List<GlobalStatus> COMMIT_STATUSES =
-        Arrays.asList(GlobalStatus.Committed, GlobalStatus.Committing, GlobalStatus.CommitRetrying);
+            Arrays.asList(GlobalStatus.Committed, GlobalStatus.Committing, GlobalStatus.CommitRetrying);
     private static final List<GlobalStatus> ROLLBACK_STATUSES =
-        Arrays.asList(GlobalStatus.Rollbacked, GlobalStatus.Rollbacking, GlobalStatus.RollbackRetrying);
+            Arrays.asList(GlobalStatus.Rollbacked, GlobalStatus.Rollbacking, GlobalStatus.RollbackRetrying);
 
     public static String PROPERTY_SEATA_XID = RootContext.KEY_XID;
     public static String PROPERTY_SEATA_BRANCHID = RootContext.KEY_BRANCHID;
@@ -78,7 +77,7 @@ public class SeataMQProducer extends TransactionMQProducer {
                     return LocalTransactionState.ROLLBACK_MESSAGE;
                 }
                 GlobalStatus globalStatus =
-                    DefaultResourceManager.get().getGlobalStatus(SeataMQProducerFactory.ROCKET_BRANCH_TYPE, xid);
+                        DefaultResourceManager.get().getGlobalStatus(SeataMQProducerFactory.ROCKET_BRANCH_TYPE, xid);
                 if (COMMIT_STATUSES.contains(globalStatus)) {
                     return LocalTransactionState.COMMIT_MESSAGE;
                 } else if (ROLLBACK_STATUSES.contains(globalStatus) || GlobalStatus.isOnePhaseTimeout(globalStatus)) {
@@ -94,13 +93,13 @@ public class SeataMQProducer extends TransactionMQProducer {
 
     @Override
     public SendResult send(Message msg)
-        throws MQClientException, MQBrokerException, RemotingException, InterruptedException {
+            throws MQClientException, MQBrokerException, RemotingException, InterruptedException {
         return send(msg, this.getSendMsgTimeout());
     }
 
     @Override
     public SendResult send(Message msg, long timeout)
-        throws MQClientException, MQBrokerException, RemotingException, InterruptedException {
+            throws MQClientException, MQBrokerException, RemotingException, InterruptedException {
         if (RootContext.inGlobalTransaction()) {
             if (tccRocketMQ == null) {
                 throw new RuntimeException("TCCRocketMQ is not initialized");
@@ -112,7 +111,7 @@ public class SeataMQProducer extends TransactionMQProducer {
     }
 
     public SendResult doSendMessageInTransaction(final Message msg, long timeout, String xid, long branchId)
-        throws MQClientException {
+            throws MQClientException {
         msg.setTopic(withNamespace(msg.getTopic()));
         if (msg.getDelayTimeLevel() != 0) {
             MessageAccessor.clearProperty(msg, MessageConst.PROPERTY_DELAY_TIME_LEVEL);
@@ -144,7 +143,7 @@ public class SeataMQProducer extends TransactionMQProducer {
     }
 
     public SendResult superSend(Message msg, long timeout)
-        throws MQClientException, MQBrokerException, RemotingException, InterruptedException {
+            throws MQClientException, MQBrokerException, RemotingException, InterruptedException {
         return super.send(msg, timeout);
     }
 

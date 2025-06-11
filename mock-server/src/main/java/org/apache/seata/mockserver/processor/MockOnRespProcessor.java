@@ -16,9 +16,8 @@
  */
 package org.apache.seata.mockserver.processor;
 
-import java.util.concurrent.ConcurrentMap;
-
 import io.netty.channel.ChannelHandlerContext;
+import java.util.concurrent.ConcurrentMap;
 import org.apache.seata.core.protocol.MessageFuture;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.rpc.RemotingServer;
@@ -31,9 +30,10 @@ public class MockOnRespProcessor extends MockRemotingProcessor {
 
     private ConcurrentMap<Integer, MessageFuture> futures;
 
-
-    public MockOnRespProcessor(RemotingServer remotingServer, TransactionMessageHandler handler
-            , ConcurrentMap<Integer, MessageFuture> futures) {
+    public MockOnRespProcessor(
+            RemotingServer remotingServer,
+            TransactionMessageHandler handler,
+            ConcurrentMap<Integer, MessageFuture> futures) {
         super(remotingServer, handler);
         this.futures = futures;
     }
@@ -46,6 +46,4 @@ public class MockOnRespProcessor extends MockRemotingProcessor {
             messageFuture.setResultMessage(rpcMessage.getBody());
         }
     }
-
-
 }

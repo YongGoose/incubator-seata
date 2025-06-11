@@ -27,6 +27,9 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.sqlparser.SQLInsertRecognizer;
 import org.apache.seata.sqlparser.SQLType;
@@ -35,10 +38,6 @@ import org.apache.seata.sqlparser.struct.Null;
 import org.apache.seata.sqlparser.struct.SqlMethodExpr;
 import org.apache.seata.sqlparser.struct.SqlSequenceExpr;
 import org.apache.seata.sqlparser.util.ColumnUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * The type oscar insert recognizer.
@@ -56,7 +55,7 @@ public class OscarInsertRecognizer extends BaseOscarRecognizer implements SQLIns
      */
     public OscarInsertRecognizer(String originalSQL, SQLStatement ast) {
         super(originalSQL);
-        this.ast = (SQLInsertStatement)ast;
+        this.ast = (SQLInsertStatement) ast;
     }
 
     @Override
@@ -99,7 +98,7 @@ public class OscarInsertRecognizer extends BaseOscarRecognizer implements SQLIns
         List<String> list = new ArrayList<>(columnSQLExprs.size());
         for (SQLExpr expr : columnSQLExprs) {
             if (expr instanceof SQLIdentifierExpr) {
-                list.add(((SQLIdentifierExpr)expr).getName());
+                list.add(((SQLIdentifierExpr) expr).getName());
             } else {
                 wrapSQLParsingException(expr);
             }

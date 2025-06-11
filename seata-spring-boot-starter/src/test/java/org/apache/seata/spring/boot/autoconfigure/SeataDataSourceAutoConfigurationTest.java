@@ -16,6 +16,11 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+
+import javax.sql.DataSource;
 import org.apache.seata.rm.datasource.DataSourceProxy;
 import org.apache.seata.spring.annotation.datasource.SeataAutoDataSourceProxyCreator;
 import org.apache.seata.spring.boot.autoconfigure.properties.SeataProperties;
@@ -24,12 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-
-import javax.sql.DataSource;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 
 /**
  * Tests for {@link SeataDataSourceAutoConfiguration} to verify conditional bean registration.
@@ -48,8 +47,7 @@ public class SeataDataSourceAutoConfigurationTest {
                     .withPropertyValues(
                             "seata.enabled=true",
                             "seata.enableAutoDataSourceProxy=true",
-                            "seata.enable-auto-data-source-proxy=true"
-                    )
+                            "seata.enable-auto-data-source-proxy=true")
                     .run(context -> {
                         // assert DataSourceProxy construction to be mock
                         assertThat(mocked.constructed()).isNotEmpty();
@@ -60,13 +58,9 @@ public class SeataDataSourceAutoConfigurationTest {
 
     @Test
     void whenDisabledByProperty_thenBeanNotCreated() {
-        contextRunner
-                .withPropertyValues(
-                        "seata.enabled=false"
-                )
-                .run(context -> {
-                    assertThat(context).doesNotHaveBean(SeataAutoDataSourceProxyCreator.class);
-                });
+        contextRunner.withPropertyValues("seata.enabled=false").run(context -> {
+            assertThat(context).doesNotHaveBean(SeataAutoDataSourceProxyCreator.class);
+        });
     }
 
     @Test

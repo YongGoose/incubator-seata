@@ -16,13 +16,12 @@
  */
 package org.apache.seata.rm.tcc.api;
 
-import org.apache.seata.rm.tcc.interceptor.TccActionInterceptorHandler;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.apache.seata.rm.tcc.interceptor.TccActionInterceptorHandler;
 
 /**
  * TCC annotation.

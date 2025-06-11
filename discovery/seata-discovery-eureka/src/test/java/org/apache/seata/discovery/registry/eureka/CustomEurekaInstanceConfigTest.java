@@ -16,11 +16,12 @@
  */
 package org.apache.seata.discovery.registry.eureka;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CustomEurekaInstanceConfigTest {
     private CustomEurekaInstanceConfig config;
@@ -64,7 +65,7 @@ public class CustomEurekaInstanceConfigTest {
 
     @Test
     void testGetNonSecurePortWhenNotSet() throws Exception {
-        int  nonSecurePort = (int) getConfigString("getNonSecurePort");
+        int nonSecurePort = (int) getConfigString("getNonSecurePort");
         assertEquals(nonSecurePort, config.getNonSecurePort());
     }
 
@@ -95,12 +96,10 @@ public class CustomEurekaInstanceConfigTest {
         assertEquals(ipAddress, config.getHostName(false));
     }
 
-
-    private Object getConfigString(String method) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private Object getConfigString(String method)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Class<?> grandparentClass = config.getClass().getSuperclass().getSuperclass();
         Method grandparentMethod = grandparentClass.getDeclaredMethod(method);
         return grandparentMethod.invoke(config);
     }
-
 }
-

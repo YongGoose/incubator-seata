@@ -16,9 +16,8 @@
  */
 package org.apache.seata.saga.statelang.validator;
 
-import org.apache.seata.common.loader.EnhancedServiceLoader;
-
 import java.util.List;
+import org.apache.seata.common.loader.EnhancedServiceLoader;
 
 /**
  * Factorial class to get all rules.

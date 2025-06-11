@@ -16,15 +16,14 @@
  */
 package org.apache.seata.rm.datasource.xa;
 
-import org.apache.seata.core.context.RootContext;
-import org.apache.seata.core.model.BranchType;
-import org.apache.seata.rm.datasource.util.JdbcUtils;
-
+import java.sql.Connection;
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.apache.seata.core.context.RootContext;
+import org.apache.seata.core.model.BranchType;
+import org.apache.seata.rm.datasource.util.JdbcUtils;
 
 /**
  * DataSource proxy to wrap a XADataSource.
@@ -40,7 +39,7 @@ public class DataSourceProxyXANative extends AbstractDataSourceProxyXA {
 
     public DataSourceProxyXANative(XADataSource dataSource, String resourceGroupId) {
         if (dataSource instanceof DataSource) {
-            this.dataSource = (DataSource)dataSource;
+            this.dataSource = (DataSource) dataSource;
         }
         this.xaDataSource = dataSource;
         this.branchType = BranchType.XA;
@@ -61,10 +60,10 @@ public class DataSourceProxyXANative extends AbstractDataSourceProxyXA {
 
     protected Connection getConnectionProxy(XAConnection xaConnection) throws SQLException {
         Connection connection = xaConnection.getConnection();
-        ConnectionProxyXA connectionProxyXA = new ConnectionProxyXA(connection, xaConnection, this, RootContext.getXID());
+        ConnectionProxyXA connectionProxyXA =
+                new ConnectionProxyXA(connection, xaConnection, this, RootContext.getXID());
         connectionProxyXA.init();
         return connectionProxyXA;
-
     }
 
     @Override

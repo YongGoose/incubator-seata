@@ -16,6 +16,21 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.common.Constants.OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_RM_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_TM_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.COMPRESS_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.LOAD_BALANCE_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.LOCK_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.PROPERTY_BEAN_MAP;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SAGA_ASYNC_THREAD_POOL_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SAGA_STATE_MACHINE_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SERVICE_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.TCC_FENCE_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.TCC_PREFIX;
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.UNDO_PREFIX;
+
 import org.apache.seata.common.holder.ObjectHolder;
 import org.apache.seata.rm.fence.SpringFenceConfig;
 import org.apache.seata.saga.engine.StateMachineConfig;
@@ -33,22 +48,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
-
-import static org.apache.seata.common.Constants.OBJECT_KEY_SPRING_CONFIGURABLE_ENVIRONMENT;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_RM_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.CLIENT_TM_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.COMPRESS_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.LOAD_BALANCE_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.LOCK_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.PROPERTY_BEAN_MAP;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SAGA_ASYNC_THREAD_POOL_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SAGA_STATE_MACHINE_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SEATA_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.SERVICE_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.TCC_FENCE_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.TCC_PREFIX;
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.UNDO_PREFIX;
-
 
 public class SeataClientEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 

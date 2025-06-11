@@ -163,9 +163,8 @@ public class RmBranchCommitProcessorTest {
         when(mockHandler.onRequest(mockRequest, null)).thenReturn(mockResponse);
         processor.process(mockCtx, mockRpcMessage);
 
-        assertTrue(
-                getLogs(Level.INFO).stream().anyMatch(log -> log.startsWith("rm client handle branch commit process:"))
-        );
+        assertTrue(getLogs(Level.INFO).stream()
+                .anyMatch(log -> log.startsWith("rm client handle branch commit process:")));
     }
 
     private List<String> getLogs(Level level) {

@@ -16,12 +16,10 @@
  */
 package org.apache.seata.core.store.db.sql.log;
 
-import org.apache.seata.common.loader.EnhancedServiceLoader;
-import org.apache.seata.common.util.CollectionUtils;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
+import org.apache.seata.common.loader.EnhancedServiceLoader;
+import org.apache.seata.common.util.CollectionUtils;
 
 public class LogStoreSqlsFactory {
 
@@ -33,7 +31,9 @@ public class LogStoreSqlsFactory {
      * @return the LogStoreSqls
      */
     public static LogStoreSqls getLogStoreSqls(String dbType) {
-        return CollectionUtils.computeIfAbsent(LOG_STORE_SQLS_MAP, dbType,
-            key -> EnhancedServiceLoader.load(LogStoreSqls.class, dbType.toLowerCase()));
+        return CollectionUtils.computeIfAbsent(
+                LOG_STORE_SQLS_MAP,
+                dbType,
+                key -> EnhancedServiceLoader.load(LogStoreSqls.class, dbType.toLowerCase()));
     }
 }

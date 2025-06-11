@@ -16,12 +16,11 @@
  */
 package org.apache.seata.common.exception;
 
-import java.sql.SQLException;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.SQLException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * The type Framework exception test.
@@ -40,7 +39,7 @@ public class FrameworkExceptionTest {
             message.print4();
         });
         assertThat(throwable).hasMessage(FrameworkErrorCode.UnknownAppError.getErrMessage());
-        assertThat(((FrameworkException)throwable).getErrcode()).isEqualTo(FrameworkErrorCode.UnknownAppError);
+        assertThat(((FrameworkException) throwable).getErrcode()).isEqualTo(FrameworkErrorCode.UnknownAppError);
     }
 
     /**
@@ -149,5 +148,4 @@ public class FrameworkExceptionTest {
         assertThat(exception).isInstanceOf(FrameworkException.class).hasMessage(expectMessage);
         assertThat(exception.getErrcode()).isEqualTo(FrameworkErrorCode.UnknownAppError);
     }
-
 }

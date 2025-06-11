@@ -16,6 +16,9 @@
  */
 package org.apache.seata.core.rpc.netty.http;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -23,16 +26,12 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class HttpDispatchHandlerTest {
 
@@ -57,7 +56,7 @@ class HttpDispatchHandlerTest {
         Method method = TestController.class.getMethod("handleRequest", String.class);
         ParamMetaData paramMetaData = new ParamMetaData();
         paramMetaData.setParamConvertType(ParamMetaData.ParamConvertType.REQUEST_PARAM);
-        ParamMetaData[] paramMetaDatas = new ParamMetaData[]{paramMetaData};
+        ParamMetaData[] paramMetaDatas = new ParamMetaData[] {paramMetaData};
 
         HttpInvocation invocation = new HttpInvocation();
         invocation.setController(testController);
@@ -68,11 +67,8 @@ class HttpDispatchHandlerTest {
         ControllerManager.addHttpInvocation(invocation);
 
         try {
-            HttpRequest request = new DefaultFullHttpRequest(
-                    HttpVersion.HTTP_1_1,
-                    HttpMethod.GET,
-                    "/test?param=testValue"
-            );
+            HttpRequest request =
+                    new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/test?param=testValue");
 
             channel.writeInbound(request);
 
@@ -87,11 +83,7 @@ class HttpDispatchHandlerTest {
 
     @Test
     void testRequestToNonexistentPath() {
-        HttpRequest request = new DefaultFullHttpRequest(
-                HttpVersion.HTTP_1_1,
-                HttpMethod.GET,
-                "/notfound"
-        );
+        HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/notfound");
 
         channel.writeInbound(request);
 
@@ -101,11 +93,7 @@ class HttpDispatchHandlerTest {
 
     @Test
     void testHttpHeadMethod() {
-        HttpRequest request = new DefaultFullHttpRequest(
-                HttpVersion.HTTP_1_1,
-                HttpMethod.HEAD,
-                "/head"
-        );
+        HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.HEAD, "/head");
 
         channel.writeInbound(request);
 
@@ -138,6 +126,5 @@ class HttpDispatchHandlerTest {
         field.setAccessible(true);
         Map<String, HttpInvocation> map = (java.util.Map<String, HttpInvocation>) field.get(null);
         map.clear();
-
     }
 }

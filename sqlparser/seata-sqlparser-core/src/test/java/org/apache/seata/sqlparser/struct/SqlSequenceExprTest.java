@@ -58,5 +58,4 @@ public class SqlSequenceExprTest {
         expr.setFunction("newFunction");
         assertEquals("newFunction", expr.getFunction(), "Function should be 'newFunction'.");
     }
-
 }

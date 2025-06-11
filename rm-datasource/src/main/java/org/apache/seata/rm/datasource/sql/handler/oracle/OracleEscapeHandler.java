@@ -19,7 +19,6 @@ package org.apache.seata.rm.datasource.sql.handler.oracle;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.seata.common.loader.LoadLevel;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.sqlparser.EscapeHandler;
@@ -34,7 +33,8 @@ import org.apache.seata.sqlparser.util.JdbcConstants;
 @LoadLevel(name = JdbcConstants.ORACLE)
 public class OracleEscapeHandler implements EscapeHandler {
 
-    private Set<String> keywordSet = Arrays.stream(OracleKeyword.values()).map(OracleKeyword::name).collect(Collectors.toSet());
+    private Set<String> keywordSet =
+            Arrays.stream(OracleKeyword.values()).map(OracleKeyword::name).collect(Collectors.toSet());
 
     /**
      * oracle keyword
@@ -499,9 +499,7 @@ public class OracleEscapeHandler implements EscapeHandler {
             fieldOrTableName = fieldOrTableName.toUpperCase();
         }
         return keywordSet.contains(fieldOrTableName);
-
     }
-
 
     @Override
     public boolean checkIfNeedEscape(String columnName, TableMeta tableMeta) {
@@ -519,15 +517,15 @@ public class OracleEscapeHandler implements EscapeHandler {
         // oracle
         // we are recommend table name and column name must uppercase.
         // if exists full uppercase, the table name or column name doesn't bundle escape symbol.
-        //create\read    table TABLE "table" "TABLE"
+        // create\read    table TABLE "table" "TABLE"
         //
-        //table        √     √       ×       √
+        // table        √     √       ×       √
         //
-        //TABLE        √     √       ×       √
+        // TABLE        √     √       ×       √
         //
-        //"table"      ×     ×       √       ×
+        // "table"      ×     ×       √       ×
         //
-        //"TABLE"      √     √       ×       √
+        // "TABLE"      √     √       ×       √
         if (null != tableMeta) {
             ColumnMeta columnMeta = tableMeta.getColumnMeta(columnName);
             if (null != columnMeta) {

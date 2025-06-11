@@ -16,6 +16,9 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.HTTP_PREFIX;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.seata.integration.http.JakartaSeataWebMvcConfigurer;
 import org.apache.seata.integration.http.SeataWebMvcConfigurer;
 import org.junit.jupiter.api.Test;
@@ -24,9 +27,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
-import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.HTTP_PREFIX;
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Tests for {@link SeataHttpAutoConfiguration} to verify conditional bean registration.
  */
@@ -34,16 +34,15 @@ public class SeataHttpAutoConfigurationTest {
     // No thread safety issues, no need to create in @BeforeEach
     private final WebApplicationContextRunner webContextRunner = new WebApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(SeataHttpAutoConfiguration.class));
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(SeataHttpAutoConfiguration.class));
+    private final ApplicationContextRunner contextRunner =
+            new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(SeataHttpAutoConfiguration.class));
 
     @Test
     void whenNotWebApplication_thenNoBeansCreated() {
-        contextRunner
-                .run(context -> {
-                    assertThat(context).doesNotHaveBean(SeataWebMvcConfigurer.class);
-                    assertThat(context).doesNotHaveBean(JakartaSeataWebMvcConfigurer.class);
-                });
+        contextRunner.run(context -> {
+            assertThat(context).doesNotHaveBean(SeataWebMvcConfigurer.class);
+            assertThat(context).doesNotHaveBean(JakartaSeataWebMvcConfigurer.class);
+        });
     }
 
     @Test
@@ -68,12 +67,11 @@ public class SeataHttpAutoConfigurationTest {
 
     @Test
     void whenJakartaClassPresent_thenCreatesJakartaSeataWebMvcConfigurer() {
-        webContextRunner
-                .run(context -> {
-                    // Do not use assertThat(context).doesNotHaveBean(SeataWebMvcConfigurer.class),
-                    // because JakartaSeataWebMvcConfigurer extends SeataWebMvcConfigurer.
-                    assertThat(context.getBeansOfType(SeataWebMvcConfigurer.class).values())
-                            .hasOnlyElementsOfType(JakartaSeataWebMvcConfigurer.class);
-                });
+        webContextRunner.run(context -> {
+            // Do not use assertThat(context).doesNotHaveBean(SeataWebMvcConfigurer.class),
+            // because JakartaSeataWebMvcConfigurer extends SeataWebMvcConfigurer.
+            assertThat(context.getBeansOfType(SeataWebMvcConfigurer.class).values())
+                    .hasOnlyElementsOfType(JakartaSeataWebMvcConfigurer.class);
+        });
     }
 }

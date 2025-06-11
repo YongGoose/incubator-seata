@@ -16,6 +16,8 @@
  */
 package org.apache.seata.metrics.exporter.prometheus;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.seata.metrics.Clock;
 import org.apache.seata.metrics.Id;
 import org.apache.seata.metrics.Measurement;
@@ -23,8 +25,6 @@ import org.apache.seata.metrics.registry.compact.CompactCounter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CompactCounterTest {
     private CompactCounter compactCounter;

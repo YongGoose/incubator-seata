@@ -16,6 +16,7 @@
  */
 package org.apache.seata.tm;
 
+import java.util.concurrent.TimeoutException;
 import org.apache.seata.core.exception.TmTransactionException;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.exception.TransactionExceptionCode;
@@ -36,8 +37,6 @@ import org.apache.seata.core.protocol.transaction.GlobalStatusRequest;
 import org.apache.seata.core.protocol.transaction.GlobalStatusResponse;
 import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 
-import java.util.concurrent.TimeoutException;
-
 /**
  * The type Default transaction manager.
  *
@@ -46,7 +45,7 @@ public class DefaultTransactionManager implements TransactionManager {
 
     @Override
     public String begin(String applicationId, String transactionServiceGroup, String name, int timeout)
-        throws TransactionException {
+            throws TransactionException {
         GlobalBeginRequest request = new GlobalBeginRequest();
         request.setTransactionName(name);
         request.setTimeout(timeout);
@@ -92,7 +91,8 @@ public class DefaultTransactionManager implements TransactionManager {
 
     private AbstractTransactionResponse syncCall(AbstractTransactionRequest request) throws TransactionException {
         try {
-            return (AbstractTransactionResponse) TmNettyRemotingClient.getInstance().sendSyncRequest(request);
+            return (AbstractTransactionResponse)
+                    TmNettyRemotingClient.getInstance().sendSyncRequest(request);
         } catch (TimeoutException toe) {
             throw new TmTransactionException(TransactionExceptionCode.IO, "RPC timeout", toe);
         }

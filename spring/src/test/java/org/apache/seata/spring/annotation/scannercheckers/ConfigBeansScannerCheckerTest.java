@@ -16,14 +16,13 @@
  */
 package org.apache.seata.spring.annotation.scannercheckers;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
-import java.util.stream.Stream;
 
 /**
  * Test for {@link ConfigBeansScannerChecker} class
@@ -54,8 +53,7 @@ public class ConfigBeansScannerCheckerTest {
                 // Bean names containing but not ending with Properties should return true
                 Arguments.of("PropertiesTest", true),
                 // Bean names containing but not ending with Config should return true
-                Arguments.of("ConfigTest", true)
-        );
+                Arguments.of("ConfigTest", true));
     }
 
     /**
@@ -85,4 +83,4 @@ public class ConfigBeansScannerCheckerTest {
         Assertions.assertFalse(doCheck("applicationProperties"));
         Assertions.assertFalse(doCheck("serverConfig"));
     }
-} 
+}

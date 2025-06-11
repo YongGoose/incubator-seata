@@ -16,6 +16,11 @@
  */
 package org.apache.seata.metrics.exporter.prometheus;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.Iterator;
 import org.apache.seata.metrics.Id;
 import org.apache.seata.metrics.Measurement;
 import org.apache.seata.metrics.registry.compact.CompactSummary;
@@ -23,12 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Iterator;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
 public class CompactSummaryTest {
     @Mock
@@ -70,13 +69,13 @@ public class CompactSummaryTest {
         compactSummary.increase(10);
         compactSummary.increase(15);
         try {
-            //Avoid test failures that take less than 1 millisecond to complete
+            // Avoid test failures that take less than 1 millisecond to complete
             Thread.sleep(1);
         } catch (InterruptedException ignore) {
             // don't care
         }
         // Assuming that the time taken is 1 second
-        assertTrue(compactSummary.tps() >0);
+        assertTrue(compactSummary.tps() > 0);
     }
 
     @Test

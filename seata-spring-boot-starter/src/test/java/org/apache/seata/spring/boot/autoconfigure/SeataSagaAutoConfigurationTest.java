@@ -16,6 +16,20 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.apache.seata.spring.boot.autoconfigure.SeataSagaAutoConfiguration.SAGA_ASYNC_THREAD_POOL_EXECUTOR_BEAN_NAME;
+import static org.apache.seata.spring.boot.autoconfigure.SeataSagaAutoConfiguration.SAGA_REJECTED_EXECUTION_HANDLER_BEAN_NAME;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import javax.sql.DataSource;
 import org.apache.seata.core.model.Resource;
 import org.apache.seata.rm.DefaultResourceManager;
 import org.apache.seata.saga.engine.StateMachineConfig;
@@ -40,34 +54,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import static org.apache.seata.spring.boot.autoconfigure.SeataSagaAutoConfiguration.SAGA_ASYNC_THREAD_POOL_EXECUTOR_BEAN_NAME;
-import static org.apache.seata.spring.boot.autoconfigure.SeataSagaAutoConfiguration.SAGA_REJECTED_EXECUTION_HANDLER_BEAN_NAME;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
  * Tests for {@link SeataSagaAutoConfiguration} to verify conditional bean registration.
  */
 @SpringBootTest(
-        classes = {
-                SeataSagaAutoConfigurationTest.TestConfig.class
-        },
+        classes = {SeataSagaAutoConfigurationTest.TestConfig.class},
         properties = {
-                "seata.enabled=true",
-                "seata.saga.enabled=true",
-                "spring.application.name=testApp",
-                "seata.tx-service-group=testTxGroup",
-                "seata.saga.state-machine.enable-async=true"
+            "seata.enabled=true",
+            "seata.saga.enabled=true",
+            "spring.application.name=testApp",
+            "seata.tx-service-group=testTxGroup",
+            "seata.saga.state-machine.enable-async=true"
         })
 class SeataSagaAutoConfigurationTest {
     @Autowired
@@ -103,7 +100,12 @@ class SeataSagaAutoConfigurationTest {
 
     @Configuration
     @EnableConfigurationProperties(SeataProperties.class)
-    @ImportAutoConfiguration({DataSourceAutoConfiguration.class, SeataCoreAutoConfiguration.class, SeataAutoConfiguration.class, SeataSagaAutoConfiguration.class})
+    @ImportAutoConfiguration({
+        DataSourceAutoConfiguration.class,
+        SeataCoreAutoConfiguration.class,
+        SeataAutoConfiguration.class,
+        SeataSagaAutoConfiguration.class
+    })
     static class TestConfig {
         @Bean
         public DataSource dataSource() throws SQLException {

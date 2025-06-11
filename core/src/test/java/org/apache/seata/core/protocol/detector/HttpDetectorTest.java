@@ -16,17 +16,16 @@
  */
 package org.apache.seata.core.protocol.detector;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import java.nio.charset.StandardCharsets;
 import org.apache.seata.core.rpc.netty.http.HttpDispatchHandler;
 import org.junit.jupiter.api.Test;
-
-import java.nio.charset.StandardCharsets;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class HttpDetectorTest {
     private final HttpDetector httpDetector = new HttpDetector();

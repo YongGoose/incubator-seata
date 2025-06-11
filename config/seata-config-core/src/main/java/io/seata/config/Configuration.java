@@ -19,7 +19,6 @@ package io.seata.config;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.seata.common.util.StringUtils;
 
 /**

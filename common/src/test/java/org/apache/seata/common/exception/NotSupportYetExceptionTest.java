@@ -16,9 +16,9 @@
  */
 package org.apache.seata.common.exception;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * The notSupportYet exception.
@@ -38,15 +38,20 @@ public class NotSupportYetExceptionTest {
 
     @Test
     public void testConstructorWithMessageAndThrowable() {
-        exceptionAsserts(new NotSupportYetException(FrameworkErrorCode.UnknownAppError.getErrMessage(), new Throwable()));
+        exceptionAsserts(
+                new NotSupportYetException(FrameworkErrorCode.UnknownAppError.getErrMessage(), new Throwable()));
     }
 
     @Test
     public void testConstructorWithThrowable() {
-        assertThat(new NotSupportYetException(new Throwable(FrameworkErrorCode.UnknownAppError.getErrMessage()))).isInstanceOf(NotSupportYetException.class).hasMessage("java.lang.Throwable: " + FrameworkErrorCode.UnknownAppError.getErrMessage());
+        assertThat(new NotSupportYetException(new Throwable(FrameworkErrorCode.UnknownAppError.getErrMessage())))
+                .isInstanceOf(NotSupportYetException.class)
+                .hasMessage("java.lang.Throwable: " + FrameworkErrorCode.UnknownAppError.getErrMessage());
     }
 
     private static void exceptionAsserts(NotSupportYetException exception) {
-        assertThat(exception).isInstanceOf(NotSupportYetException.class).hasMessage(FrameworkErrorCode.UnknownAppError.getErrMessage());
+        assertThat(exception)
+                .isInstanceOf(NotSupportYetException.class)
+                .hasMessage(FrameworkErrorCode.UnknownAppError.getErrMessage());
     }
 }

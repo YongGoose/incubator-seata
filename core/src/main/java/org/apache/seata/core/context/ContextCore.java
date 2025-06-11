@@ -16,8 +16,8 @@
  */
 package org.apache.seata.core.context;
 
-import javax.annotation.Nullable;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * The interface Context core.

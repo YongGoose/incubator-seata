@@ -16,11 +16,10 @@
  */
 package org.apache.seata.spring.boot.autoconfigure.properties.server.store;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import static org.apache.seata.spring.boot.autoconfigure.StarterConstants.STORE_DB_HIKARI_PREFIX;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = STORE_DB_HIKARI_PREFIX)
@@ -68,11 +67,10 @@ public class HikariProperties {
 
     @Override
     public String toString() {
-        return "HikariProperties{" +
-                "idleTimeout=" + idleTimeout +
-                ", keepaliveTime=" + keepaliveTime +
-                ", maxLifetime=" + maxLifetime +
-                ", validationTimeout=" + validationTimeout +
-                '}';
+        return "HikariProperties{" + "idleTimeout="
+                + idleTimeout + ", keepaliveTime="
+                + keepaliveTime + ", maxLifetime="
+                + maxLifetime + ", validationTimeout="
+                + validationTimeout + '}';
     }
 }

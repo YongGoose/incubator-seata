@@ -16,22 +16,19 @@
  */
 package org.apache.seata.rm.datasource.exec;
 
-import org.apache.seata.common.exception.NotSupportYetException;
-import org.apache.seata.common.util.StringUtils;
-
-
-import org.apache.seata.sqlparser.util.ColumnUtils;
-import org.apache.seata.rm.datasource.StatementProxy;
-import org.apache.seata.sqlparser.struct.TableMeta;
-import org.apache.seata.rm.datasource.sql.struct.TableRecords;
-import org.apache.seata.sqlparser.SQLDeleteRecognizer;
-import org.apache.seata.sqlparser.SQLRecognizer;
-
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import org.apache.seata.common.exception.NotSupportYetException;
+import org.apache.seata.common.util.StringUtils;
+import org.apache.seata.rm.datasource.StatementProxy;
+import org.apache.seata.rm.datasource.sql.struct.TableRecords;
+import org.apache.seata.sqlparser.SQLDeleteRecognizer;
+import org.apache.seata.sqlparser.SQLRecognizer;
+import org.apache.seata.sqlparser.struct.TableMeta;
+import org.apache.seata.sqlparser.util.ColumnUtils;
 
 /**
  * The type MultiSql executor.
@@ -40,7 +37,10 @@ import java.util.StringJoiner;
  * @param <S> the type parameter
  */
 public class MultiDeleteExecutor<T, S extends Statement> extends AbstractDMLBaseExecutor<T, S> {
-    public MultiDeleteExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback, List<SQLRecognizer> sqlRecognizers) {
+    public MultiDeleteExecutor(
+            StatementProxy<S> statementProxy,
+            StatementCallback<T, S> statementCallback,
+            List<SQLRecognizer> sqlRecognizers) {
         super(statementProxy, statementCallback, sqlRecognizers);
     }
 

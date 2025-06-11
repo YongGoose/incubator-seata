@@ -16,9 +16,13 @@
  */
 package org.apache.seata.tm.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.core.model.TransactionManager;
@@ -33,12 +37,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-
 public class TransactionTemplateTest {
 
     private static final String DEFAULT_XID = "123456789";
@@ -51,13 +49,14 @@ public class TransactionTemplateTest {
     public void init() throws Exception {
         // mock transactionManager
         TransactionManager transactionManager = mock(TransactionManager.class);
-        when(transactionManager.begin(null, null, DEFAULT_NAME, DEFAULT_TIME_OUT)).thenReturn(DEFAULT_XID);
+        when(transactionManager.begin(null, null, DEFAULT_NAME, DEFAULT_TIME_OUT))
+                .thenReturn(DEFAULT_XID);
         when(transactionManager.commit(DEFAULT_XID)).thenReturn(GlobalStatus.Committed);
         when(transactionManager.rollback(DEFAULT_XID)).thenReturn(GlobalStatus.Rollbacked);
         when(transactionManager.getStatus(DEFAULT_XID)).thenReturn(GlobalStatus.Begin);
         TransactionManagerHolder.set(transactionManager);
 
-        //mock transactionalExecutor
+        // mock transactionalExecutor
         transactionalExecutor = Mockito.mock(TransactionalExecutor.class);
         TransactionInfo txInfo = new TransactionInfo();
         txInfo.setTimeOut(DEFAULT_TIME_OUT);
@@ -90,7 +89,7 @@ public class TransactionTemplateTest {
         try {
             template.execute(transactionalExecutor);
         } catch (Exception e) {
-            //catch rollback exception
+            // catch rollback exception
         }
         verifyRollBack(transactionHook);
     }
@@ -135,7 +134,7 @@ public class TransactionTemplateTest {
         try {
             template.execute(transactionalExecutor);
         } catch (Exception e) {
-            //catch rollback exception
+            // catch rollback exception
         }
         return transactionHook;
     }

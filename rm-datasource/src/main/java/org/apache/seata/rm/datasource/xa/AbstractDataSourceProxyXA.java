@@ -44,7 +44,7 @@ public abstract class AbstractDataSourceProxyXA extends BaseDataSourceResource<C
                 return connectionProxyXA;
             }
         }
-        return (ConnectionProxyXA)getConnectionProxyXA();
+        return (ConnectionProxyXA) getConnectionProxyXA();
     }
 
     protected abstract Connection getConnectionProxyXA() throws SQLException;
@@ -60,12 +60,10 @@ public abstract class AbstractDataSourceProxyXA extends BaseDataSourceResource<C
             connectionProxyXA.close();
             Connection physicalConn = connectionProxyXA.getWrappedConnection();
             if (physicalConn instanceof PooledConnection) {
-                physicalConn = ((PooledConnection)physicalConn).getConnection();
+                physicalConn = ((PooledConnection) physicalConn).getConnection();
             }
             // Force close the physical connection
             physicalConn.close();
         }
-
-
     }
 }

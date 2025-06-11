@@ -16,22 +16,24 @@
  */
 package org.apache.seata.core.event;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The GlobalTransactionEvent Test
  */
 public class GlobalTransactionEventTest {
 
-    private static GlobalTransactionEvent event ;
+    private static GlobalTransactionEvent event;
 
     @BeforeAll
     public static void setUp() {
-        event = new GlobalTransactionEvent(123456789L, "tc", "EventName", "AppID", "Group1", 123456789L, 1234567890L, "committed", true,false);
+        event = new GlobalTransactionEvent(
+                123456789L, "tc", "EventName", "AppID", "Group1", 123456789L, 1234567890L, "committed", true, false);
     }
+
     @Test
     public void testGetId() {
         // Test the getId method
@@ -86,11 +88,9 @@ public class GlobalTransactionEventTest {
         assertTrue(event.isRetryGlobal());
     }
 
-
     @Test
     public void testIsRetryBranch() {
         // Test the isSuccess method
         assertFalse(event.isRetryBranch());
     }
-
 }

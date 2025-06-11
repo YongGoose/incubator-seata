@@ -16,6 +16,10 @@
  */
 package org.apache.seata.core.rpc.processor.client;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.seata.core.protocol.RpcMessage;
 import org.apache.seata.core.protocol.transaction.UndoLogDeleteRequest;
@@ -27,10 +31,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * The type Rm undo log processor test.
@@ -54,7 +54,9 @@ public class RmUndoLogProcessorTest {
         mockLogger = mock(Logger.class);
 
         mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
-        mockedLoggerFactory.when(() -> LoggerFactory.getLogger(RmUndoLogProcessor.class)).thenReturn(mockLogger);
+        mockedLoggerFactory
+                .when(() -> LoggerFactory.getLogger(RmUndoLogProcessor.class))
+                .thenReturn(mockLogger);
 
         processor = new RmUndoLogProcessor(mockHandler);
     }

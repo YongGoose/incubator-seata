@@ -18,7 +18,6 @@ package org.apache.seata.metrics.registry.compact;
 
 import java.util.Collections;
 import java.util.function.Supplier;
-
 import org.apache.seata.metrics.Clock;
 import org.apache.seata.metrics.Gauge;
 import org.apache.seata.metrics.Id;

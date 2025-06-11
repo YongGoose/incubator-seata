@@ -289,5 +289,4 @@ public class GlobalTransactionDO implements java.io.Serializable {
     public String toString() {
         return StringUtils.toString(this);
     }
-
 }

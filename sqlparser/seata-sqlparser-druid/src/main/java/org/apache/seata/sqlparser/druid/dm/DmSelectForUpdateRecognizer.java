@@ -24,13 +24,12 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.seata.sqlparser.ParametersHolder;
 import org.apache.seata.sqlparser.SQLParsingException;
 import org.apache.seata.sqlparser.SQLSelectRecognizer;
 import org.apache.seata.sqlparser.SQLType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The type dm select for update recognizer.
@@ -48,7 +47,7 @@ public class DmSelectForUpdateRecognizer extends BaseDmRecognizer implements SQL
      */
     public DmSelectForUpdateRecognizer(String originalSQL, SQLStatement ast) {
         super(originalSQL);
-        this.ast = (SQLSelectStatement)ast;
+        this.ast = (SQLSelectStatement) ast;
     }
 
     @Override
@@ -57,8 +56,8 @@ public class DmSelectForUpdateRecognizer extends BaseDmRecognizer implements SQL
     }
 
     @Override
-    public String getWhereCondition(final ParametersHolder parametersHolder,
-        final ArrayList<List<Object>> paramAppenderList) {
+    public String getWhereCondition(
+            final ParametersHolder parametersHolder, final ArrayList<List<Object>> paramAppenderList) {
         SQLSelectQueryBlock selectQueryBlock = getSelect();
         SQLExpr where = selectQueryBlock.getWhere();
         return super.getWhereCondition(where, parametersHolder, paramAppenderList);
@@ -103,7 +102,7 @@ public class DmSelectForUpdateRecognizer extends BaseDmRecognizer implements SQL
                 return false;
             }
         };
-        visitor.visit((SQLExprTableSource)tableSource);
+        visitor.visit((SQLExprTableSource) tableSource);
         return sb.toString();
     }
 

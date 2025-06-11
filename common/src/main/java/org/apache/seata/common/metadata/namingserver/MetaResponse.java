@@ -16,16 +16,14 @@
  */
 package org.apache.seata.common.metadata.namingserver;
 
-import org.apache.seata.common.metadata.Cluster;
-
 import java.util.List;
+import org.apache.seata.common.metadata.Cluster;
 
 public class MetaResponse {
     private List<Cluster> clusterList;
     private long term;
 
-    public MetaResponse() {
-    }
+    public MetaResponse() {}
 
     public MetaResponse(List<Cluster> clusterList, long term) {
         this.clusterList = clusterList;

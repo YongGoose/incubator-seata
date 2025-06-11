@@ -16,9 +16,8 @@
  */
 package org.apache.seata.core.rpc.netty;
 
-import org.apache.seata.core.protocol.AbstractMessage;
-
 import java.util.Objects;
+import org.apache.seata.core.protocol.AbstractMessage;
 
 /**
  * The type Netty pool key.
@@ -142,7 +141,8 @@ public class NettyPoolKey {
         }
         final NettyPoolKey other = (NettyPoolKey) obj;
 
-        return Objects.equals(other.address, this.address) && Objects.equals(other.transactionRole, this.transactionRole);
+        return Objects.equals(other.address, this.address)
+                && Objects.equals(other.transactionRole, this.transactionRole);
     }
 
     /**

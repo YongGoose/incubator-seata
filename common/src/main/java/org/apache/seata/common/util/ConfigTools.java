@@ -27,7 +27,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import javax.crypto.Cipher;
 
-
 public class ConfigTools {
 
     // generate key pair
@@ -115,5 +114,4 @@ public class ConfigTools {
     public static byte[] base642Byte(String base64Key) {
         return Base64.getDecoder().decode(base64Key);
     }
-
 }

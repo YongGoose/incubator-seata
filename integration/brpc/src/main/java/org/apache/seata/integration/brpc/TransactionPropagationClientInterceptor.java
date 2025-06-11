@@ -16,13 +16,12 @@
  */
 package org.apache.seata.integration.brpc;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.baidu.brpc.interceptor.AbstractInterceptor;
 import com.baidu.brpc.interceptor.InterceptorChain;
 import com.baidu.brpc.protocol.Request;
 import com.baidu.brpc.protocol.Response;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.seata.integration.rpc.core.ConsumerRpcFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

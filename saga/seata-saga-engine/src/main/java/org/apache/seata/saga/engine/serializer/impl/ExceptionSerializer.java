@@ -21,9 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import org.apache.seata.saga.engine.serializer.Serializer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

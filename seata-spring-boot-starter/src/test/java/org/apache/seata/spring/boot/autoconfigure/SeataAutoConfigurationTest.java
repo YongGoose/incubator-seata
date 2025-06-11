@@ -16,6 +16,9 @@
  */
 package org.apache.seata.spring.boot.autoconfigure;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+
 import org.apache.seata.spring.annotation.GlobalTransactionScanner;
 import org.apache.seata.spring.boot.autoconfigure.properties.SeataProperties;
 import org.apache.seata.tm.TMClient;
@@ -33,21 +36,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-
 /**
  * Tests for {@link SeataAutoConfiguration} to verify conditional bean registration.
  * Here not use new ApplicationContextRunner() to avoid environment to be null.
  */
 @SpringBootTest(
         classes = SeataAutoConfigurationTest.TestConfig.class,
-        properties = {
-                "seata.enabled=true",
-                "seata.application-id=testApp",
-                "seata.tx-service-group=test_tx_group"
-        }
-)
+        properties = {"seata.enabled=true", "seata.application-id=testApp", "seata.tx-service-group=test_tx_group"})
 public class SeataAutoConfigurationTest {
 
     private static MockedStatic<TMClient> mockedTMClient;
@@ -66,8 +61,7 @@ public class SeataAutoConfigurationTest {
     @Configuration
     @EnableConfigurationProperties(SeataProperties.class)
     @ImportAutoConfiguration({SeataCoreAutoConfiguration.class, SeataAutoConfiguration.class})
-    static class TestConfig {
-    }
+    static class TestConfig {}
 
     @Autowired
     private ApplicationContext applicationContext;

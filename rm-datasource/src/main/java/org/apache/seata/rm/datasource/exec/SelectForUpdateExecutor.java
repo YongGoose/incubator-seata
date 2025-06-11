@@ -23,7 +23,6 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.rm.datasource.StatementProxy;
@@ -50,8 +49,8 @@ public class SelectForUpdateExecutor<T, S extends Statement> extends BaseTransac
      * @param statementCallback the statement callback
      * @param sqlRecognizer     the sql recognizer
      */
-    public SelectForUpdateExecutor(StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback,
-                                   SQLRecognizer sqlRecognizer) {
+    public SelectForUpdateExecutor(
+            StatementProxy<S> statementProxy, StatementCallback<T, S> statementCallback, SQLRecognizer sqlRecognizer) {
         super(statementProxy, statementCallback, sqlRecognizer);
     }
 
@@ -98,7 +97,7 @@ public class SelectForUpdateExecutor<T, S extends Statement> extends BaseTransac
                     }
 
                     if (RootContext.inGlobalTransaction() || RootContext.requireGlobalLock()) {
-                        // Do the same thing under either @GlobalTransactional or @GlobalLock, 
+                        // Do the same thing under either @GlobalTransactional or @GlobalLock,
                         // that only check the global lock  here.
                         statementProxy.getConnectionProxy().checkLock(lockKeys);
                     } else {
@@ -133,7 +132,7 @@ public class SelectForUpdateExecutor<T, S extends Statement> extends BaseTransac
     }
 
     protected String buildSelectSQL(ArrayList<List<Object>> paramAppenderList) {
-        SQLSelectRecognizer recognizer = (SQLSelectRecognizer)sqlRecognizer;
+        SQLSelectRecognizer recognizer = (SQLSelectRecognizer) sqlRecognizer;
         StringBuilder selectSQLAppender = new StringBuilder("SELECT ");
         selectSQLAppender.append(getColumnNamesInSQL(getTableMeta().getEscapePkNameList(getDbType())));
         selectSQLAppender.append(" FROM ").append(getFromTableInSQL());

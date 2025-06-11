@@ -18,7 +18,6 @@ package org.apache.seata.integration.http;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.core.context.RootContext;
 import org.slf4j.Logger;
@@ -32,7 +31,6 @@ public class TransactionPropagationInterceptor implements HandlerInterceptorAdap
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionPropagationInterceptor.class);
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String rpcXid = request.getHeader(RootContext.KEY_XID);
@@ -40,13 +38,13 @@ public class TransactionPropagationInterceptor implements HandlerInterceptorAdap
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
         if (RootContext.inGlobalTransaction()) {
             String rpcXid = request.getHeader(RootContext.KEY_XID);
             this.cleanXid(rpcXid);
         }
     }
-
 
     protected boolean bindXid(String rpcXid) {
         String xid = RootContext.getXID();
@@ -67,5 +65,4 @@ public class TransactionPropagationInterceptor implements HandlerInterceptorAdap
     protected void cleanXid(String rpcXid) {
         XidResource.cleanXid(rpcXid);
     }
-
 }

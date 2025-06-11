@@ -16,17 +16,16 @@
  */
 package org.apache.seata.spring.util;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.AopUtils;
-
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SpringProxyUtilsTest {
 
@@ -44,12 +43,8 @@ public class SpringProxyUtilsTest {
     // Helper: create a “pure” JDK dynamic proxy for TestService
     private TestService createJdkProxy() {
         return (TestService) Proxy.newProxyInstance(
-                TestService.class.getClassLoader(),
-                new Class<?>[]{TestService.class},
-                (proxy, method, args) -> null
-        );
+                TestService.class.getClassLoader(), new Class<?>[] {TestService.class}, (proxy, method, args) -> null);
     }
-
 
     // Tests for findTargetClass
 
@@ -83,7 +78,6 @@ public class SpringProxyUtilsTest {
         Class<?> result = SpringProxyUtils.findTargetClass(springJdkProxy);
         assertEquals(TestServiceImpl.class, result);
     }
-
 
     // Tests for findInterfaces
 
@@ -130,8 +124,7 @@ public class SpringProxyUtilsTest {
     public void testGetAdvisedSupport_WithCglibProxy() throws Exception {
         // Define a concrete class with no interfaces to force CGLIB proxy
         class NoInterfaceTarget {
-            public void sayHello() {
-            }
+            public void sayHello() {}
         }
 
         NoInterfaceTarget target = new NoInterfaceTarget();
@@ -176,7 +169,6 @@ public class SpringProxyUtilsTest {
         assertTrue(SpringProxyUtils.isProxy(springProxy));
     }
 
-
     // Tests for getTargetInterface
 
     @Test
@@ -197,7 +189,6 @@ public class SpringProxyUtilsTest {
         Class<?> clazz = SpringProxyUtils.getTargetInterface(plain);
         assertEquals(TestServiceImpl.class, clazz);
     }
-
 
     // Tests for getAllInterfaces
     @Test
@@ -220,11 +211,10 @@ public class SpringProxyUtilsTest {
     public void testGetAllInterfaces_WithMultipleInterfaces() {
         class MultiInterfaceImpl implements TestService, Runnable {
             @Override
-            public void doSomething() {
-            }
+            public void doSomething() {}
+
             @Override
-            public void run() {
-            }
+            public void run() {}
         }
         MultiInterfaceImpl multi = new MultiInterfaceImpl();
         Class<?>[] ifaces = SpringProxyUtils.getAllInterfaces(multi);
@@ -233,7 +223,6 @@ public class SpringProxyUtilsTest {
         assertTrue(Arrays.asList(ifaces).contains(TestService.class));
         assertTrue(Arrays.asList(ifaces).contains(Runnable.class));
     }
-
 
     // Tests for getTargetClass
     @Test
@@ -274,14 +263,17 @@ public class SpringProxyUtilsTest {
             public Class<?> getTargetClass() {
                 return TestService.class;
             }
+
             @Override
             public boolean isStatic() {
                 return true;
             }
+
             @Override
             public Object getTarget() {
                 return null;
             }
+
             @Override
             public void releaseTarget(Object target) {
                 // no-op
@@ -298,5 +290,4 @@ public class SpringProxyUtilsTest {
         Class<?> result = SpringProxyUtils.findTargetClass(proxyWithNullTarget);
         assertNull(result);
     }
-
 }

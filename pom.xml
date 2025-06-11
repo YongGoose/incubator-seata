@@ -363,7 +363,6 @@
                                     <exclude>**/antlr/mysql/antlr/*.*</exclude>
                                     <exclude>**/antlr/mysql/stream/ANTLRNoCaseStringStream.java</exclude>
                                 </excludes>
-                                <ratchetFrom>HEAD</ratchetFrom>
                                 <palantirJavaFormat>
                                     <version>${palantirJavaFormat.version}</version>
                                 </palantirJavaFormat>

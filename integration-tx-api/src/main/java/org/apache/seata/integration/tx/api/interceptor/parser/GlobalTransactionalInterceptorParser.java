@@ -19,7 +19,6 @@ package org.apache.seata.integration.tx.api.interceptor.parser;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.util.CollectionUtils;
 import org.apache.seata.common.util.ReflectionUtil;
@@ -51,7 +50,9 @@ public class GlobalTransactionalInterceptorParser implements InterfaceParser {
 
         if (existsAnnotation(serviceInterface) || existsAnnotation(interfacesIfJdk)) {
             ProxyInvocationHandler proxyInvocationHandler = createProxyInvocationHandler();
-            ConfigurationFactory.getInstance().addConfigListener(ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION, (CachedConfigurationChangeListener) proxyInvocationHandler);
+            ConfigurationFactory.getInstance()
+                    .addConfigListener(ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION, (CachedConfigurationChangeListener)
+                            proxyInvocationHandler);
             return proxyInvocationHandler;
         }
 

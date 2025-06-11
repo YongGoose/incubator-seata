@@ -18,11 +18,9 @@ package org.apache.seata.discovery.registry.nacos;
 
 import java.lang.reflect.Method;
 import java.util.Properties;
-
 import org.apache.seata.common.util.ReflectionUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 
 /**
  * The type Nacos registry serivce impl test
@@ -39,6 +37,4 @@ public class NacosRegistryServiceImplTest {
         properties = (Properties) ReflectionUtil.invokeMethod(null, method);
         Assertions.assertThat(properties.getProperty("contextPath")).isEqualTo("/bar");
     }
-
-
 }

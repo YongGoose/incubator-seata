@@ -17,13 +17,11 @@
 package org.apache.seata.serializer.protobuf;
 
 import com.google.protobuf.MessageLite;
-import org.apache.seata.common.exception.ShouldNeverHappenException;
-import org.apache.seata.common.util.CollectionUtils;
-
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
+import org.apache.seata.common.exception.ShouldNeverHappenException;
+import org.apache.seata.common.util.CollectionUtils;
 
 public class ProtobufHelper {
 
@@ -57,8 +55,8 @@ public class ProtobufHelper {
                 throw new ShouldNeverHappenException("get class occurs exception", e);
             }
             if (clazz == void.class || !isProtoBufMessageClass(clazz)) {
-                throw new ShouldNeverHappenException("class based protobuf: " + clazz.getName()
-                        + ", only support return protobuf message!");
+                throw new ShouldNeverHappenException(
+                        "class based protobuf: " + clazz.getName() + ", only support return protobuf message!");
             }
             return clazz;
         });

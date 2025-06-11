@@ -16,6 +16,10 @@
  */
 package org.apache.seata.tm;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.concurrent.TimeoutException;
 import org.apache.seata.core.exception.TransactionException;
 import org.apache.seata.core.model.GlobalStatus;
 import org.apache.seata.core.protocol.ResultCode;
@@ -40,17 +44,12 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.concurrent.TimeoutException;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 /**
  * the type DefaultTransactionManager
  */
 public class DefaultTransactionManagerTest {
 
-    private final static String DEFAULT_XID = "1234567890";
+    private static final String DEFAULT_XID = "1234567890";
 
     private DefaultTransactionManager defaultTransactionManager;
 
@@ -59,17 +58,18 @@ public class DefaultTransactionManagerTest {
     @Mock
     private TmNettyRemotingClient tmNettyRemotingClient;
 
-
     @BeforeEach
     void init() {
         MockitoAnnotations.openMocks(this);
         tmNettyRemotingClientMockedStatic = Mockito.mockStatic(TmNettyRemotingClient.class);
-        tmNettyRemotingClientMockedStatic.when(TmNettyRemotingClient::getInstance).thenReturn(tmNettyRemotingClient);
+        tmNettyRemotingClientMockedStatic
+                .when(TmNettyRemotingClient::getInstance)
+                .thenReturn(tmNettyRemotingClient);
         defaultTransactionManager = new DefaultTransactionManager();
     }
 
     @AfterEach
-    void destory(){
+    void destory() {
         tmNettyRemotingClientMockedStatic.close();
     }
 
@@ -79,7 +79,8 @@ public class DefaultTransactionManagerTest {
         mockResponse.setResultCode(ResultCode.Success);
         mockResponse.setXid(DEFAULT_XID);
 
-        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalBeginRequest.class))).thenReturn(mockResponse);
+        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalBeginRequest.class)))
+                .thenReturn(mockResponse);
 
         String xid = defaultTransactionManager.begin("appId", "txGroup", "testName", 1000);
 
@@ -93,9 +94,11 @@ public class DefaultTransactionManagerTest {
         mockResponse.setResultCode(ResultCode.Failed);
         mockResponse.setMsg("Failed to begin transaction");
 
-        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalBeginRequest.class))).thenReturn(mockResponse);
+        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalBeginRequest.class)))
+                .thenReturn(mockResponse);
 
-        TransactionException exception = Assertions.assertThrows(TransactionException.class,
+        TransactionException exception = Assertions.assertThrows(
+                TransactionException.class,
                 () -> defaultTransactionManager.begin("appId", "txGroup", "testName", 1000));
 
         Assertions.assertTrue(exception.getMessage().contains("Failed to begin transaction"));
@@ -107,7 +110,8 @@ public class DefaultTransactionManagerTest {
         GlobalCommitResponse mockResponse = new GlobalCommitResponse();
         mockResponse.setGlobalStatus(GlobalStatus.Committed);
 
-        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalCommitRequest.class))).thenReturn(mockResponse);
+        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalCommitRequest.class)))
+                .thenReturn(mockResponse);
 
         GlobalStatus status = defaultTransactionManager.commit(DEFAULT_XID);
 
@@ -120,7 +124,8 @@ public class DefaultTransactionManagerTest {
         GlobalRollbackResponse mockResponse = new GlobalRollbackResponse();
         mockResponse.setGlobalStatus(GlobalStatus.Rollbacked);
 
-        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalRollbackRequest.class))).thenReturn(mockResponse);
+        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalRollbackRequest.class)))
+                .thenReturn(mockResponse);
 
         GlobalStatus status = defaultTransactionManager.rollback(DEFAULT_XID);
 
@@ -133,7 +138,8 @@ public class DefaultTransactionManagerTest {
         GlobalStatusResponse mockResponse = new GlobalStatusResponse();
         mockResponse.setGlobalStatus(GlobalStatus.Committing);
 
-        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalStatusRequest.class))).thenReturn(mockResponse);
+        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalStatusRequest.class)))
+                .thenReturn(mockResponse);
 
         GlobalStatus status = defaultTransactionManager.getStatus(DEFAULT_XID);
 
@@ -146,7 +152,8 @@ public class DefaultTransactionManagerTest {
         GlobalReportResponse mockResponse = new GlobalReportResponse();
         mockResponse.setGlobalStatus(GlobalStatus.Committed);
 
-        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalReportRequest.class))).thenReturn(mockResponse);
+        when(tmNettyRemotingClient.sendSyncRequest(any(GlobalReportRequest.class)))
+                .thenReturn(mockResponse);
 
         GlobalStatus status = defaultTransactionManager.globalReport(DEFAULT_XID, GlobalStatus.Committed);
 
@@ -159,8 +166,8 @@ public class DefaultTransactionManagerTest {
         when(tmNettyRemotingClient.sendSyncRequest(any(AbstractTransactionRequest.class)))
                 .thenThrow(new TimeoutException("Timeout occurred"));
 
-        TransactionException exception = Assertions.assertThrows(TransactionException.class,
-                () -> defaultTransactionManager.getStatus(DEFAULT_XID));
+        TransactionException exception = Assertions.assertThrows(
+                TransactionException.class, () -> defaultTransactionManager.getStatus(DEFAULT_XID));
 
         Assertions.assertTrue(exception.getMessage().contains("RPC timeout"));
         Mockito.verify(tmNettyRemotingClient).sendSyncRequest(any(AbstractTransactionRequest.class));
