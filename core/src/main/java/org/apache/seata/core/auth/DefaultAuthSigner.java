@@ -24,8 +24,7 @@ public class DefaultAuthSigner implements AuthSigner {
 
     @Override
     public String sign(String data, String key) {
-        if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(data)) {
-            return RamSignAdapter.getRamSign(data, key);
+        if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(data)){return RamSignAdapter.getRamSign(data, key);
         }
         return data;
     }
