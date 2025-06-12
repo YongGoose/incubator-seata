@@ -26,9 +26,12 @@ import org.springframework.test.context.DynamicPropertySource;
 public class DynamicPortTestConfig {
     @DynamicPropertySource
     static void dynamicProperties(DynamicPropertyRegistry registry) throws IOException {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            int port = socket.getLocalPort();
-            registry.add("server.servicePort", () -> String.valueOf(port));
+        try (ServerSocket serverSocket = new ServerSocket(0);
+             ServerSocket exporterSocket = new ServerSocket(0)) {
+            int servicePort = serverSocket.getLocalPort();
+            int exporterPort = exporterSocket.getLocalPort();
+            registry.add("server.servicePort", () -> String.valueOf(servicePort));
+            registry.add("metrics.exporter.prometheus.port", () -> String.valueOf(exporterPort));
         }
     }
 }
