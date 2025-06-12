@@ -119,7 +119,7 @@ class ResourceCleanupTest {
         basket.add(rpcMessage2);
         basketMap.put(serverAddress, basket);
 
-        client.cleanupResourcesForChannel(channel);
+        client.onChannelInactive(channel);
 
         assertFalse(futures.containsKey(1), "Future ID 1 has not been removed");
         assertFalse(futures.containsKey(2), "Future ID 2 has not been removed");
