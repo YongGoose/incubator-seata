@@ -27,14 +27,19 @@ public class DynamicPortTestConfig {
     @DynamicPropertySource
     static void dynamicProperties(DynamicPropertyRegistry registry) throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(0);
-             ServerSocket exporterSocket = new ServerSocket(0)) {
+             ServerSocket exporterSocket = new ServerSocket(0);
+             ServerSocket portSocket = new ServerSocket(0)
+        ) {
             int servicePort = serverSocket.getLocalPort();
             int exporterPort = exporterSocket.getLocalPort();
+            int port = portSocket.getLocalPort();
+
             registry.add("server.servicePort", () -> String.valueOf(servicePort));
             registry.add("metrics.exporter.prometheus.port", () -> String.valueOf(exporterPort));
 
             System.setProperty("server.servicePort", String.valueOf(servicePort));
             System.setProperty("metrics.exporter.prometheus.port", String.valueOf(exporterPort));
+            System.setProperty("server.port", String.valueOf(port));
         }
     }
 }
