@@ -36,6 +36,7 @@ public class DynamicPortTestConfig {
 
             registry.add("server.servicePort", () -> String.valueOf(servicePort));
             registry.add("metrics.exporter.prometheus.port", () -> String.valueOf(exporterPort));
+            registry.add("server.port", () -> String.valueOf(port));
 
             System.setProperty("server.servicePort", String.valueOf(servicePort));
             System.setProperty("metrics.exporter.prometheus.port", String.valueOf(exporterPort));
