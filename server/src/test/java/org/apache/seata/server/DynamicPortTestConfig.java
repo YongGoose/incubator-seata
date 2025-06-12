@@ -14,28 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.seata.server.controller;
+package org.apache.seata.server;
 
-import org.apache.seata.server.DynamicPortTestConfig;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import java.io.IOException;
+import java.net.ServerSocket;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
-@Disabled
-@SpringBootTest
-class VGroupMappingControllerTest {
-    @Autowired
-    private VGroupMappingController vGroupMappingController;
-
-    @Test
-    void addVGroup() {
-        vGroupMappingController.addVGroup("group1","unit1");
-    }
-
-    @Test
-    void removeVGroup() {
-        vGroupMappingController.removeVGroup("group1");
+@TestConfiguration
+public class DynamicPortTestConfig {
+    @DynamicPropertySource
+    static void dynamicProperties(DynamicPropertyRegistry registry) throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            int port = socket.getLocalPort();
+            registry.add("server.servicePort", () -> String.valueOf(port));
+        }
     }
 }
