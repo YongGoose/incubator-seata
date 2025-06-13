@@ -44,7 +44,6 @@ import static org.apache.seata.common.ConfigurationKeys.SERVER_SERVICE_PORT_CAME
 import static org.apache.seata.common.Constants.OBJECT_KEY_SPRING_APPLICATION_CONTEXT;
 
 @SpringBootTest
-//@TestPropertySource(locations = "classpath:test-cluster-controller.properties")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Import(DynamicPortTestConfig.class)
 class ClusterControllerTest {
