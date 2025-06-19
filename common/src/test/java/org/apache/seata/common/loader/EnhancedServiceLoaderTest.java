@@ -81,7 +81,6 @@ public class EnhancedServiceLoaderTest {
     /**
      * Gets all extension class.
      */
-    @SuppressWarnings("checkstyle:UnnecessaryParentheses")
     @Test
     public void getAllExtensionClass() {
         List<Class<Hello>> allExtensionClass = EnhancedServiceLoader.getAllExtensionClass(Hello.class);
