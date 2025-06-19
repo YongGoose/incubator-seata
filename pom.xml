@@ -352,7 +352,6 @@
                         <artifactId>spotless-maven-plugin</artifactId>
                         <version>${spotless-maven-plugin.version}</version>
                         <configuration>
-                            <skip>true</skip>
                             <java>
                                 <excludes>
                                     <exclude>**/script/**</exclude>
@@ -361,13 +360,15 @@
                                     <exclude>**/antlr/mysql/antlr/*.*</exclude>
                                     <exclude>**/antlr/mysql/stream/ANTLRNoCaseStringStream.java</exclude>
                                 </excludes>
-                                <ratchetFrom>HEAD</ratchetFrom>
                                 <palantirJavaFormat>
                                     <version>${palantirJavaFormat.version}</version>
                                 </palantirJavaFormat>
                                 <removeUnusedImports/>
                                 <trimTrailingWhitespace/>
                                 <endWithNewline/>
+                                <importOrder>
+                                    <order>,javax|java,\#</order>
+                                </importOrder>
                             </java>
                         </configuration>
                         <executions>
