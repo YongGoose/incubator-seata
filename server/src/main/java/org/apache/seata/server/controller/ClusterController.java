@@ -26,6 +26,7 @@ import org.apache.seata.common.result.Result;
 import org.apache.seata.common.rpc.http.HttpContext;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.ConfigurationFactory;
+import org.apache.seata.core.protocol.Version;
 import org.apache.seata.server.cluster.manager.ClusterWatcherManager;
 import org.apache.seata.server.cluster.raft.RaftServer;
 import org.apache.seata.server.cluster.raft.RaftServerManager;
@@ -117,6 +118,12 @@ public class ClusterController {
             @RequestBody Map<String, Object> groupTerms,
             @RequestParam(defaultValue = "28000") Integer timeout) {
         context.setAsync(true);
+
+        if (Version.isAboveOrEqualVersion250(Version.getCurrent())) {
+            // TODO[#7406] : Generate a new Watch interface that supports HTTP/2 and implements this code
+            return;
+        }
+
         groupTerms.forEach((group, term) -> {
             Watcher<HttpContext> watcher = new Watcher<>(group, context, timeout, Long.parseLong(String.valueOf(term)));
             clusterWatcherManager.registryWatcher(watcher);

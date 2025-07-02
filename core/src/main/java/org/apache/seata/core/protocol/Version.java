@@ -41,6 +41,7 @@ public class Version {
     private static final String VERSION_0_7_1 = "0.7.1";
     private static final String VERSION_1_5_0 = "1.5.0";
     private static final String VERSION_2_3_0 = "2.3.0";
+    private static final String VERSION_2_5_0 = "2.5.0";
     private static final int MAX_VERSION_DOT = 3;
 
     /**
@@ -91,6 +92,10 @@ public class Version {
 
     public static boolean isAboveOrEqualVersion230(String version) {
         return isAboveOrEqualVersion(version, VERSION_2_3_0);
+    }
+
+    public static boolean isAboveOrEqualVersion250(String version) {
+        return isAboveOrEqualVersion(version, VERSION_2_5_0);
     }
 
     public static boolean isV0(String version) {

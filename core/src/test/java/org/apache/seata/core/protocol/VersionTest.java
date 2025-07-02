@@ -35,6 +35,29 @@ public class VersionTest {
     }
 
     @Test
+    public void isAboveOrEqualVersion250_whenGreaterThan() {
+        Assertions.assertTrue(Version.isAboveOrEqualVersion250("2.5.1"));
+        Assertions.assertTrue(Version.isAboveOrEqualVersion250("3.0.0"));
+    }
+
+    @Test
+    public void isAboveOrEqualVersion250_whenEqual() {
+        Assertions.assertTrue(Version.isAboveOrEqualVersion250("2.5.0"));
+    }
+
+    @Test
+    public void isAboveOrEqualVersion250_whenLessThan() {
+        Assertions.assertFalse(Version.isAboveOrEqualVersion250("2.4.9"));
+        Assertions.assertFalse(Version.isAboveOrEqualVersion250("1.0.0"));
+    }
+
+    @Test
+    public void isAboveOrEqualVersion250_whenInvalidVersion() {
+        Assertions.assertFalse(Version.isAboveOrEqualVersion250(""));
+        Assertions.assertFalse(Version.isAboveOrEqualVersion250("invalid"));
+    }
+
+    @Test
     public void testConvertVersion() {
         // case: success
         Assertions.assertDoesNotThrow(() -> {
