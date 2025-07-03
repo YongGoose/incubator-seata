@@ -118,12 +118,6 @@ public class ClusterController {
             @RequestBody Map<String, Object> groupTerms,
             @RequestParam(defaultValue = "28000") Integer timeout) {
         context.setAsync(true);
-
-        if (Version.isAboveOrEqualVersion250(Version.getCurrent())) {
-            // TODO[#7406] : Generate a new Watch interface that supports HTTP/2 and implements this code
-            return;
-        }
-
         groupTerms.forEach((group, term) -> {
             Watcher<HttpContext> watcher = new Watcher<>(group, context, timeout, Long.parseLong(String.valueOf(term)));
             clusterWatcherManager.registryWatcher(watcher);
