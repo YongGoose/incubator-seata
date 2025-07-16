@@ -119,7 +119,7 @@ public class HttpClientUtil {
     }
 
     // post request for http2
-    public static CompletableFuture<SimpleHttpResponse> doPostHttp2Async(
+    public static CompletableFuture<SimpleHttpResponse> doPostHttp2(
             String url, Map<String, String> params, Map<String, String> headers, int timeout) throws IOException {
         try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
                 .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
@@ -167,7 +167,7 @@ public class HttpClientUtil {
                 }
             });
             return future;
-        } catch (URISyntaxException | ClientProtocolException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         return null;
@@ -207,7 +207,7 @@ public class HttpClientUtil {
     }
 
     // post request for http2
-    public static CompletableFuture<SimpleHttpResponse> doPostHttp2Async(
+    public static CompletableFuture<SimpleHttpResponse> doPostHttp2(
             String url, String body, Map<String, String> headers, int timeout) throws IOException {
         try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
                 .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
@@ -250,7 +250,7 @@ public class HttpClientUtil {
                 }
             });
             return future;
-        } catch (URISyntaxException | ClientProtocolException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         return null;
@@ -286,7 +286,7 @@ public class HttpClientUtil {
         return null;
     }
 
-    public static CompletableFuture<SimpleHttpResponse> doGetHttp2Async(
+    public static CompletableFuture<SimpleHttpResponse> doGetHttp2(
             String url, Map<String, String> headers, int timeout) throws IOException {
         try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
                 .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
@@ -320,7 +320,7 @@ public class HttpClientUtil {
                 }
             });
             return future;
-        } catch (URISyntaxException | ClientProtocolException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         return null;
