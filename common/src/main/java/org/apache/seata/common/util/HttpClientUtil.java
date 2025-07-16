@@ -286,8 +286,8 @@ public class HttpClientUtil {
         return null;
     }
 
-    public static CompletableFuture<SimpleHttpResponse> doGetHttp2(
-            String url, Map<String, String> headers, int timeout) throws IOException {
+    public static CompletableFuture<SimpleHttpResponse> doGetHttp2(String url, Map<String, String> headers, int timeout)
+            throws IOException {
         try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
                 .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
                 .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
