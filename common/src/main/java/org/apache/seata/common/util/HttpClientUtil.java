@@ -17,6 +17,12 @@
 package org.apache.seata.common.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.core5.concurrent.FutureCallback;
+import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
@@ -41,7 +47,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class HttpClientUtil {
 
@@ -110,6 +118,61 @@ public class HttpClientUtil {
         return null;
     }
 
+    // post request for http2
+    public static CompletableFuture<SimpleHttpResponse> doPostHttp2Async(
+            String url, Map<String, String> params, Map<String, String> headers, int timeout) throws IOException {
+        try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
+                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
+                .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
+                        .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .setConnectionRequestTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .build())
+                .build()) {
+            http2Client.start();
+
+            SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
+            String contentType = "";
+            if (headers != null) {
+                headers.forEach(request::setHeader);
+                contentType = headers.get("Content-Type");
+            }
+            if (StringUtils.isNotBlank(contentType)) {
+                if (ContentType.APPLICATION_FORM_URLENCODED.getMimeType().equals(contentType)) {
+                    List<NameValuePair> nameValuePairs = new ArrayList<>();
+                    params.forEach((k, v) -> nameValuePairs.add(new BasicNameValuePair(k, v)));
+                    String requestBody = URLEncodedUtils.format(nameValuePairs, StandardCharsets.UTF_8);
+                    request.setBody(requestBody, org.apache.hc.core5.http.ContentType.APPLICATION_FORM_URLENCODED);
+                } else if (ContentType.APPLICATION_JSON.getMimeType().equals(contentType)) {
+                    String requestBody = OBJECT_MAPPER.writeValueAsString(params);
+                    request.setBody(requestBody, org.apache.hc.core5.http.ContentType.APPLICATION_JSON);
+                }
+            }
+
+            CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
+            http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
+                @Override
+                public void completed(SimpleHttpResponse result) {
+                    future.complete(result);
+                }
+
+                @Override
+                public void failed(Exception e) {
+                    future.completeExceptionally(e);
+                }
+
+                @Override
+                public void cancelled() {
+                    future.cancel(true);
+                }
+            });
+            return future;
+        } catch (URISyntaxException | ClientProtocolException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
     // post request
     public static CloseableHttpResponse doPost(String url, String body, Map<String, String> header, int timeout)
             throws IOException {
@@ -143,6 +206,56 @@ public class HttpClientUtil {
         return null;
     }
 
+    // post request for http2
+    public static CompletableFuture<SimpleHttpResponse> doPostHttp2Async(
+            String url, String body, Map<String, String> headers, int timeout) throws IOException {
+        try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
+                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
+                .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
+                        .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .setConnectionRequestTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .build())
+                .build()) {
+            http2Client.start();
+
+            String contentType = "";
+            SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
+            if (headers != null) {
+                headers.forEach(request::setHeader);
+                contentType = headers.get("Content-Type");
+            }
+
+            if (StringUtils.isNotBlank(contentType)) {
+                if (ContentType.APPLICATION_JSON.getMimeType().equals(contentType)) {
+                    request.setBody(body, org.apache.hc.core5.http.ContentType.APPLICATION_JSON);
+                }
+            }
+
+            CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
+            http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
+                @Override
+                public void completed(SimpleHttpResponse result) {
+                    future.complete(result);
+                }
+
+                @Override
+                public void failed(Exception e) {
+                    future.completeExceptionally(e);
+                }
+
+                @Override
+                public void cancelled() {
+                    future.cancel(true);
+                }
+            });
+            return future;
+        } catch (URISyntaxException | ClientProtocolException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
     // get request
     public static CloseableHttpResponse doGet(
             String url, Map<String, String> param, Map<String, String> header, int timeout) throws IOException {
@@ -167,6 +280,46 @@ public class HttpClientUtil {
                             .build())
                     .build());
             return client.execute(httpGet);
+        } catch (URISyntaxException | ClientProtocolException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public static CompletableFuture<SimpleHttpResponse> doGetHttp2Async(
+            String url, Map<String, String> headers, int timeout) throws IOException {
+        try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
+                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
+                .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
+                        .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .setConnectionRequestTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .build())
+                .build()) {
+            http2Client.start();
+
+            SimpleHttpRequest request = new SimpleHttpRequest("GET", url);
+            if (headers != null) {
+                headers.forEach(request::setHeader);
+            }
+            CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
+            http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
+                @Override
+                public void completed(SimpleHttpResponse result) {
+                    future.complete(result);
+                }
+
+                @Override
+                public void failed(Exception e) {
+                    future.completeExceptionally(e);
+                }
+
+                @Override
+                public void cancelled() {
+                    future.cancel(true);
+                }
+            });
+            return future;
         } catch (URISyntaxException | ClientProtocolException e) {
             LOGGER.error(e.getMessage(), e);
         }
