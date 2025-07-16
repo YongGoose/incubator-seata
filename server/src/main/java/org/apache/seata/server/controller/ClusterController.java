@@ -26,7 +26,6 @@ import org.apache.seata.common.result.Result;
 import org.apache.seata.common.rpc.http.HttpContext;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.ConfigurationFactory;
-import org.apache.seata.core.protocol.Version;
 import org.apache.seata.server.cluster.manager.ClusterWatcherManager;
 import org.apache.seata.server.cluster.raft.RaftServer;
 import org.apache.seata.server.cluster.raft.RaftServerManager;
