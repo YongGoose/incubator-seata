@@ -325,7 +325,7 @@ public class HttpClientUtil {
         }
         return null;
     }
-  
+
     public static CloseableHttpResponse doPostJson(
             String url, String jsonBody, Map<String, String> headers, int timeout) throws IOException {
         RequestConfig requestConfig = RequestConfig.custom()
