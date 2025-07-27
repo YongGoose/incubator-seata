@@ -108,7 +108,19 @@ public class TableMetaCacheFactory {
         LOGGER.info("Removed TableMetaRefreshHolder for resourceId: {}", resourceId);
     }
 
+    /**
+     * Shutdown all TableMetaRefreshHolder threads.
+     */
+    public static void shutdown() {
+        for (Map.Entry<String, TableMetaRefreshHolder> entry : TABLE_META_REFRESH_HOLDER_MAP.entrySet()) {
+            entry.getValue().shutdown();
+        }
+        TABLE_META_REFRESH_HOLDER_MAP.clear();
+        LOGGER.info("All TableMetaRefreshHolder threads have been shutdown.");
+    }
+
     static class TableMetaRefreshHolder {
+        private volatile boolean stopped = false;
         private long lastRefreshFinishTime;
         private DataSourceProxy dataSource;
         private BlockingQueue<Long> tableMetaRefreshQueue;
@@ -128,7 +140,7 @@ public class TableMetaCacheFactory {
             this.tableMetaRefreshQueue = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
 
             tableMetaRefreshExecutor.execute(() -> {
-                while (true) {
+                while (!stopped) {
                     // 1. check table meta
                     if (ENABLE_TABLE_META_CHECKER_ENABLE
                             && System.nanoTime() - lastRefreshFinishTime
@@ -186,6 +198,14 @@ public class TableMetaCacheFactory {
                 return true;
             }
             return StringUtils.isNotBlank(message) && message.contains("datasource") && message.contains("close");
+        }
+
+        public void shutdown() {
+            stopped = true;
+            if (tableMetaRefreshExecutor instanceof ThreadPoolExecutor) {
+                ((ThreadPoolExecutor) tableMetaRefreshExecutor).shutdownNow();
+            }
+            LOGGER.info("TableMetaRefreshHolder shutdown for resourceId: {}", dataSource.getResourceId());
         }
     }
 }
