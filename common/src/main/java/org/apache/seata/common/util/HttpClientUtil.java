@@ -19,6 +19,8 @@ package org.apache.seata.common.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.async.methods.SimpleRequestProducer;
+import org.apache.hc.client5.http.async.methods.SimpleResponseConsumer;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.concurrent.FutureCallback;
@@ -59,7 +61,10 @@ public class HttpClientUtil {
 
     private static final PoolingHttpClientConnectionManager POOLING_HTTP_CLIENT_CONNECTION_MANAGER =
             new PoolingHttpClientConnectionManager();
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private static final CloseableHttpAsyncClient HTTP2_CLIENT;
 
     static {
         POOLING_HTTP_CLIENT_CONNECTION_MANAGER.setMaxTotal(10);
@@ -74,6 +79,16 @@ public class HttpClientUtil {
                         LOGGER.error(e.getMessage(), e);
                     }
                 })));
+
+        HTTP2_CLIENT = HttpAsyncClients.custom()
+                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
+                .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
+                        .setConnectTimeout(1_000, TimeUnit.MILLISECONDS)
+                        .setResponseTimeout(1_000, TimeUnit.MILLISECONDS)
+                        .setConnectionRequestTimeout(1_000, TimeUnit.MILLISECONDS)
+                        .build())
+                .build();
+        HTTP2_CLIENT.start();
     }
 
     // post request
@@ -120,27 +135,21 @@ public class HttpClientUtil {
 
     // post request for http2
     public static CompletableFuture<SimpleHttpResponse> doPostHttp2(
-            String url, Map<String, String> params, Map<String, String> headers, int timeout) throws IOException {
-        try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
-                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
-                .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
-                        .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .setConnectionRequestTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .build())
-                .build()) {
-            http2Client.start();
-
-            SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
+            String url, Map<String, String> params, Map<String, String> headers) {
+        try {
+            final SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
             String contentType = "";
             if (headers != null) {
                 headers.forEach(request::setHeader);
                 contentType = headers.get("Content-Type");
             }
+
             if (StringUtils.isNotBlank(contentType)) {
                 if (ContentType.APPLICATION_FORM_URLENCODED.getMimeType().equals(contentType)) {
                     List<NameValuePair> nameValuePairs = new ArrayList<>();
-                    params.forEach((k, v) -> nameValuePairs.add(new BasicNameValuePair(k, v)));
+                    if (params != null) {
+                        params.forEach((k, v) -> nameValuePairs.add(new BasicNameValuePair(k, v)));
+                    }
                     String requestBody = URLEncodedUtils.format(nameValuePairs, StandardCharsets.UTF_8);
                     request.setBody(requestBody, org.apache.hc.core5.http.ContentType.APPLICATION_FORM_URLENCODED);
                 } else if (ContentType.APPLICATION_JSON.getMimeType().equals(contentType)) {
@@ -149,23 +158,27 @@ public class HttpClientUtil {
                 }
             }
 
-            CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
-            http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
-                @Override
-                public void completed(SimpleHttpResponse result) {
-                    future.complete(result);
-                }
+            final CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
+            HTTP2_CLIENT.execute(
+                    SimpleRequestProducer.create(request),
+                    SimpleResponseConsumer.create(),
+                    new FutureCallback<SimpleHttpResponse>() {
+                        @Override
+                        public void completed(SimpleHttpResponse result) {
+                            future.complete(result);
+                        }
 
-                @Override
-                public void failed(Exception e) {
-                    future.completeExceptionally(e);
-                }
+                        @Override
+                        public void failed(Exception e) {
+                            future.completeExceptionally(e);
+                        }
 
-                @Override
-                public void cancelled() {
-                    future.cancel(true);
-                }
-            });
+                        @Override
+                        public void cancelled() {
+                            future.cancel(true);
+                        }
+                    });
+
             return future;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -208,17 +221,8 @@ public class HttpClientUtil {
 
     // post request for http2
     public static CompletableFuture<SimpleHttpResponse> doPostHttp2(
-            String url, String body, Map<String, String> headers, int timeout) throws IOException {
-        try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
-                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
-                .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
-                        .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .setConnectionRequestTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .build())
-                .build()) {
-            http2Client.start();
-
+            String url, String body, Map<String, String> headers) throws IOException {
+        try {
             String contentType = "";
             SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
             if (headers != null) {
@@ -233,26 +237,30 @@ public class HttpClientUtil {
             }
 
             CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
-            http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
-                @Override
-                public void completed(SimpleHttpResponse result) {
-                    future.complete(result);
-                }
+            HTTP2_CLIENT.execute(
+                    SimpleRequestProducer.create(request),
+                    SimpleResponseConsumer.create(),
+                    new FutureCallback<SimpleHttpResponse>() {
+                        @Override
+                        public void completed(SimpleHttpResponse result) {
+                            future.complete(result);
+                        }
 
-                @Override
-                public void failed(Exception e) {
-                    future.completeExceptionally(e);
-                }
+                        @Override
+                        public void failed(Exception e) {
+                            future.completeExceptionally(e);
+                        }
 
-                @Override
-                public void cancelled() {
-                    future.cancel(true);
-                }
-            });
+                        @Override
+                        public void cancelled() {
+                            future.cancel(true);
+                        }
+                    });
             return future;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+
         return null;
     }
 
