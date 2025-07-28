@@ -29,6 +29,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.seata.common.executor.HttpCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +61,11 @@ public class Http5ClientUtil {
         HTTP2_CLIENT.start();
     }
 
-    public static CompletableFuture<SimpleHttpResponse> doPostHttp(
-            String url, Map<String, String> params, Map<String, String> headers) {
+    public static void doPostHttp(
+            String url,
+            Map<String, String> params,
+            Map<String, String> headers,
+            HttpCallback<SimpleHttpResponse> callback) {
         try {
             final SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
             String contentType = "";
@@ -91,29 +95,27 @@ public class Http5ClientUtil {
                     new FutureCallback<SimpleHttpResponse>() {
                         @Override
                         public void completed(SimpleHttpResponse result) {
-                            future.complete(result);
+                            callback.onSuccess(result);
                         }
 
                         @Override
                         public void failed(Exception e) {
-                            future.completeExceptionally(e);
+                            callback.onFailure(e);
                         }
 
                         @Override
                         public void cancelled() {
-                            future.cancel(true);
+                            callback.onCancelled();
                         }
                     });
-
-            return future;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return null;
     }
 
     // post request for http2
-    public static CompletableFuture<SimpleHttpResponse> doPostHttp(String url, String body, Map<String, String> headers)
+    public static void doPostHttp(
+            String url, String body, Map<String, String> headers, HttpCallback<SimpleHttpResponse> callback)
             throws IOException {
         try {
             String contentType = "";
@@ -136,28 +138,26 @@ public class Http5ClientUtil {
                     new FutureCallback<SimpleHttpResponse>() {
                         @Override
                         public void completed(SimpleHttpResponse result) {
-                            future.complete(result);
+                            callback.onSuccess(result);
                         }
 
                         @Override
                         public void failed(Exception e) {
-                            future.completeExceptionally(e);
+                            callback.onFailure(e);
                         }
 
                         @Override
                         public void cancelled() {
-                            future.cancel(true);
+                            callback.onCancelled();
                         }
                     });
-            return future;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-
-        return null;
     }
 
-    public static CompletableFuture<SimpleHttpResponse> doGetHttp(String url, Map<String, String> headers, int timeout)
+    public static void doGetHttp(
+            String url, Map<String, String> headers, int timeout, HttpCallback<SimpleHttpResponse> callback)
             throws IOException {
         try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
                 .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
@@ -177,23 +177,21 @@ public class Http5ClientUtil {
             http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
                 @Override
                 public void completed(SimpleHttpResponse result) {
-                    future.complete(result);
+                    callback.onSuccess(result);
                 }
 
                 @Override
                 public void failed(Exception e) {
-                    future.completeExceptionally(e);
+                    callback.onFailure(e);
                 }
 
                 @Override
                 public void cancelled() {
-                    future.cancel(true);
+                    callback.onCancelled();
                 }
             });
-            return future;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return null;
     }
 }
