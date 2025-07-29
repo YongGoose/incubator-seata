@@ -58,8 +58,8 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://httpbin.org/post", params, headers, callback);
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        Http5ClientUtil.doPostHttp("https://mockhttp.org/", params, headers, callback);
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -92,7 +92,7 @@ class Http5ClientUtilTest {
         headers.put("Content-Type", "application/json");
 
         Http5ClientUtil.doPostHttp("http://localhost:9999/invalid", params, headers, callback);
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -121,8 +121,8 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://httpbin.org/post", "{\"key\":\"value\"}", headers, callback);
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        Http5ClientUtil.doPostHttp("https://mockhttp.org/", "{\"key\":\"value\"}", headers, callback);
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -152,7 +152,7 @@ class Http5ClientUtilTest {
         headers.put("Content-Type", "application/json");
 
         Http5ClientUtil.doPostHttp("http://localhost:9999/invalid", "{\"key\":\"value\"}", headers, callback);
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -185,7 +185,7 @@ class Http5ClientUtilTest {
         headers.put("Content-Type", "application/json");
 
         Http5ClientUtil.doPostHttp("http://httpbin.org/post", params, headers, callback);
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -215,6 +215,6 @@ class Http5ClientUtilTest {
         headers.put("Content-Type", "application/json");
 
         Http5ClientUtil.doPostHttp("http://httpbin.org/post", "{\"key\":\"value\"}", headers, callback);
-        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 }
