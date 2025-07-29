@@ -20,22 +20,22 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.seata.common.executor.HttpCallback;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -279,7 +279,8 @@ class Http5ClientUtilTest {
         headers.put("Content-Type", "application/json");
 
         Http5ClientUtil.doPostHttp("https://mockhttp.org/", params, headers, callback);
-        assertTrue(getLogs(Level.INFO).stream().anyMatch(log -> log.equals("Conscrypt library detected. Configuring HTTP/2 support for JDK 8.")));
+        assertTrue(getLogs(Level.INFO).stream()
+                .anyMatch(log -> log.equals("Conscrypt library detected. Configuring HTTP/2 support for JDK 8.")));
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -311,16 +312,17 @@ class Http5ClientUtilTest {
         headers.put("Content-Type", "application/json");
 
         Http5ClientUtil.doPostHttp("https://mockhttp.org/", "{\"key\":\"value\"}", headers, callback);
-        assertTrue(getLogs(Level.INFO).stream().anyMatch(log -> log.equals("Conscrypt library detected. Configuring HTTP/2 support for JDK 8.")));
+        assertTrue(getLogs(Level.INFO).stream()
+                .anyMatch(log -> log.equals("Conscrypt library detected. Configuring HTTP/2 support for JDK 8.")));
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     private List<String> getLogs(Level level) {
         return logWatcher.list.stream()
-            .filter(event -> event.getLoggerName().endsWith(CLASS_NAME)
-                && event.getLevel().equals(level))
-            .map(ILoggingEvent::getFormattedMessage)
-            .collect(Collectors.toList());
+                .filter(event -> event.getLoggerName().endsWith(CLASS_NAME)
+                        && event.getLevel().equals(level))
+                .map(ILoggingEvent::getFormattedMessage)
+                .collect(Collectors.toList());
     }
 
     private void setUpLogger() {
