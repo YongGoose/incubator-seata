@@ -88,7 +88,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://mockhttp.org/", params, headers, callback);
+        Http5ClientUtil.doPostHttp("https://www.apache.org/", params, headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -151,7 +151,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://mockhttp.org/", "{\"key\":\"value\"}", headers, callback);
+        Http5ClientUtil.doPostHttp("https://www.apache.org/", "{\"key\":\"value\"}", headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -278,7 +278,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://mockhttp.org/", params, headers, callback);
+        Http5ClientUtil.doPostHttp("https://www.apache.org/", params, headers, callback);
         assertTrue(getLogs(Level.INFO).stream()
                 .anyMatch(log -> log.equals("Conscrypt library detected. Configuring HTTP/2 support for JDK 8.")));
         assertTrue(latch.await(10, TimeUnit.SECONDS));
@@ -311,7 +311,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://mockhttp.org/", "{\"key\":\"value\"}", headers, callback);
+        Http5ClientUtil.doPostHttp("https://www.apache.org/", "{\"key\":\"value\"}", headers, callback);
         assertTrue(getLogs(Level.INFO).stream()
                 .anyMatch(log -> log.equals("Conscrypt library detected. Configuring HTTP/2 support for JDK 8.")));
         assertTrue(latch.await(10, TimeUnit.SECONDS));
