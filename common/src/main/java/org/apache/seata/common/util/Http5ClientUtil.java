@@ -51,7 +51,7 @@ public class Http5ClientUtil {
 
     static {
         HTTP2_CLIENT = HttpAsyncClients.custom()
-                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
+                .setVersionPolicy(HttpVersionPolicy.NEGOTIATE)
                 .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
                         .setConnectTimeout(1_000, TimeUnit.MILLISECONDS)
                         .setResponseTimeout(1_000, TimeUnit.MILLISECONDS)

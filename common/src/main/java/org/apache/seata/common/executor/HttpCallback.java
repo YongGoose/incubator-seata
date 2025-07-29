@@ -35,7 +35,7 @@ public interface HttpCallback<T> {
      *
      * @param e the exception that occurred during the HTTP request
      */
-    void onFailure(Exception e);
+    void onFailure(Throwable e);
 
     /**
      * Called when the HTTP request is cancelled.
