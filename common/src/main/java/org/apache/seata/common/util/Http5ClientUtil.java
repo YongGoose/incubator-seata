@@ -135,7 +135,11 @@ public class Http5ClientUtil {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                callback.onSuccess(response);
+                try {
+                    callback.onSuccess(response);
+                } finally {
+                    response.close();
+                }
             }
 
             @Override
