@@ -188,6 +188,36 @@ class Http5ClientUtilTest {
     }
 
     @Test
+    void testDoGetHttp_onSuccess() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        HttpCallback<Response> callback = new HttpCallback<Response>() {
+            @Override
+            public void onSuccess(Response result) {
+                assertNotNull(result);
+                assertEquals(Protocol.HTTP_2, result.protocol());
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+                fail("Should not fail");
+            }
+
+            @Override
+            public void onCancelled() {
+                fail("Should not be cancelled");
+            }
+        };
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Accept", "application/json");
+
+        Http5ClientUtil.doGetHttp("https://www.apache.org/", headers, callback, 1);
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+    }
+
+    @Test
     void testDoPostHttp_body_onSuccess_forceHttp1() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
