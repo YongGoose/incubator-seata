@@ -16,257 +16,136 @@
  */
 package org.apache.seata.common.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
-import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
-import org.apache.hc.client5.http.async.methods.SimpleRequestProducer;
-import org.apache.hc.client5.http.async.methods.SimpleResponseConsumer;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
-import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
-import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
-import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
-import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
-import org.apache.hc.core5.concurrent.FutureCallback;
-import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
-import org.apache.hc.core5.http2.HttpVersionPolicy;
-import org.apache.hc.core5.http2.ssl.H2ClientTlsStrategy;
-import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.ContentType;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.seata.common.executor.HttpCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Http5ClientUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Http5ClientUtil.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Http5ClientUtil.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static final CloseableHttpAsyncClient HTTP_CLIENT;
+    private static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build();
 
-    static {
-        HTTP_CLIENT = createOptimalHttpClient();
-        HTTP_CLIENT.start();
-    }
+    public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+    public static final MediaType MEDIA_TYPE_FORM_URLENCODED = MediaType.parse("application/x-www-form-urlencoded");
 
-    private static CloseableHttpAsyncClient createOptimalHttpClient() {
-        HttpAsyncClientBuilder clientBuilder = HttpAsyncClients.custom()
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(10_000, TimeUnit.MILLISECONDS)
-                        .setResponseTimeout(10_000, TimeUnit.MILLISECONDS)
-                        .setConnectionRequestTimeout(10_000, TimeUnit.MILLISECONDS)
-                        .build());
-
-        String jdkVersion = System.getProperty("java.version");
-        int majorVersion = getMajorJavaVersion(jdkVersion);
-
-        if (majorVersion >= 9) {
-            LOGGER.info("JDK 9+ detected. Enabling HTTP/2 with native ALPN support.");
-            return clientBuilder.setVersionPolicy(HttpVersionPolicy.NEGOTIATE).build();
-        }
-
-        // For Java 8 and below
-        return configureJdk8(clientBuilder);
-    }
-
-    private static CloseableHttpAsyncClient configureJdk8(HttpAsyncClientBuilder clientBuilder) {
-        if (isConscryptAvailable()) {
-            LOGGER.info("Conscrypt library detected. Configuring HTTP/2 support for JDK 8.");
-            return setUpConscryptClient(clientBuilder);
-        }
-
-        LOGGER.warn("Running on JDK 8 without Conscrypt. HTTP/2 is not supported. Falling back to HTTP/1.1.");
-        return clientBuilder.setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_1).build();
-    }
-
-    private static CloseableHttpAsyncClient setUpConscryptClient(HttpAsyncClientBuilder clientBuilder) {
+    public static void doPostHttp(
+            String url, Map<String, String> params, Map<String, String> headers, HttpCallback<Response> callback) {
         try {
-            Class<?> conscryptClass = Class.forName("org.conscrypt.Conscrypt");
-            Object provider = conscryptClass.getMethod("newProvider").invoke(null);
-            Security.insertProviderAt((java.security.Provider) provider, 1);
+            Headers.Builder headerBuilder = new Headers.Builder();
+            if (headers != null) {
+                headers.forEach(headerBuilder::add);
+            }
 
-            SSLContext sslContext =
-                    SSLContextBuilder.create().setProvider("Conscrypt").build();
-            TlsStrategy tlsStrategy = new H2ClientTlsStrategy(sslContext);
+            String contentType = headers != null ? headers.get("Content-Type") : "";
+            RequestBody requestBody = createRequestBody(params, contentType);
 
-            PoolingAsyncClientConnectionManager connectionManager = PoolingAsyncClientConnectionManagerBuilder.create()
-                    .setTlsStrategy(tlsStrategy)
+            Request request = new Request.Builder()
+                    .url(url)
+                    .headers(headerBuilder.build())
+                    .post(requestBody)
                     .build();
 
-            return clientBuilder
-                    .setConnectionManager(connectionManager)
-                    .setVersionPolicy(HttpVersionPolicy.NEGOTIATE)
-                    .build();
-        } catch (Exception e) {
-            LOGGER.error("Failed to configure HTTP/2 with Conscrypt on JDK 8. Falling back to HTTP/1.1.", e);
-            return clientBuilder
-                    .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_1)
-                    .build();
-        }
-    }
+            executeAsync(HTTP_CLIENT, request, callback);
 
-    private static boolean isConscryptAvailable() {
-        try {
-            Class.forName("org.conscrypt.Conscrypt");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage(), e);
+            callback.onFailure(e);
         }
-    }
-
-    private static int getMajorJavaVersion(String version) {
-        if (version.startsWith("1.")) {
-            return Integer.parseInt(version.substring(2, 3));
-        }
-        int dotIndex = version.indexOf('.');
-        return (dotIndex != -1) ? Integer.parseInt(version.substring(0, dotIndex)) : Integer.parseInt(version);
     }
 
     public static void doPostHttp(
-            String url,
-            Map<String, String> params,
-            Map<String, String> headers,
-            HttpCallback<SimpleHttpResponse> callback) {
-        try {
-            final SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
-            String contentType = "";
-            if (headers != null) {
-                headers.forEach(request::setHeader);
-                contentType = headers.get("Content-Type");
-            }
-
-            if (StringUtils.isNotBlank(contentType)) {
-                if (ContentType.APPLICATION_FORM_URLENCODED.getMimeType().equals(contentType)) {
-                    List<NameValuePair> nameValuePairs = new ArrayList<>();
-                    if (params != null) {
-                        params.forEach((k, v) -> nameValuePairs.add(new BasicNameValuePair(k, v)));
-                    }
-                    String requestBody = URLEncodedUtils.format(nameValuePairs, StandardCharsets.UTF_8);
-                    request.setBody(requestBody, org.apache.hc.core5.http.ContentType.APPLICATION_FORM_URLENCODED);
-                } else if (ContentType.APPLICATION_JSON.getMimeType().equals(contentType)) {
-                    String requestBody = OBJECT_MAPPER.writeValueAsString(params);
-                    request.setBody(requestBody, org.apache.hc.core5.http.ContentType.APPLICATION_JSON);
-                }
-            }
-
-            final CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
-            HTTP_CLIENT.execute(
-                    SimpleRequestProducer.create(request),
-                    SimpleResponseConsumer.create(),
-                    new FutureCallback<SimpleHttpResponse>() {
-                        @Override
-                        public void completed(SimpleHttpResponse result) {
-                            callback.onSuccess(result);
-                        }
-
-                        @Override
-                        public void failed(Exception e) {
-                            callback.onFailure(e);
-                        }
-
-                        @Override
-                        public void cancelled() {
-                            callback.onCancelled();
-                        }
-                    });
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            String url, String body, Map<String, String> headers, HttpCallback<Response> callback) {
+        Headers.Builder headerBuilder = new Headers.Builder();
+        if (headers != null) {
+            headers.forEach(headerBuilder::add);
         }
-    }
 
-    // post request for http2
-    public static void doPostHttp(
-            String url, String body, Map<String, String> headers, HttpCallback<SimpleHttpResponse> callback)
-            throws IOException {
-        try {
-            String contentType = "";
-            SimpleHttpRequest request = new SimpleHttpRequest("POST", url);
-            if (headers != null) {
-                headers.forEach(request::setHeader);
-                contentType = headers.get("Content-Type");
-            }
+        RequestBody requestBody = RequestBody.create(body, MEDIA_TYPE_JSON);
 
-            if (StringUtils.isNotBlank(contentType)) {
-                if (ContentType.APPLICATION_JSON.getMimeType().equals(contentType)) {
-                    request.setBody(body, org.apache.hc.core5.http.ContentType.APPLICATION_JSON);
-                }
-            }
+        Request request = new Request.Builder()
+                .url(url)
+                .headers(headerBuilder.build())
+                .post(requestBody)
+                .build();
 
-            CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
-            HTTP_CLIENT.execute(
-                    SimpleRequestProducer.create(request),
-                    SimpleResponseConsumer.create(),
-                    new FutureCallback<SimpleHttpResponse>() {
-                        @Override
-                        public void completed(SimpleHttpResponse result) {
-                            callback.onSuccess(result);
-                        }
-
-                        @Override
-                        public void failed(Exception e) {
-                            callback.onFailure(e);
-                        }
-
-                        @Override
-                        public void cancelled() {
-                            callback.onCancelled();
-                        }
-                    });
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+        executeAsync(HTTP_CLIENT, request, callback);
     }
 
     public static void doGetHttp(
-            String url, Map<String, String> headers, int timeout, HttpCallback<SimpleHttpResponse> callback)
-            throws IOException {
-        try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.custom()
-                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
-                .setDefaultRequestConfig(org.apache.hc.client5.http.config.RequestConfig.custom()
-                        .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .setConnectionRequestTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .build())
-                .build()) {
-            http2Client.start();
+            String url, Map<String, String> headers, final HttpCallback<Response> callback, int timeout) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(timeout, TimeUnit.SECONDS)
+                .readTimeout(timeout, TimeUnit.SECONDS)
+                .writeTimeout(timeout, TimeUnit.SECONDS)
+                .build();
 
-            SimpleHttpRequest request = new SimpleHttpRequest("GET", url);
-            if (headers != null) {
-                headers.forEach(request::setHeader);
+        Headers.Builder headerBuilder = new Headers.Builder();
+        if (headers != null) {
+            headers.forEach(headerBuilder::add);
+        }
+
+        Request request = new Request.Builder()
+                .url(url)
+                .headers(headerBuilder.build())
+                .get()
+                .build();
+
+        executeAsync(client, request, callback);
+    }
+
+    private static RequestBody createRequestBody(Map<String, String> params, String contentType)
+            throws JsonProcessingException {
+        if (params == null || params.isEmpty()) {
+            return RequestBody.create(new byte[0]);
+        }
+
+        if (MEDIA_TYPE_FORM_URLENCODED.toString().equals(contentType)) {
+            FormBody.Builder formBuilder = new FormBody.Builder();
+            params.forEach(formBuilder::add);
+            return formBuilder.build();
+        } else {
+            String json = OBJECT_MAPPER.writeValueAsString(params);
+            return RequestBody.create(json, MEDIA_TYPE_JSON);
+        }
+    }
+
+    private static void executeAsync(OkHttpClient client, Request request, final HttpCallback<Response> callback) {
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                callback.onSuccess(response);
             }
-            CompletableFuture<SimpleHttpResponse> future = new CompletableFuture<>();
-            http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
-                @Override
-                public void completed(SimpleHttpResponse result) {
-                    callback.onSuccess(result);
-                }
 
-                @Override
-                public void failed(Exception e) {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (call.isCanceled()) {
+                    callback.onCancelled();
+                } else {
                     callback.onFailure(e);
                 }
-
-                @Override
-                public void cancelled() {
-                    callback.onCancelled();
-                }
-            });
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+            }
+        });
     }
 }
