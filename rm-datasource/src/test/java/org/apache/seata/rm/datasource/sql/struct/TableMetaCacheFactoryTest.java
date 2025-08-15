@@ -16,7 +16,11 @@
  */
 package org.apache.seata.rm.datasource.sql.struct;
 
+import java.lang.reflect.Field;
+import java.util.Map;
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
+import org.apache.seata.rm.datasource.DataSourceProxy;
+import org.apache.seata.rm.datasource.mock.MockDataSource;
 import org.apache.seata.rm.datasource.sql.struct.cache.MariadbTableMetaCache;
 import org.apache.seata.rm.datasource.sql.struct.cache.MysqlTableMetaCache;
 import org.apache.seata.rm.datasource.sql.struct.cache.OceanBaseTableMetaCache;
@@ -51,5 +55,24 @@ public class TableMetaCacheFactoryTest {
         Assertions.assertThrows(EnhancedServiceNotFoundException.class, () -> {
             TableMetaCacheFactory.getTableMetaCache(NOT_EXIST_SQL_TYPE);
         });
+    }
+
+    @Test
+    public void shutdownTest() throws NoSuchFieldException, IllegalAccessException {
+        DataSourceProxy dummy = new DataSourceProxy(new MockDataSource(), "dummy1");
+        TableMetaCacheFactory.registerTableMeta(dummy);
+
+        Map<String, TableMetaCacheFactory.TableMetaRefreshHolder> holderMap = getTableMetaRefreshHolderMap();
+        Assertions.assertEquals(1, holderMap.size());
+
+        TableMetaCacheFactory.shutdown("jdbc:mysql://127.0.0.1:3306/seata");
+        Assertions.assertTrue(holderMap.isEmpty(), "TableMetaRefreshHolder map should be empty after shutdown");
+    }
+
+    private Map<String, TableMetaCacheFactory.TableMetaRefreshHolder> getTableMetaRefreshHolderMap()
+        throws NoSuchFieldException, IllegalAccessException {
+        Field field = TableMetaCacheFactory.class.getDeclaredField("TABLE_META_REFRESH_HOLDER_MAP");
+        field.setAccessible(true);
+        return (Map<String, TableMetaCacheFactory.TableMetaRefreshHolder>) field.get(null);
     }
 }
