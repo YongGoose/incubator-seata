@@ -17,7 +17,6 @@
 package org.apache.seata.rm.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import java.util.Map;
 import org.apache.seata.rm.DefaultResourceManager;
 import org.apache.seata.rm.datasource.mock.MockDataSource;
 import org.apache.seata.rm.datasource.mock.MockDriver;
@@ -231,10 +230,8 @@ public class DataSourceProxyTest {
         dataSource.setPassword("password");
 
         DataSourceProxy proxy = getDataSourceProxy(dataSource);
-        try (
-            MockedStatic<DefaultResourceManager> drmStatic = Mockito.mockStatic(DefaultResourceManager.class);
-            MockedStatic<TableMetaCacheFactory> tmcfStatic = Mockito.mockStatic(TableMetaCacheFactory.class)
-        ) {
+        try (MockedStatic<DefaultResourceManager> drmStatic = Mockito.mockStatic(DefaultResourceManager.class);
+                MockedStatic<TableMetaCacheFactory> tmcfStatic = Mockito.mockStatic(TableMetaCacheFactory.class)) {
             DefaultResourceManager drm = Mockito.mock(DefaultResourceManager.class);
             drmStatic.when(DefaultResourceManager::get).thenReturn(drm);
 

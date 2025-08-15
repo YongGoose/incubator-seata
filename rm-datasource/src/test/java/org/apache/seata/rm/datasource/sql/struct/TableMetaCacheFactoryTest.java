@@ -16,8 +16,6 @@
  */
 package org.apache.seata.rm.datasource.sql.struct;
 
-import java.lang.reflect.Field;
-import java.util.Map;
 import org.apache.seata.common.loader.EnhancedServiceNotFoundException;
 import org.apache.seata.rm.datasource.DataSourceProxy;
 import org.apache.seata.rm.datasource.mock.MockDataSource;
@@ -29,6 +27,9 @@ import org.apache.seata.rm.datasource.sql.struct.cache.PolarDBXTableMetaCache;
 import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 public class TableMetaCacheFactoryTest {
 
@@ -70,7 +71,7 @@ public class TableMetaCacheFactoryTest {
     }
 
     private Map<String, TableMetaCacheFactory.TableMetaRefreshHolder> getTableMetaRefreshHolderMap()
-        throws NoSuchFieldException, IllegalAccessException {
+            throws NoSuchFieldException, IllegalAccessException {
         Field field = TableMetaCacheFactory.class.getDeclaredField("TABLE_META_REFRESH_HOLDER_MAP");
         field.setAccessible(true);
         return (Map<String, TableMetaCacheFactory.TableMetaRefreshHolder>) field.get(null);
