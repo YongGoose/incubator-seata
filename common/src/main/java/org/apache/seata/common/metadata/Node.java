@@ -99,6 +99,27 @@ public class Node {
         this.version = version;
     }
 
+    public boolean isHttp2Supported() {
+        String baseVersion = "2.6.0";
+
+        if (version == null || version.isEmpty()) {
+            return false;
+        }
+
+        String[] current = version.split("\\.");
+        String[] base = baseVersion.split("\\.");
+
+        int len = Math.max(current.length, base.length);
+        for (int i = 0; i < len; i++) {
+            int cur = i < current.length ? Integer.parseInt(current[i]) : 0;
+            int bas = i < base.length ? Integer.parseInt(base[i]) : 0;
+
+            if (cur > bas) return true;
+            if (cur < bas) return false;
+        }
+        return true;
+    }
+
     public Endpoint getInternal() {
         return internal;
     }
