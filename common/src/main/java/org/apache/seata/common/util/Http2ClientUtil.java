@@ -75,8 +75,7 @@ public class Http2ClientUtil {
         }
     }
 
-    public static void doPost(
-            String url, String body, Map<String, String> headers, HttpCallback<Response> callback) {
+    public static void doPost(String url, String body, Map<String, String> headers, HttpCallback<Response> callback) {
         Headers.Builder headerBuilder = new Headers.Builder();
         if (headers != null) {
             headers.forEach(headerBuilder::add);
