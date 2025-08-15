@@ -35,9 +35,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class Http5ClientUtil {
+public class Http2ClientUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Http5ClientUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Http2ClientUtil.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

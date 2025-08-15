@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class Http5ClientUtilTest {
+class Http2ClientUtilTest {
 
     @Test
     void testDoPost_param_onSuccess() throws Exception {
@@ -62,7 +62,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPost("https://www.apache.org/", params, headers, callback);
+        Http2ClientUtil.doPost("https://www.apache.org/", params, headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -94,7 +94,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPost("http://localhost:9999/invalid", params, headers, callback);
+        Http2ClientUtil.doPost("http://localhost:9999/invalid", params, headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -124,7 +124,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPost("https://www.apache.org/", "{\"key\":\"value\"}", headers, callback);
+        Http2ClientUtil.doPost("https://www.apache.org/", "{\"key\":\"value\"}", headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -153,7 +153,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPost("http://localhost:9999/invalid", "{\"key\":\"value\"}", headers, callback);
+        Http2ClientUtil.doPost("http://localhost:9999/invalid", "{\"key\":\"value\"}", headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -186,7 +186,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPost("http://httpbin.org/post", params, headers, callback);
+        Http2ClientUtil.doPost("http://httpbin.org/post", params, headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -216,7 +216,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
 
-        Http5ClientUtil.doGet("https://www.apache.org/", headers, callback, 1);
+        Http2ClientUtil.doGet("https://www.apache.org/", headers, callback, 1);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
@@ -246,7 +246,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPost("http://httpbin.org/post", "{\"key\":\"value\"}", headers, callback);
+        Http2ClientUtil.doPost("http://httpbin.org/post", "{\"key\":\"value\"}", headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 }
