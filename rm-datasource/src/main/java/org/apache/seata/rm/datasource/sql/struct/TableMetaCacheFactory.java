@@ -111,12 +111,12 @@ public class TableMetaCacheFactory {
     /**
      * Shutdown all TableMetaRefreshHolder threads.
      */
-    public static void shutdown() {
-        for (Map.Entry<String, TableMetaRefreshHolder> entry : TABLE_META_REFRESH_HOLDER_MAP.entrySet()) {
-            entry.getValue().shutdown();
+    public static void shutdown(String resourceId) {
+        TableMetaRefreshHolder holder = TABLE_META_REFRESH_HOLDER_MAP.remove(resourceId);
+        if (holder != null) {
+            holder.shutdown();
+            LOGGER.info("TableMetaRefreshHolder for resourceId: {} has been shutdown.", resourceId);
         }
-        TABLE_META_REFRESH_HOLDER_MAP.clear();
-        LOGGER.info("All TableMetaRefreshHolder threads have been shutdown.");
     }
 
     static class TableMetaRefreshHolder {

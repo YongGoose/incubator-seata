@@ -47,7 +47,7 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_LOG
  * The type Data source proxy.
  *
  */
-public class DataSourceProxy extends AbstractDataSourceProxy implements Resource {
+public class DataSourceProxy extends AbstractDataSourceProxy implements Resource, AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceProxy.class);
 
@@ -451,5 +451,11 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
         } catch (Exception e) {
             LOGGER.error("check mysql version fail error: {}", e.getMessage());
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        DefaultResourceManager.get().unregisterResource(this);
+        TableMetaCacheFactory.shutdown(resourceId);
     }
 }
