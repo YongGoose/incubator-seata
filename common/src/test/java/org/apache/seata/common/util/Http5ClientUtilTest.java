@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class Http5ClientUtilTest {
 
     @Test
-    void testDoPostHttp_param_onSuccess() throws Exception {
+    void testDoPost_param_onSuccess() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         HttpCallback<Response> callback = new HttpCallback<Response>() {
@@ -62,12 +62,12 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://www.apache.org/", params, headers, callback);
+        Http5ClientUtil.doPost("https://www.apache.org/", params, headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
-    void testDoPostHttp_param_onFailure() throws Exception {
+    void testDoPost_param_onFailure() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         HttpCallback<Response> callback = new HttpCallback<Response>() {
@@ -94,12 +94,12 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("http://localhost:9999/invalid", params, headers, callback);
+        Http5ClientUtil.doPost("http://localhost:9999/invalid", params, headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
-    void testDoPostHttp_body_onSuccess() throws Exception {
+    void testDoPost_body_onSuccess() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         HttpCallback<Response> callback = new HttpCallback<Response>() {
@@ -124,12 +124,12 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("https://www.apache.org/", "{\"key\":\"value\"}", headers, callback);
+        Http5ClientUtil.doPost("https://www.apache.org/", "{\"key\":\"value\"}", headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
-    void testDoPostHttp_body_onFailure() throws Exception {
+    void testDoPost_body_onFailure() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         HttpCallback<Response> callback = new HttpCallback<Response>() {
@@ -153,12 +153,12 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("http://localhost:9999/invalid", "{\"key\":\"value\"}", headers, callback);
+        Http5ClientUtil.doPost("http://localhost:9999/invalid", "{\"key\":\"value\"}", headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
-    void testDoPostHttp_param_onSuccess_forceHttp1() throws Exception {
+    void testDoPostHttp_param_onSuccess_force1() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         HttpCallback<Response> callback = new HttpCallback<Response>() {
@@ -186,12 +186,12 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("http://httpbin.org/post", params, headers, callback);
+        Http5ClientUtil.doPost("http://httpbin.org/post", params, headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
-    void testDoGetHttp_onSuccess() throws Exception {
+    void testDoGet_onSuccess() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         HttpCallback<Response> callback = new HttpCallback<Response>() {
@@ -216,12 +216,12 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
 
-        Http5ClientUtil.doGetHttp("https://www.apache.org/", headers, callback, 1);
+        Http5ClientUtil.doGet("https://www.apache.org/", headers, callback, 1);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
-    void testDoPostHttp_body_onSuccess_forceHttp1() throws Exception {
+    void testDoPostHttp_body_onSuccess_force1() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         HttpCallback<Response> callback = new HttpCallback<Response>() {
@@ -246,7 +246,7 @@ class Http5ClientUtilTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
-        Http5ClientUtil.doPostHttp("http://httpbin.org/post", "{\"key\":\"value\"}", headers, callback);
+        Http5ClientUtil.doPost("http://httpbin.org/post", "{\"key\":\"value\"}", headers, callback);
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 }

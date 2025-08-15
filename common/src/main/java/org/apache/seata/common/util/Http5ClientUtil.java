@@ -50,7 +50,7 @@ public class Http5ClientUtil {
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
     public static final MediaType MEDIA_TYPE_FORM_URLENCODED = MediaType.parse("application/x-www-form-urlencoded");
 
-    public static void doPostHttp(
+    public static void doPost(
             String url, Map<String, String> params, Map<String, String> headers, HttpCallback<Response> callback) {
         try {
             Headers.Builder headerBuilder = new Headers.Builder();
@@ -75,7 +75,7 @@ public class Http5ClientUtil {
         }
     }
 
-    public static void doPostHttp(
+    public static void doPost(
             String url, String body, Map<String, String> headers, HttpCallback<Response> callback) {
         Headers.Builder headerBuilder = new Headers.Builder();
         if (headers != null) {
@@ -93,7 +93,7 @@ public class Http5ClientUtil {
         executeAsync(HTTP_CLIENT, request, callback);
     }
 
-    public static void doGetHttp(
+    public static void doGet(
             String url, Map<String, String> headers, final HttpCallback<Response> callback, int timeout) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(timeout, TimeUnit.SECONDS)
