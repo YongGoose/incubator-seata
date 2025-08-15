@@ -200,7 +200,7 @@ public class TableMetaCacheFactory {
             return StringUtils.isNotBlank(message) && message.contains("datasource") && message.contains("close");
         }
 
-        public void shutdown() {
+        private void shutdown() {
             stopped = true;
             if (tableMetaRefreshExecutor instanceof ThreadPoolExecutor) {
                 ((ThreadPoolExecutor) tableMetaRefreshExecutor).shutdownNow();
