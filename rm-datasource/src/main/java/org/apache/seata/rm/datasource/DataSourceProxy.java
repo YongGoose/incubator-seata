@@ -47,7 +47,7 @@ import static org.apache.seata.common.DefaultValues.DEFAULT_TRANSACTION_UNDO_LOG
  * The type Data source proxy.
  *
  */
-public class DataSourceProxy extends AbstractDataSourceProxy implements Resource, AutoCloseable {
+public class DataSourceProxy extends AbstractDataSourceProxy implements Resource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceProxy.class);
 
@@ -453,7 +453,6 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
         }
     }
 
-    @Override
     public void close() throws Exception {
         DefaultResourceManager.get().unregisterResource(this);
         TableMetaCacheFactory.shutdown(resourceId);
