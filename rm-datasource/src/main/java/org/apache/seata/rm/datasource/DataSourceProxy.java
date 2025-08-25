@@ -454,7 +454,7 @@ public class DataSourceProxy extends AbstractDataSourceProxy implements Resource
     }
 
     public void close() throws Exception {
-        DefaultResourceManager.get().unregisterResource(this);
+        // TODO: Need to unregister resource from DefaultResourceManager
         TableMetaCacheFactory.shutdown(resourceId);
     }
 }

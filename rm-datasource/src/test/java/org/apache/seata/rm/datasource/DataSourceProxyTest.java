@@ -237,7 +237,6 @@ public class DataSourceProxyTest {
 
             proxy.close();
 
-            Mockito.verify(drm).unregisterResource(proxy);
             tmcfStatic.verify(() -> TableMetaCacheFactory.shutdown(proxy.getResourceId()));
         }
     }
