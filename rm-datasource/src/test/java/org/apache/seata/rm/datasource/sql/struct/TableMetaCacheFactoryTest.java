@@ -26,6 +26,7 @@ import org.apache.seata.rm.datasource.sql.struct.cache.OracleTableMetaCache;
 import org.apache.seata.rm.datasource.sql.struct.cache.PolarDBXTableMetaCache;
 import org.apache.seata.sqlparser.util.JdbcConstants;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -34,6 +35,14 @@ import java.util.Map;
 public class TableMetaCacheFactoryTest {
 
     private static final String NOT_EXIST_SQL_TYPE = "not_exist_sql_type";
+
+    @BeforeEach
+    public void clearTableMetaRefreshHolderMap() throws Exception {
+        Field field = TableMetaCacheFactory.class.getDeclaredField("TABLE_META_REFRESH_HOLDER_MAP");
+        field.setAccessible(true);
+        Map<?, ?> map = (Map<?, ?>) field.get(null);
+        map.clear();
+    }
 
     @Test
     public void getTableMetaCache() {
