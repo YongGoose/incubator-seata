@@ -16,6 +16,7 @@
  */
 package org.apache.seata.common.metadata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.seata.common.exception.ParseEndpointException;
@@ -99,6 +100,7 @@ public class Node {
         this.version = version;
     }
 
+    @JsonIgnore
     public boolean isHttp2Supported() {
         String baseVersion = "2.6.0";
 
