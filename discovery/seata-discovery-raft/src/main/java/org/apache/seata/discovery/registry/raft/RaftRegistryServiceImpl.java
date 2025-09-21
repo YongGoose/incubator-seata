@@ -522,7 +522,6 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
             boolean success = jsonNode.path("success").asBoolean(false);
             if (success) {
                 LOGGER.info("Watch request successful");
-                // 여기에 필요한 메타데이터 처리 로직 추가
             } else {
                 String message = jsonNode.path("message").asText("Unknown error");
                 LOGGER.warn("Watch request failed: {}", message);
