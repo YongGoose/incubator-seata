@@ -119,8 +119,6 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
 
     private static final AtomicBoolean CLOSED = new AtomicBoolean(false);
 
-    private static final HttpCallback<Response> CALLBACK;
-
     /**
      * Service node health check
      */
@@ -133,26 +131,6 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
         USERNAME = CONFIG.getConfig(getRaftUserNameKey());
         PASSWORD = CONFIG.getConfig(getRaftPassWordKey());
         PREFERRED_NETWORKS = CONFIG.getConfig(getPreferredNetworks());
-        CALLBACK = new HttpCallback<Response>() {
-            @Override
-            public void onSuccess(Response result) {
-                // TODO : Handle the successful response
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                if (t instanceof RetryableException) {
-                    LOGGER.error("Http2ClientUtil request failed, retrying: {}", t.getMessage());
-                } else {
-                    LOGGER.error("Http2ClientUtil request failed: {}", t.getMessage(), t);
-                }
-            }
-
-            @Override
-            public void onCancelled() {
-                LOGGER.warn("Http2ClientUtil request was cancelled.");
-            }
-        };
     }
 
     private RaftRegistryServiceImpl() {}
@@ -467,39 +445,98 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
                 header.put(AUTHORIZATION_HEADER, jwtToken);
             }
 
-            return executeWatchRequest(selectedNode, tcAddress, param, header);
+            ResponseProcessor processor = (responseBody, error) -> {
+                if (error != null) {
+                    LOGGER.error("Watch request failed: {}", error.getMessage(), error);
+                } else if (StringUtils.isNotBlank(responseBody)) {
+                    try {
+                        processWatchResponse(responseBody);
+                    } catch (Exception e) {
+                        LOGGER.error("Error processing watch response: {}", e.getMessage(), e);
+                    }
+                }
+            };
+
+            if (selectedNode != null && selectedNode.isHttp2Supported()) {
+                executeHttp2WatchRequest(tcAddress, param, header, processor);
+            } else {
+                executeHttpWatchRequest(tcAddress, param, header, processor);
+            }
+            return true;
         }
         return false;
     }
 
-    private static boolean executeWatchRequest(
-            Node selectedNode, String tcAddress, Map<String, String> param, Map<String, String> header)
-            throws RetryableException {
-        if (selectedNode.isHttp2Supported()) {
-            Http2ClientUtil.doPost("http://" + tcAddress + "/metadata/v1/watch", param, header, CALLBACK);
-            return true; // TODO : Handle the response properly
-        }
-
+    private static void executeHttpWatchRequest(
+            String tcAddress, Map<String, String> param, Map<String, String> header, ResponseProcessor processor) {
         try (CloseableHttpResponse response =
                 HttpClientUtil.doPost("http://" + tcAddress + "/metadata/v1/watch", param, header, 30000)) {
             if (response != null) {
                 StatusLine statusLine = response.getStatusLine();
                 if (statusLine != null && statusLine.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                    if (StringUtils.isNotBlank(USERNAME) && StringUtils.isNotBlank(PASSWORD)) {
-                        throw new RetryableException("Authentication failed!");
-                    } else {
-                        throw new AuthenticationFailedException(
-                                "Authentication failed! you should configure the correct username and password.");
-                    }
+                    processor.process(null, new RetryableException("Authentication failed!"));
+                } else if (statusLine != null && statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                    String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+                    processor.process(responseBody, null);
+                } else {
+                    processor.process(
+                            null,
+                            new RetryableException("Invalid response status: "
+                                    + (statusLine != null ? statusLine.getStatusCode() : "unknown")));
                 }
-                return statusLine != null && statusLine.getStatusCode() == HttpStatus.SC_OK;
+            } else {
+                processor.process(null, new RetryableException("Null response"));
             }
-        } catch (IOException e) {
-            LOGGER.error("watch cluster node: {}, fail: {}", tcAddress, e.getMessage());
-            throw new RetryableException(e.getMessage(), e);
+        } catch (Exception e) {
+            processor.process(null, new RetryableException(e.getMessage(), e));
         }
+    }
 
-        return false;
+    private static void executeHttp2WatchRequest(
+            String tcAddress, Map<String, String> param, Map<String, String> header, ResponseProcessor processor) {
+        Http2ClientUtil.doPost(
+                "http://" + tcAddress + "/metadata/v1/watch", param, header, new HttpCallback<Response>() {
+                    @Override
+                    public void onSuccess(Response response) {
+                        try {
+                            String responseBody = response.body().string();
+                            processor.process(responseBody, null);
+                        } catch (IOException e) {
+                            processor.process(null, e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable e) {
+                        processor.process(null, e);
+                    }
+
+                    @Override
+                    public void onCancelled() {
+                        processor.process(null, new RetryableException("Request cancelled"));
+                    }
+                });
+    }
+
+    private static void processWatchResponse(String responseBody) {
+        try {
+            JsonNode jsonNode = OBJECT_MAPPER.readTree(responseBody);
+            boolean success = jsonNode.path("success").asBoolean(false);
+            if (success) {
+                LOGGER.info("Watch request successful");
+                // 여기에 필요한 메타데이터 처리 로직 추가
+            } else {
+                String message = jsonNode.path("message").asText("Unknown error");
+                LOGGER.warn("Watch request failed: {}", message);
+            }
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Failed to parse watch response: {}", e.getMessage(), e);
+        }
+    }
+
+    @FunctionalInterface
+    private interface ResponseProcessor {
+        void process(String responseBody, Throwable error);
     }
 
     @Override
@@ -540,6 +577,12 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
 
     private static void acquireClusterMetaData(String clusterName, String group) throws RetryableException {
         Node selectedNode = selectNodeForHttpAddress(clusterName, group);
+
+        if (selectedNode == null) {
+            LOGGER.warn("No available node found for cluster: {}, group: {}", clusterName, group);
+            return;
+        }
+
         String tcAddress = queryHttpAddress(clusterName, selectedNode);
         Map<String, String> header = new HashMap<>();
         header.put(HTTP.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.getMimeType());
@@ -552,52 +595,72 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
         if (StringUtils.isNotBlank(tcAddress)) {
             Map<String, String> param = new HashMap<>();
             param.put("group", group);
-        }
-    }
 
-    private static void updateClusterMetadataFromHttp(
-            Node selectedNode,
-            String clusterName,
-            String tcAddress,
-            Map<String, String> param,
-            Map<String, String> header)
-            throws RetryableException {
+            if (selectedNode.isHttp2Supported()) {
+                Http2ClientUtil.doGet(
+                        "http://" + tcAddress + "/metadata/v1/cluster",
+                        header,
+                        new HttpCallback<Response>() {
+                            @Override
+                            public void onSuccess(Response result) {
+                                try {
+                                    String responseBody = result.body().string();
+                                    if (StringUtils.isNotBlank(responseBody)) {
+                                        MetadataResponse metadataResponse =
+                                                OBJECT_MAPPER.readValue(responseBody, MetadataResponse.class);
+                                        METADATA.refreshMetadata(clusterName, metadataResponse);
+                                        LOGGER.debug("Metadata refreshed via HTTP/2 for cluster: {}", clusterName);
+                                    }
+                                } catch (Exception e) {
+                                    LOGGER.error("Error processing metadata response: {}", e.getMessage(), e);
+                                }
+                            }
 
-        if (selectedNode.isHttp2Supported()) {
-            Http2ClientUtil.doGet("http://" + tcAddress + "/metadata/v1/cluster", header, CALLBACK, 1000);
-            return;
-        }
-        String response = null;
-        try (CloseableHttpResponse httpResponse =
-                HttpClientUtil.doGet("http://" + tcAddress + "/metadata/v1/cluster", param, header, 1000)) {
-            if (httpResponse != null) {
-                int statusCode = httpResponse.getStatusLine().getStatusCode();
-                if (statusCode == HttpStatus.SC_OK) {
-                    response = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
-                } else if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
-                    if (StringUtils.isNotBlank(USERNAME) && StringUtils.isNotBlank(PASSWORD)) {
-                        refreshToken(clusterName, selectedNode);
-                        throw new RetryableException("Token refreshed, retrying request.");
+                            @Override
+                            public void onFailure(Throwable t) {
+                                LOGGER.error("Metadata request failed: {}", t.getMessage(), t);
+                            }
+
+                            @Override
+                            public void onCancelled() {
+                                LOGGER.warn("Metadata request was cancelled");
+                            }
+                        },
+                        1000);
+                return;
+            }
+            String response = null;
+            try (CloseableHttpResponse httpResponse =
+                    HttpClientUtil.doGet("http://" + tcAddress + "/metadata/v1/cluster", param, header, 1000)) {
+                if (httpResponse != null) {
+                    int statusCode = httpResponse.getStatusLine().getStatusCode();
+                    if (statusCode == HttpStatus.SC_OK) {
+                        response = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
+                    } else if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+                        if (StringUtils.isNotBlank(USERNAME) && StringUtils.isNotBlank(PASSWORD)) {
+                            refreshToken(tcAddress, selectedNode);
+                            throw new RetryableException("Token refreshed, retrying request.");
+                        } else {
+                            throw new AuthenticationFailedException(
+                                    "Authentication failed! you should configure the correct username and password.");
+                        }
                     } else {
                         throw new AuthenticationFailedException(
                                 "Authentication failed! you should configure the correct username and password.");
                     }
-                } else {
-                    throw new AuthenticationFailedException(
-                            "Authentication failed! you should configure the correct username and password.");
                 }
-            }
-            MetadataResponse metadataResponse;
-            if (StringUtils.isNotBlank(response)) {
-                try {
-                    metadataResponse = OBJECT_MAPPER.readValue(response, MetadataResponse.class);
-                    METADATA.refreshMetadata(clusterName, metadataResponse);
-                } catch (JsonProcessingException e) {
-                    LOGGER.error(e.getMessage(), e);
+                MetadataResponse metadataResponse;
+                if (StringUtils.isNotBlank(response)) {
+                    try {
+                        metadataResponse = OBJECT_MAPPER.readValue(response, MetadataResponse.class);
+                        METADATA.refreshMetadata(clusterName, metadataResponse);
+                    } catch (JsonProcessingException e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
                 }
+            } catch (IOException e) {
+                throw new RetryableException(e.getMessage(), e);
             }
-        } catch (IOException e) {
-            throw new RetryableException(e.getMessage(), e);
         }
     }
 
@@ -621,8 +684,42 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
     private static void requestJwtToken(
             Node selectedNode, String tcAddress, Map<String, String> param, Map<String, String> header)
             throws RetryableException {
+
+        if (selectedNode == null) {
+            LOGGER.warn("No available node found for token request.");
+            return;
+        }
         if (selectedNode.isHttp2Supported()) {
-            Http2ClientUtil.doPost("http://" + tcAddress + "/api/v1/auth/login", param, header, CALLBACK);
+            Http2ClientUtil.doPost(
+                    "http://" + tcAddress + "/api/v1/auth/login", param, header, new HttpCallback<Response>() {
+                        @Override
+                        public void onSuccess(Response result) {
+                            try {
+                                String responseBody = result.body().string();
+                                JsonNode jsonNode = OBJECT_MAPPER.readTree(responseBody);
+                                String codeStatus = jsonNode.get("code").asText();
+                                if (StringUtils.equals(codeStatus, "200")) {
+                                    jwtToken = jsonNode.get("data").asText();
+                                    tokenTimeStamp = System.currentTimeMillis();
+                                    LOGGER.info("JWT token refreshed successfully via HTTP/2");
+                                } else {
+                                    LOGGER.error("Authentication failed with code: {}", codeStatus);
+                                }
+                            } catch (Exception e) {
+                                LOGGER.error("Error processing JWT token response: {}", e.getMessage(), e);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            LOGGER.error("JWT token request failed: {}", t.getMessage(), t);
+                        }
+
+                        @Override
+                        public void onCancelled() {
+                            LOGGER.warn("JWT token request was cancelled");
+                        }
+                    });
             return;
         }
 
@@ -630,7 +727,8 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
         try (CloseableHttpResponse httpResponse =
                 HttpClientUtil.doPost("http://" + tcAddress + "/api/v1/auth/login", param, header, 1000)) {
             if (httpResponse != null) {
-                if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                if (httpResponse.getStatusLine() != null
+                        && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     response = EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8);
                     JsonNode jsonNode = OBJECT_MAPPER.readTree(response);
                     String codeStatus = jsonNode.get("code").asText();
