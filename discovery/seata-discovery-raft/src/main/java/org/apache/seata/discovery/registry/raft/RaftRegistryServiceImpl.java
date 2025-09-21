@@ -223,8 +223,6 @@ public class RaftRegistryServiceImpl implements RegistryService<ConfigChangeList
         }
     }
 
-    // 그러면 여기에서 string을 반환하는 것이 아니라 node를 반환해야 된다. (node를 반환해서 node의 버전에 따라 결정)
-    // 또는 2.0이 가능한 node를 먼저 선택하게 하는 거는 어떨까?
     private static Node selectNodeForHttpAddress(String clusterName, String group) {
         List<Node> nodeList = METADATA.getNodes(clusterName, group);
 
