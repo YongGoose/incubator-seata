@@ -114,8 +114,12 @@ public class Node {
             int cur = i < current.length ? Integer.parseInt(current[i]) : 0;
             int bas = i < base.length ? Integer.parseInt(base[i]) : 0;
 
-            if (cur > bas) return true;
-            if (cur < bas) return false;
+            if (cur > bas) {
+                return true;
+            }
+            if (cur < bas) {
+                return false;
+            }
         }
         return true;
     }
