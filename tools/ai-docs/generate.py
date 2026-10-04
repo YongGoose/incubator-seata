@@ -212,6 +212,7 @@ LOAD_CALL_RE = re.compile(r"EnhancedServiceLoader\s*\.\s*(load|loadAll)\s*\(\s*(
 
 
 def parse_load_level(index, impl_fqn):
+    """Return (source path, @LoadLevel name, @LoadLevel order) of an implementation."""
     path = index.by_fqn.get(impl_fqn)
     if not path:
         return None, "", ""
@@ -228,11 +229,29 @@ def parse_load_level(index, impl_fqn):
             raw = name_expr.group(1).strip()
             value = index.resolve_constant(raw, path)
             name = value if value is not None else raw
-        order = re.search(r"order\s*=\s*(-?\w+)", args)
-        scope = re.search(r"scope\s*=\s*(?:Scope\.)?(\w+)", args)
-        extra = [order.group(1) if order else "", scope.group(1).lower() if scope else ""]
-        return path, name, " / ".join(e for e in extra if e)
+        order = re.search(r"order\s*=\s*(-?[\w.]+)", args)
+        return path, name, order.group(1) if order else ""
     return path, "", ""
+
+
+BRANCH_TYPE_RE = re.compile(
+    r"BranchType\s+get(?:Handle)?BranchType\s*\(\s*\)\s*\{\s*return\s+BranchType\.(\w+)\s*;")
+BRANCH_TYPE_KEY_RE = re.compile(r"\.put\s*\(\s*\w+\s*\.\s*get(?:Handle)?BranchType\s*\(\s*\)")
+
+
+def branch_type_of(index, path):
+    """BranchType an implementation declares via getBranchType()/getHandleBranchType(), if any."""
+    current = path
+    for _ in range(10):
+        m = BRANCH_TYPE_RE.search(index.source(current))
+        if m:
+            return m.group(1)
+        chain = index.superclasses(current)
+        fqn = index.resolve(chain[0], current) if chain else None
+        current = index.by_fqn.get(fqn) if fqn else None
+        if not current:
+            return ""
+    return ""
 
 
 def build_spi(index):
@@ -261,10 +280,19 @@ def build_spi(index):
                 foreign.append((code(iface), code(impl.rsplit(".", 1)[-1]), code(module_of(spi_file))))
             continue
         iface_path = index.by_fqn.get(iface)
+        iface_simple = iface.rsplit(".", 1)[-1]
         rows = []
         for impl, spi_file in sorted(set(impls_by_iface[iface])):
-            impl_path, name, extra = parse_load_level(index, impl)
-            rows.append((name, impl, impl_path or spi_file, extra))
+            impl_path, name, order = parse_load_level(index, impl)
+            branch = branch_type_of(index, impl_path) if impl_path else ""
+            keys = []
+            if branch:
+                keys.append("BranchType `%s`" % branch)
+            if name:
+                keys.append("name `%s`" % name)
+            if order:
+                keys.append("order %s" % order)
+            rows.append((", ".join(keys), impl, impl_path or spi_file, bool(branch), name))
         rows.sort(key=lambda r: (r[0] == "", r[0].lower(), r[1]))
         summary.append((iface, len(rows), module_of(iface_path) if iface_path else "?"))
 
@@ -273,20 +301,34 @@ def build_spi(index):
             lines.append("Defined in %s." % code(iface_path))
         lines.append("")
         lines.append(table(
-            ["Name", "Implementation", "Source", "Order / scope"],
-            [(code(n) if n else "no `@LoadLevel`", code(i.rsplit(".", 1)[-1]), code(p), e or "-") for n, i, p, e in rows],
+            ["Interface", "Selected by", "Implementation", "Source"],
+            [(code(iface_simple), k or "default (no key)", code(i.rsplit(".", 1)[-1]), code(p))
+             for k, i, p, _, _ in rows],
         ))
-        if loaders.get(iface):
+        sites = sorted(loaders.get(iface, ()))
+        if sites:
             lines.append("")
-            lines.append("Loaded in: " + ", ".join(code(p) for p in sorted(loaders[iface])))
+            lines.append("Loaded in: " + ", ".join(code(p) for p in sites))
+        keyed = [p for p in sites if BRANCH_TYPE_KEY_RE.search(index.source(p))]
+        if keyed and any(r[3] for r in rows):
+            lines.append("")
+            lines.append("Kept in a map keyed by `BranchType` in " + ", ".join(code(p) for p in keyed)
+                         + "; the branch type of the transaction picks the implementation, not the name.")
         sections.append("\n".join(lines))
 
     intro = """
 Every SPI interface registered under `META-INF/services/`, its implementations,
-and where `EnhancedServiceLoader` loads it. An implementation is selected at
-runtime by the `Name` from its `@LoadLevel` annotation (for example a store mode
-such as `db`, or a database type such as `mysql`); a higher `Order` wins when no
-name is given. Constant names are resolved to their string values where possible.
+and where `EnhancedServiceLoader` loads it. Each row names its interface so that a
+single grep hit is self-explanatory.
+
+`Selected by` tells how the runtime picks an implementation:
+
+- `name`: the `@LoadLevel` name, for example a store mode such as `db` or a
+  database type such as `mysql`. Constants are resolved to their string values.
+- `BranchType`: the transaction mode the implementation declares through
+  `getBranchType()` or `getHandleBranchType()` (AT, TCC, SAGA, XA, ...).
+- `order`: without a name, the implementation with the highest order wins.
+- `default (no key)`: loaded as the only or every implementation.
 
 Load sites only list calls of the form `EnhancedServiceLoader.load(X.class, ...)`.
 Which configuration key decides the name is code flow, not a declaration, so it
@@ -352,6 +394,7 @@ def build_rpc(index):
                   [(code(n), code(p), e) for n, p, e in sorted(regs, key=lambda r: int(codes.get(r[0], 0)))]),
         ))
 
+    spi_interfaces = {os.path.basename(p) for p in git_ls_files("*/META-INF/services/*") if is_main(p)}
     dispatch_rows = []
     for path in index.files:
         src = index.source(path)
@@ -371,7 +414,9 @@ def build_rpc(index):
                 code(m.group(1)),
                 code("%s#handle" % handler),
                 code(do_call.group(1)),
-                ", ".join(code(c) for c in impls) or "%s (no override)" % code(handler),
+                ", ".join(code(c) for c in impls)
+                or ("%s; one subclass per transaction mode, see `spi.md`" % code(handler)
+                    if index.fqn_of(path) in spi_interfaces else "%s (no override)" % code(handler)),
             ))
     dispatch_rows.sort()
 

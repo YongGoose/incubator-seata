@@ -146,10 +146,10 @@ Transaction requests reach their handler through `request.handle(handler)`, whic
 
 | Request | Entry point | Calls | Implemented in |
 |---|---|---|---|
-| `BranchCommitRequest` | `AbstractRMHandler#handle` | `doBranchCommit` | `AbstractRMHandler` (no override) |
+| `BranchCommitRequest` | `AbstractRMHandler#handle` | `doBranchCommit` | `AbstractRMHandler`; one subclass per transaction mode, see `spi.md` |
 | `BranchRegisterRequest` | `AbstractTCInboundHandler#handle` | `doBranchRegister` | `DefaultCoordinator` |
 | `BranchReportRequest` | `AbstractTCInboundHandler#handle` | `doBranchReport` | `DefaultCoordinator` |
-| `BranchRollbackRequest` | `AbstractRMHandler#handle` | `doBranchRollback` | `AbstractRMHandler` (no override) |
+| `BranchRollbackRequest` | `AbstractRMHandler#handle` | `doBranchRollback` | `AbstractRMHandler`; one subclass per transaction mode, see `spi.md` |
 | `GlobalBeginRequest` | `AbstractTCInboundHandler#handle` | `doGlobalBegin` | `DefaultCoordinator` |
 | `GlobalCommitRequest` | `AbstractTCInboundHandler#handle` | `doGlobalCommit` | `DefaultCoordinator` |
 | `GlobalLockQueryRequest` | `AbstractTCInboundHandler#handle` | `doLockCheck` | `DefaultCoordinator` |
