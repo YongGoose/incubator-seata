@@ -22,6 +22,7 @@ SHELL := /usr/bin/env bash
 # Declare all phony targets (targets that are not actual files, i.e. they don't produce a file
 # matching the target name — make will always execute them regardless of file timestamps)
 .PHONY: help clean spotless-check spotless-apply checkstyle checkstyle-diff license test \
+	ai-docs ai-docs-check \
 	package-only package \
 	install-server-jar install-namingserver-jar \
 	install-run-namingserver-native-jar run-namingserver-native-jar \
@@ -86,6 +87,12 @@ checkstyle-diff: ## Run Checkstyle code check only on changed .java files
 
 license: ## Run license check
 	$(MVN) $(MAVEN_ARGS) verify -Dlicense.skip=false -DskipTests
+
+ai-docs: ## Regenerate the AI reference maps in docs/ai/
+	python3 tools/ai-docs/generate.py
+
+ai-docs-check: ## Check that the AI reference maps in docs/ai/ are up to date
+	python3 tools/ai-docs/generate.py --check
 
 test: ## Run unit tests
 	$(MVN) $(MAVEN_ARGS) clean test
